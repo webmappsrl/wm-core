@@ -1,6 +1,9 @@
 @import 'src/theme/mixins.scss';
 wm-search-box {
   margin: 10px;
+  wm-img {
+    height: 30px;
+  }
   .webmapp-card-big-container {
     overflow: hidden;
     width: 90%;
@@ -12,7 +15,6 @@ wm-search-box {
 
     .webmapp-card-big-image-container {
       display: block;
-      height: 49.95%;
       background-color: var(--wm-color-skeleton);
       background-position: center;
       background-repeat: no-repeat;

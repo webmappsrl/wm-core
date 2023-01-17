@@ -1,17 +1,9 @@
-import {BehaviorSubject, Observable, from, of} from 'rxjs';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  ViewEncapsulation,
-} from '@angular/core';
-import {shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
+import {BehaviorSubject, from, Observable, of} from 'rxjs';
+import {switchMap} from 'rxjs/operators';
 
-import {DownloadService} from 'src/app/services/download.service';
 import {IWmImage} from 'src/app/types/model';
-import defaultImage from 'src/assets/images/defaultImageB64.json';
+import defaultImage from './defaultImageB64.json';
 
 @Component({
   selector: 'wm-img',
@@ -36,26 +28,16 @@ export class WmImgComponent {
 
   public image$: Observable<string | ArrayBuffer | null> = of(null);
 
-  constructor(private download: DownloadService) {
+  constructor() {
     this.image$ = this._loadSrcEVT$.pipe(
       switchMap(src => {
+        console.log(src);
         if (typeof src === 'string') {
           return of(src);
         } else {
-          return from(this.loadImage(src));
+          return from(defaultImage.image);
         }
       }),
     );
-  }
-
-  loadImage(imageSrc: IWmImage | string): Promise<string | ArrayBuffer> {
-    if (!imageSrc) return;
-    let url = imageSrc as string;
-    if (typeof imageSrc !== 'string') {
-      if (this.size && imageSrc.sizes[this.size]) {
-        url = imageSrc.sizes[this.size];
-      }
-    }
-    return this.download.getB64img(url);
   }
 }
