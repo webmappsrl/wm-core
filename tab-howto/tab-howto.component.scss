@@ -1,0 +1,58 @@
+wm-tab-howto {
+  padding-left: 15px;
+
+  .webmapp-title {
+    font-weight: var(--wm-font-weight-bold);
+    font-size: var(--wm-font-lg);
+  }
+  .webmapp-walkability {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+    align-items: flex-start;
+
+    .webmapp-walkability-box {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-start;
+      margin: 0 10px 10px 0;
+      padding: 10px;
+
+      height: 82px;
+      min-width: 80px;
+      left: 0px;
+      top: 932px;
+      border-radius: 15px;
+      background: rgba(255, 129, 40, 0.2);
+      i {
+        position: static;
+        height: 24px;
+        width: 27.333335876464844px;
+        left: 11px;
+        top: 947px;
+        border-radius: 0px;
+        font-size: 24px;
+        color: #ff8128;
+
+        /* Inside auto layout */
+
+        flex: none;
+        order: 0;
+        flex-grow: 0;
+        margin: 8px 0px;
+      }
+      .webmapp-walkability-label {
+        font-family: var(--wm-font-family-header);
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 17px;
+        letter-spacing: 0em;
+        text-align: left;
+      }
+    }
+  }
+}

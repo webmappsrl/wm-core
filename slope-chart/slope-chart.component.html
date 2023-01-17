@@ -1,0 +1,40 @@
+<div class="webmapp-slopechart-canvas-container">
+  <canvas #chartCanvas class="webmapp-slopechart-canvas"></canvas>
+</div>
+<div class="webmapp-slopechart-legend-container">
+  <div class="webmapp-slopechart-legend-slope-container" *ngIf="slope?.available">
+    <div class="webmapp-slopechart-legend-slope-label">
+      {{ "components.slopechart.slope.label" | wmtrans }}
+    </div>
+    <div class="webmapp-slopechart-legend-slope-bar">
+      <div
+        *ngIf="slope?.selectedValue !== undefined"
+        class="webmapp-slopechart-legend-slope-selected-container"
+        [ngStyle]="{
+          left: slope.selectedPercentage + '%'
+        }"
+      >
+        <div class="webmapp-slopechart-legend-slope-selected-text">{{ slope.selectedValue }}%</div>
+        <div class="webmapp-slopechart-legend-slope-selected-dot"></div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="webmapp-slopechart-legend-surface-container"
+    *ngIf="surfaces && surfaces.length > 0 && false"
+  >
+    <div *ngFor="let surface of surfaces" class="webmapp-slopechart-legend-surface">
+      <span
+        [ngStyle]="{
+          background: 'rgb(' + surface.backgroundColor + ')'
+        }"
+        class="webmapp-slopechart-legend-surface-dot"
+      ></span>
+      <div class="webmapp-slopechart-legend-surface-label">
+        {{
+          "components.slopechart.surfaces." + surface.id + ".label" | wmtrans
+        }}
+      </div>
+    </div>
+  </div>
+</div>

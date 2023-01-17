@@ -1,0 +1,86 @@
+wm-tab-nearest-poi {
+  margin-top: 20px;
+  padding-left: 15px;
+  display: block;
+  .webmapp-title {
+    font-weight: var(--wm-font-weight-bold);
+    font-size: var(--wm-font-md);
+  }
+  .webmapp-track-poi-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: stretch;
+    .webmapp-track-poi-item {
+      flex: 0 1 auto;
+      align-self: auto;
+
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      align-content: stretch;
+      align-items: stretch;
+      margin-bottom: 10px;
+      height: 60px;
+      cursor: pointer;
+    }
+    .webmapp-track-poi-text {
+      margin-left: 5px;
+      flex: 1 1 auto;
+      align-self: auto;
+      height: 100%;
+
+      .webmapp-track-poi-title {
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 22px;
+        letter-spacing: 0em;
+        text-align: left;
+      }
+
+      .webmapp-track-poi-description {
+        align-self: stretch;
+        display: -webkit-box;
+        overflow: hidden;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        flex: 0 1 auto;
+      }
+      .webmapp-track-poi-btns {
+        margin-top: 5px;
+        display: -ms-inline-flexbox;
+        display: -webkit-inline-flex;
+        display: inline-flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-content: stretch;
+        align-items: flex-start;
+      }
+    }
+
+    wm-img {
+      height: 100%;
+      width: 108px;
+      left: 0px;
+      top: 0px;
+      border-radius: 8px;
+      object-fit: cover;
+      min-height: unset;
+
+      flex: 0 0 auto;
+      align-self: auto;
+      img {
+        border-radius: 8px;
+      }
+    }
+    .selected {
+      background-color: rgba(243, 244, 246, 1);
+      border-radius: 8px;
+    }
+  }
+}

@@ -1,0 +1,14 @@
+<ion-card class="webmapp-base-box-container" (click)="clickEVT.emit()">
+  <wm-img class="webmapp-base-box-image-container" [src]="data.image_url" size="225x100"></wm-img>
+  <ion-card-header class="webmapp-base-box-header">
+    <ng-container *ngIf="data else skeletonTemplate">
+      <ion-card-title class="webmapp-base-box-title">
+        {{ data.title | wmtrans }}
+      </ion-card-title>
+    </ng-container>
+    <ng-template #skeletonTemplate>
+      <ion-skeleton-text class="webmapp-base-box-subtitle-skeleton" animated></ion-skeleton-text>
+      <ion-skeleton-text class="webmapp-base-box-title-skeleton" animated></ion-skeleton-text>
+    </ng-template>
+  </ion-card-header>
+</ion-card>

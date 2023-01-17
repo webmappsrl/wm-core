@@ -1,0 +1,20 @@
+<ion-card class="webmapp-card-big-container" (click)="open()">
+  <wm-img class="webmapp-card-big-image-container" [src]="feature_image" size="225x100"></wm-img>
+  <ion-card-header class="webmapp-card-big-header">
+    <ng-container *ngIf="title$|async as title; else skeletonTemplate">
+      <ion-card-subtitle class="webmapp-card-big-subtitle">
+        {{ where | wmtrans }}
+      </ion-card-subtitle>
+      <ion-card-title class="webmapp-card-big-title">
+        {{ title  | wmtrans }}
+      </ion-card-title>
+      <ion-label *ngIf="showDistance" class="webmapp-card-big-distance">
+        {{distance}} Km
+      </ion-label>
+    </ng-container>
+    <ng-template #skeletonTemplate>
+      <ion-skeleton-text class="webmapp-card-big-subtitle-skeleton" animated></ion-skeleton-text>
+      <ion-skeleton-text class="webmapp-card-big-title-skeleton" animated></ion-skeleton-text>
+    </ng-template>
+  </ion-card-header>
+</ion-card>

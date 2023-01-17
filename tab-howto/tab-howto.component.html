@@ -1,0 +1,32 @@
+<ng-container *ngIf="properties != null">
+  <ng-container *ngIf="properties.taxonomy  as taxonomy">
+    <div class="webmapp-title">{{'Percorribilità'|wmtrans}}</div>
+    <div class="webmapp-walkability" *ngIf="taxonomy.activity as activity">
+      <ng-container *ngFor="let item of activity">
+        <div class="webmapp-walkability-box" *ngIf="item.identifier ==='hiking'">
+          <i class="icon-fill-trekking"></i>
+          <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
+        </div>
+        <div
+          class="webmapp-walkability-box"
+          *ngIf="item.identifier === 'cycling'||item.identifier === 'mtb'"
+        >
+          <i class="icon-outline-bike"></i>
+          <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
+        </div>
+        <div class="webmapp-walkability-box" *ngIf="item.identifier === 'running'">
+          <i class="icon-outline-running"></i>
+          <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
+        </div>
+        <div class="webmapp-walkability-box" *ngIf="item.identifier === 'walking'">
+          <i class="icon-outline-walking"></i>
+          <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
+        </div>
+        <div class="webmapp-walkability-box" *ngIf="item.identifier === 'skitouring'">
+          <i class="icon-outline-nordic-walking"></i>
+          <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
+</ng-container>

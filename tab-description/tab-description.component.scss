@@ -1,0 +1,23 @@
+.webmapp-pageroute-tabdescription-description {
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+.webmapp-pageroute-tabdescription-title {
+  padding-left: 15px;
+  font-weight: var(--wm-font-weight-bold);
+  font-size: var(--wm-font-lg);
+}
+
+.webmapp-pageroute-tabdescription-photoslider {
+  padding: 20px 0;
+  overflow: visible;
+
+  .webmapp-pageroute-tabdescription-photo {
+    height: 150px;
+    width: 250px;
+    &::part(image) {
+      border-radius: 15px;
+    }
+  }
+}

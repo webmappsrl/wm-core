@@ -1,0 +1,24 @@
+<div class="webmapp-slider-box-container">
+  <h3 class="webmapp-slider-box-header">{{ data.title }}</h3>
+  <ion-slides [options]="sliderOptions" class="webmapp-slider-box">
+    <ng-container *ngIf="!data.items">
+      <ion-slide>
+        <webmapp-base-box></webmapp-base-box>
+      </ion-slide>
+      <ion-slide>
+        <webmapp-base-box></webmapp-base-box>
+      </ion-slide>
+      <ion-slide>
+        <webmapp-base-box></webmapp-base-box>
+      </ion-slide>
+    </ng-container>
+    <ng-container *ngIf="data && data.items.length">
+      <ion-slide *ngFor="let item of data.items">
+        <webmapp-base-box [data]="item" (clickEVT)="open(item.track_id)"></webmapp-base-box>
+      </ion-slide>
+    </ng-container>
+    <ion-label *ngIf="data && !data.length" class="webmapp-slider-box-nodata">
+      {{nodata}}
+    </ion-label>
+  </ion-slides>
+</div>

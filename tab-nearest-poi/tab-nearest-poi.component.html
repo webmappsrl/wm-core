@@ -1,0 +1,37 @@
+<ng-container *ngIf="nearestPoi as np">
+  <ng-container *ngIf="np.getProperties() as properties">
+    <div class="webmapp-title">
+      {{'Punto di interesse nelle vicinanze'| wmtrans}}
+      ({{properties.distance_from_user|distance:'m'}})
+    </div>
+    <div class="webmapp-track-poi-list">
+      <div class="webmapp-track-poi-item">
+        <wm-img
+          class="webmapp-track-poi-img"
+          [src]="properties?.feature_image"
+          size="225x100"
+        ></wm-img>
+        <div class="webmapp-track-poi-text">
+          <div class="webmapp-track-poi-title">
+            {{ properties.name | wmtrans|lowercase }}
+          </div>
+
+          <div class="webmapp-track-poi-btns">
+            <div class="webmapp-poi-popup-btn">
+              <i class="webmapp-icon icon-fill-pin"></i>
+            </div>
+            <div class="webmapp-poi-popup-btn" target="_blank">
+              <i class="webmapp-icon icon-fill-phone"></i>
+            </div>
+            <div class="webmapp-poi-popup-btn" target="_blank">
+              <i class="webmapp-icon icon-fill-mail"></i>
+            </div>
+            <div class="webmapp-poi-popup-btn">
+              <i class="webmapp-icon icon-fill-globe"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>

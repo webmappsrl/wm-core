@@ -1,0 +1,16 @@
+<div class="webmapp-pageroute-downloadbackpanel"></div>
+<div class="webmapp-pageroute-downloadpanel">
+  <div class="webmapp-pageroute-downloadpanel-container">
+    <ion-img class="webmapp-pageroute-downloadpanel-logo" src="assets/images/logo46.png"></ion-img>
+    <i
+      class="webmapp-pageroute-downloadpanel-exit icon-outline-close-outline"
+      (click)="closeEvt.emit()"
+    >
+    </i>
+    <wm-download-panel
+      [track]="track"
+      (changeStatus)="downloadStatus($event)"
+      (exit)="endDownload()"
+    ></wm-download-panel>
+  </div>
+</div>

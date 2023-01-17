@@ -1,0 +1,24 @@
+<div class="webmapp-card-slider-container">
+  <h3 class="webmapp-card-slider-header">{{ title }}</h3>
+  <ion-slides [options]="sliderOptions" class="webmapp-card-slider">
+    <ng-container *ngIf="!data">
+      <ion-slide>
+        <webmapp-card-big></webmapp-card-big>
+      </ion-slide>
+      <ion-slide>
+        <webmapp-card-big></webmapp-card-big>
+      </ion-slide>
+      <ion-slide>
+        <webmapp-card-big></webmapp-card-big>
+      </ion-slide>
+    </ng-container>
+    <ng-container *ngIf="data && data.length">
+      <ion-slide *ngFor="let item of data">
+        <webmapp-card-big [item]="item" [showDistance]="showDistance"></webmapp-card-big>
+      </ion-slide>
+    </ng-container>
+    <ion-label *ngIf="data && !data.length" class="webmapp-card-slider-nodata">
+      {{nodata}}
+    </ion-label>
+  </ion-slides>
+</div>

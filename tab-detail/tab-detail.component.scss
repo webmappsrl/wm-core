@@ -1,0 +1,23 @@
+wm-tab-detail {
+  .webmapp-pageroute-tabdetail-chart {
+    // height: 200px;
+    text-align: center;
+    width: 100%;
+    display: block;
+    padding: 0 10px;
+  }
+
+  .webmapp-pageroute-tabdetail-label {
+    color: var(--wm-color-dark);
+  }
+
+  .webmapp-pageroute-tabdetail-icon {
+    color: var(--wm-color-primary);
+    padding: 0 5px;
+  }
+
+  .webmapp-pageroute-tabdetail-value {
+    color: var(--wm-color-dark);
+    font-weight: var(--wm-font-weight-bold);
+  }
+}

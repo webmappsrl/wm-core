@@ -1,0 +1,10 @@
+<ion-title>{{'Descrizione Audio'|wmtrans}}</ion-title>
+<ion-segment (ionChange)="changeLang($event)" value="{{currentLang$|async}}">
+  <ion-segment-button *ngFor="let lang of (langs$|async)" [value]="lang">
+    <ion-label>{{lang}}</ion-label>
+  </ion-segment-button>
+</ion-segment>
+<audio controls #player>
+  <source src="{{(audio$|async)}}" type="audio/mpeg" />
+  {{'Your browser does not support the audio element.'|wmtrans}}
+</audio>

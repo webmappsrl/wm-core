@@ -1,0 +1,28 @@
+<ion-card class="webmapp-card-big-container" (click)="clickEVT.emit()">
+  <wm-img
+    *ngIf="data.feature_image as img"
+    class="webmapp-card-big-image-container"
+    [src]="img"
+    size="225x100"
+  ></wm-img>
+  <ion-card-header class="webmapp-card-big-header">
+    <ng-container *ngIf="data.name else skeletonTemplate">
+      <ion-card-subtitle
+        class="webmapp-card-big-subtitle"
+        *ngIf="data.taxonomyWheres!= null && data.taxonomyWheres.length>0"
+      >
+        {{ data.taxonomyWheres[data.taxonomyWheres.length-1] | wmtrans }}
+      </ion-card-subtitle>
+      <ion-card-title class="webmapp-card-big-title">
+        {{ data.name  | wmtrans }}
+      </ion-card-title>
+      <ion-label *ngIf="data.distance" class="webmapp-card-big-distance">
+        {{data.distance}} Km
+      </ion-label>
+    </ng-container>
+    <ng-template #skeletonTemplate>
+      <ion-skeleton-text class="webmapp-card-big-subtitle-skeleton" animated></ion-skeleton-text>
+      <ion-skeleton-text class="webmapp-card-big-title-skeleton" animated></ion-skeleton-text>
+    </ng-template>
+  </ion-card-header>
+</ion-card>

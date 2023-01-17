@@ -1,0 +1,8 @@
+<ng-container *ngIf="image$|async as image;else spinTemplate">
+  <img part="image" [src]="image" class="wm-img-image" />
+</ng-container>
+<ng-template #spinTemplate>
+  <div class="wm-img-spinner-container">
+    <ion-spinner class="wm-img-spinner"></ion-spinner>
+  </div>
+</ng-template>
