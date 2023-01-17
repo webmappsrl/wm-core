@@ -11,7 +11,6 @@ import {WmSlopeChartComponent} from './slope-chart/slope-chart.component';
 import {WmAddressComponent} from './address/address.component';
 import {ApiEffects} from './api/api.effects';
 import {elasticQueryReducer} from './api/api.reducer';
-import {BoxModule} from './box/box.module';
 import {WmDownloadPanelComponent} from './download-panel/download-panel.component';
 import {WmDownloadComponent} from './download/download/download.component';
 import {WmEmailComponent} from './email/email.component';
@@ -40,7 +39,7 @@ const declarations = [
   WmEmailComponent,
   WmPhoneComponent,
 ];
-const modules = [WmSharedModule, BoxModule, PipeModule, CardsModule];
+const modules = [WmSharedModule, PipeModule, CardsModule];
 
 @NgModule({
   declarations,
