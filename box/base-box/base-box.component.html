@@ -1,0 +1,19 @@
+<ion-card class="wm-base-box-container" (click)="clickEVT.emit()">
+  <wm-img
+    *ngIf="data.image_url as imageUrl"
+    class="wm-base-box-image-container"
+    [src]="imageUrl"
+    size="225x100"
+  ></wm-img>
+  <ion-card-header class="wm-base-box-header">
+    <ng-container *ngIf="data else skeletonTemplate">
+      <ion-card-title class="wm-base-box-title">
+        {{ data.title | wmtrans }}
+      </ion-card-title>
+    </ng-container>
+    <ng-template #skeletonTemplate>
+      <ion-skeleton-text class="wm-base-box-subtitle-skeleton" animated></ion-skeleton-text>
+      <ion-skeleton-text class="wm-base-box-title-skeleton" animated></ion-skeleton-text>
+    </ng-template>
+  </ion-card-header>
+</ion-card>

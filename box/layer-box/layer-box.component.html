@@ -1,0 +1,17 @@
+<div class="wm-box" (click)="clickEVT.emit()">
+  <div class="color" [ngStyle]="{'background-color':data?.style?.color?data.style.color:''}"></div>
+  <wm-img
+    class="webmapp-card-big-image-container wm-result-img"
+    [src]="data.layer.feature_image"
+    size="225x100"
+  ></wm-img>
+  <div class="wm-box-title">{{data.title| wmtrans}}</div>
+  <ng-container *ngIf="buttons">
+    <div class="wm-box-click" (click)="openMap()">
+      <i class="icon-outline-map-outline"></i>
+    </div>
+    <div class="wm-box-click">
+      <i class="icon-outline-list"></i>
+    </div>
+  </ng-container>
+</div>

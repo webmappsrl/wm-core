@@ -1,0 +1,149 @@
+wm-poi-box {
+  .wm-box {
+    position: relative;
+    margin: 10px;
+    border-radius: 15px;
+    box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.1);
+    transition: all 500ms;
+    min-height: 229px;
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: stretch;
+
+    img {
+      border-radius: 15px 15px 0 0;
+      object-fit: cover;
+      align-self: stretch;
+      height: 115px;
+      width: 100%;
+    }
+
+    .wm-box-taxonomies {
+      position: absolute;
+      top: 30%;
+      left: 3%;
+      display: flex;
+      flex-direction: row;
+      .wm-box-taxonomy {
+        left: 0px;
+        top: 0px;
+        border-radius: 25px;
+        padding: 8px 12px 8px 12px;
+        background-color: white;
+
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: stretch;
+        align-items: center;
+        i {
+          color: unset;
+        }
+        > * {
+          flex: 0 1 auto;
+          align-self: auto;
+
+          display: inline-flex;
+          flex-direction: row;
+          flex-wrap: nowrap;
+          justify-content: flex-start;
+          align-content: center;
+          align-items: center;
+        }
+      }
+    }
+    .wm-box-name,
+    .wm-box-where,
+    .wm-box-tags {
+      margin-left: 10px;
+      margin-right: 10px;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .wm-box-name {
+      font-family: var(--wm-font-family-header);
+      font-style: normal;
+      font-weight: 700;
+      color: #323031;
+      font-size: 16px;
+      line-height: 27px;
+      letter-spacing: 0em;
+      text-align: left;
+    }
+
+    .wm-box-where {
+      margin-top: 2%;
+      text-transform: uppercase;
+      font-family: var(--wm-font-family-header);
+      color: var(--wm-color-primary);
+
+      font-style: normal;
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 22px;
+    }
+    .wm-box-tags {
+      position: absolute;
+      bottom: 10px;
+      background-color: transparent;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-content: stretch;
+      align-items: center;
+
+      display: flex;
+      flex-direction: row;
+
+      > * {
+        margin: 5px;
+      }
+      .wm-box-tag {
+        flex: 0 1 auto;
+        align-self: auto;
+
+        display: inline-flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-content: center;
+        align-items: center;
+        font-size: var(--wm-font-lg);
+        i {
+          font-size: 30px;
+        }
+      }
+
+      .wm-box-badge {
+        padding: 8px;
+        left: 0px;
+        top: 0px;
+        border-radius: 25px;
+        padding: 8px 12px 8px 12px;
+        background-color: rgba(var(--wm-color-primary-rgb), 0.2);
+      }
+    }
+    i {
+      color: var(--wm-color-primary);
+      padding: 0 5px;
+      flex: 0 1 auto;
+      font-size: var(--wm-font-md);
+      path1,
+      path2,
+      path1::before,
+      path2::before {
+        color: var(--wm-color-primary);
+        background: var(--wm-color-primary);
+      }
+    }
+  }
+}

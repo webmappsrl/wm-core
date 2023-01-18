@@ -1,0 +1,67 @@
+wm-external-url-box {
+  .wm-box {
+    position: relative;
+    margin: 10px;
+    border-radius: 15px;
+    box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.1);
+    transition: all 500ms;
+    height: 100%;
+    max-height: 176px;
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: stretch;
+    wm-img {
+      height: 100%;
+      img {
+        position: absolute;
+        border-radius: 15px;
+        object-fit: cover;
+        align-self: stretch;
+        height: 100%;
+        width: 100%;
+        filter: brightness(75%);
+      }
+    }
+
+    .wm-box-title {
+      font-size: 26px;
+      font-family: var(--wm-font-family-header);
+      font-style: normal;
+      font-weight: 700;
+      color: white;
+      position: absolute;
+      bottom: 0;
+      padding: 6%;
+
+      line-height: 31px;
+      letter-spacing: 0em;
+      text-align: left;
+      white-space: break-spaces;
+    }
+    .wm-box-click {
+      background-color: white;
+      border: none;
+      color: black;
+      padding: 8px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      border-radius: 30px;
+      position: absolute;
+      padding: 0px;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      bottom: 5%;
+      right: 5%;
+      i {
+        font-size: 12px;
+      }
+    }
+  }
+}
