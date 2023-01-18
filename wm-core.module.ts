@@ -22,7 +22,6 @@ import {WmTabHowtoComponent} from './tab-howto/tab-howto.component';
 import {WmTabNearestPoiComponent} from './tab-nearest-poi/tab-nearest-poi.component';
 import {WmTrackAudioComponent} from './track-audio/track-audio.component';
 import {PipeModule} from './pipes/pipe.module';
-import {CardsModule} from './cards/cards.module';
 import {WmSharedModule} from './shared/shared.module';
 import {BoxModule} from './box/box.module';
 
@@ -40,7 +39,7 @@ const declarations = [
   WmEmailComponent,
   WmPhoneComponent,
 ];
-const modules = [WmSharedModule, PipeModule, CardsModule, BoxModule];
+const modules = [WmSharedModule, PipeModule, BoxModule];
 
 @NgModule({
   declarations,

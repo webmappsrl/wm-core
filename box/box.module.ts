@@ -3,7 +3,6 @@ import {NgModule} from '@angular/core';
 import {IonicModule} from '@ionic/angular';
 import {TranslateModule} from '@ngx-translate/core';
 import {SharedModule} from 'src/app/components/shared/shared.module';
-import {CardsModule} from '../cards/cards.module';
 import {PipeModule} from '../pipes/pipe.module';
 import {WmSharedModule} from '../shared/shared.module';
 import {BaseBoxComponent} from './box';
@@ -27,15 +26,7 @@ const boxComponents = [
 ];
 @NgModule({
   declarations: boxComponents,
-  imports: [
-    CommonModule,
-    IonicModule,
-    WmSharedModule,
-    PipeModule,
-    TranslateModule,
-    SharedModule,
-    CardsModule,
-  ],
+  imports: [CommonModule, IonicModule, WmSharedModule, PipeModule, TranslateModule, SharedModule],
   exports: boxComponents,
 })
 export class BoxModule {}
