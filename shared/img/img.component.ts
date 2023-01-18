@@ -31,7 +31,6 @@ export class WmImgComponent {
   constructor() {
     this.image$ = this._loadSrcEVT$.pipe(
       switchMap(src => {
-        console.log(src);
         if (typeof src === 'string') {
           return of(src);
         } else {
