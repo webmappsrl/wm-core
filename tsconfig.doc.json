@@ -1,0 +1,11 @@
+{
+  "include": [
+    "**/*.ts",
+    "**/*.d.ts",
+    "node_modules/@types/ol/*.d.ts",
+    "types/*.*",
+    "node_modules/@types",
+    "/Users/bongiu/Documents/wm-webapp/src/app/shared/map-core/node_modules/ol/Map.js"
+  ],
+  "exclude": ["src/test.ts", "src/**/*.spec.ts", "src/app/file-to-exclude.ts"]
+}
