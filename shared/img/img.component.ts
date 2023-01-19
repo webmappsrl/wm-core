@@ -3,7 +3,7 @@ import {BehaviorSubject, from, Observable, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
 import {IWmImage} from 'src/app/types/model';
-import defaultImage from './defaultImageB64.json';
+import {defaultImageB64} from './defaultImageB64';
 
 @Component({
   selector: 'wm-img',
@@ -34,7 +34,7 @@ export class WmImgComponent {
         if (typeof src === 'string') {
           return of(src);
         } else {
-          return from(defaultImage.image);
+          return from(defaultImageB64.image);
         }
       }),
     );

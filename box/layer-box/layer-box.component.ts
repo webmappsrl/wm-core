@@ -1,7 +1,7 @@
 import {NavController} from '@ionic/angular';
 import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
 import {BaseBoxComponent} from '../box';
-import {ILAYER, ILAYERBOX} from 'src/app/types/config';
+import {ILAYERBOX} from '../../types/config';
 
 @Component({
   selector: 'wm-layer-box',

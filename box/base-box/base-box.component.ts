@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
-import {IHOMEBASEITEM} from 'src/app/types/config';
+import {IHOMEBASEITEM} from '../../types/config';
 import {BaseBoxComponent as BBaseBoxComponent} from '../box';
 
 @Component({

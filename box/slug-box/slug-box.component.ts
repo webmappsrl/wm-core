@@ -1,7 +1,7 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 
 import {BaseBoxComponent as BBaseBoxComponent} from '../box';
-import {ISLUGBOX} from 'src/app/types/config';
+import {ISLUGBOX} from '../../types/config';
 
 @Component({
   selector: 'wm-slug-box',
