@@ -1,5 +1,4 @@
-import {NavController} from '@ionic/angular';
-import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 import {BaseBoxComponent} from '../box';
 import {ILAYERBOX} from '../../types/config';
 
