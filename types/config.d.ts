@@ -1,5 +1,4 @@
 import {iLocalString} from './model';
-import {ITrack} from './track';
 
 interface IGEOLOCATION {
   record: {
@@ -74,9 +73,6 @@ type ITITLEBOX = IBOX & {
 type ILAYERBOX = IBOX & {
   box_type: 'layer';
   layer: ILAYER;
-  style: {
-    [attr: string]: any;
-  };
 };
 
 type ITRACKBOX = IBOX & {
@@ -208,7 +204,7 @@ interface ILAYER {
   data_use_bbox: boolean;
   data_use_only_my_data: boolean;
   description: string;
-  feature_image: 'string';
+  feature_image: string;
   icon?: any;
   id: string;
   name: string;

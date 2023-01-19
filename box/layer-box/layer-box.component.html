@@ -1,5 +1,8 @@
 <div class="wm-box" (click)="clickEVT.emit()">
-  <div class="color" [ngStyle]="{'background-color':data?.style?.color?data.style.color:''}"></div>
+  <div
+    class="color"
+    [ngStyle]="{'background-color':data.layer.style?.color?data.layer.style.color:''}"
+  ></div>
   <wm-img
     class="webmapp-card-big-image-container wm-result-img"
     [src]="data.layer.feature_image"
