@@ -1,13 +1,14 @@
+import {Observable, of} from 'rxjs';
 import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
+  OnInit,
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import {DeviceService} from 'src/app/services/base/device.service';
-import {IBASEBOX} from 'src/app/types/config';
+import {IBASEBOX} from '../../types/config';
 import {BaseBoxComponent} from '../box';
 
 @Component({
@@ -17,21 +18,21 @@ import {BaseBoxComponent} from '../box';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class SliderBoxComponent extends BaseBoxComponent<IBASEBOX> {
-  @Output() public clickEVT: EventEmitter<number> = new EventEmitter<number>();
+export class SliderBoxComponent extends BaseBoxComponent<IBASEBOX> implements OnInit {
+  @Input() width = 235;
+  @Output() clickEVT: EventEmitter<number> = new EventEmitter<number>();
 
-  public sliderOptions: any;
+  sliderOptions$: Observable<any>;
 
-  constructor(private _deviceService: DeviceService) {
-    super();
-    this.sliderOptions = {
+  ngOnInit(): void {
+    this.sliderOptions$ = of({
       initialSlide: 0,
       speed: 400,
       spaceBetween: 10,
       slidesOffsetAfter: 15,
       slidesOffsetBefore: 15,
-      slidesPerView: this._deviceService.width / 235,
-    };
+      slidesPerView: this.width / 235,
+    });
   }
 
   open(id: number): void {

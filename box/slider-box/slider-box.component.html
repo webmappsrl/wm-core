@@ -1,22 +1,26 @@
 <div class="wm-slider-box-container">
   <h3 class="wm-slider-box-header">{{ data.title }}</h3>
-  <ion-slides [options]="sliderOptions" class="wm-slider-box">
-    <ng-container *ngIf="!data.items">
-      <ion-slide>
-        <wm-base-box></wm-base-box>
-      </ion-slide>
-      <ion-slide>
-        <wm-base-box></wm-base-box>
-      </ion-slide>
-      <ion-slide>
-        <wm-base-box></wm-base-box>
-      </ion-slide>
-    </ng-container>
-    <ng-container *ngIf="data && data.items.length">
-      <ion-slide *ngFor="let item of data.items">
-        <wm-base-box [data]="item" (clickEVT)="open(item.track_id)"></wm-base-box>
-      </ion-slide>
-    </ng-container>
-    <ion-label *ngIf="data && !data.items.length" class="wm-slider-box-nodata"> no data </ion-label>
-  </ion-slides>
+  <ng-container *ngIf="sliderOptions$|async as sliderOptions">
+    <ion-slides [options]="sliderOptions" class="wm-slider-box">
+      <ng-container *ngIf="!data.items">
+        <ion-slide>
+          <wm-base-box></wm-base-box>
+        </ion-slide>
+        <ion-slide>
+          <wm-base-box></wm-base-box>
+        </ion-slide>
+        <ion-slide>
+          <wm-base-box></wm-base-box>
+        </ion-slide>
+      </ng-container>
+      <ng-container *ngIf="data && data.items.length">
+        <ion-slide *ngFor="let item of data.items">
+          <wm-base-box [data]="item" (clickEVT)="open(item.track_id)"></wm-base-box>
+        </ion-slide>
+      </ng-container>
+      <ion-label *ngIf="data && !data.items.length" class="wm-slider-box-nodata">
+        no data
+      </ion-label>
+    </ion-slides>
+  </ng-container>
 </div>
