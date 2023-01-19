@@ -52,30 +52,5 @@ wm-layer-box {
       text-align: left;
       white-space: break-spaces;
     }
-    .wm-box-click {
-      background-color: white;
-      border: none;
-      color: black;
-      padding: 8px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      border-radius: 30px;
-      position: absolute;
-      padding: 0px;
-      width: 30px;
-      height: 30px;
-      line-height: 30px;
-      top: 5%;
-      right: 5%;
-      z-index: 2;
-      i {
-        font-size: 12px;
-      }
-    }
-    .wm-box-click ~ .wm-box-click {
-      top: 50px;
-      bottom: unset;
-    }
   }
 }

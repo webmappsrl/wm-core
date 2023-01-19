@@ -10,14 +10,4 @@ import {ILAYERBOX} from '../../types/config';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class LayerBoxComponent extends BaseBoxComponent<ILAYERBOX> {
-  @Input() buttons = true;
-
-  constructor(private _navCtrl: NavController) {
-    super();
-  }
-
-  openMap(): void {
-    this._navCtrl.navigateForward('map');
-  }
-}
+export class LayerBoxComponent extends BaseBoxComponent<ILAYERBOX> {}
