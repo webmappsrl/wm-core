@@ -20,13 +20,7 @@ export class ApiService {
   constructor(private _http: HttpClient) {
     const hostname: string = window.location.hostname;
     if (hostname.indexOf('localhost') < 0) {
-      const newGeohubId = parseInt(hostname.split('.')[0], environment.geohubId);
-      if (!Number.isNaN(newGeohubId)) {
-        this._geohubAppId = newGeohubId;
-      }
-    }
-    if (hostname.indexOf('mobile') > 0) {
-      const newGeohubId = parseInt(hostname.split('.')[0]);
+      const newGeohubId = +hostname.split('.')[0];
       if (!Number.isNaN(newGeohubId)) {
         this._geohubAppId = newGeohubId;
       }
