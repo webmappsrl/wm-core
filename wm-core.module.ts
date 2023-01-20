@@ -11,7 +11,6 @@ import {WmSlopeChartComponent} from './slope-chart/slope-chart.component';
 import {WmAddressComponent} from './address/address.component';
 import {ApiEffects} from './api/api.effects';
 import {elasticQueryReducer} from './api/api.reducer';
-import {WmDownloadComponent} from './download/download/download.component';
 import {WmEmailComponent} from './email/email.component';
 import {WmPhoneComponent} from './phone/phone.component';
 import {WmRelatedUrlsComponent} from './related-urls/related-urls.component';
@@ -26,7 +25,6 @@ import {BoxModule} from './box/box.module';
 
 const declarations = [
   WmAddressComponent,
-  WmDownloadComponent,
   WmTabDetailComponent,
   WmTabDescriptionComponent,
   WmTabHowtoComponent,
