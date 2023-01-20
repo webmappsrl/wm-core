@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import {AlertController} from '@ionic/angular';
 import {TranslateService} from '@ngx-translate/core';
-import {downloadPanelStatus} from 'src/app/types/downloadpanel.enum';
+import {downloadPanelStatus} from '../../types/downloadpanel.enum';
 
 @Component({
   selector: 'wm-download',
@@ -19,11 +19,17 @@ import {downloadPanelStatus} from 'src/app/types/downloadpanel.enum';
   encapsulation: ViewEncapsulation.None,
 })
 export class WmDownloadComponent implements OnInit {
-  constructor(private _alertCtrl: AlertController, private _translate: TranslateService) {}
   private _actualDownloadStatus: downloadPanelStatus;
-  @Output() closeEvt: EventEmitter<void> = new EventEmitter<void>();
+
   @Input() track: any;
-  ngOnInit(): void {}
+  @Output() closeEvt: EventEmitter<void> = new EventEmitter<void>();
+
+  constructor(private _alertCtrl: AlertController, private _translate: TranslateService) {}
+
+  public downloadStatus(status: downloadPanelStatus) {
+    this._actualDownloadStatus = status;
+  }
+
   async endDownload(requireConfirm = false) {
     if (requireConfirm && this._actualDownloadStatus == downloadPanelStatus.DOWNLOADING) {
       const translation = await this._translate
@@ -62,7 +68,5 @@ export class WmDownloadComponent implements OnInit {
     }
   }
 
-  public downloadStatus(status: downloadPanelStatus) {
-    this._actualDownloadStatus = status;
-  }
+  ngOnInit(): void {}
 }

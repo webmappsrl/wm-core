@@ -6,12 +6,8 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import {Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
-import {IMapRootState} from 'src/app/store/map/map';
-import {mapCurrentTrackProperties} from 'src/app/store/map/map.selector';
-import {IGeojsonFeature, IGeojsonProperties} from 'src/app/types/model';
-import {ISlopeChartHoverElements} from 'src/app/types/slope-chart';
+import {IGeojsonFeature, IGeojsonProperties} from '../types/model';
+import {ISlopeChartHoverElements} from '../types/slope-chart';
 
 @Component({
   selector: 'wm-tab-detail',
@@ -21,12 +17,13 @@ import {ISlopeChartHoverElements} from 'src/app/types/slope-chart';
   encapsulation: ViewEncapsulation.None,
 })
 export class WmTabDetailComponent {
-  public route: IGeojsonFeature;
   @Input()
   properties: IGeojsonProperties;
   @Output('slopeChartHover')
   slopeChartHover: EventEmitter<ISlopeChartHoverElements> =
     new EventEmitter<ISlopeChartHoverElements>();
+
+  public route: IGeojsonFeature;
 
   constructor() {}
 
