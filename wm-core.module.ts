@@ -19,7 +19,7 @@ import {WmTabDetailComponent} from './tab-detail/tab-detail.component';
 import {WmTabHowtoComponent} from './tab-howto/tab-howto.component';
 import {WmTabNearestPoiComponent} from './tab-nearest-poi/tab-nearest-poi.component';
 import {WmTrackAudioComponent} from './track-audio/track-audio.component';
-import {PipeModule} from './pipes/pipe.module';
+import {WmPipeModule} from './pipes/pipe.module';
 import {WmSharedModule} from './shared/shared.module';
 import {BoxModule} from './box/box.module';
 import {WmElevationComponent} from './elevation/elevation.component';
@@ -37,7 +37,7 @@ const declarations = [
   WmPhoneComponent,
   WmElevationComponent,
 ];
-const modules = [WmSharedModule, PipeModule, BoxModule];
+const modules = [WmSharedModule, WmPipeModule, BoxModule];
 
 @NgModule({
   declarations,

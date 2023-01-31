@@ -22,4 +22,4 @@ const pipes = [
   imports: [CommonModule],
   exports: pipes,
 })
-export class PipeModule {}
+export class WmPipeModule {}
