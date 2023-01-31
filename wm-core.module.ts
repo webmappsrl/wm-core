@@ -22,6 +22,7 @@ import {WmTrackAudioComponent} from './track-audio/track-audio.component';
 import {PipeModule} from './pipes/pipe.module';
 import {WmSharedModule} from './shared/shared.module';
 import {BoxModule} from './box/box.module';
+import {WmElevationComponent} from './elevation/elevation.component';
 
 const declarations = [
   WmAddressComponent,
@@ -34,6 +35,7 @@ const declarations = [
   WmRelatedUrlsComponent,
   WmEmailComponent,
   WmPhoneComponent,
+  WmElevationComponent,
 ];
 const modules = [WmSharedModule, PipeModule, BoxModule];
 
