@@ -1,12 +1,13 @@
-import {ChangeDetectorRef, Pipe, PipeTransform} from '@angular/core';
-import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {ChangeDetectorRef, Pipe} from '@angular/core';
+import {TranslatePipe} from '@ngx-translate/core';
+import {LangService} from '../localization/lang.service';
 
 @Pipe({
   name: 'wmtrans',
   pure: false,
 })
 export class WmTransPipe extends TranslatePipe {
-  constructor(private _translateSvc: TranslateService, _cdr: ChangeDetectorRef) {
+  constructor(private _translateSvc: LangService, _cdr: ChangeDetectorRef) {
     super(_translateSvc, _cdr);
   }
 

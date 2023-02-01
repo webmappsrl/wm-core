@@ -1,7 +1,6 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {IonicModule} from '@ionic/angular';
-import {TranslateModule} from '@ngx-translate/core';
 import {WmPipeModule} from '../pipes/pipe.module';
 import {WmSharedModule} from '../shared/shared.module';
 import {BaseBoxComponent} from './base-box/base-box.component';
@@ -25,7 +24,7 @@ const boxComponents = [
 ];
 @NgModule({
   declarations: boxComponents,
-  imports: [CommonModule, IonicModule, WmSharedModule, WmPipeModule, TranslateModule],
+  imports: [CommonModule, IonicModule, WmSharedModule, WmPipeModule],
   exports: boxComponents,
 })
 export class BoxModule {}

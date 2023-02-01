@@ -1,0 +1,8 @@
+<form [formGroup]="langForm">
+  <ion-item>
+    <ion-label> {{'lang' | wmtrans}}</ion-label>
+    <ion-select formControlName="lang" placeholder="{{'langPlaceholder' | wmtrans}}">
+      <ion-select-option [value]="lang" *ngFor="let lang of langs">{{lang}}</ion-select-option>
+    </ion-select>
+  </ion-item>
+</form>
