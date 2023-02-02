@@ -8,7 +8,6 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import {IBASEBOX} from '../../types/config';
 import {BaseBoxComponent} from '../box';
 
 @Component({

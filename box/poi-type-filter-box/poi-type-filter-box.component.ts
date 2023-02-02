@@ -1,7 +1,6 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 
 import {BaseBoxComponent as BBaseBoxComponent} from '../box';
-import {IPOITYPEFILTERBOX} from '../../types/config';
 import {BehaviorSubject} from 'rxjs';
 
 @Component({

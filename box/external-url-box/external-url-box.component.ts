@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
-import {IEXTERNALURLBOX} from '../../types/config';
 import {BaseBoxComponent} from '../box';
 
 @Component({

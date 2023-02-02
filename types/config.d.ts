@@ -1,6 +1,10 @@
-import {PoiTypeTaxonomy} from './model.d';
-import {iLocalString} from './model';
-
+interface PoiTypeTaxonomy {
+  identifier: string;
+  name: iLocalString;
+  id: number;
+  icon: string;
+  color: string;
+}
 interface IGEOLOCATION {
   record: {
     enable: boolean;
@@ -8,12 +12,12 @@ interface IGEOLOCATION {
 }
 
 interface IAPP {
+  geohubId: number;
+  name: string;
+  id?: string;
   appStoreUrl?: string;
   customerName?: string;
-  geohubId: number;
   googlePlayUrl?: string;
-  id: string;
-  name: string;
   welcome?: string;
 }
 
@@ -122,6 +126,7 @@ type IHOME =
   | ISLUGBOX
   | ITRACKBOX
   | IPOITYPEFILTERBOX;
+
 interface IOPTIONS {
   addArrowsOverTracks: boolean;
   baseUrl: string;
@@ -135,6 +140,8 @@ interface IOPTIONS {
   enableTrackAdoption: boolean;
   forceDefaultFeatureColor: boolean;
   forceWelcomePagePopup: boolean;
+  download_track_enable?: boolean;
+  print_track_enable?: boolean;
   galleryAnimationType?: string;
   hideDisclaimer: boolean;
   hideFilters: boolean;
@@ -188,6 +195,11 @@ interface IAUTH {
 interface IPROJECT {
   HTML: string;
 }
+interface iLocalString {
+  en?: string;
+  it?: string;
+}
+
 interface IMAP {
   alert_poi_radius: number;
   alert_poi_show: boolean;
@@ -280,6 +292,10 @@ interface IAPPDOWNLOADBUTTONS {
   route: boolean;
   track: boolean;
 }
+interface IWEBAPP {
+  draw_track_show: boolean;
+  editing_inline_show: boolean;
+}
 interface ICONF {
   APP: IAPP;
   AUTH?: IAUTH;
@@ -290,4 +306,5 @@ interface ICONF {
   OPTIONS: IOPTIONS;
   PROJECT?: IPROJECT;
   THEME?: ITHEME;
+  WEBAPP?: IWEBAPP;
 }
