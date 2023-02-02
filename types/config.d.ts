@@ -114,7 +114,14 @@ type IBASEBOX = IBOX & {
   items: IHOMEITEMTRACK[];
   image_url?: string;
 };
-type IHOME = ITITLEBOX | ILAYERBOX | IBASEBOX | IEXTERNALURLBOX | ISLUGBOX | ITRACKBOX;
+type IHOME =
+  | ITITLEBOX
+  | ILAYERBOX
+  | IBASEBOX
+  | IEXTERNALURLBOX
+  | ISLUGBOX
+  | ITRACKBOX
+  | IPOITYPEFILTERBOX;
 interface IOPTIONS {
   addArrowsOverTracks: boolean;
   baseUrl: string;
