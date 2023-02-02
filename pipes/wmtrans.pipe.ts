@@ -12,7 +12,6 @@ export class WmTransPipe extends TranslatePipe {
   }
 
   transform(value: any, ...args: unknown[]): string {
-    console.log(value);
     if (value) {
       if (value[this._translateSvc.currentLang]) {
         return value[this._translateSvc.currentLang];
