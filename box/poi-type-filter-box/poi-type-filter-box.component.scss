@@ -1,0 +1,64 @@
+wm-poi-type-filter-box {
+  .wm-box {
+    position: relative;
+    margin: 10px;
+    border-radius: 15px;
+    box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.1);
+    transition: all 500ms;
+    height: 80px;
+    max-height: 176px;
+    cursor: pointer;
+
+    > * {
+      margin: 2px;
+    }
+
+    .wm-box-icon {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      margin: 0;
+      height: 100% !important;
+      width: 10%;
+
+      background-color: white;
+      border-color: black;
+      border-width: 1px;
+      svg {
+        height: 100%;
+      }
+    }
+    .wm-box-title {
+      position: absolute;
+      margin: 0;
+      top: 0;
+      left: 10%;
+      bottom: 0;
+      width: 100%;
+      margin: auto;
+      font-size: 24px;
+      font-family: var(--wm-font-family-header);
+      font-style: normal;
+      font-weight: 700;
+      color: white;
+      line-height: 100%;
+      letter-spacing: 0em;
+      text-align: left;
+      padding: 10px;
+
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      align-content: flex-start;
+      align-items: stretch;
+
+      span {
+        order: 0;
+        flex: 1 1 auto;
+        align-self: center;
+      }
+    }
+  }
+}

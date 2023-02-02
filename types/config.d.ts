@@ -1,3 +1,4 @@
+import {PoiTypeTaxonomy} from './model.d';
 import {iLocalString} from './model';
 
 interface IGEOLOCATION {
@@ -64,7 +65,7 @@ interface IHOMEOLD {
 }
 
 type IBOX = {
-  box_type: 'title' | 'layer' | 'track' | 'base' | 'external_url' | 'slug';
+  box_type: 'title' | 'layer' | 'track' | 'base' | 'external_url' | 'slug' | 'poi_type_filter';
   title: iLocalString | string;
 };
 type ITITLEBOX = IBOX & {
@@ -93,6 +94,9 @@ type ISLUGBOX = IHOMEBASEITEM & {
   box_type: 'slug';
   slug: string;
 };
+type IPOITYPEFILTERBOX = {
+  box_type: 'poi_type_filter';
+} & PoiTypeTaxonomy;
 
 type IHOMEITEMTRACK = IHOMEBASEITEM & {
   track_id: number;

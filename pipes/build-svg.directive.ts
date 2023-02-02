@@ -8,4 +8,10 @@ export class BuildSvgDirective {
   @Input() set svg(svg: string) {
     this.elementRef.nativeElement.innerHTML = svg;
   }
+  @Input() set color(color: string) {
+    this.elementRef.nativeElement.innerHTML = this.elementRef.nativeElement.innerHTML.replaceAll(
+      'darkorange',
+      color,
+    );
+  }
 }

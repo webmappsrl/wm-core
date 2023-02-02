@@ -1,0 +1,12 @@
+<div class="wm-box" (click)="toggle()" [ngStyle]="{'background-color': backgroundColor$|async}">
+  <div
+    class="wm-box-icon"
+    appBuildSvg
+    style="height:55%"
+    [svg]="data.icon"
+    [color]="data.color"
+  ></div>
+  <div class="wm-box-title">
+    <span [ngStyle]="{'color': color$|async}">{{data.name| wmtrans}}</span>
+  </div>
+</div>

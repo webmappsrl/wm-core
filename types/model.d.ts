@@ -17,6 +17,7 @@ export interface IGeojsonGeometry {
 export interface iLocalString {
   en?: string;
   it?: string;
+  [key: string]: string;
 }
 
 /**
@@ -142,6 +143,13 @@ export interface IGeojsonClusterApiResponse {
   features: IGeojsonCluster[];
 }
 
+export interface PoiTypeTaxonomy {
+  identifier: string;
+  name: iLocalString;
+  id: number;
+  icon: string;
+  color: string;
+}
 export interface WhereTaxonomy {
   admin_level: number;
   created_at: Date;
