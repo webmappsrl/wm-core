@@ -9,18 +9,20 @@ import {LangService} from '../lang.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class WmLangSelectorComponent {
+  @Input() set defaultLang(lang: string) {
+    if (lang != null) {
+      this._langSvc.setDefaultLang(lang);
+    }
+  }
+
   @Input() set langs(langs: string[]) {
     if (langs != null && langs.length > 0) {
       this._langSvc.addLangs(langs);
     }
   }
+
   get langs() {
     return this._langSvc.langs;
-  }
-  @Input() set defaultLang(lang: string) {
-    if (lang != null) {
-      this._langSvc.setDefaultLang(lang);
-    }
   }
 
   langForm: FormGroup;

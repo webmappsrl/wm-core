@@ -6,7 +6,7 @@ import {IonicModule} from '@ionic/angular';
 import {EffectsModule} from '@ngrx/effects';
 import {StoreModule} from '@ngrx/store';
 
-import {TranslateModule} from '@ngx-translate/core';
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 
 import {WmSlopeChartComponent} from './slope-chart/slope-chart.component';
 import {WmAddressComponent} from './address/address.component';
@@ -26,7 +26,12 @@ import {WmTabDetailComponent} from './tab-detail/tab-detail.component';
 import {WmTabHowtoComponent} from './tab-howto/tab-howto.component';
 import {WmTabNearestPoiComponent} from './tab-nearest-poi/tab-nearest-poi.component';
 import {WmTrackAudioComponent} from './track-audio/track-audio.component';
+import {HttpClient} from '@angular/common/http';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 
+export function httpTranslateLoader(http: HttpClient): any {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
 const declarations = [
   WmAddressComponent,
   WmTabDetailComponent,
@@ -50,7 +55,13 @@ const modules = [WmSharedModule, WmPipeModule, BoxModule, WmLocalizationModule];
       IonicModule,
       StoreModule.forFeature('query', elasticQueryReducer),
       EffectsModule.forFeature([ApiEffects]),
-      TranslateModule.forRoot({}),
+      TranslateModule.forRoot({
+        loader: {
+          provide: TranslateLoader,
+          useFactory: httpTranslateLoader,
+          deps: [HttpClient],
+        },
+      }),
     ],
     ...modules,
   ],

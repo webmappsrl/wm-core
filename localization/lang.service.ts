@@ -44,6 +44,7 @@ export class LangService extends TranslateService implements TranslateService {
       true,
       'it',
     );
+
     const savedLang = localStorage.getItem('wm-lang');
     if (savedLang) {
       this.use(savedLang);

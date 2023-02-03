@@ -1,3 +1,4 @@
+import {LangService} from './../localization/lang.service';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -9,12 +10,11 @@ import {
 import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {TranslateService} from '@ngx-translate/core';
-
 @Component({
   selector: 'wm-track-audio',
   templateUrl: './track-audio.component.html',
   styleUrls: ['./track-audio.component.scss'],
+  providers: [LangService],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -35,7 +35,7 @@ export class WmTrackAudioComponent {
   currentLang$: BehaviorSubject<string> = new BehaviorSubject<string>('it');
   langs$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(['it']);
 
-  constructor(private _translateSvc: TranslateService) {
+  constructor(private _translateSvc: LangService) {
     this.currentLang$.next(this._translateSvc.currentLang);
     this.audio$ = this.currentLang$.pipe(
       map(lang => {
