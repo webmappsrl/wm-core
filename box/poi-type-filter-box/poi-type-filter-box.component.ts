@@ -1,4 +1,5 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {LangService} from '../../localization/lang.service';
+import {ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation} from '@angular/core';
 
 import {BaseBoxComponent as BBaseBoxComponent} from '../box';
 import {BehaviorSubject} from 'rxjs';
@@ -7,7 +8,9 @@ import {BehaviorSubject} from 'rxjs';
   selector: 'wm-poi-type-filter-box',
   templateUrl: './poi-type-filter-box.component.html',
   styleUrls: ['./poi-type-filter-box.component.scss'],
+  providers: [LangService],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PoiTypeFilterBoxComponent
   extends BBaseBoxComponent<IPOITYPEFILTERBOX>
