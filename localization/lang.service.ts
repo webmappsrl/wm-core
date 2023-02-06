@@ -45,12 +45,38 @@ export class LangService extends TranslateService implements TranslateService {
       'it',
     );
 
+    this.setTranslation('en', wmEN);
+  }
+
+  initLang(defLang: string): void {
+    console.log('init lang');
+    if (defLang) {
+      this.setDefaultLang(defLang);
+    }
+    switch (defLang) {
+      case 'it':
+      default:
+        this.setTranslation(defLang, wmIT);
+        break;
+      case 'en':
+        this.setTranslation('en', wmEN);
+        break;
+    }
+
     const savedLang = localStorage.getItem('wm-lang');
     if (savedLang) {
       this.use(savedLang);
+    } else {
+      this.use(defLang);
+    }
+  }
+
+  setTranslation(lang: string, translations: Object, shouldMerge?: boolean): void {
+    const wmCoreLangs = {'it': wmIT, 'en': wmEN};
+    if (wmCoreLangs[lang] != null) {
+      super.setTranslation(lang, wmCoreLangs[lang], true);
     }
 
-    this.setTranslation('it', wmIT);
-    this.setTranslation('en', wmEN);
+    super.setTranslation(lang, translations, shouldMerge);
   }
 }
