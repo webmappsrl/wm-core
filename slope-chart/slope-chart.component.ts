@@ -32,6 +32,7 @@ import {ISlopeChartHoverElements} from '../types/slope-chart';
   templateUrl: './slope-chart.component.html',
   styleUrls: ['./slope-chart.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WmSlopeChartComponent implements OnChanges {
   private _chart: Chart;
@@ -94,7 +95,6 @@ export class WmSlopeChartComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes);
     if (changes.currentTrack != null && changes.currentTrack.currentValue != null) {
       setTimeout(() => {
         this._setChart(this.currentTrack);
