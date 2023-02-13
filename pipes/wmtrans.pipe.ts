@@ -14,15 +14,9 @@ export class WmTransPipe extends TranslatePipe {
   transform(value: any, ...args: unknown[]): string {
     if (value) {
       if (value[this._translateSvc.currentLang]) {
-        setTimeout(() => {
-          this._cdr.detectChanges();
-        }, 10);
         return value[this._translateSvc.currentLang];
       }
       if (value[this._translateSvc.defaultLang]) {
-        setTimeout(() => {
-          this._cdr.detectChanges();
-        }, 10);
         return value[this._translateSvc.defaultLang];
       }
       if (typeof value === 'string') {
@@ -30,9 +24,6 @@ export class WmTransPipe extends TranslatePipe {
       }
       for (const val in value) {
         if (value[val]) {
-          setTimeout(() => {
-            this._cdr.detectChanges();
-          }, 10);
           return value[val];
         }
       }
