@@ -5,7 +5,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 })
 export class WmGetFilterIcnPipe implements PipeTransform {
   transform(identifier = '', filters: string[]): string {
-    const outline = 'icn-outline-';
+    const outline = 'icon-outline-';
     let selected = '';
     if (filters.indexOf(identifier) >= 0) {
       selected = '_selected';
