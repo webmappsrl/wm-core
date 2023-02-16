@@ -2,7 +2,6 @@ import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@ang
 import {BehaviorSubject, from, Observable, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
-import {IWmImage} from 'src/app/types/model';
 import {defaultImageB64} from './defaultImageB64';
 
 @Component({
@@ -33,6 +32,12 @@ export class WmImgComponent {
       switchMap(src => {
         if (typeof src === 'string') {
           return of(src);
+        } else if (src.api_url) {
+          if (src.sizes != null && this.size != null && src.sizes[this.size] != null) {
+            return of(src.sizes[this.size]);
+          } else {
+            return of(src.url);
+          }
         } else {
           return from(defaultImageB64.image);
         }
