@@ -5,60 +5,68 @@ wm-poi-type-filter-box {
     border-radius: 15px;
     box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.1);
     transition: all 500ms;
-    height: 80px;
+    height: 100%;
     max-height: 176px;
     cursor: pointer;
 
-    > * {
-      margin: 2px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: stretch;
+    .color {
+      position: absolute;
+      border-radius: 15px;
+      clip-path: polygon(100% 0, 85% 0, 100% 25%);
+      box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.1);
+      height: 100%;
+      width: 100%;
+      z-index: 1;
     }
-
     .wm-box-icon {
       position: absolute;
       top: 0;
       left: 0;
       bottom: 0;
       margin: 0;
-      height: 100% !important;
-      width: 10%;
+      height: 48px;
+      width: 48px;
+      margin: 10px;
 
-      background-color: white;
-      border-color: black;
       border-width: 1px;
       svg {
         height: 100%;
       }
+      z-index: 2;
     }
+    wm-img {
+      height: 100%;
+      img {
+        position: absolute;
+        border-radius: 15px;
+        object-fit: cover;
+        align-self: stretch;
+        height: 100%;
+        width: 100%;
+        filter: brightness(75%);
+      }
+    }
+
     .wm-box-title {
-      position: absolute;
-      margin: 0;
-      top: 0;
-      left: 10%;
-      bottom: 0;
-      width: 100%;
-      margin: auto;
-      font-size: 24px;
+      font-size: 26px;
       font-family: var(--wm-font-family-header);
       font-style: normal;
       font-weight: 700;
       color: white;
-      line-height: 100%;
+      position: absolute;
+      bottom: 0;
+      padding: 6%;
+
+      line-height: 31px;
       letter-spacing: 0em;
       text-align: left;
-      padding: 10px;
-
-      display: flex;
-      flex-direction: row;
-      flex-wrap: nowrap;
-      justify-content: flex-start;
-      align-content: flex-start;
-      align-items: stretch;
-
-      span {
-        order: 0;
-        flex: 1 1 auto;
-        align-self: center;
-      }
+      white-space: break-spaces;
     }
   }
 }

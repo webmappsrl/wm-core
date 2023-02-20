@@ -4,6 +4,7 @@ interface PoiTypeTaxonomy {
   id: number;
   icon: string;
   color: string;
+  image_url: string;
 }
 interface IGEOLOCATION {
   record: {
