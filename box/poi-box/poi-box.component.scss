@@ -13,7 +13,9 @@ wm-poi-box {
     padding: 10px;
     margin: auto;
     @include box-shadow-light;
-
+    .wm-box-name {
+      font-family: var(--wm-font-family-content, inherit);
+    }
     wm-img {
       display: block;
       background-color: var(--wm-color-skeleton);

@@ -1,5 +1,6 @@
 @import '../../theme/mixins.scss';
 wm-search-box {
+  font-family: var(--wm-font-family-content, inherit);
   cursor: pointer;
   margin: 10px;
   wm-img {
@@ -49,7 +50,7 @@ wm-search-box {
         > * {
           flex: 0 1 auto;
           align-self: auto;
-
+          font-family: var(--wm-font-family-content, inherit);
           display: inline-flex;
           flex-direction: row;
           flex-wrap: nowrap;
@@ -90,6 +91,7 @@ wm-search-box {
         padding: 5px 0 0;
         font-size: var(--wm-font-sm);
         font-weight: var(--wm-font-weight-normal);
+        font-family: var(--wm-font-family-content, inherit);
         &::first-letter {
           text-transform: uppercase;
         }

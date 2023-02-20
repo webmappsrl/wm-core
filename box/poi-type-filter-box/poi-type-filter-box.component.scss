@@ -55,7 +55,7 @@ wm-poi-type-filter-box {
 
     .wm-box-title {
       font-size: 26px;
-      font-family: var(--wm-font-family-header);
+      font-family: var(--wm-font-family-content, inherit);
       font-style: normal;
       font-weight: 700;
       color: white;
