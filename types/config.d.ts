@@ -79,6 +79,8 @@ type ITITLEBOX = IBOX & {
 type ILAYERBOX = IBOX & {
   box_type: 'layer';
   layer: ILAYER;
+  icon?: string;
+  color?: string;
 };
 
 type ITRACKBOX = IBOX & {

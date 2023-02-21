@@ -3,6 +3,13 @@
     class="color"
     [ngStyle]="{'background-color':data.layer.style?.color?data.layer.style.color:''}"
   ></div>
+  <div
+    class="wm-box-icon"
+    *ngIf="data.icon as icon"
+    appBuildSvg
+    [svg]="icon"
+    [color]="data.color"
+  ></div>
   <wm-img
     class="webmapp-card-big-image-container wm-result-img"
     [src]="data.layer.feature_image"
