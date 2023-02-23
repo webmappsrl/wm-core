@@ -7,6 +7,7 @@ import {NgModule} from '@angular/core';
 import {WmGetFilterIcnPipe} from './wm-get-filter-icn.pipe';
 import {WmGetIcnPipe} from './wm-get-icn.pipe';
 import {WmTransPipe} from './wmtrans.pipe';
+import {WmGetDataPipe} from './wm-get-data.pipe';
 
 const pipes = [
   WmTransPipe,
@@ -16,6 +17,7 @@ const pipes = [
   WmGetFilterIcnPipe,
   WmGetIcnPipe,
   BuildSvgDirective,
+  WmGetDataPipe,
 ];
 @NgModule({
   declarations: pipes,
