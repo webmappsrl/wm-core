@@ -1,17 +1,17 @@
 <ion-card (click)="clickEVT.emit()">
-  <div *ngIf="data.feature_image as img; else taxonomiesDiv" class="wm-box-header">
+  <div *ngIf="data?.feature_image as img; else taxonomiesDiv" class="wm-box-header">
     <wm-img [src]="img" size="225x100"></wm-img>
     <ng-container *ngTemplateOutlet="taxonomies"></ng-container>
   </div>
   <ion-card-header>
-    <ng-container *ngIf="data.name else skeletonTemplate">
-      <ion-card-subtitle *ngIf="data.taxonomyWheres!= null && data.taxonomyWheres.length>0">
+    <ng-container *ngIf="data?.name else skeletonTemplate">
+      <ion-card-subtitle *ngIf="data?.taxonomyWheres!= null && data?.taxonomyWheres.length>0">
         {{ data.taxonomyWheres[data.taxonomyWheres.length-1] | wmtrans }}
       </ion-card-subtitle>
       <ion-card-title>
         {{ data.name  | wmtrans }}
       </ion-card-title>
-      <ion-label *ngIf="data.distance" class="wm-card-big-distance">
+      <ion-label *ngIf="data?.distance" class="wm-card-big-distance">
         {{data.distance}} Km
       </ion-label>
     </ng-container>
@@ -23,8 +23,8 @@
 </ion-card>
 
 <ng-template #taxonomies>
-  <div class="wm-box-taxonomies" *ngIf="data.taxonomyActivities">
-    <div class="wm-box-taxonomy" *ngFor="let item of data.taxonomyActivities">
+  <div class="wm-box-taxonomies" *ngIf="data?.taxonomyActivities">
+    <div class="wm-box-taxonomy" *ngFor="let item of data?.taxonomyActivities">
       <i [class]="item|getIcn"></i>
       <div>{{item|lowercase|wmtrans}}</div>
     </div>

@@ -21,8 +21,7 @@ export class WmGetDataPipe implements PipeTransform {
     const prop = value.properties;
     const taxonomy = prop.taxonomy;
     const activity = taxonomy.activity;
-    const taxonomyActivities = activity.map(a => a.identifier);
-    console.log(taxonomyActivities);
+    const taxonomyActivities = activity != null ? activity.map(a => a.identifier) : null;
     return {
       name: prop.name,
       feature_image: prop.feature_image,
