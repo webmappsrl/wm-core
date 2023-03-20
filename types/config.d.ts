@@ -1,10 +1,10 @@
 interface PoiTypeTaxonomy {
-  identifier: string;
-  name: iLocalString;
-  id: number;
-  icon: string;
   color: string;
+  icon: string;
+  id: number;
+  identifier: string;
   image_url: string;
+  name: iLocalString;
 }
 interface IGEOLOCATION {
   record: {
@@ -13,12 +13,13 @@ interface IGEOLOCATION {
 }
 
 interface IAPP {
-  geohubId: number;
-  name: string;
-  id?: string;
   appStoreUrl?: string;
   customerName?: string;
+  geohubId: number;
   googlePlayUrl?: string;
+  id?: string;
+  name: string;
+  poi_acquisition_form?: any;
   welcome?: string;
 }
 
@@ -140,11 +141,10 @@ interface IOPTIONS {
   detailsMapBehaviour?: IDETAILSMAPBEHAVIOUR;
   downloadFullGemoetryRouteIndex: boolean;
   downloadRoutesInWebapp: boolean;
+  download_track_enable?: boolean;
   enableTrackAdoption: boolean;
   forceDefaultFeatureColor: boolean;
   forceWelcomePagePopup: boolean;
-  download_track_enable?: boolean;
-  print_track_enable?: boolean;
   galleryAnimationType?: string;
   hideDisclaimer: boolean;
   hideFilters: boolean;
@@ -164,6 +164,7 @@ interface IOPTIONS {
   poiMinRadius: number;
   poiMinZoom: number;
   poiSelectedRadius: number;
+  print_track_enable?: boolean;
   privacyUrl: string;
   resetFiltersAtStartup: boolean;
   showAppDownloadButtons: IAPPDOWNLOADBUTTONS;
