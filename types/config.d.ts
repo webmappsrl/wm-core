@@ -205,23 +205,25 @@ interface iLocalString {
 }
 
 interface IMAP {
-  alert_poi_radius: number;
-  alert_poi_show: boolean;
+  alert_poi_radius?: number;
+  alert_poi_show?: boolean;
   bbox: [number, number, number, number];
   center?: [number, number];
   defZoom: number;
-  flow_line_quote_orange: number;
-  flow_line_quote_red: number;
-  flow_line_quote_show: boolean;
+  flow_line_quote_orange?: number;
+  flow_line_quote_red?: number;
+  flow_line_quote_show?: boolean;
   layers?: ILAYER[];
   maxZoom: number;
   minZoom: number;
   pois?: any;
-  record_track_show: boolean;
-  ref_on_track_min_zoom: number;
-  ref_on_track_show: boolean;
-  start_end_icons_min_zoom: number;
-  start_end_icons_show: boolean;
+  maxStrokeWidth?: number;
+  minStrokeWidth?: number;
+  record_track_show?: boolean;
+  ref_on_track_min_zoom?: number;
+  ref_on_track_show?: boolean;
+  start_end_icons_min_zoom?: number;
+  start_end_icons_show?: boolean;
   tiles: {[name: string]: string}[];
   tracks?: any[];
 }
