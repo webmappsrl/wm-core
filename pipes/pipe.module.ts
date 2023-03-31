@@ -8,6 +8,7 @@ import {WmGetFilterIcnPipe} from './wm-get-filter-icn.pipe';
 import {WmGetIcnPipe} from './wm-get-icn.pipe';
 import {WmTransPipe} from './wmtrans.pipe';
 import {WmGetDataPipe} from './wm-get-data.pipe';
+import {WmToMbPipe} from './wm-to-mb.pipe';
 
 const pipes = [
   WmTransPipe,
@@ -18,6 +19,7 @@ const pipes = [
   WmGetIcnPipe,
   BuildSvgDirective,
   WmGetDataPipe,
+  WmToMbPipe,
 ];
 @NgModule({
   declarations: pipes,

@@ -23,9 +23,8 @@ export class WmImgComponent {
     this._loadSrcEVT$.next(src);
   }
 
+  @Input() offlineFn: (url: string) => Promise<any>;
   @Input('size') size: string;
-
-  @Input() offlineFn: (string) => Promise<string>;
 
   public image$: Observable<string | ArrayBuffer | null> = of(null);
 
@@ -35,12 +34,12 @@ export class WmImgComponent {
       switchMap(src => {
         if (!isOnline && this.offlineFn != null) {
           if (typeof src === 'string') {
-            return of(this.offlineFn(src));
+            return from(this.offlineFn(src));
           } else if (src.api_url) {
             if (src.sizes != null && this.size != null && src.sizes[this.size] != null) {
-              return of(this.offlineFn(src.sizes[this.size]));
+              return from(this.offlineFn(src.sizes[this.size]));
             } else {
-              return of(this.offlineFn(src.url));
+              return from(this.offlineFn(src.url));
             }
           } else {
             return from(defaultImageB64.image);

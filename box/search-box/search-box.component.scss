@@ -9,7 +9,7 @@ wm-search-box {
   ion-card {
     overflow: hidden;
     width: 90%;
-    max-height: 220px;
+    max-height: 250px;
     border-radius: 15px;
     padding: 10px;
     margin: auto;
@@ -114,12 +114,22 @@ wm-search-box {
         width: 70%;
       }
     }
+    .wm-search-box-properties {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-content: stretch;
+      align-items: flex-start;
+      .wm-search-box-property {
+        order: 0;
+        flex: 0 1 auto;
+        align-self: center;
 
-    .wm-card-big-distance {
-      text-align: left;
-      color: var(--wm-color-darkgrey);
-      height: var(--wm-font-sm);
-      margin: 10px;
+        color: var(--wm-color-darkgrey);
+        height: var(--wm-font-sm);
+        font-size: var(--wm-font-sm) !important;
+      }
     }
   }
 }

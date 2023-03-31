@@ -11,9 +11,14 @@
       <ion-card-title>
         {{ data.name  | wmtrans }}
       </ion-card-title>
-      <ion-label *ngIf="data?.distance" class="wm-card-big-distance">
-        {{data.distance}} Km
-      </ion-label>
+      <div class="wm-search-box-properties">
+        <ion-label *ngIf="data?.distance" class="wm-search-box-property">
+          {{data.distance}} Km
+        </ion-label>
+        <ion-label *ngIf="data?.size" class="wm-search-box-property">
+          {{data?.size|wmToMb}}</ion-label
+        >
+      </div>
     </ng-container>
     <ng-template #skeletonTemplate>
       <ion-skeleton-text class="wm-card-big-subtitle-skeleton" animated></ion-skeleton-text>
