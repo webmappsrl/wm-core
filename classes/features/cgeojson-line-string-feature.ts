@@ -1,8 +1,7 @@
-import { EGeojsonGeometryTypes } from 'src/app/types/egeojson-geometry-types.enum';
-import { ILocation } from 'src/app/types/location';
-import { IPoint, ILineString, IGeojsonGeometry } from 'src/app/types/model';
-import { CGeojsonFeature } from './cgeojson-feature';
-
+import {EGeojsonGeometryTypes} from '../../types/egeojson-geometry-types.enum';
+import {IPoint, ILineString, IGeojsonGeometry} from '../../types/model';
+import {CGeojsonFeature} from './cgeojson-feature';
+import {Location} from '../../types/location';
 export class CGeojsonLineStringFeature extends CGeojsonFeature {
   constructor(geometry?: IGeojsonGeometry) {
     super();
@@ -14,7 +13,7 @@ export class CGeojsonLineStringFeature extends CGeojsonFeature {
    *
    * @param location the new coordinates to add
    */
-  addCoordinates(location: ILocation): void {
+  addCoordinates(location: Location): void {
     if (!this._geometry) this._initializeGeometry();
     const newPoint: IPoint = [location.longitude, location.latitude];
     if (location.altitude) newPoint.push(location.altitude);

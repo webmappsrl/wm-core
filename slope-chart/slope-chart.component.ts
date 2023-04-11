@@ -11,7 +11,6 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {Chart, ChartDataset, registerables, Tick, TooltipItem, TooltipModel} from 'chart.js';
-import {CLocation} from '../classes/clocation';
 import {CGeojsonLineStringFeature} from '../classes/features/cgeojson-line-string-feature';
 import {
   SLOPE_CHART_SLOPE_EASY,
@@ -23,9 +22,9 @@ import {
 } from '../constants/slope-chart';
 import {EGeojsonGeometryTypes} from '../types/egeojson-geometry-types.enum';
 import {ESlopeChartSurface} from '../types/eslope-chart.enum';
-import {ILocation} from '../types/location';
 import {IGeojsonFeature, ILineString} from '../types/model';
 import {ISlopeChartHoverElements} from '../types/slope-chart';
+import {Location} from '../types/location';
 
 @Component({
   selector: 'wm-slope-chart',
@@ -37,7 +36,7 @@ import {ISlopeChartHoverElements} from '../types/slope-chart';
 export class WmSlopeChartComponent implements OnChanges {
   private _chart: Chart;
   private _chartCanvas: any;
-  private _chartValues: Array<ILocation>;
+  private _chartValues: Array<Location>;
 
   @ViewChild('chartCanvas') set content(content: ElementRef) {
     if (this._chart != null) {
@@ -77,7 +76,7 @@ export class WmSlopeChartComponent implements OnChanges {
    * @param point1 the first location
    * @param point2 the second location
    */
-  getDistanceBetweenPoints(point1: ILocation, point2: ILocation): number {
+  getDistanceBetweenPoints(point1: Location, point2: Location): number {
     let R: number = 6371e3;
     let lat1: number = (point1.latitude * Math.PI) / 180;
     let lat2: number = (point2.latitude * Math.PI) / 180;
@@ -118,7 +117,7 @@ export class WmSlopeChartComponent implements OnChanges {
     surfaceValues: Array<{
       surface: string;
       values: Array<number>;
-      locations: Array<ILocation>;
+      locations: Array<Location>;
     }>,
     slopeValues: Array<[number, number]>,
   ) {
@@ -291,7 +290,7 @@ export class WmSlopeChartComponent implements OnChanges {
                   (Math.min(15, Math.max(0, Math.abs(this.slope.selectedValue))) * 100) / 15;
 
                 let index: number = (<any>tooltip)._tooltipItems[0].dataIndex,
-                  locations: Array<ILocation> = [],
+                  locations: Array<Location> = [],
                   surfaceColor: string;
 
                 for (let i in surfaceValues) {
@@ -482,15 +481,15 @@ export class WmSlopeChartComponent implements OnChanges {
       let surfaceValues: Array<{
           surface: string;
           values: Array<number>;
-          locations: Array<ILocation>;
+          locations: Array<Location>;
         }> = [],
         slopeValues: Array<[number, number]> = [],
         labels: Array<number> = [],
         steps: number = 100,
         trackLength: number = 0,
         currentDistance: number = 0,
-        previousLocation: ILocation,
-        currentLocation: ILocation,
+        previousLocation: Location,
+        currentLocation: Location,
         maxAlt: number = undefined,
         minAlt: number = undefined,
         usedSurfaces: Array<ESlopeChartSurface> = [];
@@ -498,11 +497,11 @@ export class WmSlopeChartComponent implements OnChanges {
       this._chartValues = [];
 
       labels.push(0);
-      currentLocation = new CLocation(
-        route.geometry.coordinates[0][0],
-        route.geometry.coordinates[0][1],
-        route.geometry.coordinates[0][2],
-      );
+      currentLocation = {
+        longitude: route.geometry.coordinates[0][0],
+        latitude: route.geometry.coordinates[0][1],
+        altitude: route.geometry.coordinates[0][2],
+      };
       this._chartValues.push(currentLocation);
       maxAlt = currentLocation.altitude;
       minAlt = currentLocation.altitude;
@@ -520,11 +519,11 @@ export class WmSlopeChartComponent implements OnChanges {
       // Calculate track length and max/min altitude
       for (let i = 1; i < route.geometry.coordinates.length; i++) {
         previousLocation = currentLocation;
-        currentLocation = new CLocation(
-          route.geometry.coordinates[i][0],
-          route.geometry.coordinates[i][1],
-          route.geometry.coordinates[i][2],
-        );
+        currentLocation = {
+          longitude: route.geometry.coordinates[i][0],
+          latitude: route.geometry.coordinates[i][1],
+          altitude: route.geometry.coordinates[i][2],
+        };
         trackLength += this.getDistanceBetweenPoints(previousLocation, currentLocation);
 
         if (!maxAlt || maxAlt < currentLocation.altitude) maxAlt = currentLocation.altitude;
@@ -532,22 +531,22 @@ export class WmSlopeChartComponent implements OnChanges {
       }
 
       let step: number = 1,
-        locations: Array<ILocation> = [];
-      currentLocation = new CLocation(
-        route.geometry.coordinates[0][0],
-        route.geometry.coordinates[0][1],
-        route.geometry.coordinates[0][2],
-      );
+        locations: Array<Location> = [];
+      currentLocation = {
+        longitude: route.geometry.coordinates[0][0],
+        latitude: route.geometry.coordinates[0][1],
+        altitude: route.geometry.coordinates[0][2],
+      };
 
       // Create the chart datasets
       for (let i = 1; i < route.geometry.coordinates.length && step <= steps; i++) {
         locations.push(currentLocation);
         previousLocation = currentLocation;
-        currentLocation = new CLocation(
-          route.geometry.coordinates[i][0],
-          route.geometry.coordinates[i][1],
-          route.geometry.coordinates[i][2],
-        );
+        currentLocation = {
+          longitude: route.geometry.coordinates[i][0],
+          latitude: route.geometry.coordinates[i][1],
+          altitude: route.geometry.coordinates[i][2],
+        };
         let localDistance: number = this.getDistanceBetweenPoints(
           previousLocation,
           currentLocation,
@@ -577,7 +576,7 @@ export class WmSlopeChartComponent implements OnChanges {
               ).toPrecision(1),
             );
 
-          let intermediateLocation: ILocation = new CLocation(longitude, latitude, altitude);
+          let intermediateLocation: Location = {longitude, latitude, altitude};
 
           this._chartValues.push(intermediateLocation);
 
@@ -616,16 +615,16 @@ export class WmSlopeChartComponent implements OnChanges {
   private _setSurfaceValue(
     surface: string,
     value: number,
-    locations: Array<ILocation>,
+    locations: Array<Location>,
     values: Array<{
       surface: string;
       values: Array<number>;
-      locations: Array<ILocation>;
+      locations: Array<Location>;
     }>,
   ): Array<{
     surface: string;
     values: Array<number>;
-    locations: Array<ILocation>;
+    locations: Array<Location>;
   }> {
     let oldSurface: string = values?.[values.length - 1]?.surface;
 
