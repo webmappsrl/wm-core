@@ -203,7 +203,28 @@ interface iLocalString {
   en?: string;
   it?: string;
 }
-
+interface IOVERLAYERS {
+  label: iLocalString;
+  icon: string;
+  url: string;
+}
+interface IOVERLAYERTITLE {
+  label: iLocalString;
+}
+interface ICONTROLSTITLE {
+  label: iLocalString;
+  type: 'title';
+}
+interface ICONTROLSBUTTON {
+  label: iLocalString;
+  type: 'button';
+  icon: string;
+  url: string;
+  id?: number;
+}
+interface ICONTROLS {
+  [key: string]: (ICONTROLSTITLE | ICONTROLSBUTTON)[];
+}
 interface IMAP {
   alert_poi_radius?: number;
   alert_poi_show?: boolean;
@@ -214,11 +235,12 @@ interface IMAP {
   flow_line_quote_red?: number;
   flow_line_quote_show?: boolean;
   layers?: ILAYER[];
-  maxZoom: number;
-  minZoom: number;
-  pois?: any;
   maxStrokeWidth?: number;
+  maxZoom: number;
   minStrokeWidth?: number;
+  minZoom: number;
+  controls: ICONTROLS;
+  pois?: any;
   record_track_show?: boolean;
   ref_on_track_min_zoom?: number;
   ref_on_track_show?: boolean;
