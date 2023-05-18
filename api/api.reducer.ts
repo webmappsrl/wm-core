@@ -1,10 +1,11 @@
 import {createReducer, on} from '@ngrx/store';
 import {
   addActivities,
+  queryApiFail,
   queryApiSuccess,
   removeActivities,
   resetActivities,
-  setLayerID,
+  setLayer,
 } from './api.actions';
 
 export const searchKey = 'search';
@@ -14,7 +15,8 @@ export interface IElasticSearchRootState {
 
 const initialConfState: IELASTIC = {
   activities: [],
-  layerID: null,
+  layer: null,
+  loading: true,
 };
 
 export const elasticQueryReducer = createReducer(
@@ -23,20 +25,18 @@ export const elasticQueryReducer = createReducer(
     return {
       ...state,
       activities: [...new Set([...state.activities, ...activities])],
+      loading: true,
     };
   }),
   on(removeActivities, (state, {activities}) => {
     return {
       ...state,
       activities: [...state.activities.filter(a => activities.indexOf(a) < 0)],
+      loading: true,
     };
   }),
-  on(resetActivities, (state, {}) => {
-    return {
-      ...state,
-      activities: [],
-    };
-  }),
-  on(setLayerID, (state, {layerID}) => ({...state, layerID})),
-  on(queryApiSuccess, (state, {search}) => ({...state, ...search})),
+  on(resetActivities, (state, {}) => ({...state, activities: [], loading: true})),
+  on(setLayer, (state, {layer}) => ({...state, layer, ...{loading: true}})),
+  on(queryApiSuccess, (state, {search}) => ({...state, ...search, ...{loading: false}})),
+  on(queryApiFail, state => ({...state, ...{loading: false}})),
 );

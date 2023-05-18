@@ -2,7 +2,8 @@ import {HttpClient} from '@angular/common/http';
 
 /* eslint-disable quote-props */
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, from, of} from 'rxjs';
+import {take} from 'rxjs/operators';
 import {environment} from 'src/environments/environment';
 // const baseUrl = 'https://elastic-passtrough.herokuapp.com/search';
 const baseUrl = 'https://elastic-json.webmapp.it/search';
@@ -11,6 +12,7 @@ const baseUrl = 'https://elastic-json.webmapp.it/search';
 })
 export class ApiService {
   private _geohubAppId: number = environment.geohubId;
+  private _queryDic: {[query: string]: any} = {};
 
   /**
    * Creates an instance of ElasticService.
@@ -44,25 +46,28 @@ export class ApiService {
    * @returns {*}  {Observable<IELASTIC>}
    * @memberof ElasticService
    */
-  getQuery(options: {
+  async getQuery(options: {
     inputTyped?: string;
-    layer?: number;
+    layer?: any;
     activities: string[];
-  }): Observable<IELASTIC> {
+  }): Promise<IELASTIC> {
     let query = this._baseUrl;
 
     if (options.inputTyped) {
       query += `&query=${options.inputTyped}`;
     }
 
-    if (options.layer) {
-      query += `&layer=${options.layer}`;
+    if (options.layer && options.layer.id != null) {
+      query += `&layer=${options.layer.id}`;
     }
 
     if (options.activities != null && options.activities.length > 0) {
       query += `&activities=${options.activities.toString()}`;
     }
-    console.log(query);
-    return this._http.request('get', query);
+    if (this._queryDic[query] == null) {
+      const value = await this._http.request('get', query).toPromise();
+      this._queryDic[query] = value;
+    }
+    return this._queryDic[query];
   }
 }

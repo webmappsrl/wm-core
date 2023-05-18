@@ -14,4 +14,4 @@ export const removeActivities = createAction(
 );
 export const resetActivities = createAction('[api] reset activities');
 
-export const setLayerID = createAction('[api] set Layer', props<{layerID: number | null}>());
+export const setLayer = createAction('[api] set Layer', props<{layer: any | null}>());

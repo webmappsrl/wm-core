@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {of} from 'rxjs';
+import {from, of} from 'rxjs';
 import {catchError, map, switchMap, withLatestFrom} from 'rxjs/operators';
 import {
   addActivities,
@@ -8,7 +8,7 @@ import {
   queryApiFail,
   queryApiSuccess,
   removeActivities,
-  setLayerID,
+  setLayer,
 } from './api.actions';
 import {ApiService} from './api.service';
 import {IElasticSearchRootState} from './api.reducer';
@@ -28,6 +28,23 @@ export class ApiEffects {
       }),
     ),
   );
+  queryApi$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(query),
+      withLatestFrom(this._store),
+      switchMap(([action, state]) => {
+        const api = state['query'];
+        if (api.activities.length === 0 && api.layer == null) {
+          return of(queryApiFail());
+        }
+        const newAction = {...action, ...{activities: api.activities}, ...{layer: api.layer}};
+        return from(this._apiSVC.getQuery(newAction)).pipe(
+          map(search => queryApiSuccess({search})),
+          catchError(e => of(queryApiFail())),
+        );
+      }),
+    ),
+  );
   removeActivitiesApi$ = createEffect(() =>
     this._actions$.pipe(
       ofType(removeActivities),
@@ -38,27 +55,13 @@ export class ApiEffects {
       }),
     ),
   );
-  setLayerIDApi$ = createEffect(() =>
+  setLayerApi$ = createEffect(() =>
     this._actions$.pipe(
-      ofType(setLayerID),
+      ofType(setLayer),
       switchMap(_ => {
         return of({
           type: '[api] Query',
         });
-      }),
-    ),
-  );
-  queryApi$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(query),
-      withLatestFrom(this._store),
-      switchMap(([action, state]) => {
-        const api = state['query'];
-        const newAction = {...action, ...{activities: api.activities}, ...{layer: api.layerID}};
-        return this._apiSVC.getQuery(newAction).pipe(
-          map(search => queryApiSuccess({search})),
-          catchError(e => of(queryApiFail())),
-        );
       }),
     ),
   );
