@@ -44,17 +44,25 @@ export class ApiService {
    * @returns {*}  {Observable<IELASTIC>}
    * @memberof ElasticService
    */
-  getQuery(inputTyped?: string, layer?: number): Observable<IELASTIC> {
+  getQuery(options: {
+    inputTyped?: string;
+    layer?: number;
+    activities: string[];
+  }): Observable<IELASTIC> {
     let query = this._baseUrl;
 
-    if (inputTyped) {
-      query += `&query=${inputTyped}`;
+    if (options.inputTyped) {
+      query += `&query=${options.inputTyped}`;
     }
 
-    if (layer) {
-      query += `&layer=${layer}`;
+    if (options.layer) {
+      query += `&layer=${options.layer}`;
     }
 
+    if (options.activities != null && options.activities.length > 0) {
+      query += `&activities=${options.activities.toString()}`;
+    }
+    console.log(query);
     return this._http.request('get', query);
   }
 }

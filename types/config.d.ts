@@ -202,10 +202,11 @@ interface IPROJECT {
 interface iLocalString {
   en?: string;
   it?: string;
+  [lang: string]: string;
 }
 interface IOVERLAYERS {
-  label: iLocalString;
   icon: string;
+  label: iLocalString;
   url: string;
 }
 interface IOVERLAYERTITLE {
@@ -216,11 +217,35 @@ interface ICONTROLSTITLE {
   type: 'title';
 }
 interface ICONTROLSBUTTON {
+  icon: string;
+  id?: number;
   label: iLocalString;
   type: 'button';
-  icon: string;
   url: string;
-  id?: number;
+}
+interface IFILTERS {
+  [key: string]: IFILTERSELECT | IFILTERSLIDER;
+}
+interface IFILTER {
+  type: 'select' | 'slider';
+  name: iLocalString;
+}
+interface IFILTERSELECT extends IFILTER {
+  type: 'select';
+  options: IFILTEROPTION[];
+}
+interface IFILTERSLIDER extends IFILTER {
+  type: 'slider';
+  min: number;
+  max: number;
+  identifier: string;
+}
+interface IFILTEROPTION {
+  identifier: string;
+  name: iLocalString;
+  id: number;
+  icon: string;
+  color: string;
 }
 interface ICONTROLS {
   [key: string]: (ICONTROLSTITLE | ICONTROLSBUTTON)[];
@@ -230,6 +255,7 @@ interface IMAP {
   alert_poi_show?: boolean;
   bbox: [number, number, number, number];
   center?: [number, number];
+  controls: ICONTROLS;
   defZoom: number;
   flow_line_quote_orange?: number;
   flow_line_quote_red?: number;
@@ -239,7 +265,6 @@ interface IMAP {
   maxZoom: number;
   minStrokeWidth?: number;
   minZoom: number;
-  controls: ICONTROLS;
   pois?: any;
   record_track_show?: boolean;
   ref_on_track_min_zoom?: number;
