@@ -71,7 +71,15 @@ interface IHOMEOLD {
 }
 
 type IBOX = {
-  box_type: 'title' | 'layer' | 'track' | 'base' | 'external_url' | 'slug' | 'poi_type_filter';
+  box_type:
+    | 'title'
+    | 'layer'
+    | 'track'
+    | 'base'
+    | 'external_url'
+    | 'slug'
+    | 'poi_type_filter'
+    | 'horizontal_scroll';
   title: iLocalString | string;
 };
 type ITITLEBOX = IBOX & {
@@ -106,6 +114,10 @@ type IPOITYPEFILTERBOX = {
   box_type: 'poi_type_filter';
 } & PoiTypeTaxonomy;
 
+type IHORIZONTALSCROLLBOXITEM = IHOMEBASEITEM & {
+  res: any;
+  item_type: string;
+};
 type IHOMEITEMTRACK = IHOMEBASEITEM & {
   track_id: number;
   taxonomy_activities: string[];
@@ -116,10 +128,15 @@ type IHOMEITEMTRACK = IHOMEBASEITEM & {
 type IHOMEITEMURL = IHOMEBASEITEM & {
   url: string;
 };
-type IHOMEITEM = IHOMEITEMTRACK | IHOMEITEMURL;
+type IHOMEITEM = IHOMEITEMTRACK | IHOMEITEMURL | IHORIZONTALSCROLLBOXITEM;
 type IBASEBOX = IBOX & {
   box_type: 'base';
   items: IHOMEITEMTRACK[];
+  image_url?: string;
+};
+type IHORIZONTALSCROLLBOX = IBOX & {
+  box_type: 'horizontal_scroll';
+  items: IHORIZONTALSCROLLBOXITEM[];
   image_url?: string;
 };
 type IHOME =
@@ -129,7 +146,8 @@ type IHOME =
   | IEXTERNALURLBOX
   | ISLUGBOX
   | ITRACKBOX
-  | IPOITYPEFILTERBOX;
+  | IPOITYPEFILTERBOX
+  | IHORIZONTALSCROLLBOX;
 
 interface IOPTIONS {
   addArrowsOverTracks: boolean;
@@ -202,6 +220,7 @@ interface IPROJECT {
 interface iLocalString {
   en?: string;
   it?: string;
+
   [lang: string]: string;
 }
 interface IOVERLAYERS {
@@ -227,25 +246,25 @@ interface IFILTERS {
   [key: string]: IFILTERSELECT | IFILTERSLIDER;
 }
 interface IFILTER {
-  type: 'select' | 'slider';
   name: iLocalString;
+  type: 'select' | 'slider';
 }
 interface IFILTERSELECT extends IFILTER {
-  type: 'select';
   options: IFILTEROPTION[];
+  type: 'select';
 }
 interface IFILTERSLIDER extends IFILTER {
-  type: 'slider';
-  min: number;
-  max: number;
   identifier: string;
+  max: number;
+  min: number;
+  type: 'slider';
 }
 interface IFILTEROPTION {
+  color: string;
+  icon: string;
+  id: number;
   identifier: string;
   name: iLocalString;
-  id: number;
-  icon: string;
-  color: string;
 }
 interface ICONTROLS {
   [key: string]: (ICONTROLSTITLE | ICONTROLSBUTTON)[];
