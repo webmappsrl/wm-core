@@ -54,7 +54,7 @@ export class ApiService {
     let query = this._baseUrl;
 
     if (options.inputTyped) {
-      query += `&query=${options.inputTyped}`;
+      query += `&query=${options.inputTyped.replace(/ /g, '%20')}`;
     }
 
     if (options.layer && options.layer.id != null) {
@@ -65,6 +65,7 @@ export class ApiService {
       query += `&activities=${options.activities.toString()}`;
     }
     if (this._queryDic[query] == null) {
+      console.log(query);
       const value = await this._http.request('get', query).toPromise();
       this._queryDic[query] = value;
     }

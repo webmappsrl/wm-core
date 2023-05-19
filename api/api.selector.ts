@@ -1,11 +1,17 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {SearchResponse} from 'elasticsearch';
+import {inputTyped} from './api.actions';
 export const elasticSearchFeature = createFeatureSelector<IELASTIC>('query');
 export const queryApi = createSelector(elasticSearchFeature, (state: SearchResponse<IHIT>) =>
   state != null && state.hits && state.hits.hits ? state.hits.hits.map(hit => hit._source) : [],
 );
 export const apiElasticState = createSelector(elasticSearchFeature, state => {
-  return {layer: state.layer, activities: state.activities, loading: true};
+  return {
+    layer: state.layer,
+    activities: state.activities,
+    inputTypes: state.inputTyped,
+    loading: true,
+  };
 });
 export const apiElasticStateActivities = createSelector(apiElasticState, state => {
   return state.activities;

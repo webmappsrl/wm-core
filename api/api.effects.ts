@@ -4,6 +4,7 @@ import {from, of} from 'rxjs';
 import {catchError, map, switchMap, withLatestFrom} from 'rxjs/operators';
 import {
   addActivities,
+  inputTyped,
   query,
   queryApiFail,
   queryApiSuccess,
@@ -28,20 +29,13 @@ export class ApiEffects {
       }),
     ),
   );
-  queryApi$ = createEffect(() =>
+  inputTypedApi$ = createEffect(() =>
     this._actions$.pipe(
-      ofType(query),
-      withLatestFrom(this._store),
-      switchMap(([action, state]) => {
-        const api = state['query'];
-        if (api.activities.length === 0 && api.layer == null) {
-          return of(queryApiFail());
-        }
-        const newAction = {...action, ...{activities: api.activities}, ...{layer: api.layer}};
-        return from(this._apiSVC.getQuery(newAction)).pipe(
-          map(search => queryApiSuccess({search})),
-          catchError(e => of(queryApiFail())),
-        );
+      ofType(inputTyped),
+      switchMap(_ => {
+        return of({
+          type: '[api] Query',
+        });
       }),
     ),
   );
@@ -65,7 +59,28 @@ export class ApiEffects {
       }),
     ),
   );
-
+  queryApi$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(query),
+      withLatestFrom(this._store),
+      switchMap(([action, state]) => {
+        const api = state['query'];
+        if (api.activities.length === 0 && api.layer == null && api.inputTyped == null) {
+          return of(queryApiFail());
+        }
+        const newAction = {
+          ...action,
+          ...{activities: api.activities},
+          ...{layer: api.layer},
+          ...{inputTyped: api.inputTyped},
+        };
+        return from(this._apiSVC.getQuery(newAction)).pipe(
+          map(search => queryApiSuccess({search})),
+          catchError(e => of(queryApiFail())),
+        );
+      }),
+    ),
+  );
   constructor(
     private _apiSVC: ApiService,
     private _actions$: Actions,

@@ -1,6 +1,7 @@
 import {createReducer, on} from '@ngrx/store';
 import {
   addActivities,
+  inputTyped,
   queryApiFail,
   queryApiSuccess,
   removeActivities,
@@ -17,10 +18,18 @@ const initialConfState: IELASTIC = {
   activities: [],
   layer: null,
   loading: true,
+  inputTyped: null,
 };
 
 export const elasticQueryReducer = createReducer(
   initialConfState,
+  on(inputTyped, (state, {inputTyped}) => {
+    return {
+      ...state,
+      inputTyped,
+      loading: true,
+    };
+  }),
   on(addActivities, (state, {activities}) => {
     return {
       ...state,
