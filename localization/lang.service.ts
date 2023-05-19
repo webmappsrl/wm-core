@@ -64,7 +64,7 @@ export class LangService extends TranslateService implements TranslateService {
   }
 
   instant(key: string | Array<string>, interpolateParams?: Object): string | any {
-    if (key[this.currentLang]) {
+    if (key[this.currentLang] != null) {
       return key[this.currentLang];
     }
     if (key[this.defaultLang]) {
@@ -76,7 +76,10 @@ export class LangService extends TranslateService implements TranslateService {
     if (key[0]) {
       return key[0];
     }
-
-    return super.instant(key, interpolateParams);
+    try {
+      return super.instant(key, interpolateParams);
+    } catch (e) {
+      console.error(e);
+    }
   }
 }
