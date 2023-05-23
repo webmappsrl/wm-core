@@ -28,6 +28,7 @@ import {WmTabNearestPoiComponent} from './tab-nearest-poi/tab-nearest-poi.compon
 import {WmTrackAudioComponent} from './track-audio/track-audio.component';
 import {HttpClient} from '@angular/common/http';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import {FilterComponent} from './filter/filter.component';
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -44,6 +45,7 @@ const declarations = [
   WmEmailComponent,
   WmPhoneComponent,
   WmElevationComponent,
+  FilterComponent,
 ];
 const modules = [WmSharedModule, WmPipeModule, BoxModule, WmLocalizationModule];
 
