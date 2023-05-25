@@ -26,7 +26,7 @@ wm-filters {
     width: 300px;
     z-index: 1;
   }
-  .chip-list {
+  .selected-filters {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -34,7 +34,6 @@ wm-filters {
     align-content: stretch;
     align-items: stretch;
     overflow: auto;
-    max-height: 600px;
     ion-chip {
       order: 0;
       flex: 1 1 auto;
@@ -46,6 +45,8 @@ wm-filters {
       justify-content: space-between;
       align-content: stretch;
       align-items: stretch;
+      min-width: fit-content;
+
       ion-label {
         order: 0;
         flex: 1 1 auto;

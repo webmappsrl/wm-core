@@ -6,23 +6,25 @@
     <div class="ion-padding" slot="content">
       <div class="chip-list">
         <ng-container
-          *ngFor="let option of filter.options| orderedBySelection:(parent.currentFilters$|async)"
+          *ngFor="let option of filter.options| orderedBySelection:(parent.currentFilterIdentifiers$|async)"
         >
           <ion-chip
-            *ngIf="parent.stats[option.identifier]!= null"
+            *ngIf="parent.poisStats[option.identifier]!= null"
             outline="true"
-            (click)="parent.addFilter(option.identifier)"
-            [color]="(parent.currentFilters$|async).indexOf(option.identifier) >= 0? 'success': ''"
+            (click)="parent.addFilter(option)"
+            [color]="(parent.currentFilterIdentifiers$|async).indexOf(option.identifier) >= 0? 'success': ''"
           >
             <ng-container *ngIf="option.icon != null;else imgT">
               <div appBuildSvg style="height:55%" [svg]="option.icon"></div>
             </ng-container>
             <ng-template #imgT>
-              <img [src]="option.identifier|getFilterIcn:(parent.currentFilters$|async)" />
+              <img
+                [src]="option.identifier|getFilterIcn:(parent.currentFilterIdentifiers$|async)"
+              />
             </ng-template>
             <ion-label>{{option.name|wmtrans}}</ion-label>
             <ng-container>
-              {{ option.identifier|wmhowmany:parent.stats}}
+              {{ option.identifier|wmhowmany:parent.poisStats}}
             </ng-container>
           </ion-chip>
         </ng-container>
@@ -38,12 +40,12 @@
     <div class="ion-padding" slot="content">
       <div class="chip-list">
         <ng-container
-          *ngFor="let options of filter.options | orderedBySelection:(parent.currentFilters$|async)"
+          *ngFor="let options of filter.options | orderedBySelection:(parent.currentFilterIdentifiers$|async)"
         >
           <ion-chip outline="true" (click)="addFilter(filterName,options.identifier)">
             <ion-label>{{options.name|wmtrans}}</ion-label>
             <ng-container>
-              {{ options.identifier|wmhowmany:parent.stats}}
+              {{ options.identifier|wmhowmany:parent.poisStats}}
             </ng-container>
           </ion-chip>
         </ng-container>

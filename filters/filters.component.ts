@@ -3,16 +3,18 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges,
   Output,
-  SimpleChanges,
-  ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-
-import {BehaviorSubject} from 'rxjs';
-import {IonModal} from '@ionic/angular';
 import {FeatureCollection} from 'geojson';
+import {BehaviorSubject} from 'rxjs';
+
+export interface Filter {
+  identifier: string;
+  name: any;
+  icon: string;
+  color?: string;
+}
 
 @Component({
   selector: 'wm-filters',
@@ -21,49 +23,48 @@ import {FeatureCollection} from 'geojson';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class FiltersComponent implements OnChanges {
+export class FiltersComponent {
   @Input() confFilters: any;
-  @Input() filters: {[filter: string]: any[]};
   @Input() pois: FeatureCollection;
-  @Input() stats: {
+  @Input() poisStats: {
     [name: string]: {[identifier: string]: any};
   } = {};
   @Output() selectedFilters: EventEmitter<string[]> = new EventEmitter<string[]>();
-  @ViewChild(IonModal) modal: IonModal;
 
-  currentFilters$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+  currentFilterIdentifiers$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+  currentFilters$: BehaviorSubject<Filter[]> = new BehaviorSubject<Filter[]>([]);
   currentTab$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   tabs$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
   toggle$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  addFilter(filter: string): void {
-    let currentFilters = this.currentFilters$.value;
-    const indexOfFilter = currentFilters.indexOf(filter);
+  addFilter(filter: Filter): void {
+    let currentFilterIdentifiers = this.currentFilterIdentifiers$.value;
+    const indexOfFilter = currentFilterIdentifiers.indexOf(filter.identifier);
     if (indexOfFilter >= 0) {
-      this.currentFilters$.next(currentFilters.filter(e => e !== filter));
+      this.currentFilterIdentifiers$.next(
+        currentFilterIdentifiers.filter(e => e !== filter.identifier),
+      );
+      const currentFilter = this.currentFilters$.value;
+      currentFilter.splice(indexOfFilter, 1);
+      this.currentFilters$.next(currentFilter);
     } else {
+      this.currentFilterIdentifiers$.next([
+        ...this.currentFilterIdentifiers$.value,
+        filter.identifier,
+      ]);
       this.currentFilters$.next([...this.currentFilters$.value, filter]);
     }
-    this.selectedFilters.emit(this.currentFilters$.value);
+    console.log(this.currentFilterIdentifiers$.value);
+    this.selectedFilters.emit(this.currentFilterIdentifiers$.value);
   }
-
-  cancel() {
-    this.modal.dismiss(null, 'cancel');
-  }
-
-  confirm() {
-    this.modal.dismiss(this.currentFilters$.value, 'confirm');
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {}
 
   reset(): void {
-    this.currentFilters$.next([]);
-    this.selectedFilters.emit(this.currentFilters$.value);
+    this.currentFilterIdentifiers$.next([]);
+    this.selectedFilters.emit(this.currentFilterIdentifiers$.value);
   }
 
   setFilter(filter: string): void {
     this.selectedFilters.emit([filter]);
-    this.currentFilters$.next([filter]);
+    this.currentFilterIdentifiers$.next([filter]);
   }
 }

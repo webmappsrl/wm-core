@@ -2,14 +2,6 @@ wm-select-filter {
   ion-list {
     padding: 0 !important;
   }
-  .filter-content {
-    position: fixed;
-    background-color: rgba($color: white, $alpha: 0.8);
-    top: calc(2% + 50px);
-    right: 1%;
-    width: 300px;
-    z-index: 1;
-  }
   .chip-list {
     display: flex;
     flex-direction: row;
