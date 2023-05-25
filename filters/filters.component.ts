@@ -13,6 +13,7 @@ export interface Filter {
   identifier: string;
   name: any;
   icon: string;
+  taxonomy?: string;
   color?: string;
 }
 
@@ -29,42 +30,69 @@ export class FiltersComponent {
   @Input() poisStats: {
     [name: string]: {[identifier: string]: any};
   } = {};
-  @Output() selectedFilters: EventEmitter<string[]> = new EventEmitter<string[]>();
+  @Output() filterPois: EventEmitter<string[]> = new EventEmitter<string[]>();
+  @Output() filterActivities: EventEmitter<string[]> = new EventEmitter<string[]>();
+  @Output() removeFilterActivities: EventEmitter<string> = new EventEmitter<string>();
 
-  currentFilterIdentifiers$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
-  currentFilters$: BehaviorSubject<Filter[]> = new BehaviorSubject<Filter[]>([]);
+  currentPoiFilterIdentifiers$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+  currentPoiFilters$: BehaviorSubject<Filter[]> = new BehaviorSubject<Filter[]>([]);
+  currentTrackFilterIdentifiers$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+  currentTrackFilters$: BehaviorSubject<Filter[]> = new BehaviorSubject<Filter[]>([]);
   currentTab$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   tabs$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
   toggle$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  addFilter(filter: Filter): void {
-    let currentFilterIdentifiers = this.currentFilterIdentifiers$.value;
-    const indexOfFilter = currentFilterIdentifiers.indexOf(filter.identifier);
+  addPoisFilter(filter: Filter): void {
+    console.log(filter);
+    let currentPoiFilterIdentifiers = this.currentPoiFilterIdentifiers$.value;
+    const indexOfFilter = currentPoiFilterIdentifiers.indexOf(filter.identifier);
     if (indexOfFilter >= 0) {
-      this.currentFilterIdentifiers$.next(
-        currentFilterIdentifiers.filter(e => e !== filter.identifier),
+      this.currentPoiFilterIdentifiers$.next(
+        currentPoiFilterIdentifiers.filter(e => e !== filter.identifier),
       );
-      const currentFilter = this.currentFilters$.value;
+      const currentFilter = this.currentPoiFilters$.value;
       currentFilter.splice(indexOfFilter, 1);
-      this.currentFilters$.next(currentFilter);
+      this.currentPoiFilters$.next(currentFilter);
     } else {
-      this.currentFilterIdentifiers$.next([
-        ...this.currentFilterIdentifiers$.value,
+      this.currentPoiFilterIdentifiers$.next([
+        ...this.currentPoiFilterIdentifiers$.value,
         filter.identifier,
       ]);
-      this.currentFilters$.next([...this.currentFilters$.value, filter]);
+      this.currentPoiFilters$.next([...this.currentPoiFilters$.value, filter]);
     }
-    console.log(this.currentFilterIdentifiers$.value);
-    this.selectedFilters.emit(this.currentFilterIdentifiers$.value);
+    console.log(this.currentPoiFilterIdentifiers$.value);
+    this.filterPois.emit(this.currentPoiFilterIdentifiers$.value);
   }
 
-  reset(): void {
-    this.currentFilterIdentifiers$.next([]);
-    this.selectedFilters.emit(this.currentFilterIdentifiers$.value);
+  addTrackFilter(filter: Filter): void {
+    let currentTrackFilterIdentifiers = this.currentTrackFilterIdentifiers$.value;
+    const indexOfFilter = currentTrackFilterIdentifiers.indexOf(filter.identifier);
+    if (indexOfFilter >= 0) {
+      this.currentTrackFilterIdentifiers$.next(
+        currentTrackFilterIdentifiers.filter(e => e !== filter.identifier),
+      );
+      const currentFilter = this.currentTrackFilters$.value;
+      currentFilter.splice(indexOfFilter, 1);
+      this.currentTrackFilters$.next(currentFilter);
+    } else {
+      this.currentTrackFilterIdentifiers$.next([
+        ...this.currentTrackFilterIdentifiers$.value,
+        filter.identifier,
+      ]);
+      this.currentTrackFilters$.next([...this.currentTrackFilters$.value, filter]);
+    }
+    console.log(this.currentTrackFilterIdentifiers$.value);
+    this.filterActivities.emit([filter.identifier]);
   }
+  removeTrackFilter(filter): void {
+    let currentTrackFilterIdentifiers = this.currentTrackFilterIdentifiers$.value;
+    let currentTrackFilter = this.currentTrackFilters$.value;
+    const indexOfFilter = currentTrackFilterIdentifiers.indexOf(filter.identifier);
+    currentTrackFilterIdentifiers.splice(indexOfFilter, 1);
+    currentTrackFilter.splice(indexOfFilter, 1);
+    this.currentTrackFilterIdentifiers$.next(currentTrackFilterIdentifiers);
+    this.currentTrackFilters$.next(currentTrackFilter);
 
-  setFilter(filter: string): void {
-    this.selectedFilters.emit([filter]);
-    this.currentFilterIdentifiers$.next([filter]);
+    this.removeFilterActivities.emit(filter.identifier);
   }
 }

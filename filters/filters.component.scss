@@ -8,12 +8,22 @@ wm-filters {
     gap: 10px;
     cursor: pointer;
     height: 40px;
-
+    position: relative;
     background: #ffffff !important;
     /* Drop Shadow */
 
     box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2);
     border-radius: 4px;
+    .dot {
+      height: 6px;
+      width: 6px;
+      background-color: var(--wm-color-primary);
+      border-radius: 50%;
+      display: inline-block;
+      position: absolute;
+      top: 25%;
+      right: 5%;
+    }
   }
   ion-list {
     padding: 0 !important;

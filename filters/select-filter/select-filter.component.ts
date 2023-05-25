@@ -15,5 +15,10 @@ export class SelectFilterComponent {
 
   constructor(@Host() public parent: FiltersComponent) {}
 
-  addFilter(filterType: string, filterIdentifier: string): void {}
+  addFilter(filterType: string, filter: any): void {
+    console.log(filterType, filter);
+    if (filterType === 'activity') {
+      this.parent.filterActivities.emit([filter.identifier]);
+    }
+  }
 }

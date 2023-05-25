@@ -1,25 +1,40 @@
 <div class="filter-button" (click)="toggle$.next(!toggle$.value)">
   {{'Filtri'|wmtrans}}
   <ion-icon name="funnel-outline"></ion-icon>
+  <span
+    class="dot"
+    *ngIf="(this.currentPoiFilters$|async).length>0|| (this.currentTrackFilters$|async).length>0"
+  ></span>
 </div>
 <ion-list class="filter-content" lines="none" *ngIf="toggle$|async">
-  <ng-container *ngIf="currentFilters$|async as currentFilters">
-    <ng-container *ngIf="currentFilters.length>0">
-      <ion-item> Filtri attivi {{(this.currentFilters$|async).length}}</ion-item>
-      <ion-item class="selected-filters">
-        <ng-container *ngFor="let f of this.currentFilters$|async">
-          <ion-chip (click)="addFilter(f)">
-            <ng-container *ngIf="f.icon != null;else imgT">
-              <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
-            </ng-container>
-            <ng-template #imgT>
-              <img [src]="f.identifier|getFilterIcn:(currentFilterIdentifiers$|async)" />
-            </ng-template>
-            <ion-label>{{f.name|wmtrans}}</ion-label>
-          </ion-chip>
-        </ng-container>
-      </ion-item>
-    </ng-container>
+  <ng-container
+    *ngIf="(this.currentPoiFilters$|async).length>0|| (this.currentTrackFilters$|async).length>0"
+  >
+    <ion-item>
+      Filtri attivi
+      {{(this.currentPoiFilters$|async).length + (this.currentTrackFilters$|async).length}}</ion-item
+    >
+    <ion-item class="selected-filters">
+      <ng-container *ngFor="let f of this.currentPoiFilters$|async">
+        <ion-chip (click)="addPoisFilter(f)">
+          <ng-container *ngIf="f.icon != null;else imgT">
+            <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
+          </ng-container>
+          <ng-template #imgT>
+            <img [src]="f.identifier|getFilterIcn:(currentPoiFilterIdentifiers$|async)" />
+          </ng-template>
+          <ion-label>{{f.name|wmtrans}}</ion-label>
+        </ion-chip>
+      </ng-container>
+      <ng-container *ngFor="let f of this.currentTrackFilters$|async">
+        <ion-chip (click)="removeTrackFilter(f)">
+          <ng-container *ngIf="f.icon != null">
+            <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
+          </ng-container>
+          <ion-label>{{f.name|wmtrans}}</ion-label>
+        </ion-chip>
+      </ng-container>
+    </ion-item>
   </ng-container>
   <ion-accordion-group value="poi_type">
     <ng-container *ngFor="let filter of confFilters|keyvalue">

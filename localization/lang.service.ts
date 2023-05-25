@@ -64,6 +64,7 @@ export class LangService extends TranslateService implements TranslateService {
   }
 
   instant(key: string | Array<string>, interpolateParams?: Object): string | any {
+    if (typeof key === 'object' && key.length === 0) return '';
     if (key[this.currentLang] != null) {
       return key[this.currentLang];
     }
