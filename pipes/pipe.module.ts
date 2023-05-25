@@ -11,6 +11,7 @@ import {WmGetDataPipe} from './wm-get-data.pipe';
 import {WmToMbPipe} from './wm-to-mb.pipe';
 import {WmHowMany} from './wm-how-many.pipe';
 import {WmOrderedBySelection} from './wm-filter-by-selection.pipe';
+import {WmAsAny} from './wm-as-any.pipe';
 
 const pipes = [
   WmTransPipe,
@@ -24,6 +25,7 @@ const pipes = [
   WmToMbPipe,
   WmHowMany,
   WmOrderedBySelection,
+  WmAsAny,
 ];
 @NgModule({
   declarations: pipes,

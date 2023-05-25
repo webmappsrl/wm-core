@@ -292,6 +292,7 @@ interface IMAP {
   start_end_icons_show?: boolean;
   tiles: {[name: string]: string}[];
   tracks?: any[];
+  filters?: {[key: string]: any};
 }
 interface ILAYER {
   bbox: [number, number, number, number];

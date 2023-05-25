@@ -14,6 +14,7 @@ import {
 import {ApiService} from './api.service';
 import {IElasticSearchRootState} from './api.reducer';
 import {Store} from '@ngrx/store';
+import {SearchResponse} from 'elasticsearch';
 
 @Injectable({
   providedIn: 'root',
@@ -75,7 +76,7 @@ export class ApiEffects {
           ...{inputTyped: api.inputTyped},
         };
         return from(this._apiSVC.getQuery(newAction)).pipe(
-          map(search => queryApiSuccess({search})),
+          map((search: SearchResponse<any>) => queryApiSuccess({search})),
           catchError(e => of(queryApiFail())),
         );
       }),

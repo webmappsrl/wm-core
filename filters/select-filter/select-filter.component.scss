@@ -1,0 +1,62 @@
+wm-select-filter {
+  ion-list {
+    padding: 0 !important;
+  }
+  .filter-content {
+    position: fixed;
+    background-color: rgba($color: white, $alpha: 0.8);
+    top: calc(2% + 50px);
+    right: 1%;
+    width: 300px;
+    z-index: 1;
+  }
+  .chip-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-content: stretch;
+    align-items: stretch;
+    overflow: auto;
+    max-height: 600px;
+    ion-chip {
+      order: 0;
+      flex: 1 1 auto;
+      align-self: stretch;
+
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-content: stretch;
+      align-items: stretch;
+      ion-label {
+        order: 0;
+        flex: 1 1 auto;
+        align-self: stretch;
+      }
+      ion-icon,
+      i {
+        order: 0;
+        flex: 0 1 auto;
+        align-self: stretch;
+      }
+      img {
+        position: relative;
+        height: 25px;
+        display: block;
+        margin-left: -7px;
+        margin-top: -4px;
+      }
+    }
+  }
+}
+
+div {
+  svg {
+    height: 200%;
+  }
+}
+ion-chip {
+  width: 100%;
+}

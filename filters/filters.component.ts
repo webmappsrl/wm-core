@@ -15,13 +15,14 @@ import {IonModal} from '@ionic/angular';
 import {FeatureCollection} from 'geojson';
 
 @Component({
-  selector: 'wm-filter',
-  templateUrl: './filter.component.html',
-  styleUrls: ['./filter.component.scss'],
+  selector: 'wm-filters',
+  templateUrl: './filters.component.html',
+  styleUrls: ['./filters.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class FilterComponent implements OnChanges {
+export class FiltersComponent implements OnChanges {
+  @Input() confFilters: any;
   @Input() filters: {[filter: string]: any[]};
   @Input() pois: FeatureCollection;
   @Input() stats: {
@@ -33,6 +34,7 @@ export class FilterComponent implements OnChanges {
   currentFilters$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   currentTab$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   tabs$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
+  toggle$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   addFilter(filter: string): void {
     let currentFilters = this.currentFilters$.value;
@@ -53,21 +55,11 @@ export class FilterComponent implements OnChanges {
     this.modal.dismiss(this.currentFilters$.value, 'confirm');
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes?.filters?.currentValue != null) {
-      const keys = Object.keys(this.filters);
-      this.tabs$.next(['poi_type']);
-      this.currentTab$.next(keys[0]);
-    }
-  }
+  ngOnChanges(changes: SimpleChanges): void {}
 
   reset(): void {
     this.currentFilters$.next([]);
     this.selectedFilters.emit(this.currentFilters$.value);
-  }
-
-  segmentChanged(event: any): void {
-    this.currentTab$.next(event);
   }
 
   setFilter(filter: string): void {

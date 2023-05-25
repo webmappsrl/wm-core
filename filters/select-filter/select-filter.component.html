@@ -1,0 +1,53 @@
+<ng-container *ngIf="filterName === 'poi_type';else generic">
+  <ion-accordion [value]="filterName">
+    <ion-item slot="header" color="light">
+      <ion-label> {{filter.name|wmtrans}} {{parent.pois.features.length}}</ion-label>
+    </ion-item>
+    <div class="ion-padding" slot="content">
+      <div class="chip-list">
+        <ng-container
+          *ngFor="let option of filter.options| orderedBySelection:(parent.currentFilters$|async)"
+        >
+          <ion-chip
+            *ngIf="parent.stats[option.identifier]!= null"
+            outline="true"
+            (click)="parent.addFilter(option.identifier)"
+            [color]="(parent.currentFilters$|async).indexOf(option.identifier) >= 0? 'success': ''"
+          >
+            <ng-container *ngIf="option.icon != null;else imgT">
+              <div appBuildSvg style="height:55%" [svg]="option.icon"></div>
+            </ng-container>
+            <ng-template #imgT>
+              <img [src]="option.identifier|getFilterIcn:(parent.currentFilters$|async)" />
+            </ng-template>
+            <ion-label>{{option.name|wmtrans}}</ion-label>
+            <ng-container>
+              {{ option.identifier|wmhowmany:parent.stats}}
+            </ng-container>
+          </ion-chip>
+        </ng-container>
+      </div>
+    </div>
+  </ion-accordion>
+</ng-container>
+<ng-template #generic>
+  <ion-accordion [value]="filterName">
+    <ion-item slot="header" color="light">
+      <ion-label> {{filter.name|wmtrans}}</ion-label>
+    </ion-item>
+    <div class="ion-padding" slot="content">
+      <div class="chip-list">
+        <ng-container
+          *ngFor="let options of filter.options | orderedBySelection:(parent.currentFilters$|async)"
+        >
+          <ion-chip outline="true" (click)="addFilter(filterName,options.identifier)">
+            <ion-label>{{options.name|wmtrans}}</ion-label>
+            <ng-container>
+              {{ options.identifier|wmhowmany:parent.stats}}
+            </ng-container>
+          </ion-chip>
+        </ng-container>
+      </div>
+    </div>
+  </ion-accordion>
+</ng-template>
