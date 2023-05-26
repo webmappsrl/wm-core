@@ -1,6 +1,6 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {SearchResponse} from 'elasticsearch';
-import {inputTyped} from './api.actions';
+import {confFILTERS} from './../conf/conf.selector';
 export const elasticSearchFeature = createFeatureSelector<IELASTIC>('query');
 export const queryApi = createSelector(elasticSearchFeature, (state: SearchResponse<IHIT>) =>
   state != null && state.hits && state.hits.hits ? state.hits.hits.map(hit => hit._source) : [],
@@ -16,6 +16,20 @@ export const apiElasticState = createSelector(elasticSearchFeature, state => {
 export const apiElasticStateActivities = createSelector(apiElasticState, state => {
   return state.activities;
 });
+export const apiElasticStateActivityFilters = createSelector(
+  apiElasticStateActivities,
+  confFILTERS,
+  (activities, filters) => {
+    const activityFilter =
+      filters != null && filters['activity'] != null ? filters['activity'] : undefined;
+    if (activities.length > 0 && activityFilter != null) {
+      let opt = activityFilter.options;
+      console.log(opt);
+      return activities.map(a => opt.filter(o => o.identifier === a)[0]);
+    }
+    return activities;
+  },
+);
 export const apiElasticStateLayer = createSelector(apiElasticState, state => {
   return state.layer;
 });

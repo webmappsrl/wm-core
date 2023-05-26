@@ -95,4 +95,8 @@ export class FiltersComponent {
 
     this.removeFilterActivities.emit(filter.identifier);
   }
+
+  filterBtnClick(): void {
+    this.toggle$.next(!this.toggle$.value);
+  }
 }

@@ -10,8 +10,8 @@ import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 
 import {WmSlopeChartComponent} from './slope-chart/slope-chart.component';
 import {WmAddressComponent} from './address/address.component';
-import {ApiEffects} from './api/api.effects';
-import {elasticQueryReducer} from './api/api.reducer';
+import {ApiEffects} from './store/api/api.effects';
+import {elasticQueryReducer} from './store/api/api.reducer';
 import {BoxModule} from './box/box.module';
 import {WmElevationComponent} from './elevation/elevation.component';
 import {WmEmailComponent} from './email/email.component';
@@ -29,10 +29,10 @@ import {WmTrackAudioComponent} from './track-audio/track-audio.component';
 import {HttpClient} from '@angular/common/http';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {WmFiltersModule} from './filters/filters.module';
-import {ConfEffects} from './api/conf/conf.effects';
-import {PoisEffects} from './api/pois/pois.effects';
-import {confReducer} from './api/conf/conf.reducer';
-import {poisReducer} from './api/pois/pois.reducer';
+import {ConfEffects} from './store/conf/conf.effects';
+import {PoisEffects} from './store/pois/pois.effects';
+import {confReducer} from './store/conf/conf.reducer';
+import {poisReducer} from './store/pois/pois.reducer';
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');

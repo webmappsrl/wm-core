@@ -116,7 +116,6 @@ type IPOITYPEFILTERBOX = {
 
 type IHORIZONTALSCROLLBOXITEM = IHOMEBASEITEM & {
   res: any;
-  item_type: string;
 };
 type IHOMEITEMTRACK = IHOMEBASEITEM & {
   track_id: number;
@@ -136,6 +135,7 @@ type IBASEBOX = IBOX & {
 };
 type IHORIZONTALSCROLLBOX = IBOX & {
   box_type: 'horizontal_scroll';
+  item_type: string;
   items: IHORIZONTALSCROLLBOXITEM[];
   image_url?: string;
 };

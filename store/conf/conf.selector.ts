@@ -62,36 +62,29 @@ export const confTHEMEVariables = createSelector(confTHEME, (theme: ITHEME) =>
 export const confShowDrawTrack = createSelector(confWEBAPP, state => state.draw_track_show);
 export const confShowEditingInline = createSelector(confWEBAPP, state => state.editing_inline_show);
 
-export const confPreHOME = createSelector(confFeature, state => {
-  if (state.HOME != null && state.MAP != null && state.MAP.layers != null) {
+export const confHOME = createSelector(confFeature, confFILTERS, (state, filters) => {
+  if (state.HOME != null && state.MAP != null) {
     const home: IHOME[] = [];
     state.HOME.forEach(el => {
       if (el.box_type === 'layer') {
-        const layers = getLayers([el.layer as unknown as number], state.MAP.layers, []);
-        home.push({...el, ...{layer: layers[0]}});
+        if (state.MAP.layers != null) {
+          const layers = getLayers([el.layer as unknown as number], state.MAP.layers, []);
+          home.push({...el, ...{layer: layers[0]}});
+        }
+      } else if (el.box_type === 'horizontal_scroll') {
+        if (filters[el.item_type] != null) {
+          const horizontalScrollFiltersOpt = filters[el.item_type].options;
+          const enrichItems = el.items.map(i => {
+            const enrichItem =
+              horizontalScrollFiltersOpt.filter(opt => i.title === opt.identifier)[0] ?? {};
+            return {...i, ...enrichItem};
+          });
+          home.push({...el, ...{items: enrichItems}});
+        }
       } else {
         home.push(el);
       }
     });
-
-    return home;
-  }
-
-  return state.HOME;
-});
-
-export const confHOME = createSelector(confFeature, state => {
-  if (state.HOME != null && state.MAP != null && state.MAP.layers != null) {
-    const home: IHOME[] = [];
-    state.HOME.forEach(el => {
-      if (el.box_type === 'layer') {
-        const layers = getLayers([el.layer as unknown as number], state.MAP.layers, []);
-        home.push({...el, ...{layer: layers[0]}});
-      } else {
-        home.push(el);
-      }
-    });
-
     return home;
   }
 
