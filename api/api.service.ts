@@ -3,8 +3,6 @@ import {HttpClient} from '@angular/common/http';
 /* eslint-disable quote-props */
 import {Injectable} from '@angular/core';
 import {SearchResponse} from 'elasticsearch';
-import {Observable, from, of} from 'rxjs';
-import {take} from 'rxjs/operators';
 import {environment} from 'src/environments/environment';
 // const baseUrl = 'https://elastic-passtrough.herokuapp.com/search';
 const baseUrl = 'https://elastic-json.webmapp.it/search';

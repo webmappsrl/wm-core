@@ -29,6 +29,10 @@ import {WmTrackAudioComponent} from './track-audio/track-audio.component';
 import {HttpClient} from '@angular/common/http';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {WmFiltersModule} from './filters/filters.module';
+import {ConfEffects} from './api/conf/conf.effects';
+import {PoisEffects} from './api/pois/pois.effects';
+import {confReducer} from './api/conf/conf.reducer';
+import {poisReducer} from './api/pois/pois.reducer';
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -55,7 +59,9 @@ const modules = [WmSharedModule, WmPipeModule, BoxModule, WmLocalizationModule, 
       CommonModule,
       IonicModule,
       StoreModule.forFeature('query', elasticQueryReducer),
-      EffectsModule.forFeature([ApiEffects]),
+      StoreModule.forFeature('conf', confReducer),
+      StoreModule.forFeature('pois', poisReducer),
+      EffectsModule.forFeature([ApiEffects, ConfEffects, PoisEffects]),
       TranslateModule.forRoot({
         loader: {
           provide: TranslateLoader,
