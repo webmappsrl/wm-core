@@ -40,7 +40,9 @@ export const featureCollectionCount = createSelector(
   state => state.featureCollectionCount,
 );
 export const featureCollection = createSelector(poisFeature, state => state.featureCollection);
-export const showPoisResult = createSelector(
-  poisFeature,
-  state => state.where != null || state.filters != null,
-);
+export const showPoisResult = createSelector(poisFeature, state => state.where != null);
+
+export const poiFilters = createSelector(poisFeature, state => [
+  ...(state.where ?? []),
+  ...(state.filters ?? []),
+]);
