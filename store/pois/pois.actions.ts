@@ -8,7 +8,7 @@ export const loadPoisSuccess = createAction(
 );
 export const loadPoisFail = createAction('[pois] Load pois Fail');
 export const applyWhere = createAction('[pois] apply where', props<{where: string[]}>());
-export const toggleFilter = createAction(
+export const togglePoiFilter = createAction(
   '[pois] toggle filter',
   props<{filterIdentifier: string}>(),
 );

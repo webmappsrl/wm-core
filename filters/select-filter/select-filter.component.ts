@@ -25,7 +25,7 @@ export class SelectFilterComponent implements OnChanges {
   addFilter(filterType: string, filter: any): void {
     console.log(filterType, filter);
     if (filterType === 'activity') {
-      this.parent.filterTracksEvt.emit([filter.identifier]);
+      this.parent.filterTracksEvt.emit(filter.identifier);
     }
   }
   ngOnChanges(changes: SimpleChanges) {

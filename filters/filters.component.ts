@@ -19,14 +19,14 @@ import {BehaviorSubject} from 'rxjs';
   encapsulation: ViewEncapsulation.None,
 })
 export class FiltersComponent implements OnChanges {
-  @Input() confFilters: any;
+  @Input() confFilters: {[key: string]: any};
   @Input() poiFilters: Filter[];
   @Input() pois: FeatureCollection;
   @Input() poisStats: {
     [name: string]: {[identifier: string]: any};
   } = {};
   @Output() filterPoisEvt: EventEmitter<string> = new EventEmitter<string>();
-  @Output() filterTracksEvt: EventEmitter<string[]> = new EventEmitter<string[]>();
+  @Output() filterTracksEvt: EventEmitter<string> = new EventEmitter<string>();
   @Output() removefilterPoiEvt: EventEmitter<string> = new EventEmitter<string>();
   @Output() removefilterTracksEvt: EventEmitter<string> = new EventEmitter<string>();
 
@@ -40,24 +40,7 @@ export class FiltersComponent implements OnChanges {
   }
 
   addTrackFilter(filter: Filter): void {
-    let currentTrackFilterIdentifiers = this.currentTrackFilterIdentifiers$.value;
-    const indexOfFilter = currentTrackFilterIdentifiers.indexOf(filter.identifier);
-    if (indexOfFilter >= 0) {
-      this.currentTrackFilterIdentifiers$.next(
-        currentTrackFilterIdentifiers.filter(e => e !== filter.identifier),
-      );
-      const currentFilter = this.currentTrackFilters$.value;
-      currentFilter.splice(indexOfFilter, 1);
-      this.currentTrackFilters$.next(currentFilter);
-    } else {
-      this.currentTrackFilterIdentifiers$.next([
-        ...this.currentTrackFilterIdentifiers$.value,
-        filter.identifier,
-      ]);
-      this.currentTrackFilters$.next([...this.currentTrackFilters$.value, filter]);
-    }
-    console.log(this.currentTrackFilterIdentifiers$.value);
-    this.filterTracksEvt.emit([filter.identifier]);
+    this.filterTracksEvt.emit(filter.identifier);
   }
 
   filterBtnClick(): void {

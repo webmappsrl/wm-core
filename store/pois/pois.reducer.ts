@@ -1,6 +1,6 @@
 import {createReducer, on} from '@ngrx/store';
 import {Feature, FeatureCollection, Geometry} from 'geojson';
-import {loadPoisSuccess, applyWhere, toggleFilter} from './pois.actions';
+import {loadPoisSuccess, applyWhere, togglePoiFilter} from './pois.actions';
 
 export const confFeatureKey = 'pois';
 export interface IpoisRootState {
@@ -67,7 +67,7 @@ export const poisReducer = createReducer(
       stats,
     };
   }),
-  on(toggleFilter, (state, {filterIdentifier}) => {
+  on(togglePoiFilter, (state, {filterIdentifier}) => {
     let newSelectedFilterIdentifiers = [...(state.selectedFilterIdentifiers ?? [])];
     if (newSelectedFilterIdentifiers.indexOf(filterIdentifier) >= 0) {
       newSelectedFilterIdentifiers = state.selectedFilterIdentifiers.filter(
