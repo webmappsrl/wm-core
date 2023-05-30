@@ -17,6 +17,7 @@ interface IGeojsonGeometry {
 interface iLocalString {
   en?: string;
   it?: string;
+
   [key: string]: string;
 }
 
@@ -144,11 +145,11 @@ interface IGeojsonClusterApiResponse {
 }
 
 interface PoiTypeTaxonomy {
+  color: string;
+  icon: string;
+  id: number;
   identifier: string;
   name: iLocalString;
-  id: number;
-  icon: string;
-  color: string;
 }
 interface WhereTaxonomy {
   admin_level: number;

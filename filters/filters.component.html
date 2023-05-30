@@ -1,22 +1,17 @@
 <div class="filter-button" (click)="filterBtnClick()">
   {{'Filtri'|wmtrans}}
   <ion-icon name="funnel-outline"></ion-icon>
-  <span
-    class="dot"
-    *ngIf="(this.currentPoiFilters$|async).length>0|| (this.currentTrackFilters$|async).length>0"
-  ></span>
+  <span class="dot" *ngIf="poiFilters.length>0|| (this.currentTrackFilters$|async).length>0"></span>
 </div>
 <ion-list class="filter-content" lines="none" *ngIf="toggle$|async">
-  <ng-container
-    *ngIf="(this.currentPoiFilters$|async).length>0|| (this.currentTrackFilters$|async).length>0"
-  >
+  <ng-container *ngIf="poiFilters.length>0|| (this.currentTrackFilters$|async).length>0">
     <ion-item>
-      Filtri attivi
-      {{(this.currentPoiFilters$|async).length + (this.currentTrackFilters$|async).length}}</ion-item
+      {{'Filtri attivi'|wmtrans}}
+      {{poiFilters.length + (this.currentTrackFilters$|async).length}}</ion-item
     >
     <ion-item class="selected-filters">
-      <ng-container *ngFor="let f of this.currentPoiFilters$|async">
-        <ion-chip (click)="addPoisFilter(f)">
+      <ng-container *ngFor="let f of poiFilters">
+        <ion-chip (click)="removePoiFilter(f)">
           <ng-container *ngIf="f.icon != null;else imgT">
             <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
           </ng-container>

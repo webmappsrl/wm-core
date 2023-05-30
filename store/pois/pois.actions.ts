@@ -7,5 +7,8 @@ export const loadPoisSuccess = createAction(
   props<{featureCollection: FeatureCollection}>(),
 );
 export const loadPoisFail = createAction('[pois] Load pois Fail');
-export const applyFilter = createAction('[pois] apply filters', props<{filters: string[]}>());
 export const applyWhere = createAction('[pois] apply where', props<{where: string[]}>());
+export const toggleFilter = createAction(
+  '[pois] toggle filter',
+  props<{filterIdentifier: string}>(),
+);

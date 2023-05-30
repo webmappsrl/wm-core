@@ -1,4 +1,12 @@
-import {ChangeDetectionStrategy, Component, Host, Input, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Host,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  ViewEncapsulation,
+} from '@angular/core';
 
 import {FiltersComponent} from '../../filters/filters.component';
 
@@ -6,10 +14,9 @@ import {FiltersComponent} from '../../filters/filters.component';
   selector: 'wm-select-filter',
   templateUrl: './select-filter.component.html',
   styleUrls: ['./select-filter.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class SelectFilterComponent {
+export class SelectFilterComponent implements OnChanges {
   @Input() filter: any;
   @Input() filterName: any;
 
@@ -18,7 +25,13 @@ export class SelectFilterComponent {
   addFilter(filterType: string, filter: any): void {
     console.log(filterType, filter);
     if (filterType === 'activity') {
-      this.parent.filterActivities.emit([filter.identifier]);
+      this.parent.filterTracksEvt.emit([filter.identifier]);
     }
+  }
+  ngOnChanges(changes: SimpleChanges) {
+    console.log(changes);
+  }
+  addPoiFilter(filter: Filter): void {
+    this.parent.addPoisFilter(filter);
   }
 }

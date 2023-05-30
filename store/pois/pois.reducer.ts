@@ -1,6 +1,6 @@
 import {createReducer, on} from '@ngrx/store';
 import {Feature, FeatureCollection, Geometry} from 'geojson';
-import {loadPoisSuccess, applyFilter, applyWhere} from './pois.actions';
+import {loadPoisSuccess, applyWhere, toggleFilter} from './pois.actions';
 
 export const confFeatureKey = 'pois';
 export interface IpoisRootState {
@@ -21,7 +21,7 @@ const initialPoisState: {
     [name: string]: {[identifier: string]: any};
   };
   where: string[];
-  filters: string[];
+  selectedFilterIdentifiers: string[];
 } = {
   initFeatureCollection: null,
   whereFeatureCollection: null,
@@ -31,7 +31,7 @@ const initialPoisState: {
   whereStats: {},
   stats: {},
   where: null,
-  filters: null,
+  selectedFilterIdentifiers: null,
 };
 export const poisReducer = createReducer(
   initialPoisState,
@@ -51,7 +51,10 @@ export const poisReducer = createReducer(
   on(applyWhere, (state, {where}) => {
     const whereFeatureCollection = _filterFeatureCollection(state.initFeatureCollection, where);
     const whereStats = _buildStats(whereFeatureCollection.features);
-    const featureCollection = _filterFeatureCollection(whereFeatureCollection, state.filters);
+    const featureCollection = _filterFeatureCollection(
+      whereFeatureCollection,
+      state.selectedFilterIdentifiers,
+    );
     const stats = _buildStats(featureCollection.features);
     console.log(where);
     return {
@@ -64,16 +67,26 @@ export const poisReducer = createReducer(
       stats,
     };
   }),
-  on(applyFilter, (state, {filters}) => {
-    const featureCollection = _filterFeatureCollection(state.whereFeatureCollection, filters);
+  on(toggleFilter, (state, {filterIdentifier}) => {
+    let newSelectedFilterIdentifiers = [...(state.selectedFilterIdentifiers ?? [])];
+    if (newSelectedFilterIdentifiers.indexOf(filterIdentifier) >= 0) {
+      newSelectedFilterIdentifiers = state.selectedFilterIdentifiers.filter(
+        f => f != filterIdentifier,
+      );
+    } else {
+      newSelectedFilterIdentifiers.push(filterIdentifier);
+    }
+    const featureCollection = _filterFeatureCollection(
+      state.whereFeatureCollection,
+      newSelectedFilterIdentifiers,
+    );
     const stats = _buildStats(featureCollection.features);
-    console.log(filters);
     return {
       ...state,
       featureCollection,
       featureCollectionCount: featureCollection.features.length,
       stats,
-      filters: filters != null && filters.length > 0 ? filters : null,
+      selectedFilterIdentifiers: newSelectedFilterIdentifiers,
     };
   }),
 );
@@ -98,7 +111,8 @@ const _buildStats = (
 };
 
 const _filterFeatureCollection = (featureCollection: FeatureCollection, filters: string[]) => {
-  if (filters == null || filters.length === 0) return featureCollection;
+  if (filters == null || filters.length === 0 || featureCollection.features == null)
+    return featureCollection;
   return {
     type: 'FeatureCollection',
     features: featureCollection.features.filter(feature => {

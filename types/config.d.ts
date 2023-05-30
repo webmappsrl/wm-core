@@ -276,6 +276,7 @@ interface IMAP {
   center?: [number, number];
   controls: ICONTROLS;
   defZoom: number;
+  filters?: {[key: string]: any};
   flow_line_quote_orange?: number;
   flow_line_quote_red?: number;
   flow_line_quote_show?: boolean;
@@ -292,7 +293,6 @@ interface IMAP {
   start_end_icons_show?: boolean;
   tiles: {[name: string]: string}[];
   tracks?: any[];
-  filters?: {[key: string]: any};
 }
 interface ILAYER {
   bbox: [number, number, number, number];
@@ -399,4 +399,12 @@ interface IWmImage {
     '1440x500': string;
   };
   url: string;
+}
+
+interface Filter {
+  color?: string;
+  icon: string;
+  identifier: string;
+  name: any;
+  taxonomy?: string;
 }
