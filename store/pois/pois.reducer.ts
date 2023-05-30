@@ -68,6 +68,7 @@ export const poisReducer = createReducer(
     };
   }),
   on(togglePoiFilter, (state, {filterIdentifier}) => {
+    console.log(state.selectedFilterIdentifiers);
     let newSelectedFilterIdentifiers = [...(state.selectedFilterIdentifiers ?? [])];
     if (newSelectedFilterIdentifiers.indexOf(filterIdentifier) >= 0) {
       newSelectedFilterIdentifiers = state.selectedFilterIdentifiers.filter(
@@ -76,6 +77,8 @@ export const poisReducer = createReducer(
     } else {
       newSelectedFilterIdentifiers.push(filterIdentifier);
     }
+    console.log(newSelectedFilterIdentifiers);
+
     const featureCollection = _filterFeatureCollection(
       state.whereFeatureCollection,
       newSelectedFilterIdentifiers,

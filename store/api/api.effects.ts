@@ -15,17 +15,22 @@ import {ApiService} from './api.service';
 import {IElasticSearchRootState} from './api.reducer';
 import {Store} from '@ngrx/store';
 import {SearchResponse} from 'elasticsearch';
+import {apiTrackFilterIdentifier} from './api.selector';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiEffects {
   addActivitiesApi$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(addActivities),
-      switchMap(_ => {
+    this._store.select(apiTrackFilterIdentifier).pipe(
+      withLatestFrom(this._store),
+      switchMap(([trackFilterIdentifier, state]) => {
+        const api = state['query'];
         return of({
           type: '[api] Query',
+          ...{activities: trackFilterIdentifier},
+          ...{layer: api.layer},
+          ...{inputTyped: api.inputTyped},
         });
       }),
     ),

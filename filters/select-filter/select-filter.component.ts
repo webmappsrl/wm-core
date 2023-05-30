@@ -1,13 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Host,
-  Input,
-  OnChanges,
-  SimpleChanges,
-  ViewEncapsulation,
-} from '@angular/core';
-
+import {Component, Host, Input, ViewEncapsulation} from '@angular/core';
 import {FiltersComponent} from '../../filters/filters.component';
 
 @Component({
@@ -16,21 +7,18 @@ import {FiltersComponent} from '../../filters/filters.component';
   styleUrls: ['./select-filter.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class SelectFilterComponent implements OnChanges {
+export class SelectFilterComponent {
   @Input() filter: any;
   @Input() filterName: any;
 
   constructor(@Host() public parent: FiltersComponent) {}
 
   addFilter(filterType: string, filter: any): void {
-    console.log(filterType, filter);
     if (filterType === 'activity') {
       this.parent.filterTracksEvt.emit(filter.identifier);
     }
   }
-  ngOnChanges(changes: SimpleChanges) {
-    console.log(changes);
-  }
+
   addPoiFilter(filter: Filter): void {
     this.parent.addPoisFilter(filter);
   }

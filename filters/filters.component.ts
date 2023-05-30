@@ -40,6 +40,7 @@ export class FiltersComponent {
   }
 
   filterBtnClick(): void {
+    console.log(this.toggle$.value);
     this.toggle$.next(!this.toggle$.value);
   }
 

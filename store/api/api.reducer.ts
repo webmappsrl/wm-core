@@ -1,10 +1,8 @@
 import {createReducer, on} from '@ngrx/store';
 import {
-  addActivities,
   inputTyped,
   queryApiFail,
   queryApiSuccess,
-  removeActivities,
   resetActivities,
   setLayer,
   toggleTrackFilter,
@@ -32,7 +30,12 @@ export const elasticQueryReducer = createReducer(
       loading: true,
     };
   }),
-  on(resetActivities, (state, {}) => ({...state, activities: [], loading: true})),
+  on(resetActivities, (state, {}) => ({
+    ...state,
+    activities: [],
+    selectedFilterIdentifiers: [],
+    loading: true,
+  })),
   on(setLayer, (state, {layer}) => ({...state, layer, ...{loading: true}})),
   on(queryApiSuccess, (state, {search}) => ({...state, ...search, ...{loading: false}})),
   on(queryApiFail, state => ({...state, ...{loading: false}})),

@@ -24,7 +24,6 @@ export const apiTrackFilter = createSelector(
       filters != null && filters['activity'] != null ? filters['activity'] : undefined;
     if (activities.length > 0 && activityFilter != null) {
       let opt = activityFilter.options;
-      console.log(opt);
       return activities.map(a => opt.filter(o => o.identifier === a)[0]);
     }
     return activities;
