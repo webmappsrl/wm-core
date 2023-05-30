@@ -16,9 +16,7 @@
               <div appBuildSvg style="height:55%" [svg]="option.icon"></div>
             </ng-container>
             <ng-template #imgT>
-              <img
-                [src]="option.identifier|getFilterIcn:(parent.currentPoiFilterIdentifiers$|async)"
-              />
+              <img [src]="option.identifier" />
             </ng-template>
             <ion-label>{{option.name|wmtrans}}</ion-label>
             <ng-container>
@@ -38,9 +36,13 @@
     <div class="ion-padding" slot="content">
       <div class="chip-list">
         <ng-container
-          *ngFor="let option of filter.options | orderedBySelection:(parent.poiFilters)"
+          *ngFor="let option of filter.options | orderedBySelection:(parent.trackFilters)"
         >
-          <ion-chip outline="true" (click)="parent.addTrackFilter(option)">
+          <ion-chip
+            outline="true"
+            (click)="parent.addTrackFilter(option)"
+            color="{{option.identifier|isSelected:(parent.trackFilters)}}"
+          >
             <ion-label>{{option.name|wmtrans}}</ion-label>
           </ion-chip>
         </ng-container>

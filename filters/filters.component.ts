@@ -3,9 +3,7 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges,
   Output,
-  SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
 import {FeatureCollection} from 'geojson';
@@ -18,21 +16,19 @@ import {BehaviorSubject} from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class FiltersComponent implements OnChanges {
+export class FiltersComponent {
   @Input() confFilters: {[key: string]: any};
   @Input() poiFilters: Filter[];
   @Input() pois: FeatureCollection;
   @Input() poisStats: {
     [name: string]: {[identifier: string]: any};
   } = {};
+  @Input() trackFilters: any[];
   @Output() filterPoisEvt: EventEmitter<string> = new EventEmitter<string>();
   @Output() filterTracksEvt: EventEmitter<string> = new EventEmitter<string>();
   @Output() removefilterPoiEvt: EventEmitter<string> = new EventEmitter<string>();
   @Output() removefilterTracksEvt: EventEmitter<string> = new EventEmitter<string>();
 
-  currentPoiFilterIdentifiers$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
-  currentTrackFilterIdentifiers$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
-  currentTrackFilters$: BehaviorSubject<Filter[]> = new BehaviorSubject<Filter[]>([]);
   toggle$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   addPoisFilter(filter: Filter): void {
@@ -47,27 +43,11 @@ export class FiltersComponent implements OnChanges {
     this.toggle$.next(!this.toggle$.value);
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes);
-    if (changes.poiFilters && changes.poiFilters.currentValue != null) {
-      let currentPoiFilterIdentifiers = changes.poiFilters.currentValue.map(f => f.identifier);
-      this.currentTrackFilterIdentifiers$.next(currentPoiFilterIdentifiers);
-    }
-  }
-
   removePoiFilter(filter: Filter): void {
     this.removefilterPoiEvt.emit(filter.identifier);
   }
 
   removeTrackFilter(filter): void {
-    let currentTrackFilterIdentifiers = this.currentTrackFilterIdentifiers$.value;
-    let currentTrackFilter = this.currentTrackFilters$.value;
-    const indexOfFilter = currentTrackFilterIdentifiers.indexOf(filter.identifier);
-    currentTrackFilterIdentifiers.splice(indexOfFilter, 1);
-    currentTrackFilter.splice(indexOfFilter, 1);
-    this.currentTrackFilterIdentifiers$.next(currentTrackFilterIdentifiers);
-    this.currentTrackFilters$.next(currentTrackFilter);
-
     this.removefilterTracksEvt.emit(filter.identifier);
   }
 }

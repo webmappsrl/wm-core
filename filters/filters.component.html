@@ -1,13 +1,13 @@
 <div class="filter-button" (click)="filterBtnClick()">
   {{'Filtri'|wmtrans}}
   <ion-icon name="funnel-outline"></ion-icon>
-  <span class="dot" *ngIf="poiFilters.length>0|| (this.currentTrackFilters$|async).length>0"></span>
+  <span class="dot" *ngIf="poiFilters.length>0|| trackFilters.length>0"></span>
 </div>
 <ion-list class="filter-content" lines="none" *ngIf="toggle$|async">
-  <ng-container *ngIf="poiFilters.length>0|| (this.currentTrackFilters$|async).length>0">
+  <ng-container *ngIf="poiFilters.length>0|| trackFilters.length>0">
     <ion-item>
       {{'Filtri attivi'|wmtrans}}
-      {{poiFilters.length + (this.currentTrackFilters$|async).length}}</ion-item
+      {{poiFilters.length + trackFilters.length}}</ion-item
     >
     <ion-item class="selected-filters">
       <ng-container *ngFor="let f of poiFilters">
@@ -16,12 +16,12 @@
             <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
           </ng-container>
           <ng-template #imgT>
-            <img [src]="f.identifier|getFilterIcn:(currentPoiFilterIdentifiers$|async)" />
+            <img [src]="f.identifier" />
           </ng-template>
           <ion-label>{{f.name|wmtrans}}</ion-label>
         </ion-chip>
       </ng-container>
-      <ng-container *ngFor="let f of this.currentTrackFilters$|async">
+      <ng-container *ngFor="let f of trackFilters">
         <ion-chip (click)="removeTrackFilter(f)">
           <ng-container *ngIf="f.icon != null">
             <div appBuildSvg style="height:55%" [svg]="f.icon"></div>

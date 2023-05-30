@@ -6,7 +6,6 @@ export const query = createAction(
 );
 export const queryApiSuccess = createAction('[api] Search Success', props<{search: IELASTIC}>());
 export const queryApiFail = createAction('[api] Search Fail');
-
 export const addActivities = createAction('[api] add activities', props<{activities: string[]}>());
 export const inputTyped = createAction(
   '[api] set input typed',
@@ -17,5 +16,8 @@ export const removeActivities = createAction(
   props<{activities: string[]}>(),
 );
 export const resetActivities = createAction('[api] reset activities');
-
 export const setLayer = createAction('[api] set Layer', props<{layer: any | null}>());
+export const toggleTrackFilter = createAction(
+  '[api] toggle track filter',
+  props<{filterIdentifier: string}>(),
+);

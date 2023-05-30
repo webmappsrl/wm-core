@@ -7,6 +7,7 @@ import {
   removeActivities,
   resetActivities,
   setLayer,
+  toggleTrackFilter,
 } from './api.actions';
 
 export const searchKey = 'search';
@@ -19,6 +20,7 @@ const initialConfState: IELASTIC = {
   layer: null,
   loading: true,
   inputTyped: null,
+  selectedFilterIdentifiers: null,
 };
 
 export const elasticQueryReducer = createReducer(
@@ -30,22 +32,24 @@ export const elasticQueryReducer = createReducer(
       loading: true,
     };
   }),
-  on(addActivities, (state, {activities}) => {
-    return {
-      ...state,
-      activities: [...new Set([...state.activities, ...activities])],
-      loading: true,
-    };
-  }),
-  on(removeActivities, (state, {activities}) => {
-    return {
-      ...state,
-      activities: [...state.activities.filter(a => activities.indexOf(a) < 0)],
-      loading: true,
-    };
-  }),
   on(resetActivities, (state, {}) => ({...state, activities: [], loading: true})),
   on(setLayer, (state, {layer}) => ({...state, layer, ...{loading: true}})),
   on(queryApiSuccess, (state, {search}) => ({...state, ...search, ...{loading: false}})),
   on(queryApiFail, state => ({...state, ...{loading: false}})),
+  on(toggleTrackFilter, (state, {filterIdentifier}) => {
+    let newSelectedFilterIdentifiers = [...(state.selectedFilterIdentifiers ?? [])];
+    if (newSelectedFilterIdentifiers.indexOf(filterIdentifier) >= 0) {
+      newSelectedFilterIdentifiers = state.selectedFilterIdentifiers.filter(
+        f => f != filterIdentifier,
+      );
+    } else {
+      newSelectedFilterIdentifiers.push(filterIdentifier);
+    }
+    return {
+      ...state,
+      activities: newSelectedFilterIdentifiers,
+      selectedFilterIdentifiers: newSelectedFilterIdentifiers,
+      loading: true,
+    };
+  }),
 );
