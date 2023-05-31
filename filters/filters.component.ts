@@ -28,6 +28,7 @@ export class FiltersComponent {
   @Output() filterTracksEvt: EventEmitter<string> = new EventEmitter<string>();
   @Output() removefilterPoiEvt: EventEmitter<string> = new EventEmitter<string>();
   @Output() removefilterTracksEvt: EventEmitter<string> = new EventEmitter<string>();
+  @Output() resetFiltersEvt: EventEmitter<void> = new EventEmitter<void>();
 
   toggle$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
@@ -50,5 +51,8 @@ export class FiltersComponent {
 
   removeTrackFilter(filter): void {
     this.removefilterTracksEvt.emit(filter.identifier);
+  }
+  resetFilters(): void {
+    this.resetFiltersEvt.emit();
   }
 }

@@ -6,9 +6,17 @@
 <ion-list class="filter-content" lines="none" *ngIf="toggle$|async">
   <ng-container *ngIf="poiFilters.length>0|| trackFilters.length>0">
     <ion-item>
-      {{'Filtri attivi'|wmtrans}}
-      {{poiFilters.length + trackFilters.length}}</ion-item
-    >
+      <ion-grid [fixed]="true">
+        <ion-row>
+          <ion-col>
+            {{'Filtri attivi'|wmtrans}} {{poiFilters.length + trackFilters.length}}</ion-col
+          >
+          <ion-col size="auto"
+            ><ion-button (click)="resetFilters()">{{'reset'|wmtrans}}</ion-button></ion-col
+          >
+        </ion-row>
+      </ion-grid>
+    </ion-item>
     <ion-item class="selected-filters">
       <ng-container *ngFor="let f of poiFilters">
         <ion-chip (click)="removePoiFilter(f)">

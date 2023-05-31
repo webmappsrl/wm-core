@@ -12,3 +12,4 @@ export const togglePoiFilter = createAction(
   '[pois] toggle filter',
   props<{filterIdentifier: string}>(),
 );
+export const resetPoiFilters = createAction('[pois] reset all pois filters');
