@@ -30,9 +30,7 @@ import {HttpClient} from '@angular/common/http';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {WmFiltersModule} from './filters/filters.module';
 import {ConfEffects} from './store/conf/conf.effects';
-import {PoisEffects} from './store/pois/pois.effects';
 import {confReducer} from './store/conf/conf.reducer';
-import {poisReducer} from './store/pois/pois.reducer';
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -60,8 +58,7 @@ const modules = [WmSharedModule, WmPipeModule, BoxModule, WmLocalizationModule, 
       IonicModule,
       StoreModule.forFeature('query', elasticQueryReducer),
       StoreModule.forFeature('conf', confReducer),
-      StoreModule.forFeature('pois', poisReducer),
-      EffectsModule.forFeature([ApiEffects, ConfEffects, PoisEffects]),
+      EffectsModule.forFeature([ApiEffects, ConfEffects]),
       TranslateModule.forRoot({
         loader: {
           provide: TranslateLoader,

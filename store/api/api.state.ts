@@ -1,3 +1,3 @@
-import {IElasticSearchRootState} from './api.reducer';
+import {ApiRootState} from './api.reducer';
 
-export type AppState = IElasticSearchRootState; /* & OtherRootState  & ... */
+export type AppState = ApiRootState; /* & OtherRootState  & ... */

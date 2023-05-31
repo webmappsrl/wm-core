@@ -5,6 +5,9 @@ import {catchError, map, switchMap, withLatestFrom} from 'rxjs/operators';
 import {
   addActivities,
   inputTyped,
+  loadPois,
+  loadPoisFail,
+  loadPoisSuccess,
   query,
   queryApiFail,
   queryApiSuccess,
@@ -12,7 +15,7 @@ import {
   setLayer,
 } from './api.actions';
 import {ApiService} from './api.service';
-import {IElasticSearchRootState} from './api.reducer';
+import {ApiRootState} from './api.reducer';
 import {Store} from '@ngrx/store';
 import {SearchResponse} from 'elasticsearch';
 import {apiTrackFilterIdentifier} from './api.selector';
@@ -45,24 +48,15 @@ export class ApiEffects {
       }),
     ),
   );
-  removeActivitiesApi$ = createEffect(() =>
+  loadPois$ = createEffect(() =>
     this._actions$.pipe(
-      ofType(removeActivities),
-      switchMap(_ => {
-        return of({
-          type: '[api] Query',
-        });
-      }),
-    ),
-  );
-  setLayerApi$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(setLayer),
-      switchMap(_ => {
-        return of({
-          type: '[api] Query',
-        });
-      }),
+      ofType(loadPois),
+      switchMap(() =>
+        this._apiSVC.getPois().pipe(
+          map(featureCollection => loadPoisSuccess({featureCollection})),
+          catchError(() => of(loadPoisFail())),
+        ),
+      ),
     ),
   );
   queryApi$ = createEffect(() =>
@@ -87,9 +81,30 @@ export class ApiEffects {
       }),
     ),
   );
+  removeActivitiesApi$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(removeActivities),
+      switchMap(_ => {
+        return of({
+          type: '[api] Query',
+        });
+      }),
+    ),
+  );
+  setLayerApi$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(setLayer),
+      switchMap(_ => {
+        return of({
+          type: '[api] Query',
+        });
+      }),
+    ),
+  );
+
   constructor(
     private _apiSVC: ApiService,
     private _actions$: Actions,
-    private _store: Store<IElasticSearchRootState>,
+    private _store: Store<ApiRootState>,
   ) {}
 }

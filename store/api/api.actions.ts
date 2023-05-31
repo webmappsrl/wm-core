@@ -1,4 +1,5 @@
 import {createAction, props} from '@ngrx/store';
+import {FeatureCollection} from 'geojson';
 
 export const query = createAction(
   '[api] Query',
@@ -21,3 +22,16 @@ export const toggleTrackFilter = createAction(
   '[api] toggle track filter',
   props<{filterIdentifier: string}>(),
 );
+
+export const loadPois = createAction('[api] pois: Load pois');
+export const loadPoisSuccess = createAction(
+  '[api] pois: Load pois Success',
+  props<{featureCollection: FeatureCollection}>(),
+);
+export const loadPoisFail = createAction('[api] pois: Load pois Fail');
+export const applyWhere = createAction('[api] pois: apply where', props<{where: string[]}>());
+export const togglePoiFilter = createAction(
+  '[api] pois toggle filter',
+  props<{filterIdentifier: string}>(),
+);
+export const resetPoiFilters = createAction('[api] pois: reset all pois filters');
