@@ -1,4 +1,4 @@
-<div class="filter-button" (click)="filterBtnClick()">
+<div class="filter-button" (click)="filterBtnClick()" *ngIf="confFilters!= null">
   {{'Filtri'|wmtrans}}
   <ion-icon name="funnel-outline"></ion-icon>
   <span class="dot" *ngIf="poiFilters.length>0|| trackFilters.length>0"></span>

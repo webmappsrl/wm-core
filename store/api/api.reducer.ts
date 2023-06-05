@@ -1,3 +1,4 @@
+import {featureCollection} from './api.selector';
 import {Feature, FeatureCollection, Geometry} from 'geojson';
 import {createReducer, on} from '@ngrx/store';
 import {
@@ -17,18 +18,12 @@ export const searchKey = 'search';
 export interface Api {
   activities: string[];
   loading: boolean;
-  poisInitStats: {[key: string]: number};
-  poisWhereStats: {[key: string]: number};
-  poisStats: {[key: string]: number};
-  poisFeatureCollectionCount: number;
   layer?: any;
   inputTyped?: string;
   selectedFilterIdentifiers?: string[];
   poisInitFeatureCollection?: FeatureCollection;
-  poisWhereFeatureCollection?: FeatureCollection;
-  poisFeatureCollection?: FeatureCollection;
-  poisWhere?: string[];
   poisSelectedFilterIdentifiers?: string[];
+  filterWhere?: string[];
 }
 export interface ApiRootState {
   [searchKey]: Api;
@@ -41,14 +36,8 @@ const initialConfState: Api = {
   inputTyped: null,
   selectedFilterIdentifiers: null,
   poisInitFeatureCollection: null,
-  poisWhereFeatureCollection: null,
-  poisFeatureCollection: null,
-  poisFeatureCollectionCount: 0,
-  poisInitStats: {},
-  poisWhereStats: {},
-  poisStats: {},
-  poisWhere: null,
   poisSelectedFilterIdentifiers: null,
+  filterWhere: [],
 };
 
 export const elasticQueryReducer = createReducer(
@@ -100,16 +89,9 @@ export const elasticQueryReducer = createReducer(
     return newState;
   }),
   on(loadPoisSuccess, (state, {featureCollection}) => {
-    const poisInitStats = _buildStats(featureCollection.features);
     const newState: Api = {
       ...state,
       poisInitFeatureCollection: featureCollection,
-      poisWhereFeatureCollection: featureCollection,
-      poisFeatureCollection: featureCollection,
-      poisFeatureCollectionCount: featureCollection.features.length,
-      poisInitStats,
-      poisWhereStats: poisInitStats,
-      poisStats: poisInitStats,
     };
     return newState;
   }),
@@ -118,25 +100,11 @@ export const elasticQueryReducer = createReducer(
       i => i.indexOf('poi_') < 0,
     );
     poisSelectedFilterIdentifiers = [...poisSelectedFilterIdentifiers, ...(where ?? [])];
-    const poisWhereFeatureCollection = _filterFeatureCollection(
-      state.poisInitFeatureCollection,
-      where,
-    );
-    const poisWhereStats = _buildStats(poisWhereFeatureCollection.features);
-    const poisFeatureCollection = _filterFeatureCollection(
-      poisWhereFeatureCollection,
-      state.selectedFilterIdentifiers,
-    );
-    const poisStats = _buildStats(poisFeatureCollection.features);
+
     const newState: Api = {
       ...state,
-      poisWhereFeatureCollection,
-      poisWhereStats,
-      poisWhere: where,
-      poisFeatureCollection,
-      poisFeatureCollectionCount: poisFeatureCollection.features.length,
+      filterWhere: where,
       poisSelectedFilterIdentifiers,
-      poisStats,
     };
     return newState;
   }),
@@ -150,16 +118,8 @@ export const elasticQueryReducer = createReducer(
       newSelectedFilterIdentifiers.push(filterIdentifier);
     }
 
-    const poisFeatureCollection = _filterFeatureCollection(
-      state.poisWhereFeatureCollection,
-      newSelectedFilterIdentifiers,
-    );
-    const poisStats = _buildStats(poisFeatureCollection.features);
     const newState: Api = {
       ...state,
-      poisFeatureCollection,
-      poisFeatureCollectionCount: poisFeatureCollection.features.length,
-      poisStats,
       poisSelectedFilterIdentifiers: newSelectedFilterIdentifiers,
     };
     return newState;
@@ -167,62 +127,8 @@ export const elasticQueryReducer = createReducer(
   on(resetPoiFilters, (state, {}) => {
     const newState: Api = {
       ...state,
-      poisFeatureCollection: state.poisInitFeatureCollection,
-      poisWhereFeatureCollection: state.poisInitFeatureCollection,
-      poisFeatureCollectionCount: state.poisInitFeatureCollection.features.length,
-      poisWhereStats: state.poisInitStats,
-      poisStats: state.poisInitStats,
       poisSelectedFilterIdentifiers: [],
     };
     return newState;
   }),
 );
-
-const _buildStats = (
-  features: Feature<
-    Geometry,
-    {
-      [name: string]: {[identifier: string]: any};
-    }
-  >[],
-) => {
-  const stats: {[identifier: string]: any} = {};
-  features.forEach(feature => {
-    const taxonomyIdentifiers = feature?.properties?.taxonomyIdentifiers || [];
-    taxonomyIdentifiers.forEach(taxonomyIdentifier => {
-      stats[taxonomyIdentifier] =
-        stats[taxonomyIdentifier] != null ? stats[taxonomyIdentifier] + 1 : 1;
-    });
-  });
-  return stats;
-};
-
-const _filterFeatureCollection = (
-  featureCollection: FeatureCollection,
-  filters: string[],
-): FeatureCollection => {
-  if (filters == null || filters.length === 0 || featureCollection.features == null)
-    return featureCollection;
-  return {
-    type: 'FeatureCollection',
-    features: featureCollection.features.filter(feature => {
-      const taxonomyIdentifiers = feature?.properties?.taxonomyIdentifiers || [];
-      return isArrayContained(filters, taxonomyIdentifiers);
-    }),
-  } as FeatureCollection;
-};
-
-const isArrayContained = (needle: any[], haystack: any[]): boolean => {
-  if (needle.length > haystack.length) return false;
-  return needle.every(element => haystack.includes(element));
-};
-
-const toggleValue = (array: string[] = [], elem: string): string[] => {
-  let newArray = [...(array ?? [])];
-  if (newArray.indexOf(elem) >= 0) {
-    newArray = newArray.filter(f => f != elem);
-  } else {
-    newArray.push(elem);
-  }
-  return newArray;
-};
