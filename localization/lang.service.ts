@@ -62,4 +62,25 @@ export class LangService extends TranslateService implements TranslateService {
       this.use(defLang);
     }
   }
+
+  instant(key: string | Array<string>, interpolateParams?: Object): string | any {
+    if (typeof key === 'object' && key.length === 0) return '';
+    if (key[this.currentLang] != null) {
+      return key[this.currentLang];
+    }
+    if (key[this.defaultLang]) {
+      return key[this.defaultLang];
+    }
+    if (typeof key === 'string') {
+      return super.instant(key);
+    }
+    if (key[0]) {
+      return key[0];
+    }
+    try {
+      return super.instant(key, interpolateParams);
+    } catch (e) {
+      console.error(e);
+    }
+  }
 }

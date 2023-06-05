@@ -2,6 +2,8 @@ import {HttpClient} from '@angular/common/http';
 
 /* eslint-disable quote-props */
 import {Injectable} from '@angular/core';
+import {SearchResponse} from 'elasticsearch';
+import {FeatureCollection} from 'geojson';
 import {Observable} from 'rxjs';
 import {environment} from 'src/environments/environment';
 // const baseUrl = 'https://elastic-passtrough.herokuapp.com/search';
@@ -11,6 +13,7 @@ const baseUrl = 'https://elastic-json.webmapp.it/search';
 })
 export class ApiService {
   private _geohubAppId: number = environment.geohubId;
+  private _queryDic: {[query: string]: any} = {};
 
   /**
    * Creates an instance of ElasticService.
@@ -20,7 +23,7 @@ export class ApiService {
   constructor(private _http: HttpClient) {
     const hostname: string = window.location.hostname;
     if (hostname.indexOf('localhost') < 0) {
-      const newGeohubId = +hostname.split('.')[0];
+      const newGeohubId = parseInt(hostname.split('.')[0], 10);
       if (!Number.isNaN(newGeohubId)) {
         this._geohubAppId = newGeohubId;
       }
@@ -29,6 +32,12 @@ export class ApiService {
 
   private get _baseUrl(): string {
     return this._geohubAppId ? `${baseUrl}/?id=${this._geohubAppId}` : baseUrl;
+  }
+
+  public getPois(): Observable<FeatureCollection> {
+    return this._http.get<FeatureCollection>(
+      `${environment.api}/api/v1/app/${this._geohubAppId}/pois.geojson`,
+    );
   }
 
   /**
@@ -44,17 +53,29 @@ export class ApiService {
    * @returns {*}  {Observable<IELASTIC>}
    * @memberof ElasticService
    */
-  getQuery(inputTyped?: string, layer?: number): Observable<IELASTIC> {
+  async getQuery(options: {
+    inputTyped?: string;
+    layer?: any;
+    activities: string[];
+  }): Promise<SearchResponse<IELASTIC>> {
     let query = this._baseUrl;
 
-    if (inputTyped) {
-      query += `&query=${inputTyped}`;
+    if (options.inputTyped) {
+      query += `&query=${options.inputTyped.replace(/ /g, '%20')}`;
     }
 
-    if (layer) {
-      query += `&layer=${layer}`;
+    if (options.layer && options.layer.id != null) {
+      query += `&layer=${options.layer.id}`;
     }
 
-    return this._http.request('get', query);
+    if (options.activities != null && options.activities.length > 0) {
+      query += `&activities=${options.activities.toString()}`;
+    }
+    if (this._queryDic[query] == null) {
+      console.log(query);
+      const value = await this._http.request('get', query).toPromise();
+      this._queryDic[query] = value;
+    }
+    return this._queryDic[query];
   }
 }

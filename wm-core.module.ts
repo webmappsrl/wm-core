@@ -10,8 +10,8 @@ import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 
 import {WmSlopeChartComponent} from './slope-chart/slope-chart.component';
 import {WmAddressComponent} from './address/address.component';
-import {ApiEffects} from './api/api.effects';
-import {elasticQueryReducer} from './api/api.reducer';
+import {ApiEffects} from './store/api/api.effects';
+import {elasticQueryReducer} from './store/api/api.reducer';
 import {BoxModule} from './box/box.module';
 import {WmElevationComponent} from './elevation/elevation.component';
 import {WmEmailComponent} from './email/email.component';
@@ -28,6 +28,9 @@ import {WmTabNearestPoiComponent} from './tab-nearest-poi/tab-nearest-poi.compon
 import {WmTrackAudioComponent} from './track-audio/track-audio.component';
 import {HttpClient} from '@angular/common/http';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import {WmFiltersModule} from './filters/filters.module';
+import {ConfEffects} from './store/conf/conf.effects';
+import {confReducer} from './store/conf/conf.reducer';
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -45,7 +48,7 @@ const declarations = [
   WmPhoneComponent,
   WmElevationComponent,
 ];
-const modules = [WmSharedModule, WmPipeModule, BoxModule, WmLocalizationModule];
+const modules = [WmSharedModule, WmPipeModule, BoxModule, WmLocalizationModule, WmFiltersModule];
 
 @NgModule({
   declarations,
@@ -54,7 +57,8 @@ const modules = [WmSharedModule, WmPipeModule, BoxModule, WmLocalizationModule];
       CommonModule,
       IonicModule,
       StoreModule.forFeature('query', elasticQueryReducer),
-      EffectsModule.forFeature([ApiEffects]),
+      StoreModule.forFeature('conf', confReducer),
+      EffectsModule.forFeature([ApiEffects, ConfEffects]),
       TranslateModule.forRoot({
         loader: {
           provide: TranslateLoader,

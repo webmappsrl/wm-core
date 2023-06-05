@@ -71,7 +71,15 @@ interface IHOMEOLD {
 }
 
 type IBOX = {
-  box_type: 'title' | 'layer' | 'track' | 'base' | 'external_url' | 'slug' | 'poi_type_filter';
+  box_type:
+    | 'title'
+    | 'layer'
+    | 'track'
+    | 'base'
+    | 'external_url'
+    | 'slug'
+    | 'poi_type_filter'
+    | 'horizontal_scroll';
   title: iLocalString | string;
 };
 type ITITLEBOX = IBOX & {
@@ -106,6 +114,9 @@ type IPOITYPEFILTERBOX = {
   box_type: 'poi_type_filter';
 } & PoiTypeTaxonomy;
 
+type IHORIZONTALSCROLLBOXITEM = IHOMEBASEITEM & {
+  res: any;
+};
 type IHOMEITEMTRACK = IHOMEBASEITEM & {
   track_id: number;
   taxonomy_activities: string[];
@@ -116,10 +127,16 @@ type IHOMEITEMTRACK = IHOMEBASEITEM & {
 type IHOMEITEMURL = IHOMEBASEITEM & {
   url: string;
 };
-type IHOMEITEM = IHOMEITEMTRACK | IHOMEITEMURL;
+type IHOMEITEM = IHOMEITEMTRACK | IHOMEITEMURL | IHORIZONTALSCROLLBOXITEM;
 type IBASEBOX = IBOX & {
   box_type: 'base';
   items: IHOMEITEMTRACK[];
+  image_url?: string;
+};
+type IHORIZONTALSCROLLBOX = IBOX & {
+  box_type: 'horizontal_scroll';
+  item_type: string;
+  items: IHORIZONTALSCROLLBOXITEM[];
   image_url?: string;
 };
 type IHOME =
@@ -129,7 +146,8 @@ type IHOME =
   | IEXTERNALURLBOX
   | ISLUGBOX
   | ITRACKBOX
-  | IPOITYPEFILTERBOX;
+  | IPOITYPEFILTERBOX
+  | IHORIZONTALSCROLLBOX;
 
 interface IOPTIONS {
   addArrowsOverTracks: boolean;
@@ -202,23 +220,72 @@ interface IPROJECT {
 interface iLocalString {
   en?: string;
   it?: string;
-}
 
+  [lang: string]: string;
+}
+interface IOVERLAYERS {
+  icon: string;
+  label: iLocalString;
+  url: string;
+}
+interface IOVERLAYERTITLE {
+  label: iLocalString;
+}
+interface ICONTROLSTITLE {
+  label: iLocalString;
+  type: 'title';
+}
+interface ICONTROLSBUTTON {
+  icon: string;
+  id?: number;
+  label: iLocalString;
+  type: 'button';
+  url: string;
+}
+interface IFILTERS {
+  [key: string]: IFILTERSELECT | IFILTERSLIDER;
+}
+interface IFILTER {
+  name: iLocalString;
+  type: 'select' | 'slider';
+}
+interface IFILTERSELECT extends IFILTER {
+  options: IFILTEROPTION[];
+  type: 'select';
+}
+interface IFILTERSLIDER extends IFILTER {
+  identifier: string;
+  max: number;
+  min: number;
+  type: 'slider';
+}
+interface IFILTEROPTION {
+  color: string;
+  icon: string;
+  id: number;
+  identifier: string;
+  name: iLocalString;
+}
+interface ICONTROLS {
+  [key: string]: (ICONTROLSTITLE | ICONTROLSBUTTON)[];
+}
 interface IMAP {
   alert_poi_radius?: number;
   alert_poi_show?: boolean;
   bbox: [number, number, number, number];
   center?: [number, number];
+  controls: ICONTROLS;
   defZoom: number;
+  filters?: {[key: string]: any};
   flow_line_quote_orange?: number;
   flow_line_quote_red?: number;
   flow_line_quote_show?: boolean;
   layers?: ILAYER[];
+  maxStrokeWidth?: number;
   maxZoom: number;
+  minStrokeWidth?: number;
   minZoom: number;
   pois?: any;
-  maxStrokeWidth?: number;
-  minStrokeWidth?: number;
   record_track_show?: boolean;
   ref_on_track_min_zoom?: number;
   ref_on_track_show?: boolean;
@@ -332,4 +399,12 @@ interface IWmImage {
     '1440x500': string;
   };
   url: string;
+}
+
+interface Filter {
+  color?: string;
+  icon: string;
+  identifier: string;
+  name: any;
+  taxonomy?: string;
 }

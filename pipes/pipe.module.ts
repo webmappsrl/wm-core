@@ -9,6 +9,10 @@ import {WmGetIcnPipe} from './wm-get-icn.pipe';
 import {WmTransPipe} from './wmtrans.pipe';
 import {WmGetDataPipe} from './wm-get-data.pipe';
 import {WmToMbPipe} from './wm-to-mb.pipe';
+import {WmHowMany} from './wm-how-many.pipe';
+import {WmOrderedBySelection} from './wm-filter-by-selection.pipe';
+import {WmAsAny} from './wm-as-any.pipe';
+import {WmIsSelected} from './wm-filter-is-selected.pipe';
 
 const pipes = [
   WmTransPipe,
@@ -20,6 +24,10 @@ const pipes = [
   BuildSvgDirective,
   WmGetDataPipe,
   WmToMbPipe,
+  WmHowMany,
+  WmOrderedBySelection,
+  WmAsAny,
+  WmIsSelected,
 ];
 @NgModule({
   declarations: pipes,
