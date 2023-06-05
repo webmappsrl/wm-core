@@ -63,7 +63,10 @@ export class LangService extends TranslateService implements TranslateService {
     }
   }
 
-  instant(key: string | Array<string>, interpolateParams?: Object): string | any {
+  instant(
+    key: string | Array<string> | {[lang: string]: string},
+    interpolateParams?: Object,
+  ): string | any {
     if (typeof key === 'object' && key.length === 0) return '';
     if (key[this.currentLang] != null) {
       return key[this.currentLang];
@@ -74,11 +77,18 @@ export class LangService extends TranslateService implements TranslateService {
     if (typeof key === 'string') {
       return super.instant(key);
     }
+
     if (key[0]) {
       return key[0];
     }
+    // if defaultLang and currentLang no match inside object take the first
+    for (const val in key) {
+      if (key[val]) {
+        return key[val];
+      }
+    }
     try {
-      return super.instant(key, interpolateParams);
+      return super.instant(key as string | Array<string>, interpolateParams);
     } catch (e) {
       console.error(e);
     }
