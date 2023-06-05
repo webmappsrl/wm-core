@@ -12,7 +12,9 @@
     "target": "es2015",
     "module": "es2020",
     "skipLibCheck": true,
-    "lib": ["es2018", "dom"]
+    "lib": ["es2018", "dom"],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
   "angularCompilerOptions": {
     "strictTemplates": true

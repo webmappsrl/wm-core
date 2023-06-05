@@ -8,10 +8,11 @@ export const MAX_TRACKS = 200;
 export const confAPP = createSelector(confFeature, state => state.APP);
 export const confGeohubId = createSelector(confAPP, state => state.geohubId);
 export const confWEBAPP = createSelector(confFeature, state => state.WEBAPP);
+export const confPOIFORMS = createSelector(confAPP, app => app.poi_acquisition_form);
 export const confLANGUAGES = createSelector(confFeature, state => state.LANGUAGES);
 export const confOPTIONS = createSelector(confFeature, state => state.OPTIONS);
 export const confAUTH = createSelector(confFeature, state => state.AUTH);
-
+export const confAUTHEnable = createSelector(confAUTH, auth => auth?.enable ?? false);
 export const confMAP = createSelector(confFeature, state => state.MAP);
 export const confJIDOUPDATETIME = createSelector(confFeature, state => state.JIDO_UPDATE_TIME);
 
@@ -62,7 +63,12 @@ export const confTHEMEVariables = createSelector(confTHEME, (theme: ITHEME) =>
 );
 export const confShowDrawTrack = createSelector(confWEBAPP, state => state.draw_track_show);
 export const confShowEditingInline = createSelector(confWEBAPP, state => state.editing_inline_show);
-
+export const confPOIS = createSelector(confMAP, map => {
+  if (map != null && map.pois != null) {
+    return map.pois;
+  }
+  return undefined;
+});
 export const confHOME = createSelector(confFeature, confFILTERS, (state, filters) => {
   if (state.HOME != null && state.MAP != null) {
     const home: IHOME[] = [];

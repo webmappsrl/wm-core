@@ -1,4 +1,5 @@
 import * as _color from 'color';
+
 /**
  * Return a contrast color based on the color param
  *
@@ -27,7 +28,7 @@ const defaults: ITHEME = {
   fontFamilyContent: 'Roboto',
   theme: 'webmapp',
 };
-export const Color = v => _color(v.trim().replace('\t', ''));
+export const Color = v => _color.default(v.trim().replace('\t', ''));
 export const contrast = (color: any, ratio: number = 0.8): string => {
   if (color === '#000000') {
     return '#ffffff';
