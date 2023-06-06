@@ -59,7 +59,8 @@ export const showResult = createSelector(elasticSearchFeature, state => {
   return (
     state.layer != null ||
     state.activities.length > 0 ||
-    (state.poisSelectedFilterIdentifiers && state.poisSelectedFilterIdentifiers.length > 0)
+    (state.poisSelectedFilterIdentifiers && state.poisSelectedFilterIdentifiers.length > 0) ||
+    (state.inputTyped && state.inputTyped != '')
   );
 });
 
