@@ -55,6 +55,13 @@ export const apiTrackFilters = createSelector(
 );
 
 export const showPoisResult = createSelector(elasticSearchFeature, state => state.where != null);
+export const showResult = createSelector(elasticSearchFeature, state => {
+  return (
+    state.layer != null ||
+    state.activities.length > 0 ||
+    (state.poisSelectedFilterIdentifiers && state.poisSelectedFilterIdentifiers.length > 0)
+  );
+});
 
 export const poiFilterIdentifiers = createSelector(
   elasticSearchFeature,
