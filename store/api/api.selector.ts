@@ -135,7 +135,7 @@ export const pois = createSelector(featureCollection, confPoisIcons, (featureCol
 });
 export const featureCollectionCount = createSelector(
   featureCollection,
-  featureCollection => featureCollection.features.length,
+  featureCollection => featureCollection?.features?.length,
 );
 export const poisInitStats = createSelector(poisInitFeatureCollection, poisInitFeatureCollection =>
   _buildStats(poisInitFeatureCollection.features),
@@ -162,7 +162,7 @@ const _filterFeatureCollection = (
   featureCollection: FeatureCollection,
   filters: string[],
 ): FeatureCollection => {
-  if (filters == null || filters.length === 0 || featureCollection.features == null)
+  if (filters == null || filters.length === 0 || featureCollection?.features == null)
     return featureCollection;
   return {
     type: 'FeatureCollection',
