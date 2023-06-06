@@ -60,7 +60,25 @@ export const elasticQueryReducer = createReducer(
     return newState;
   }),
   on(setLayer, (state, {layer}) => {
-    const newState: Api = {...state, layer, loading: true};
+    let filterWhere = null;
+    let poisSelectedFilterIdentifiers = [];
+    if (layer && layer.taxonomy_wheres != null) {
+      filterWhere = layer.taxonomy_wheres
+        .filter(t => t.identifier != null)
+        .map(t => `where_${t.identifier}`);
+      poisSelectedFilterIdentifiers = (state.poisSelectedFilterIdentifiers ?? []).filter(
+        i => i.indexOf('poi_') < 0,
+      );
+      poisSelectedFilterIdentifiers = [...poisSelectedFilterIdentifiers, ...(filterWhere ?? [])];
+    }
+    const newState: Api = {
+      ...state,
+      layer,
+      loading: true,
+      poisSelectedFilterIdentifiers,
+      filterWhere,
+    };
+    console.log(newState);
     return newState;
   }),
   on(queryApiSuccess, (state, {search}) => {
