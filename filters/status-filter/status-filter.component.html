@@ -1,0 +1,41 @@
+<ion-grid>
+  <ion-row>
+    <ion-col>{{'Filtri Attivi'|wmtrans}}</ion-col>
+    <ion-col></ion-col>
+    <ion-col size="auto">
+      <ion-chip
+        [outline]="true"
+        (click)="resetFiltersEVT.emit()"
+        >{{'Torna alla home'|wmtrans}}</ion-chip
+      >
+    </ion-col>
+    <ion-row>
+      <ion-col class="chip-list">
+        <ion-chip outline="true" *ngIf="layer">
+          <ion-label> {{layer.title|wmtrans}}</ion-label>
+          <ion-icon name="close" (click)="removeLayerEVT.emit(layer)"></ion-icon>
+        </ion-chip>
+        <ng-container *ngFor="let f of trackFilters">
+          <ion-chip (click)="removeTrackFilterEVT.emit(f.identifier)">
+            <ng-container *ngIf="f.icon != null">
+              <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
+            </ng-container>
+            <ion-label>{{f.name|wmtrans}}</ion-label>
+          </ion-chip>
+        </ng-container>
+
+        <ng-container *ngFor="let f of poiFilters">
+          <ion-chip (click)="removePoiFilterEVT.emit(f.identifier)">
+            <ng-container *ngIf="f.icon != null;else imgT">
+              <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
+            </ng-container>
+            <ng-template #imgT>
+              <img [src]="f.identifier" />
+            </ng-template>
+            <ion-label>{{f.name|wmtrans}}</ion-label>
+          </ion-chip>
+        </ng-container>
+      </ion-col>
+    </ion-row>
+  </ion-row>
+</ion-grid>
