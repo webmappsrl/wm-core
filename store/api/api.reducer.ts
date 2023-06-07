@@ -78,7 +78,6 @@ export const elasticQueryReducer = createReducer(
       poisSelectedFilterIdentifiers,
       filterWhere,
     };
-    console.log(newState);
     return newState;
   }),
   on(queryApiSuccess, (state, {search}) => {

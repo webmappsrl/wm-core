@@ -1,0 +1,68 @@
+<ion-segment [value]="showResultType$|async" (ionChange)="changeResultType($event)">
+  <ion-segment-button value="tracks" [disabled]="tracks && tracks.length === 0">
+    <ion-label
+      >{{'Sentieri'|wmtrans}}
+      <ng-container *ngIf="loadingTracks;else count">
+        <ion-spinner name="dots"></ion-spinner
+      ></ng-container>
+      <ng-template #count>
+        <ng-container
+          *ngIf="tracks"
+          >{{!loadingTracks && tracks.length>0?tracks.length:''}}</ng-container
+        ></ng-template
+      >
+    </ion-label>
+  </ion-segment-button>
+  <ion-segment-button value="pois">
+    <ion-label
+      >{{'Punti di interesse'|wmtrans}} <ng-container>{{pois.length}}</ng-container></ion-label
+    >
+  </ion-segment-button>
+</ion-segment>
+<ion-content style="--offset-top:56px; --offset-bottom:56px;" class="wm-home-content">
+  <ng-container *ngIf="showResultType$|async as showResulType;">
+    <ng-container *ngIf="showResulType === 'tracks'|| showResulType == null">
+      <ng-container *ngIf="loadingTracks">
+        <ion-list *ngFor="let idx of [1,1,1,1,1,1,1]">
+          <ion-list-header>
+            <ion-skeleton-text [animated]="true" style="width: 80px"></ion-skeleton-text>
+          </ion-list-header>
+          <ion-item>
+            <ion-thumbnail slot="start">
+              <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+            </ion-thumbnail>
+            <ion-label>
+              <h3>
+                <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
+              </h3>
+              <p>
+                <ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text>
+              </p>
+              <p>
+                <ion-skeleton-text [animated]="true" style="width: 30%;"></ion-skeleton-text>
+              </p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ng-container>
+      <ng-container *ngIf="tracks">
+        <ng-container *ngIf="tracks.length > 0; else noResult">
+          <wm-search-box
+            *ngFor="let card of tracks|slice:0:200"
+            [data]="card"
+            (clickEVT)="trackEVT.emit(card.id)"
+          >
+          </wm-search-box>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+    <div class="pois" *ngIf="showResulType === 'pois'|| showResulType === 'all'">
+      <wm-poi-box *ngFor="let c of pois" [data]="c" (clickEVT)="poiEVT.emit(c)"> </wm-poi-box>
+    </div>
+  </ng-container>
+</ion-content>
+<ng-template #noResult>
+  <ion-item lines="none">
+    <h5>{{'Spiacenti non ci sono risultati con questi criteri di ricarca.'|wmtrans}}</h5>
+  </ion-item>
+</ng-template>

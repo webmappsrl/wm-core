@@ -6,6 +6,7 @@ import {EffectsModule} from '@ngrx/effects';
 import {StoreModule} from '@ngrx/store';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import {WmHomeResultComponent} from './home/home-result/home-result.component';
 import {WmAddressComponent} from './address/address.component';
 import {BoxModule} from './box/box.module';
 import {WmElevationComponent} from './elevation/elevation.component';
@@ -45,6 +46,7 @@ const declarations = [
   WmPhoneComponent,
   WmElevationComponent,
   WmHomeComponent,
+  WmHomeResultComponent,
 ];
 const modules = [WmSharedModule, WmPipeModule, BoxModule, WmLocalizationModule, WmFiltersModule];
 
