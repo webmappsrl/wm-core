@@ -1,0 +1,4 @@
+<div class="wm-box" (click)="clickEVT.emit()">
+  <img class="wm-result-img" [src]="data.image_url?data.image_url:defaultPhotoPath" />
+  <div class="wm-box-title">{{data.title|wmtrans}}</div>
+</div>

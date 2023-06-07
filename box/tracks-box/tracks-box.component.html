@@ -1,0 +1,18 @@
+<webmapp-title *ngIf="data.title as title">
+  {{title}}
+</webmapp-title>
+<div class="wm-tracks-wrapper">
+  <div class="wm-tracks-container" #tracks>
+    <wm-box
+      *ngFor="let track of data.items|convertToItemTracks"
+      [data]="track"
+      (clickEVT)="trackIdEVT.emit(track.track_id)"
+    ></wm-box>
+  </div>
+  <div class="wm-track-arrow left" (click)="scrollLeft()">
+    <i class="icon-outline-arrow-left"></i>
+  </div>
+  <div class="wm-track-arrow right" (click)="scrollRight()">
+    <i class="icon-outline-arrow-right"></i>
+  </div>
+</div>

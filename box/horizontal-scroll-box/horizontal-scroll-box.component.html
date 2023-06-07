@@ -1,0 +1,18 @@
+<webmapp-title *ngIf="data.title as title">
+  {{title|wmtrans}}
+</webmapp-title>
+<div class="wm-items-wrapper">
+  <div class="wm-items-container" #items>
+    <wm-box
+      *ngFor="let item of data.items|convertToHorizontalScrollboxItems"
+      [data]="item"
+      (clickEVT)="clickEVT.emit(item.res)"
+    ></wm-box>
+  </div>
+  <div class="wm-item-arrow left" (click)="scrollLeft()">
+    <i class="icon-outline-arrow-left"></i>
+  </div>
+  <div class="wm-item-arrow right" (click)="scrollRight()">
+    <i class="icon-outline-arrow-right"></i>
+  </div>
+</div>
