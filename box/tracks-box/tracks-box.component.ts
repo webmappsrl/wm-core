@@ -7,8 +7,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-
-import {BaseBoxComponent} from '../../../../components/common/abstract/box';
+import {BaseBoxComponent} from '../../box/box';
 
 @Component({
   selector: 'wm-tracks-box',
@@ -24,6 +23,7 @@ export class TracksBoxComponent extends BaseBoxComponent<IBASEBOX> {
   scrollLeft(): void {
     this.tracksContent.nativeElement.scrollLeft -= 150;
   }
+
   scrollRight(): void {
     this.tracksContent.nativeElement.scrollLeft += 150;
   }

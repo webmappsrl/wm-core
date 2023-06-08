@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
-
-import {BaseBoxComponent} from '../../../../components/common/abstract/box';
+import {BaseBoxComponent} from './../../box/box';
 
 @Component({
   selector: 'wm-box',
