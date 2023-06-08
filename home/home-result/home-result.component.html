@@ -13,9 +13,9 @@
       >
     </ion-label>
   </ion-segment-button>
-  <ion-segment-button value="pois">
+  <ion-segment-button value="pois" *ngIf="pois != null">
     <ion-label
-      >{{'Punti di interesse'|wmtrans}} <ng-container>{{pois.length}}</ng-container></ion-label
+      >{{'Punti di interesse'|wmtrans}} <ng-container>{{pois?.length}}</ng-container></ion-label
     >
   </ion-segment-button>
 </ion-segment>
