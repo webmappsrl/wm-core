@@ -157,6 +157,14 @@ export const stats = createSelector(
   poisFilteredFeatureCollectionByInputTypeStats,
   poisFilteredFeatureCollectionByInputTypeStats => poisFilteredFeatureCollectionByInputTypeStats,
 );
+export const hasActiveFilters = createSelector(
+  apiTrackFilters,
+  poiFilters,
+  showPoisResult,
+  (apiTrackFilters, poiFilters, showPoisResult) => {
+    return apiTrackFilters.length > 0 || poiFilters.length > 0 || showPoisResult;
+  },
+);
 
 const _filterFeatureCollection = (
   featureCollection: FeatureCollection,
