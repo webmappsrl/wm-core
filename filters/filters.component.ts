@@ -17,6 +17,12 @@ import {BehaviorSubject} from 'rxjs';
   encapsulation: ViewEncapsulation.None,
 })
 export class FiltersComponent {
+  @Input() set wmFiltersClose(selector: string) {
+    if (selector != 'wm-filters') {
+      this.toggle$.next(false);
+    }
+  }
+
   @Input() confFilters: {[key: string]: any};
   @Input() poiFilters: Filter[];
   @Input() pois: FeatureCollection;
@@ -51,6 +57,7 @@ export class FiltersComponent {
   removeTrackFilter(filter): void {
     this.removefilterTracksEvt.emit(filter.identifier);
   }
+
   resetFilters(): void {
     this.resetFiltersEvt.emit();
   }
