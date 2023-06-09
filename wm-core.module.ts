@@ -72,4 +72,4 @@ const modules = [WmSharedModule, WmPipeModule, BoxModule, WmLocalizationModule, 
   providers: [LangService],
   exports: [...declarations, ...modules, TranslateModule],
 })
-export class WmCoreModule {}
+export class WmCoreModule { }
