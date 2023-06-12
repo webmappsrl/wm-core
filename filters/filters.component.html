@@ -9,7 +9,11 @@
       <ion-grid [fixed]="true">
         <ion-row>
           <ion-col>
-            {{'Filtri attivi'|wmtrans}} {{poiFilters.length + trackFilters.length}}</ion-col
+            {{'Filtri attivi'|wmtrans}}
+            <span
+              class="wm-active-filters-count"
+              >{{poiFilters.length + trackFilters.length}}</span
+            ></ion-col
           >
           <ion-col size="auto"
             ><ion-button (click)="resetFilters()">{{'reset'|wmtrans}}</ion-button></ion-col
