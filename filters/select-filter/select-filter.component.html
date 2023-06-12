@@ -9,6 +9,7 @@
           <ion-chip
             *ngIf="parent.poisStats[option.identifier]!= null"
             outline="true"
+            class="wm-chip"
             (click)="addPoiFilter(option)"
             color="{{option.identifier|isSelected:(parent.poiFilters)}}"
           >
@@ -18,10 +19,10 @@
             <ng-template #imgT>
               <img [src]="option.identifier" />
             </ng-template>
-            <ion-label>{{option.name|wmtrans}}</ion-label>
-            <ng-container>
+            <ion-label class="wm-label">{{option.name|wmtrans}}</ion-label>
+            <span class="wm-filters-count">
               {{ option.identifier|wmhowmany:parent.poisStats}}
-            </ng-container>
+            </span>
           </ion-chip>
         </ng-container>
       </div>
@@ -39,6 +40,7 @@
           *ngFor="let option of filter.options | orderedBySelection:(parent.trackFilters)"
         >
           <ion-chip
+            class="wm-chip"
             outline="true"
             (click)="parent.addTrackFilter(option)"
             color="{{option.identifier|isSelected:(parent.trackFilters)}}"
