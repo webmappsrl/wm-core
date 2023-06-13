@@ -1,6 +1,6 @@
 wm-filters {
   div[appBuildSvg] {
-    height:55%; 
+    height: 55%;
   }
   .filter-button {
     display: flex;
@@ -30,6 +30,10 @@ wm-filters {
   }
   ion-list {
     padding: 0 !important;
+  }
+
+  .wm-filters-title {
+    line-height: 34px;
   }
   .wm-filter-content {
     position: fixed;
