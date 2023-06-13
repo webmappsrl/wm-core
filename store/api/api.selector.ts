@@ -214,7 +214,8 @@ const _filterFeatureCollectionByInputTyped = (
     type: 'FeatureCollection',
     features: featureCollection.features.filter(feature => {
       const p = feature?.properties;
-      return JSON.stringify(p.name).toLowerCase().indexOf(inputTyped.toLocaleLowerCase()) >= 0;
+      const searchable = `${JSON.stringify(p?.name ?? '')}${p?.searchable ?? ''}`;
+      return searchable.toLowerCase().indexOf(inputTyped.toLocaleLowerCase()) >= 0;
     }),
   } as FeatureCollection;
 };
