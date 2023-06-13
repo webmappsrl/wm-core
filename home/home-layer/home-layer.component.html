@@ -1,0 +1,9 @@
+<wm-img *ngIf="layer?.feature_image as img" [src]="img">
+  <div class="wm-box-title" *ngIf="layer?.title as title">{{title | wmtrans}}</div>
+</wm-img>
+
+<div
+  class="wm-description"
+  *ngIf="layer?.description as description"
+  [innerHTML]="description|wmtrans"
+></div>

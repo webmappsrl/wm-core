@@ -6,13 +6,14 @@ import {EffectsModule} from '@ngrx/effects';
 import {StoreModule} from '@ngrx/store';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {WmHomeResultComponent} from './home/home-result/home-result.component';
 import {WmAddressComponent} from './address/address.component';
 import {BoxModule} from './box/box.module';
 import {WmElevationComponent} from './elevation/elevation.component';
 import {WmEmailComponent} from './email/email.component';
 import {WmFiltersModule} from './filters/filters.module';
+import {WmHomeResultComponent} from './home/home-result/home-result.component';
 import {WmHomeComponent} from './home/home.component';
+import {WmHomeLayerComponent} from './home/home-layer/home-layer.component';
 import {LangService} from './localization/lang.service';
 import {WmLocalizationModule} from './localization/localization.module';
 import {WmPhoneComponent} from './phone/phone.component';
@@ -47,6 +48,7 @@ const declarations = [
   WmElevationComponent,
   WmHomeComponent,
   WmHomeResultComponent,
+  WmHomeLayerComponent,
 ];
 const modules = [WmSharedModule, WmPipeModule, BoxModule, WmLocalizationModule, WmFiltersModule];
 
@@ -72,4 +74,4 @@ const modules = [WmSharedModule, WmPipeModule, BoxModule, WmLocalizationModule, 
   providers: [LangService],
   exports: [...declarations, ...modules, TranslateModule],
 })
-export class WmCoreModule { }
+export class WmCoreModule {}
