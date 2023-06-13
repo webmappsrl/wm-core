@@ -49,4 +49,6 @@ export const wmEN = {
   'Downloads': 'Downloads',
   'edit geohub': 'edit geohub',
   'NCC': 'NCC',
+  'Filtri attivi': 'Active filters',
+  'Reset filtri': 'Reset filters',
 };

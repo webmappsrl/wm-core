@@ -1,4 +1,7 @@
 wm-filters {
+  div[appBuildSvg] {
+    height:55%; 
+  }
   .filter-button {
     display: flex;
     flex-direction: row;
@@ -28,15 +31,15 @@ wm-filters {
   ion-list {
     padding: 0 !important;
   }
-  .filter-content {
+  .wm-filter-content {
     position: fixed;
     background-color: rgba($color: white, $alpha: 0.8);
     top: calc(2% + 50px);
     right: 1%;
-    width: 300px;
+    width: 320px;
     z-index: 1;
   }
-  .selected-filters {
+  .wm-selected-filters {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -61,6 +64,7 @@ wm-filters {
         order: 0;
         flex: 1 1 auto;
         align-self: stretch;
+        margin: 2px;
       }
       ion-icon,
       i {
