@@ -427,6 +427,7 @@ interface SliderFilter extends Filter {
   indentifier: string;
   max: number;
   min: number;
+  units: string;
   steps: number;
   type: 'slider';
 }

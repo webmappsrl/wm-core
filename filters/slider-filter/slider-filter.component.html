@@ -14,8 +14,8 @@
       [pin]="true"
       (ionKnobMoveEnd)="onIonChange($event)"
     >
-      <ion-label slot="start">{{filter.min}}</ion-label>
-      <ion-label slot="end">{{filter.max}}</ion-label>
+      <ion-label slot="start">{{filter.min}}{{filter.units|wmtrans}}</ion-label>
+      <ion-label slot="end">{{filter.max}}{{filter.units|wmtrans}}</ion-label>
     </ion-range>
   </div>
 </ion-accordion>

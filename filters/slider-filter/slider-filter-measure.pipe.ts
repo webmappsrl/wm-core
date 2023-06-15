@@ -6,7 +6,7 @@ import {RangeValue} from './slider-filter.component';
   pure: false,
 })
 export class SliderFilterMeasurePipe implements PipeTransform {
-  transform(value: RangeValue, ...args: unknown[]): string {
+  transform(value: SliderFilter, ...args: unknown[]): string {
     if (value == null) return '';
     if (typeof value === 'number') {
       return `${value}`;
@@ -14,7 +14,7 @@ export class SliderFilterMeasurePipe implements PipeTransform {
       if (value.lower == null && value.upper == null) return '';
       return `${value.lower ? ' ' + value.lower : ''}${
         value.lower != null && value.upper != null ? ' - ' : ''
-      }${value.upper}`;
+      }${value.upper} ${value.units}`;
     }
   }
 }

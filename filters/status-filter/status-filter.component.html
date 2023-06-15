@@ -16,11 +16,11 @@
           <ion-icon name="close" (click)="removeLayerEVT.emit(layer)"></ion-icon>
         </ion-chip>
         <ng-container *ngFor="let f of trackFilters">
-          <ion-chip (click)="removeTrackFilterEVT.emit(f.identifier)">
+          <ion-chip (click)="removeTrackFilterEVT.emit(f)">
             <ng-container *ngIf="f.icon != null">
               <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
             </ng-container>
-            <ion-label>{{f.name|wmtrans}}</ion-label>
+            <ion-label>{{f.name|wmtrans}} {{f|wmmeasure}}</ion-label>
           </ion-chip>
         </ng-container>
 
