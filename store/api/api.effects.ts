@@ -13,6 +13,7 @@ import {
   queryApiSuccess,
   removeTrackFilters,
   setLayer,
+  toggleTrackFilterByIdentifier,
 } from './api.actions';
 import {ApiService} from './api.service';
 import {ApiRootState} from './api.reducer';
@@ -101,7 +102,22 @@ export class ApiEffects {
       }),
     ),
   );
-
+  toggleTrackFilterByIdentifier$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(toggleTrackFilterByIdentifier),
+      withLatestFrom(this._store),
+      switchMap(([action, state]) => {
+        const filters = state['conf']['MAP'].filters.activity.options;
+        let filter = filters.filter(f => f.identifier === action.filterIdentifier);
+        if (filter.length > 0) {
+          return of({
+            type: '[api] toggle track filter',
+            filter: filter[0],
+          });
+        }
+      }),
+    ),
+  );
   constructor(
     private _apiSVC: ApiService,
     private _actions$: Actions,
