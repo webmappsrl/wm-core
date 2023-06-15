@@ -30,13 +30,12 @@ export class FiltersComponent {
     [name: string]: {[identifier: string]: any};
   } = {};
   @Input() trackFilters: any[];
-  @Output() filterPoisEvt: EventEmitter<Filter> = new EventEmitter<Filter>();
-  @Output() filterTracksEvt: EventEmitter<SelectFilterOption | SliderFilter> = new EventEmitter<
-    SelectFilterOption | SliderFilter
-  >();
-  @Output() removefilterPoiEvt: EventEmitter<SelectFilterOption | SliderFilter> = new EventEmitter<
-    SelectFilterOption | SliderFilter
-  >();
+  @Output() filterPoisEvt: EventEmitter<SelectFilterOption | SliderFilter | Filter> =
+    new EventEmitter<SelectFilterOption | SliderFilter | Filter>();
+  @Output() filterTracksEvt: EventEmitter<SelectFilterOption | SliderFilter | Filter> =
+    new EventEmitter<SelectFilterOption | SliderFilter | Filter>();
+  @Output() removefilterPoiEvt: EventEmitter<SelectFilterOption | SliderFilter | Filter> =
+    new EventEmitter<SelectFilterOption | SliderFilter | Filter>();
   @Output() removefilterTracksEvt: EventEmitter<Filter> = new EventEmitter<Filter>();
   @Output() resetFiltersEvt: EventEmitter<void> = new EventEmitter<void>();
 
