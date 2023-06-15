@@ -3,24 +3,31 @@ import {FeatureCollection} from 'geojson';
 
 export const query = createAction(
   '[api] Query',
-  props<{layer?: number; inputTyped?: string; activities?: string[]}>(),
+  props<{layer?: number; inputTyped?: string; filterTracks?: {identifier: string}[]}>(),
 );
 export const queryApiSuccess = createAction('[api] Search Success', props<{search: IELASTIC}>());
 export const queryApiFail = createAction('[api] Search Fail');
-export const addActivities = createAction('[api] add activities', props<{activities: string[]}>());
+export const addTrackFilters = createAction(
+  '[api] add track filters',
+  props<{trackFilters: {identifier: string}[]}>(),
+);
 export const inputTyped = createAction(
   '[api] set input typed',
   props<{inputTyped: string | null}>(),
 );
-export const removeActivities = createAction(
-  '[api] remove activities',
-  props<{activities: string[]}>(),
+export const removeTrackFilters = createAction(
+  '[api] remove track filters',
+  props<{trackFilters: {identifier: string}[]}>(),
 );
-export const resetActivities = createAction('[api] reset activities');
+export const resetTrackFilters = createAction('[api] reset track filters');
 export const setLayer = createAction('[api] set Layer', props<{layer: any | null}>());
 export const toggleTrackFilter = createAction(
   '[api] toggle track filter',
-  props<{filterIdentifier: string}>(),
+  props<{filter: Filter}>(),
+);
+export const updateTrackFilter = createAction(
+  '[api] update track filter',
+  props<{filter: Filter}>(),
 );
 
 export const loadPois = createAction('[api] pois: Load pois');

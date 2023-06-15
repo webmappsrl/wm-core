@@ -14,28 +14,19 @@ export const queryApi = createSelector(elasticSearchFeature, (state: SearchRespo
 export const apiElasticState = createSelector(elasticSearchFeature, state => {
   return {
     layer: state.layer,
-    activities: state.activities,
+    filterTracks: state.filterTracks,
     inputTyped: state.inputTyped,
     loading: true,
   };
 });
-export const apiTrackFilterIdentifier = createSelector(apiElasticState, state => {
-  return state.activities;
+export const apiFilterTracks = createSelector(apiElasticState, state => {
+  return state.filterTracks;
+});
+export const apiTrackFilterIdentifier = createSelector(apiFilterTracks, filterTracks => {
+  return filterTracks.map(f => f.identifier);
 });
 export const apiSearchInputTyped = createSelector(apiElasticState, state => state.inputTyped);
-export const apiTrackFilter = createSelector(
-  apiTrackFilterIdentifier,
-  confFILTERS,
-  (activities, filters) => {
-    const activityFilter =
-      filters != null && filters['activity'] != null ? filters['activity'] : undefined;
-    if (activities.length > 0 && activityFilter != null) {
-      let opt = activityFilter.options;
-      return activities.map(a => opt.filter(o => o.identifier === a)[0]);
-    }
-    return activities;
-  },
-);
+
 export const apiElasticStateLayer = createSelector(apiElasticState, state => {
   return state.layer;
 });
@@ -46,19 +37,12 @@ export const confFILTERSTRACKSOPTIONS = createSelector(
   confFILTERSTRACKS,
   filterTrack => filterTrack.options ?? [],
 );
-export const apiTrackFilters = createSelector(
-  apiTrackFilterIdentifier,
-  confFILTERSTRACKSOPTIONS,
-  (selectedFilterIdentifiers, trackFilter) => {
-    return trackFilter.filter(t => selectedFilterIdentifiers.indexOf(t.identifier) >= 0);
-  },
-);
 
 export const showPoisResult = createSelector(elasticSearchFeature, state => state.where != null);
 export const showResult = createSelector(elasticSearchFeature, state => {
   return (
     state.layer != null ||
-    state.activities.length > 0 ||
+    state.filterTracks.length > 0 ||
     (state.poisSelectedFilterIdentifiers && state.poisSelectedFilterIdentifiers.length > 0) ||
     (state.inputTyped && state.inputTyped != '')
   );
@@ -158,11 +142,11 @@ export const stats = createSelector(
   poisFilteredFeatureCollectionByInputTypeStats => poisFilteredFeatureCollectionByInputTypeStats,
 );
 export const hasActiveFilters = createSelector(
-  apiTrackFilters,
+  apiFilterTracks,
   poiFilters,
   showPoisResult,
-  (apiTrackFilters, poiFilters, showPoisResult) => {
-    return apiTrackFilters.length > 0 || poiFilters.length > 0 || showPoisResult;
+  (apiFilterTracks, poiFilters, showPoisResult) => {
+    return apiFilterTracks.length > 0 || poiFilters.length > 0 || showPoisResult;
   },
 );
 

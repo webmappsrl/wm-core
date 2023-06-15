@@ -6,8 +6,8 @@ import {SearchResponse} from 'elasticsearch';
 import {FeatureCollection} from 'geojson';
 import {Observable} from 'rxjs';
 import {environment} from 'src/environments/environment';
-// const baseUrl = 'https://elastic-passtrough.herokuapp.com/search';
-const baseUrl = 'https://elastic-json.webmapp.it/search';
+const baseUrl = 'http://localhost:3000/search';
+// const baseUrl = 'https://elastic-json.webmapp.it/search';
 @Injectable({
   providedIn: 'root',
 })
@@ -56,7 +56,7 @@ export class ApiService {
   async getQuery(options: {
     inputTyped?: string;
     layer?: any;
-    activities: string[];
+    filterTracks: Filter[];
   }): Promise<SearchResponse<IELASTIC>> {
     let query = this._baseUrl;
 
@@ -68,13 +68,31 @@ export class ApiService {
       query += `&layer=${options.layer.id}`;
     }
 
-    if (options.activities != null && options.activities.length > 0) {
-      query += `&activities=${options.activities.toString()}`;
+    if (options.filterTracks != null && options.filterTracks.length > 0) {
+      const paramString = options.filterTracks.map(filterTrack => {
+        if (filterTrack.type === 'slider') {
+          const sliderFilter = filterTrack as unknown as SliderFilter;
+          return JSON.stringify({
+            identifier: sliderFilter.identifier,
+            min: sliderFilter.lower,
+            max: sliderFilter.upper,
+          });
+        } else {
+          return JSON.stringify({
+            identifier: filterTrack.identifier,
+            taxonomy: filterTrack.taxonomy,
+          });
+        }
+      });
+
+      query += `&filters=[${paramString.toString()}]`;
     }
     if (this._queryDic[query] == null) {
       console.log(query);
       const value = await this._http.request('get', query).toPromise();
       this._queryDic[query] = value;
+    } else {
+      console.log(`stored: ${query}`);
     }
     return this._queryDic[query];
   }

@@ -402,9 +402,31 @@ interface IWmImage {
 }
 
 interface Filter {
-  color?: string;
-  icon: string;
   identifier: string;
-  name: any;
+  name: iLocalString;
   taxonomy?: string;
+  type: 'select' | 'slider';
+  lower?: number;
+  upper?: number;
+}
+interface SelectFilterOption {
+  color?: string;
+  icon?: string;
+  id?: number;
+  identifier: string;
+  name: iLocalString;
+  taxonomy?: string;
+}
+
+interface SelectFilter extends Filter {
+  options: selectFilterOption[];
+  type: 'select';
+}
+
+interface SliderFilter extends Filter {
+  indentifier: string;
+  max: number;
+  min: number;
+  steps: number;
+  type: 'slider';
 }

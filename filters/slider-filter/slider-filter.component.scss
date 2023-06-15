@@ -1,0 +1,48 @@
+wm-slider-filter {
+  ion-range::part(tick) {
+    background: #a2d2ff;
+  }
+
+  ion-range::part(tick-active) {
+    background: #bde0fe;
+  }
+
+  ion-range::part(pin) {
+    color: #fff;
+
+    transform: scale(1.01);
+
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px 8px;
+    gap: 10px;
+
+    position: absolute;
+    width: 31px;
+    height: 22px;
+    left: calc(50% - 31px / 2 - 0.5px);
+    top: -14px;
+
+    background: #4d4d4d;
+    border-radius: 4px;
+  }
+
+  ion-range::part(pin)::before {
+    content: none;
+  }
+
+  ion-range::part(knob) {
+    background: var(--wm-color-primary);
+  }
+
+  ion-range::part(bar) {
+    background: #f4f4f4;
+  }
+
+  ion-range::part(bar-active) {
+    background: var(--wm-color-primary);
+  }
+}

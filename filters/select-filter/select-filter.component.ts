@@ -8,18 +8,12 @@ import {FiltersComponent} from '../../filters/filters.component';
   encapsulation: ViewEncapsulation.None,
 })
 export class SelectFilterComponent {
-  @Input() filter: any;
-  @Input() filterName: any;
+  @Input() filter: SelectFilter;
+  @Input() filterName: string;
 
   constructor(@Host() public parent: FiltersComponent) {}
 
-  addFilter(filterType: string, filter: any): void {
-    if (filterType === 'activity') {
-      this.parent.filterTracksEvt.emit(filter.identifier);
-    }
-  }
-
-  addPoiFilter(filter: Filter): void {
+  addPoiFilter(filter: SelectFilterOption): void {
     this.parent.addPoisFilter(filter);
   }
 }

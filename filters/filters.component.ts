@@ -24,38 +24,42 @@ export class FiltersComponent {
   }
 
   @Input() confFilters: {[key: string]: any};
-  @Input() poiFilters: Filter[];
+  @Input() poiFilters: SelectFilterOption[];
   @Input() pois: FeatureCollection;
   @Input() poisStats: {
     [name: string]: {[identifier: string]: any};
   } = {};
   @Input() trackFilters: any[];
   @Output() filterPoisEvt: EventEmitter<string> = new EventEmitter<string>();
-  @Output() filterTracksEvt: EventEmitter<string> = new EventEmitter<string>();
-  @Output() removefilterPoiEvt: EventEmitter<string> = new EventEmitter<string>();
-  @Output() removefilterTracksEvt: EventEmitter<string> = new EventEmitter<string>();
+  @Output() filterTracksEvt: EventEmitter<SelectFilterOption | SliderFilter> = new EventEmitter<
+    SelectFilterOption | SliderFilter
+  >();
+  @Output() removefilterPoiEvt: EventEmitter<SelectFilterOption | SliderFilter> = new EventEmitter<
+    SelectFilterOption | SliderFilter
+  >();
+  @Output() removefilterTracksEvt: EventEmitter<Filter> = new EventEmitter<Filter>();
   @Output() resetFiltersEvt: EventEmitter<void> = new EventEmitter<void>();
 
   toggle$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  addPoisFilter(filter: Filter): void {
+  addPoisFilter(filter: SelectFilterOption): void {
     this.filterPoisEvt.emit(filter.identifier);
   }
 
-  addTrackFilter(filter: Filter): void {
-    this.filterTracksEvt.emit(filter.identifier);
+  addTrackFilter(filter: SelectFilterOption, taxonomy?: string): void {
+    this.filterTracksEvt.emit({...filter, taxonomy});
   }
 
   filterBtnClick(): void {
     this.toggle$.next(!this.toggle$.value);
   }
 
-  removePoiFilter(filter: Filter): void {
-    this.removefilterPoiEvt.emit(filter.identifier);
+  removePoiFilter(filter: SelectFilterOption): void {
+    this.removefilterPoiEvt.emit(filter);
   }
 
-  removeTrackFilter(filter): void {
-    this.removefilterTracksEvt.emit(filter.identifier);
+  removeTrackFilter(filter: Filter): void {
+    this.removefilterTracksEvt.emit(filter);
   }
 
   resetFilters(): void {

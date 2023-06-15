@@ -42,7 +42,7 @@
           <ion-chip
             class="wm-chip"
             outline="true"
-            (click)="parent.addTrackFilter(option)"
+            (click)="parent.addTrackFilter(option,filter.taxonomy)"
             color="{{option.identifier|isSelected:(parent.trackFilters)}}"
           >
             <ion-label>{{option.name|wmtrans}}</ion-label>

@@ -20,7 +20,7 @@ export class StatusFilterComponent {
   @Input() trackFilters: any[];
   @Output() removeLayerEVT: EventEmitter<any> = new EventEmitter();
   @Output() removePoiFilterEVT: EventEmitter<string> = new EventEmitter();
-  @Output() removeTrackFilterEVT: EventEmitter<string> = new EventEmitter();
+  @Output() removeTrackFilterEVT: EventEmitter<Filter> = new EventEmitter();
   @Output() resetFiltersEVT: EventEmitter<void> = new EventEmitter();
 
   constructor() {}

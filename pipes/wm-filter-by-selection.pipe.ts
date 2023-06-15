@@ -5,7 +5,7 @@ import {Pipe, PipeTransform} from '@angular/core';
   pure: false,
 })
 export class WmOrderedBySelection implements PipeTransform {
-  transform(items: any[], filters: Filter[]): any {
+  transform(items: SelectFilterOption[], filters: SelectFilterOption[]): SelectFilterOption[] {
     const filterIdentifiers = filters.map(f => f.identifier);
     if (filterIdentifiers.length > 0) {
       return [

@@ -3,7 +3,7 @@ import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {from, of} from 'rxjs';
 import {catchError, map, switchMap, withLatestFrom} from 'rxjs/operators';
 import {
-  addActivities,
+  addTrackFilters,
   inputTyped,
   loadPois,
   loadPoisFail,
@@ -11,7 +11,7 @@ import {
   query,
   queryApiFail,
   queryApiSuccess,
-  removeActivities,
+  removeTrackFilters,
   setLayer,
 } from './api.actions';
 import {ApiService} from './api.service';
@@ -24,14 +24,14 @@ import {apiTrackFilterIdentifier} from './api.selector';
   providedIn: 'root',
 })
 export class ApiEffects {
-  addActivitiesApi$ = createEffect(() =>
+  addFilterTrackApi$ = createEffect(() =>
     this._store.select(apiTrackFilterIdentifier).pipe(
       withLatestFrom(this._store),
       switchMap(([trackFilterIdentifier, state]) => {
         const api = state['query'];
         return of({
           type: '[api] Query',
-          ...{activities: trackFilterIdentifier},
+          ...{filterTracks: trackFilterIdentifier},
           ...{layer: api.layer},
           ...{inputTyped: api.inputTyped},
         });
@@ -65,12 +65,12 @@ export class ApiEffects {
       withLatestFrom(this._store),
       switchMap(([action, state]) => {
         const api = state['query'];
-        if (api.activities.length === 0 && api.layer == null && api.inputTyped == null) {
+        if (api.filterTracks.length === 0 && api.layer == null && api.inputTyped == null) {
           return of(queryApiFail());
         }
         const newAction = {
           ...action,
-          ...{activities: api.activities},
+          ...{filterTracks: api.filterTracks},
           ...{layer: api.layer},
           ...{inputTyped: api.inputTyped},
         };
@@ -81,9 +81,9 @@ export class ApiEffects {
       }),
     ),
   );
-  removeActivitiesApi$ = createEffect(() =>
+  removeTrackFiltersApi$ = createEffect(() =>
     this._actions$.pipe(
-      ofType(removeActivities),
+      ofType(removeTrackFilters),
       switchMap(_ => {
         return of({
           type: '[api] Query',

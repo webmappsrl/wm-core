@@ -1,5 +1,4 @@
-import {featureCollection} from './api.selector';
-import {Feature, FeatureCollection, Geometry} from 'geojson';
+import {FeatureCollection} from 'geojson';
 import {createReducer, on} from '@ngrx/store';
 import {
   applyWhere,
@@ -7,20 +6,20 @@ import {
   loadPoisSuccess,
   queryApiFail,
   queryApiSuccess,
-  resetActivities,
+  resetTrackFilters,
   resetPoiFilters,
   setLayer,
   togglePoiFilter,
   toggleTrackFilter,
+  updateTrackFilter,
 } from './api.actions';
 
 export const searchKey = 'search';
 export interface Api {
-  activities: string[];
+  filterTracks: Filter[];
   loading: boolean;
   layer?: any;
   inputTyped?: string;
-  selectedFilterIdentifiers?: string[];
   poisInitFeatureCollection?: FeatureCollection;
   poisSelectedFilterIdentifiers?: string[];
   filterWhere?: string[];
@@ -30,11 +29,10 @@ export interface ApiRootState {
 }
 
 const initialConfState: Api = {
-  activities: [],
+  filterTracks: [],
   layer: null,
   loading: true,
   inputTyped: null,
-  selectedFilterIdentifiers: null,
   poisInitFeatureCollection: null,
   poisSelectedFilterIdentifiers: null,
   filterWhere: [],
@@ -50,11 +48,10 @@ export const elasticQueryReducer = createReducer(
     };
     return newState;
   }),
-  on(resetActivities, (state, {}) => {
+  on(resetTrackFilters, (state, {}) => {
     const newState: Api = {
       ...state,
-      activities: [],
-      selectedFilterIdentifiers: [],
+      filterTracks: [],
       loading: true,
     };
     return newState;
@@ -88,19 +85,31 @@ export const elasticQueryReducer = createReducer(
     const newState: Api = {...state, loading: false};
     return newState;
   }),
-  on(toggleTrackFilter, (state, {filterIdentifier}) => {
-    let newSelectedFilterIdentifiers = [...(state.selectedFilterIdentifiers ?? [])];
-    if (newSelectedFilterIdentifiers.indexOf(filterIdentifier) >= 0) {
-      newSelectedFilterIdentifiers = state.selectedFilterIdentifiers.filter(
-        f => f != filterIdentifier,
-      );
+  on(toggleTrackFilter, (state, {filter}) => {
+    let newSelectedFilters = [...(state.filterTracks ?? [])];
+    if (newSelectedFilters.map(f => f.identifier).indexOf(filter.identifier) >= 0) {
+      newSelectedFilters = state.filterTracks.filter(f => f.identifier != filter.identifier);
     } else {
-      newSelectedFilterIdentifiers.push(filterIdentifier);
+      newSelectedFilters.push(filter);
     }
     const newState: Api = {
       ...state,
-      activities: newSelectedFilterIdentifiers,
-      selectedFilterIdentifiers: newSelectedFilterIdentifiers,
+      filterTracks: newSelectedFilters,
+      loading: true,
+    };
+    return newState;
+  }),
+  on(updateTrackFilter, (state, {filter}) => {
+    let newSelectedFilters = [...(state.filterTracks ?? [])];
+    if (newSelectedFilters.map(f => f.identifier).indexOf(filter.identifier) >= 0) {
+      newSelectedFilters = state.filterTracks.filter(f => f.identifier != filter.identifier);
+      newSelectedFilters.push(filter);
+    } else {
+      newSelectedFilters.push(filter);
+    }
+    const newState: Api = {
+      ...state,
+      filterTracks: newSelectedFilters,
       loading: true,
     };
     return newState;

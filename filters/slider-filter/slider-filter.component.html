@@ -1,0 +1,21 @@
+<ion-accordion [value]="filterName">
+  <ion-item slot="header" color="light">
+    <ion-label> {{filter.name|wmtrans}} {{currentValue|wmmeasure}}</ion-label>
+  </ion-item>
+  <div class="ion-padding" slot="content">
+    <ion-range
+      [dualKnobs]="true"
+      [ticks]="true"
+      [snaps]="true"
+      [value]="currentValue"
+      [step]="filter.steps"
+      [min]="filter.min"
+      [max]="filter.max"
+      [pin]="true"
+      (ionKnobMoveEnd)="onIonChange($event)"
+    >
+      <ion-label slot="start">{{filter.min}}</ion-label>
+      <ion-label slot="end">{{filter.max}}</ion-label>
+    </ion-range>
+  </div>
+</ion-accordion>
