@@ -45,7 +45,7 @@
           <ng-container *ngIf="f.icon != null">
             <div appBuildSvg class="wm-filter-icon" [svg]="f.icon"></div>
           </ng-container>
-          <ion-label>{{f.name|wmtrans}}{{f|wmmeasure}}</ion-label>
+          <ion-label>{{f.name|wmtrans}}{{f|wmUnits}}</ion-label>
           <span>X</span>
         </ion-chip>
       </ng-container>

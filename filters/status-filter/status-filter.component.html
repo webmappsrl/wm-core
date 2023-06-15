@@ -20,7 +20,7 @@
             <ng-container *ngIf="f.icon != null">
               <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
             </ng-container>
-            <ion-label>{{f.name|wmtrans}} {{f|wmmeasure}}</ion-label>
+            <ion-label>{{f.name|wmtrans}} {{f|wmUnits}}</ion-label>
           </ion-chip>
         </ng-container>
 

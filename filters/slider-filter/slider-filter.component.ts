@@ -18,7 +18,7 @@ export class SliderFilterComponent implements OnDestroy {
   @Input() filter: SliderFilter;
   @Input() filterName: any;
 
-  currentValue: RangeValue = null;
+  currentValue: SliderFilter = null;
   resetFilterSub: Subscription = Subscription.EMPTY;
 
   constructor(@Host() public parent: FiltersComponent) {
@@ -36,7 +36,7 @@ export class SliderFilterComponent implements OnDestroy {
   }
 
   onIonChange(ev: Event): void {
-    this.currentValue = (ev as RangeCustomEvent).detail.value as RangeValue;
+    this.currentValue = (ev as RangeCustomEvent).detail.value as SliderFilter;
     if (typeof this.currentValue === 'number') {
       this.parent.filterTracksEvt.emit({...this.filter, ...{min: this.currentValue}});
     } else {

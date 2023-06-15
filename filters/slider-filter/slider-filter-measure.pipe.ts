@@ -2,7 +2,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {RangeValue} from './slider-filter.component';
 
 @Pipe({
-  name: 'wmmeasure',
+  name: 'wmUnits',
   pure: false,
 })
 export class SliderFilterMeasurePipe implements PipeTransform {

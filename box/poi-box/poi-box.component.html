@@ -1,6 +1,6 @@
 <ion-card class="wm-box" (click)="clickEVT.emit()">
   <div *ngIf="data.feature_image as img">
-    <wm-img [src]="img.url" size="225x100"></wm-img>
+    <wm-img [src]="img.thumbnail" size="225x100"></wm-img>
   </div>
   <div class="wm-box-name">{{data.name|wmtrans}}</div>
 </ion-card>
