@@ -14,6 +14,6 @@ export class SelectFilterComponent {
   constructor(@Host() public parent: FiltersComponent) {}
 
   addPoiFilter(filter: SelectFilterOption): void {
-    this.parent.addPoisFilter(filter);
+    this.parent.addPoisFilter({...filter, ...{type: 'select'}});
   }
 }

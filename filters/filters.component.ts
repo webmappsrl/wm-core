@@ -30,7 +30,7 @@ export class FiltersComponent {
     [name: string]: {[identifier: string]: any};
   } = {};
   @Input() trackFilters: any[];
-  @Output() filterPoisEvt: EventEmitter<string> = new EventEmitter<string>();
+  @Output() filterPoisEvt: EventEmitter<Filter> = new EventEmitter<Filter>();
   @Output() filterTracksEvt: EventEmitter<SelectFilterOption | SliderFilter> = new EventEmitter<
     SelectFilterOption | SliderFilter
   >();
@@ -42,8 +42,8 @@ export class FiltersComponent {
 
   toggle$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  addPoisFilter(filter: SelectFilterOption): void {
-    this.filterPoisEvt.emit(filter.identifier);
+  addPoisFilter(filter: any): void {
+    this.filterPoisEvt.emit(filter);
   }
 
   addTrackFilter(filter: SelectFilterOption, taxonomy?: string): void {
