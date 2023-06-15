@@ -6,8 +6,8 @@ import {SearchResponse} from 'elasticsearch';
 import {FeatureCollection} from 'geojson';
 import {Observable} from 'rxjs';
 import {environment} from 'src/environments/environment';
-const baseUrl = 'http://localhost:3000/search';
-// const baseUrl = 'https://elastic-json.webmapp.it/search';
+// const baseUrl = 'http://localhost:3000/search';
+const baseUrl = 'https://elastic-json.webmapp.it/search';
 @Injectable({
   providedIn: 'root',
 })
