@@ -3,7 +3,12 @@ import {FeatureCollection} from 'geojson';
 
 export const query = createAction(
   '[api] Query',
-  props<{layer?: number; inputTyped?: string; filterTracks?: {identifier: string}[]}>(),
+  props<{
+    init?: boolean;
+    layer?: number;
+    inputTyped?: string;
+    filterTracks?: {identifier: string}[];
+  }>(),
 );
 export const queryApiSuccess = createAction('[api] Search Success', props<{search: IELASTIC}>());
 export const queryApiFail = createAction('[api] Search Fail');

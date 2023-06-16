@@ -30,6 +30,9 @@ export class FiltersComponent {
     [name: string]: {[identifier: string]: any};
   } = {};
   @Input() trackFilters: any[];
+  @Input() trackStats: {
+    [name: string]: {[identifier: string]: any};
+  } = {};
   @Output() filterPoisEvt: EventEmitter<SelectFilterOption | SliderFilter | Filter> =
     new EventEmitter<SelectFilterOption | SliderFilter | Filter>();
   @Output() filterTracksEvt: EventEmitter<SelectFilterOption | SliderFilter | Filter> =

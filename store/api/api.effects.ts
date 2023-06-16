@@ -66,6 +66,12 @@ export class ApiEffects {
       withLatestFrom(this._store),
       switchMap(([action, state]) => {
         const api = state['query'];
+        if (action.init) {
+          return from(this._apiSVC.getQuery({})).pipe(
+            map((search: SearchResponse<any>) => queryApiSuccess({search})),
+            catchError(e => of(queryApiFail())),
+          );
+        }
         if (api.filterTracks.length === 0 && api.layer == null && api.inputTyped == null) {
           return of(queryApiFail());
         }

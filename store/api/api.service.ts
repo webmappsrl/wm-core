@@ -56,7 +56,7 @@ export class ApiService {
   async getQuery(options: {
     inputTyped?: string;
     layer?: any;
-    filterTracks: Filter[];
+    filterTracks?: Filter[];
   }): Promise<SearchResponse<IELASTIC>> {
     let query = this._baseUrl;
 

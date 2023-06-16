@@ -1,16 +1,21 @@
 import {Feature, FeatureCollection, Geometry} from 'geojson';
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {SearchResponse} from 'elasticsearch';
-import {
-  confFILTERS,
-  confFILTERSTRACKS,
-  confPOISFilter,
-  confPoisIcons,
-} from './../conf/conf.selector';
+import {confFILTERSTRACKS, confPOISFilter, confPoisIcons} from './../conf/conf.selector';
 export const elasticSearchFeature = createFeatureSelector<IELASTIC>('query');
 export const queryApi = createSelector(elasticSearchFeature, (state: SearchResponse<IHIT>) =>
   state != null && state.hits && state.hits.hits ? state.hits.hits.map(hit => hit._source) : [],
 );
+export const countApi = createSelector(queryApi, (queryApi: any[]) => queryApi.length ?? 0);
+export const statsApi = createSelector(
+  elasticSearchFeature,
+  (state: SearchResponse<IHIT>) =>
+    state != null &&
+    state.aggregations &&
+    state.aggregations.activities_count &&
+    state.aggregations.activities_count.buckets,
+);
+
 export const apiElasticState = createSelector(elasticSearchFeature, state => {
   return {
     layer: state.layer,
@@ -124,6 +129,16 @@ export const featureCollectionCount = createSelector(
 export const poisInitStats = createSelector(poisInitFeatureCollection, poisInitFeatureCollection =>
   _buildStats(poisInitFeatureCollection.features),
 );
+export const trackStats = createSelector(statsApi, countApi, (_statsApi, count) => {
+  const stats: {[identifier: string]: any} = {};
+  stats['count'] = count;
+  if (_statsApi) {
+    _statsApi.forEach(element => {
+      stats[element.key] = element.doc_count;
+    });
+  }
+  return stats;
+});
 export const poisWhereStats = createSelector(
   poisWhereFeatureCollection,
   poisWhereFeatureCollection => _buildStats(poisWhereFeatureCollection.features),

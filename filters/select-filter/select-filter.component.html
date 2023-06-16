@@ -32,7 +32,7 @@
 <ng-template #track>
   <ion-accordion [value]="filterName">
     <ion-item slot="header" color="light">
-      <ion-label> {{filter.name|wmtrans}}</ion-label>
+      <ion-label> {{filter.name|wmtrans}} {{parent.trackStats.count}}</ion-label>
     </ion-item>
     <div class="ion-padding" slot="content">
       <div class="chip-list">
@@ -46,6 +46,9 @@
             color="{{option.identifier|isSelected:(parent.trackFilters)}}"
           >
             <ion-label>{{option.name|wmtrans}}</ion-label>
+            <span class="wm-filters-count">
+              {{ option.identifier|wmhowmany:parent.trackStats}}
+            </span>
           </ion-chip>
         </ng-container>
       </div>
