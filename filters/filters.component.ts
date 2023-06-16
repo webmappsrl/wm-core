@@ -80,8 +80,8 @@ export class FiltersComponent implements OnChanges {
         diff
           .filter(d => d.type && d.type === 'slider')
           .forEach(filter => {
-            this.removefilterTracksEvt.emit(filter);
-            this.removefilterTracksEvt.emit(filter);
+            //   this.removefilterTracksEvt.emit(filter);
+            //   this.removefilterTracksEvt.emit(filter);
           });
       }
     });

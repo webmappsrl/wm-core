@@ -11,6 +11,6 @@ export class WmHowMany implements PipeTransform {
       [name: string]: {[identifier: string]: any};
     },
   ): number {
-    return +stats[identifier];
+    return +stats[identifier] || 0;
   }
 }

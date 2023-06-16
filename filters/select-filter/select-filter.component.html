@@ -1,7 +1,7 @@
 <ng-container *ngIf="filterName === 'poi_types';else track">
   <ion-accordion [value]="filterName">
     <ion-item slot="header" color="light">
-      <ion-label> {{filter.name|wmtrans}} {{parent.pois.features.length}}</ion-label>
+      <ion-label> {{filter.name|wmtrans}} {{parent?.pois?.features?.length}}</ion-label>
     </ion-item>
     <div class="ion-padding" slot="content">
       <div class="chip-list">
@@ -31,7 +31,7 @@
 <ng-template #track>
   <ion-accordion [value]="filterName">
     <ion-item slot="header" color="light">
-      <ion-label> {{filter.name|wmtrans}} {{parent.trackStats.count}}</ion-label>
+      <ion-label> {{filter.name|wmtrans}} {{parent.trackStats[filter.taxonomy]}}</ion-label>
     </ion-item>
     <div class="ion-padding" slot="content">
       <div class="chip-list">
@@ -42,10 +42,11 @@
             outline="true"
             (click)="parent.addTrackFilter(option,filter.taxonomy)"
             color="{{option.identifier|isSelected:(parent.trackFilters)}}"
+            *ngIf="option.identifier|wmhowmany:parent.trackStats as count"
           >
             <ion-label>{{option.name|wmtrans}}</ion-label>
             <span class="wm-filters-count">
-              {{ option.identifier|wmhowmany:parent.trackStats}}
+              {{ count}}
             </span>
           </ion-chip>
         </ng-container>

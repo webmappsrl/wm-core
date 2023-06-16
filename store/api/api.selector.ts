@@ -7,14 +7,25 @@ export const queryApi = createSelector(elasticSearchFeature, (state: SearchRespo
   state != null && state.hits && state.hits.hits ? state.hits.hits.map(hit => hit._source) : [],
 );
 export const countApi = createSelector(queryApi, (queryApi: any[]) => queryApi.length ?? 0);
-export const statsApi = createSelector(
-  elasticSearchFeature,
-  (state: SearchResponse<IHIT>) =>
-    state != null &&
-    state.aggregations &&
-    state.aggregations.activities_count &&
-    state.aggregations.activities_count.buckets,
-);
+export const statsApi = createSelector(elasticSearchFeature, (state: SearchResponse<IHIT>) => {
+  if (state != null && state.aggregations) {
+    let res = [];
+    const countKeys = Object.keys(state.aggregations).filter(k => k.indexOf('_count') < 0);
+    countKeys.forEach(countKey => {
+      res = [
+        ...res,
+        ...state.aggregations[countKey].count.buckets,
+        ...[
+          {
+            key: countKey,
+            doc_count: state.aggregations.themes.doc_count,
+          },
+        ],
+      ];
+    });
+    return res;
+  }
+});
 
 export const apiElasticState = createSelector(elasticSearchFeature, state => {
   return {
@@ -131,7 +142,6 @@ export const poisInitStats = createSelector(poisInitFeatureCollection, poisInitF
 );
 export const trackStats = createSelector(statsApi, countApi, (_statsApi, count) => {
   const stats: {[identifier: string]: any} = {};
-  stats['count'] = count;
   if (_statsApi) {
     _statsApi.forEach(element => {
       stats[element.key] = element.doc_count;
