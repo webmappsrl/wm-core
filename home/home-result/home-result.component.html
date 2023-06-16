@@ -6,17 +6,19 @@
         <ion-spinner name="dots"></ion-spinner
       ></ng-container>
       <ng-template #count>
-        <ng-container
-          *ngIf="tracks"
-          >{{!loadingTracks && tracks.length>0?tracks.length:''}}</ng-container
-        ></ng-template
-      >
+        <span *ngIf="tracks">
+          {{!loadingTracks && tracks.length>0?tracks.length:''}}
+        </span>
+      </ng-template>
     </ion-label>
   </ion-segment-button>
   <ion-segment-button value="pois" *ngIf="pois != null">
     <ion-label
-      >{{'Punti di interesse'|wmtrans}} <ng-container>{{pois?.length}}</ng-container></ion-label
-    >
+      >{{'Punti di interesse'|wmtrans}}
+      <span>
+        {{pois?.length}}
+      </span>
+    </ion-label>
   </ion-segment-button>
 </ion-segment>
 <ion-content style="--offset-top:56px; --offset-bottom:56px;" class="wm-home-content">

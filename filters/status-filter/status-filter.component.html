@@ -1,11 +1,17 @@
 <ion-grid>
   <ion-row>
-    <ion-col>{{'Filtri Attivi'|wmtrans}}</ion-col>
-    <ion-col></ion-col>
+    <ion-col
+      >{{'Filtri attivi'|wmtrans}}
+      <span
+        *ngIf="poiFilters.length + trackFilters.length"
+        >{{poiFilters.length + trackFilters.length}}</span
+      >
+    </ion-col>
     <ion-col size="auto">
       <ion-chip
         [outline]="true"
         (click)="resetFiltersEVT.emit()"
+        class="wm-reset-filters"
         >{{'Torna alla home'|wmtrans}}</ion-chip
       >
     </ion-col>
@@ -21,9 +27,9 @@
               <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
             </ng-container>
             <ion-label>{{f.name|wmtrans}} {{f|wmUnits}}</ion-label>
+            <ion-icon name="close"></ion-icon>
           </ion-chip>
         </ng-container>
-
         <ng-container *ngFor="let f of poiFilters">
           <ion-chip (click)="removePoiFilterEVT.emit(f.identifier)">
             <ng-container *ngIf="f.icon != null;else imgT">
@@ -33,6 +39,7 @@
               <img [src]="f.identifier" />
             </ng-template>
             <ion-label>{{f.name|wmtrans}}</ion-label>
+            <ion-icon name="close"></ion-icon>
           </ion-chip>
         </ng-container>
       </ion-col>

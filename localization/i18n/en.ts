@@ -51,4 +51,5 @@ export const wmEN = {
   'NCC': 'NCC',
   'Filtri attivi': 'Active filters',
   'Reset filtri': 'Reset filters',
+  'Torna alla home': 'Back to home',
 };

@@ -37,7 +37,7 @@
             <img [src]="f.identifier" />
           </ng-template>
           <ion-label class="wm-label">{{f.name|wmtrans}}</ion-label>
-          <span>X</span>
+          <ion-icon name="close"></ion-icon>
         </ion-chip>
       </ng-container>
       <ng-container *ngFor="let f of trackFilters">
@@ -46,7 +46,7 @@
             <div appBuildSvg class="wm-filter-icon" [svg]="f.icon"></div>
           </ng-container>
           <ion-label>{{f.name|wmtrans}}{{f|wmUnits}}</ion-label>
-          <span>X</span>
+          <ion-icon name="close"></ion-icon>
         </ion-chip>
       </ng-container>
     </ion-item>
