@@ -14,7 +14,6 @@ import {BaseBoxComponent} from '../box';
   selector: 'wm-slider-box',
   templateUrl: './slider-box.component.html',
   styleUrls: ['./slider-box.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
 export class SliderBoxComponent extends BaseBoxComponent<IBASEBOX> implements OnInit {

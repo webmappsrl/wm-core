@@ -3,7 +3,10 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   Output,
+  SimpleChange,
+  SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
 import {FeatureCollection} from 'geojson';
@@ -16,7 +19,7 @@ import {BehaviorSubject} from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class FiltersComponent {
+export class FiltersComponent implements OnChanges {
   @Input() set wmFiltersClose(selector: string) {
     if (selector != 'wm-filters') {
       this.toggle$.next(false);
@@ -66,5 +69,21 @@ export class FiltersComponent {
 
   resetFilters(): void {
     this.resetFiltersEvt.emit();
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    //TODO: workaround per eliminare un filtro slider dalla home,
+    //approfondire perche si debba cancellarlo due volte migliorare il codice evitando questo changes
+    Object.keys(changes).forEach(key => {
+      const change: SimpleChange = changes[key];
+      if (key === 'trackFilters') {
+        const diff = change.previousValue?.filter(x => !change.currentValue.includes(x)) || [];
+        diff
+          .filter(d => d.type && d.type === 'slider')
+          .forEach(filter => {
+            this.removefilterTracksEvt.emit(filter);
+            this.removefilterTracksEvt.emit(filter);
+          });
+      }
+    });
   }
 }
