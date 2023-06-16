@@ -1,4 +1,4 @@
-<ng-container *ngIf="filterName === 'poi_type';else track">
+<ng-container *ngIf="filterName === 'poi_types';else track">
   <ion-accordion [value]="filterName">
     <ion-item slot="header" color="light">
       <ion-label> {{filter.name|wmtrans}} {{parent.pois.features.length}}</ion-label>

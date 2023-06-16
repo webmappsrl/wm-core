@@ -424,7 +424,7 @@ interface SelectFilter extends Filter {
 }
 
 interface SliderFilter extends Filter {
-  indentifier: string;
+  identifier: string;
   max: number;
   min: number;
   units: string;

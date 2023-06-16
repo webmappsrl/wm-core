@@ -23,5 +23,10 @@ export class WmHomeComponent {
   @Output() slugBoxEVT: EventEmitter<[string, number]> = new EventEmitter();
   @Output() tracksBoxEVT: EventEmitter<number> = new EventEmitter();
 
+  sendHorizontalScrollBoxEVT(identifier: string, box: IHORIZONTALSCROLLBOX): void {
+    const evt = {identifier, taxonomy: box.item_type};
+    this.horizontalScrollBoxEVT.emit(evt);
+  }
+
   constructor() {}
 }

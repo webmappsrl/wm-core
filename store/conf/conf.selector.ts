@@ -25,7 +25,7 @@ export const confFILTERS = createSelector(confMAP, map => {
   });
   return filters;
 });
-export const confFILTERSTRACKS = createSelector(confFILTERS, filters => filters?.activity ?? []);
+export const confFILTERSTRACKS = createSelector(confFILTERS, filters => filters?.activities ?? []);
 export const confMAPLAYERS = createSelector(confMAP, map => map.layers ?? undefined);
 export const confPOISFilter = createSelector(confMAP, map => {
   if (map != null && map.pois != null && map.pois.taxonomies != null) {

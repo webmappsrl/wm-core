@@ -113,8 +113,11 @@ export class ApiEffects {
       ofType(toggleTrackFilterByIdentifier),
       withLatestFrom(this._store),
       switchMap(([action, state]) => {
-        const filters = state['conf']['MAP'].filters.activity.options;
-        let filter = filters.filter(f => f.identifier === action.filterIdentifier);
+        let filters = [];
+        try {
+          filters = state['conf']['MAP'].filters[action.taxonomy].options;
+        } catch (_) {}
+        let filter = filters.filter(f => f.identifier === action.identifier);
         if (filter.length > 0) {
           return of({
             type: '[api] toggle track filter',
