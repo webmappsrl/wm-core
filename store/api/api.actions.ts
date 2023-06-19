@@ -34,6 +34,7 @@ export const toggleTrackFilterByIdentifier = createAction(
   '[api] toggle track filter by identifier',
   props<{identifier: string; taxonomy?: string}>(),
 );
+export const goToHome = createAction('[api] go to home');
 export const updateTrackFilter = createAction(
   '[api] update track filter',
   props<{filter: Filter}>(),

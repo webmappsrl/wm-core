@@ -12,6 +12,7 @@ import {
   togglePoiFilter,
   toggleTrackFilter,
   updateTrackFilter,
+  goToHome,
 } from './api.actions';
 
 export const searchKey = 'search';
@@ -23,6 +24,7 @@ export interface Api {
   poisInitFeatureCollection?: FeatureCollection;
   poisSelectedFilterIdentifiers?: string[];
   filterWhere?: string[];
+  goToHome: boolean;
 }
 export interface ApiRootState {
   [searchKey]: Api;
@@ -36,6 +38,7 @@ const initialConfState: Api = {
   poisInitFeatureCollection: null,
   poisSelectedFilterIdentifiers: null,
   filterWhere: [],
+  goToHome: false,
 };
 
 export const elasticQueryReducer = createReducer(
@@ -154,6 +157,13 @@ export const elasticQueryReducer = createReducer(
     const newState: Api = {
       ...state,
       poisSelectedFilterIdentifiers: [],
+    };
+    return newState;
+  }),
+  on(goToHome, (state, {}) => {
+    const newState: Api = {
+      ...state,
+      goToHome: !state.goToHome,
     };
     return newState;
   }),

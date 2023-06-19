@@ -1,3 +1,4 @@
+import {goToHome} from './api.actions';
 import {Feature, FeatureCollection, Geometry} from 'geojson';
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {SearchResponse} from 'elasticsearch';
@@ -48,6 +49,9 @@ export const apiElasticStateLayer = createSelector(apiElasticState, state => {
 });
 export const apiElasticStateLoading = createSelector(elasticSearchFeature, state => {
   return state.loading;
+});
+export const apiGoToHome = createSelector(elasticSearchFeature, state => {
+  return state.goToHome;
 });
 export const confFILTERSTRACKSOPTIONS = createSelector(
   confFILTERSTRACKS,
