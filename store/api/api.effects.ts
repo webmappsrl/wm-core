@@ -121,7 +121,7 @@ export class ApiEffects {
         if (filter.length > 0) {
           return of({
             type: '[api] toggle track filter',
-            filter: filter[0],
+            filter: {...filter[0], taxonomy: action.taxonomy},
           });
         }
       }),
