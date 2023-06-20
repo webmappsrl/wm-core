@@ -8,7 +8,9 @@ import {
   OnChanges,
   SimpleChanges,
 } from '@angular/core';
+import {Store} from '@ngrx/store';
 import {BehaviorSubject} from 'rxjs';
+import {countPois, countTracks} from '../../store/api/api.selector';
 
 @Component({
   selector: 'wm-home-result',
@@ -24,7 +26,11 @@ export class WmHomeResultComponent implements OnChanges {
   @Output() poiEVT: EventEmitter<any> = new EventEmitter();
   @Output() trackEVT: EventEmitter<number> = new EventEmitter();
 
+  countTracks$ = this._store.select(countTracks);
+  countPois$ = this._store.select(countPois);
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
+
+  constructor(private _store: Store) {}
 
   changeResultType(event): void {
     this.showResultType$.next(event.target.value);

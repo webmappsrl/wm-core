@@ -7,7 +7,11 @@ export const elasticSearchFeature = createFeatureSelector<IELASTIC>('query');
 export const queryApi = createSelector(elasticSearchFeature, (state: SearchResponse<IHIT>) =>
   state != null && state.hits && state.hits.hits ? state.hits.hits.map(hit => hit._source) : [],
 );
-export const countApi = createSelector(queryApi, (queryApi: any[]) => queryApi.length ?? 0);
+export const countTracks = createSelector(elasticSearchFeature, (state: SearchResponse<IHIT>) =>
+  state != null && state.hits != null && state?.hits?.total && state?.hits?.total
+    ? (state?.hits?.total as any)?.value
+    : 0,
+);
 export const statsApi = createSelector(elasticSearchFeature, (state: SearchResponse<IHIT>) => {
   if (state != null && state.aggregations) {
     let res = [];
@@ -137,14 +141,14 @@ export const pois = createSelector(featureCollection, confPoisIcons, (featureCol
   }
   return s;
 });
-export const featureCollectionCount = createSelector(
+export const countPois = createSelector(
   featureCollection,
   featureCollection => featureCollection?.features?.length,
 );
 export const poisInitStats = createSelector(poisInitFeatureCollection, poisInitFeatureCollection =>
   _buildStats(poisInitFeatureCollection.features),
 );
-export const trackStats = createSelector(statsApi, countApi, (_statsApi, count) => {
+export const trackStats = createSelector(statsApi, _statsApi => {
   const stats: {[identifier: string]: any} = {};
   if (_statsApi) {
     _statsApi.forEach(element => {
