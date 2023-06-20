@@ -1,4 +1,4 @@
-<ng-container *ngFor="let box of conf;let idx = index">
+<ng-container *ngFor="let box of confHOME$|async;let idx = index">
   <webmapp-title *ngIf="box.box_type === 'title'">
     {{box.title|wmtrans}}
   </webmapp-title>
@@ -11,7 +11,7 @@
   <wm-poi-type-filter-box
     *ngIf="box.box_type === 'poi_type_filter'"
     [data]="box"
-    (clickEVT)="poiTypeFilterBoxEVT.emit([box.identifier, idx])"
+    (clickEVT)="sendPoiTypeFilterBoxEVT(box, idx)"
   >
   </wm-poi-type-filter-box>
   <wm-slug-box

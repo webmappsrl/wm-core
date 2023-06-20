@@ -3,26 +3,26 @@
     <ion-col
       >{{'Filtri attivi'|wmtrans}}
       <span
-        *ngIf="poiFilters.length + trackFilters.length"
-        >{{poiFilters.length + trackFilters.length}}</span
+        *ngIf="(poiFilters$|async).length + (trackFilters$|async).length"
+        >{{(poiFilters$|async).length + (trackFilters$|async).length}}</span
       >
     </ion-col>
     <ion-col size="auto">
       <ion-chip
         [outline]="true"
-        (click)="resetFiltersEVT.emit()"
+        (click)="resetFilters()"
         class="wm-reset-filters"
         >{{'Torna alla home'|wmtrans}}</ion-chip
       >
     </ion-col>
     <ion-row>
       <ion-col class="chip-list">
-        <ion-chip outline="true" *ngIf="layer">
-          <ion-label> {{layer.title|wmtrans}}</ion-label>
-          <ion-icon name="close" (click)="removeLayerEVT.emit(layer)"></ion-icon>
+        <ion-chip outline="true" *ngIf="layer$|async as layer" (click)="removeLayer(layer)">
+          <ion-label *ngIf="layer?.title as layerTitle"> {{layerTitle|wmtrans}}</ion-label>
+          <ion-icon name="close"></ion-icon>
         </ion-chip>
-        <ng-container *ngFor="let f of trackFilters">
-          <ion-chip (click)="removeTrackFilterEVT.emit(f)">
+        <ng-container *ngFor="let f of trackFilters$|async">
+          <ion-chip (click)="removeTrackFilter(f)">
             <ng-container *ngIf="f.icon != null">
               <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
             </ng-container>
@@ -30,8 +30,8 @@
             <ion-icon name="close"></ion-icon>
           </ion-chip>
         </ng-container>
-        <ng-container *ngFor="let f of poiFilters">
-          <ion-chip (click)="removePoiFilterEVT.emit(f.identifier)">
+        <ng-container *ngFor="let f of poiFilters$|async">
+          <ion-chip (click)="removePoiFilter(f.identifier)">
             <ng-container *ngIf="f.icon != null;else imgT">
               <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
             </ng-container>

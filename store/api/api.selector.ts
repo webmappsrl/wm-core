@@ -145,6 +145,11 @@ export const countPois = createSelector(
   featureCollection,
   featureCollection => featureCollection?.features?.length,
 );
+export const countAll = createSelector(countTracks, countPois, (cTracks, cPois) => {
+  const c1 = typeof cTracks === 'number' ? cTracks : 0;
+  const c2 = typeof cPois === 'number' ? cPois : 0;
+  return c1 + c2;
+});
 export const poisInitStats = createSelector(poisInitFeatureCollection, poisInitFeatureCollection =>
   _buildStats(poisInitFeatureCollection.features),
 );

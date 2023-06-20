@@ -1,30 +1,33 @@
-<ion-segment [value]="showResultType$|async" (ionChange)="changeResultType($event)">
-  <ion-segment-button value="tracks" [disabled]="tracks && tracks.length === 0">
-    <ion-label
-      >{{'Sentieri'|wmtrans}}
-      <ng-container *ngIf="loadingTracks;else count">
-        <ion-spinner name="dots"></ion-spinner
-      ></ng-container>
-      <ng-template #count>
-        <span *ngIf="countTracks$|async as countTracks">
-          {{countTracks}}
+<ng-container *ngIf="(countAll$|async)>0">
+  <ion-segment [value]="showResultType$|async" (ionChange)="changeResultType($event)">
+    <ion-segment-button value="tracks" [disabled]="(tracks$|async) && (tracks$|async).length === 0">
+      <ion-label
+        >{{'Sentieri'|wmtrans}}
+        <ng-container *ngIf="tracksLoading$|async;else count">
+          <ion-spinner name="dots"></ion-spinner
+        ></ng-container>
+        <ng-template #count>
+          <span *ngIf="countTracks$|async as countTracks">
+            {{countTracks}}
+          </span>
+        </ng-template>
+      </ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="pois" *ngIf="pois$|async as pois">
+      <ion-label
+        >{{'Punti di interesse'|wmtrans}}
+        <span *ngIf="countPois$|async as countPois">
+          {{countPois}}
         </span>
-      </ng-template>
-    </ion-label>
-  </ion-segment-button>
-  <ion-segment-button value="pois" *ngIf="pois != null">
-    <ion-label
-      >{{'Punti di interesse'|wmtrans}}
-      <span *ngIf="countPois$|async as countPois">
-        {{countPois}}
-      </span>
-    </ion-label>
-  </ion-segment-button>
-</ion-segment>
+      </ion-label>
+    </ion-segment-button>
+  </ion-segment>
+</ng-container>
+
 <ion-content style="--offset-top:56px; --offset-bottom:56px;" class="wm-home-content">
   <ng-container *ngIf="showResultType$|async as showResulType;">
     <ng-container *ngIf="showResulType === 'tracks'|| showResulType == null">
-      <ng-container *ngIf="loadingTracks">
+      <ng-container *ngIf="tracksLoading$|async">
         <ion-list *ngFor="let idx of [1,1,1,1,1,1,1]">
           <ion-list-header>
             <ion-skeleton-text [animated]="true" style="width: 80px"></ion-skeleton-text>
@@ -47,7 +50,7 @@
           </ion-item>
         </ion-list>
       </ng-container>
-      <ng-container *ngIf="tracks">
+      <ng-container *ngIf="tracks$|async as tracks">
         <ng-container *ngIf="tracks.length > 0; else noResult">
           <wm-search-box
             *ngFor="let card of tracks|slice:0:200"
@@ -59,12 +62,13 @@
       </ng-container>
     </ng-container>
     <div class="pois" *ngIf="showResulType === 'pois'|| showResulType === 'all'">
-      <wm-poi-box *ngFor="let c of pois" [data]="c" (clickEVT)="poiEVT.emit(c)"> </wm-poi-box>
+      <wm-poi-box *ngFor="let c of pois$|async" [data]="c" (clickEVT)="poiEVT.emit(c)">
+      </wm-poi-box>
     </div>
   </ng-container>
 </ion-content>
 <ng-template #noResult>
   <ion-item lines="none">
-    <h5>{{'Spiacenti non ci sono risultati con questi criteri di ricarca.'|wmtrans}}</h5>
+    <h5>{{'Spiacenti non ci sono risultati con questi criteri di ricerca.'|wmtrans}}</h5>
   </ion-item>
 </ng-template>

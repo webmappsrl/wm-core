@@ -1,4 +1,6 @@
-import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
+import {Store} from '@ngrx/store';
+import {apiElasticStateLayer} from '../../store/api/api.selector';
 
 @Component({
   selector: 'wm-home-layer',
@@ -8,5 +10,6 @@ import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@ang
   encapsulation: ViewEncapsulation.None,
 })
 export class WmHomeLayerComponent {
-  @Input() layer
+  layer$ = this._store.select(apiElasticStateLayer);
+  constructor(private _store: Store) {}
 }
