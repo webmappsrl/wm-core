@@ -21,6 +21,11 @@ import {
 } from '@ngx-translate/core';
 import {wmIT} from './i18n/it';
 import {wmEN} from './i18n/en';
+import {wmDE} from './i18n/de';
+import {wmFR} from './i18n/fr';
+import {wmPR} from './i18n/pr';
+import {wmES} from './i18n/es';
+
 import {setUserProjection} from 'ol/proj';
 
 @Injectable()
@@ -47,6 +52,10 @@ export class LangService extends TranslateService implements TranslateService {
     );
     this.setTranslation('it', wmIT);
     this.setTranslation('en', wmEN);
+    this.setTranslation('de', wmDE);
+    this.setTranslation('fr', wmFR);
+    this.setTranslation('pr', wmPR);
+    this.setTranslation('es', wmES);
   }
 
   initLang(defLang: string): void {
