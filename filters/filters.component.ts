@@ -15,6 +15,7 @@ import {
   apiFilterTracks,
   countPois,
   countSelectedFilters,
+  countTracks,
   poiFilters,
   poisStats,
   trackStats,
@@ -47,6 +48,7 @@ export class FiltersComponent implements OnChanges {
   confFILTERS$: Observable<{[key: string]: any}> = this._store.select(confFILTERS);
   countSelectedFilters$: Observable<number> = this._store.select(countSelectedFilters);
   countPois$: Observable<number> = this._store.select(countPois);
+  countTracks$: Observable<number> = this._store.select(countTracks);
   toggle$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   poisStats$: Observable<{
     [name: string]: {[identifier: string]: any};

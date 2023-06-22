@@ -37,7 +37,7 @@
     <ng-container *ngIf="parent.trackFilters$|async as trackFilters">
       <ion-accordion [value]="filterName">
         <ion-item slot="header" color="light">
-          <ion-label> {{filter.name|wmtrans}} {{trackStats[filter.taxonomy]}}</ion-label>
+          <ion-label> {{filter.name|wmtrans}} {{parent.countTracks$|async}}</ion-label>
         </ion-item>
         <div class="ion-padding" slot="content">
           <div class="chip-list">
