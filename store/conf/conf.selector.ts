@@ -23,6 +23,9 @@ export const confFILTERS = createSelector(confMAP, map => {
   keys.forEach(key => {
     filters[key] = {...filters[key], ...{taxonomy: key}};
   });
+  if (filters['poi_type']) {
+    delete filters['poi_type'];
+  }
   return filters;
 });
 export const confFILTERSTRACKS = createSelector(confFILTERS, filters => filters?.activities ?? []);
