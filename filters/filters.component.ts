@@ -9,8 +9,17 @@ import {
   SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
-import {FeatureCollection} from 'geojson';
-import {BehaviorSubject} from 'rxjs';
+import {Store} from '@ngrx/store';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {
+  apiFilterTracks,
+  countPois,
+  countSelectedFilters,
+  poiFilters,
+  poisStats,
+  trackStats,
+} from '../store/api/api.selector';
+import {confFILTERS} from '../store/conf/conf.selector';
 
 @Component({
   selector: 'wm-filters',
@@ -26,16 +35,6 @@ export class FiltersComponent implements OnChanges {
     }
   }
 
-  @Input() confFilters: {[key: string]: any};
-  @Input() poiFilters: SelectFilterOption[];
-  @Input() pois: FeatureCollection;
-  @Input() poisStats: {
-    [name: string]: {[identifier: string]: any};
-  } = {};
-  @Input() trackFilters: any[];
-  @Input() trackStats: {
-    [name: string]: {[identifier: string]: any};
-  } = {};
   @Output() filterPoisEvt: EventEmitter<SelectFilterOption | SliderFilter | Filter> =
     new EventEmitter<SelectFilterOption | SliderFilter | Filter>();
   @Output() filterTracksEvt: EventEmitter<SelectFilterOption | SliderFilter | Filter> =
@@ -45,7 +44,19 @@ export class FiltersComponent implements OnChanges {
   @Output() removefilterTracksEvt: EventEmitter<Filter> = new EventEmitter<Filter>();
   @Output() resetFiltersEvt: EventEmitter<void> = new EventEmitter<void>();
 
+  confFILTERS$: Observable<{[key: string]: any}> = this._store.select(confFILTERS);
+  countSelectedFilters$: Observable<number> = this._store.select(countSelectedFilters);
+  countPois$: Observable<number> = this._store.select(countPois);
   toggle$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  poisStats$: Observable<{
+    [name: string]: {[identifier: string]: any};
+  }> = this._store.select(poisStats);
+  trackStats$: Observable<{
+    [name: string]: {[identifier: string]: any};
+  }> = this._store.select(trackStats);
+  poiFilters$: Observable<any> = this._store.select(poiFilters);
+  trackFilters$: Observable<any> = this._store.select(apiFilterTracks);
+  constructor(private _store: Store) {}
 
   addPoisFilter(filter: any): void {
     this.filterPoisEvt.emit(filter);
@@ -59,17 +70,6 @@ export class FiltersComponent implements OnChanges {
     this.toggle$.next(!this.toggle$.value);
   }
 
-  removePoiFilter(filter: SelectFilterOption): void {
-    this.removefilterPoiEvt.emit(filter);
-  }
-
-  removeTrackFilter(filter: Filter): void {
-    this.removefilterTracksEvt.emit(filter);
-  }
-
-  resetFilters(): void {
-    this.resetFiltersEvt.emit();
-  }
   ngOnChanges(changes: SimpleChanges): void {
     //TODO: workaround per eliminare un filtro slider dalla home,
     //approfondire perche si debba cancellarlo due volte migliorare il codice evitando questo changes
@@ -85,5 +85,17 @@ export class FiltersComponent implements OnChanges {
           });
       }
     });
+  }
+
+  removePoiFilter(filter: SelectFilterOption): void {
+    this.removefilterPoiEvt.emit(filter);
+  }
+
+  removeTrackFilter(filter: Filter): void {
+    this.removefilterTracksEvt.emit(filter);
+  }
+
+  resetFilters(): void {
+    this.resetFiltersEvt.emit();
   }
 }

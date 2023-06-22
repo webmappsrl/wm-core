@@ -1,65 +1,67 @@
-<div class="filter-button" (click)="filterBtnClick()" *ngIf="confFilters!= null">
-  {{'Filtri'|wmtrans}}
-  <ion-icon name="funnel-outline"></ion-icon>
-  <span class="dot" *ngIf="poiFilters.length>0|| trackFilters.length>0"></span>
-</div>
-<ion-list class="wm-filter-content" lines="none" *ngIf="toggle$|async">
-  <ng-container *ngIf="poiFilters.length>0|| trackFilters.length>0">
-    <ion-item>
-      <ion-grid [fixed]="true">
-        <ion-row>
-          <ion-col>
-            <span class="wm-filters-title">
-              {{'Filtri attivi'|wmtrans}}
-            </span>
-            <span
-              class="wm-filters-count"
-              >{{poiFilters.length + trackFilters.length}}</span
-            ></ion-col
-          >
-          <ion-col size="auto"
-            ><ion-button
-              class="wm-reset-filters"
-              (click)="resetFilters()"
-              >{{'Reset filtri'|wmtrans}}</ion-button
-            ></ion-col
-          >
-        </ion-row>
-      </ion-grid>
-    </ion-item>
-    <ion-item class="wm-selected-filters">
-      <ng-container *ngFor="let f of poiFilters">
-        <ion-chip class="wm-active-filter" (click)="removePoiFilter(f)">
-          <ng-container *ngIf="f.icon != null;else imgT">
-            <div appBuildSvg class="wm-filter-icon" [svg]="f.icon"></div>
+<ng-container *ngIf=" confFILTERS$|async as confFilters">
+  <div class="filter-button" (click)="filterBtnClick()">
+    {{'Filtri'|wmtrans}}
+    <ion-icon name="funnel-outline"></ion-icon>
+    <span class="dot" *ngIf="(countSelectedFilters$|async)>0"></span>
+  </div>
+  <ion-list class="wm-filter-content" lines="none" *ngIf="toggle$|async">
+    <ng-container *ngIf="(countSelectedFilters$|async) as countSelectedFilters">
+      <ng-container *ngIf="countSelectedFilters>0">
+        <ion-item>
+          <ion-grid [fixed]="true">
+            <ion-row>
+              <ion-col>
+                <span class="wm-filters-title">
+                  {{'Filtri attivi'|wmtrans}}
+                </span>
+                <span class="wm-filters-count">{{countSelectedFilters}}</span></ion-col
+              >
+              <ion-col size="auto"
+                ><ion-button
+                  class="wm-reset-filters"
+                  (click)="resetFilters()"
+                  >{{'Reset filtri'|wmtrans}}</ion-button
+                ></ion-col
+              >
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+        <ion-item class="wm-selected-filters">
+          <ng-container *ngFor="let f of poiFilters$|async">
+            <ion-chip class="wm-active-filter" (click)="removePoiFilter(f)">
+              <ng-container *ngIf="f.icon != null;else imgT">
+                <div appBuildSvg class="wm-filter-icon" [svg]="f.icon"></div>
+              </ng-container>
+              <ng-template #imgT>
+                <img [src]="f.identifier" />
+              </ng-template>
+              <ion-label class="wm-label">{{f.name|wmtrans}}</ion-label>
+              <ion-icon name="close"></ion-icon>
+            </ion-chip>
           </ng-container>
-          <ng-template #imgT>
-            <img [src]="f.identifier" />
-          </ng-template>
-          <ion-label class="wm-label">{{f.name|wmtrans}}</ion-label>
-          <ion-icon name="close"></ion-icon>
-        </ion-chip>
-      </ng-container>
-      <ng-container *ngFor="let f of trackFilters">
-        <ion-chip class="wm-active-filter" (click)="removeTrackFilter(f)">
-          <ng-container *ngIf="f.icon != null">
-            <div appBuildSvg class="wm-filter-icon" [svg]="f.icon"></div>
+          <ng-container *ngFor="let f of trackFilters$|async">
+            <ion-chip class="wm-active-filter" (click)="removeTrackFilter(f)">
+              <ng-container *ngIf="f.icon != null">
+                <div appBuildSvg class="wm-filter-icon" [svg]="f.icon"></div>
+              </ng-container>
+              <ion-label>{{f.name|wmtrans}}{{f|wmUnits}}</ion-label>
+              <ion-icon name="close"></ion-icon>
+            </ion-chip>
           </ng-container>
-          <ion-label>{{f.name|wmtrans}}{{f|wmUnits}}</ion-label>
-          <ion-icon name="close"></ion-icon>
-        </ion-chip>
+        </ion-item>
       </ng-container>
-    </ion-item>
-  </ng-container>
-  <ion-accordion-group>
-    <ng-container *ngFor="let filter of confFilters|keyvalue">
-      <wm-select-filter
-        *ngIf="(filter.value|wmAsAny).type == 'select'"
-        [filter]="filter.value"
-        [filterName]="filter.key"
-      ></wm-select-filter>
-      <wm-slider-filter *ngIf="(filter.value|wmAsAny).type == 'slider'" [filter]="filter.value">
-      </wm-slider-filter>
     </ng-container>
-  </ion-accordion-group>
-</ion-list>
+
+    <ion-accordion-group>
+      <ng-container *ngFor="let filter of confFilters|keyvalue">
+        <wm-select-filter
+          *ngIf="(filter.value|wmAsAny).type == 'select'"
+          [filter]="filter.value"
+          [filterName]="filter.key"
+        ></wm-select-filter>
+        <wm-slider-filter *ngIf="(filter.value|wmAsAny).type == 'slider'" [filter]="filter.value">
+        </wm-slider-filter>
+      </ng-container>
+    </ion-accordion-group>
+  </ion-list>
+</ng-container>

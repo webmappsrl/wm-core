@@ -93,6 +93,11 @@ export const poiFilters = createSelector(
     return filters;
   },
 );
+export const countSelectedFilters = createSelector(
+  poiFilters,
+  apiFilterTracks,
+  (pFilters, tFilters) => pFilters.length + tFilters.length ?? 0,
+);
 
 export const filterWhere = createSelector(elasticSearchFeature, state => state.filterWhere);
 
@@ -175,7 +180,7 @@ export const poisFilteredFeatureCollectionByInputTypeStats = createSelector(
   poisFilteredFeatureCollectionByInputType =>
     _buildStats(poisFilteredFeatureCollectionByInputType?.features),
 );
-export const stats = createSelector(
+export const poisStats = createSelector(
   poisFilteredFeatureCollectionByInputTypeStats,
   poisFilteredFeatureCollectionByInputTypeStats => poisFilteredFeatureCollectionByInputTypeStats,
 );
