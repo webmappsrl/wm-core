@@ -1,7 +1,7 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {SearchResponse} from 'elasticsearch';
 import {confFILTERSTRACKS, confPOISFilter, confPoisIcons} from './../conf/conf.selector';
-import {buildStats, filterFeatureCollection} from './utils';
+import {buildStats, filterFeatureCollection, filterFeatureCollectionByInputTyped} from './utils';
 
 export const elasticSearchFeature = createFeatureSelector<IELASTIC>('query');
 export const queryApi = createSelector(elasticSearchFeature, (state: SearchResponse<IHIT>) =>
@@ -192,6 +192,3 @@ export const hasActiveFilters = createSelector(
     return apiFilterTracks.length > 0 || poiFilters.length > 0 || showPoisResult;
   },
 );
-function filterFeatureCollectionByInputTyped(featureCollection: any, inputTyped: any): any {
-  throw new Error('Function not implemented.');
-}
