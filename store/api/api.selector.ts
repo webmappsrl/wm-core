@@ -1,8 +1,8 @@
-import {goToHome} from './api.actions';
-import {Feature, FeatureCollection, Geometry} from 'geojson';
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {SearchResponse} from 'elasticsearch';
 import {confFILTERSTRACKS, confPOISFilter, confPoisIcons} from './../conf/conf.selector';
+import {buildStats, filterFeatureCollection} from './utils';
+
 export const elasticSearchFeature = createFeatureSelector<IELASTIC>('query');
 export const queryApi = createSelector(elasticSearchFeature, (state: SearchResponse<IHIT>) =>
   state != null && state.hits && state.hits.hits ? state.hits.hits.map(hit => hit._source) : [],
@@ -108,18 +108,18 @@ export const poisInitFeatureCollection = createSelector(
 export const poisWhereFeatureCollection = createSelector(
   poisInitFeatureCollection,
   filterWhere,
-  (featureCollection, filter) => _filterFeatureCollection(featureCollection, filter),
+  (featureCollection, filter) => filterFeatureCollection(featureCollection, filter),
 );
 export const poisFilteredFeatureCollection = createSelector(
   poisWhereFeatureCollection,
   poiFilterIdentifiers,
-  (featureCollection, filter) => _filterFeatureCollection(featureCollection, filter),
+  (featureCollection, filter) => filterFeatureCollection(featureCollection, filter),
 );
 export const poisFilteredFeatureCollectionByInputType = createSelector(
   poisFilteredFeatureCollection,
   apiSearchInputTyped,
   (featureCollection, inputTyped) =>
-    _filterFeatureCollectionByInputTyped(featureCollection, inputTyped),
+    filterFeatureCollectionByInputTyped(featureCollection, inputTyped),
 );
 export const featureCollection = createSelector(
   poisFilteredFeatureCollectionByInputType,
@@ -156,7 +156,7 @@ export const countAll = createSelector(countTracks, countPois, (cTracks, cPois) 
   return c1 + c2;
 });
 export const poisInitStats = createSelector(poisInitFeatureCollection, poisInitFeatureCollection =>
-  _buildStats(poisInitFeatureCollection.features),
+  buildStats(poisInitFeatureCollection.features),
 );
 export const trackStats = createSelector(statsApi, _statsApi => {
   const stats: {[identifier: string]: any} = {};
@@ -169,16 +169,16 @@ export const trackStats = createSelector(statsApi, _statsApi => {
 });
 export const poisWhereStats = createSelector(
   poisWhereFeatureCollection,
-  poisWhereFeatureCollection => _buildStats(poisWhereFeatureCollection.features),
+  poisWhereFeatureCollection => buildStats(poisWhereFeatureCollection.features),
 );
 export const poisFiltersStats = createSelector(
   poisFilteredFeatureCollection,
-  poisFilteredFeatureCollection => _buildStats(poisFilteredFeatureCollection.features),
+  poisFilteredFeatureCollection => buildStats(poisFilteredFeatureCollection.features),
 );
 export const poisFilteredFeatureCollectionByInputTypeStats = createSelector(
   poisFilteredFeatureCollectionByInputType,
   poisFilteredFeatureCollectionByInputType =>
-    _buildStats(poisFilteredFeatureCollectionByInputType?.features),
+    buildStats(poisFilteredFeatureCollectionByInputType?.features),
 );
 export const poisStats = createSelector(
   poisFilteredFeatureCollectionByInputTypeStats,
@@ -192,57 +192,6 @@ export const hasActiveFilters = createSelector(
     return apiFilterTracks.length > 0 || poiFilters.length > 0 || showPoisResult;
   },
 );
-
-const _filterFeatureCollection = (
-  featureCollection: FeatureCollection,
-  filters: string[],
-): FeatureCollection => {
-  if (filters == null || filters.length === 0 || featureCollection?.features == null)
-    return featureCollection;
-  return {
-    type: 'FeatureCollection',
-    features: featureCollection.features.filter(feature => {
-      const taxonomyIdentifiers = feature?.properties?.taxonomyIdentifiers || [];
-      return isArrayContained(filters, taxonomyIdentifiers);
-    }),
-  } as FeatureCollection;
-};
-const isArrayContained = (needle: any[], haystack: any[]): boolean => {
-  if (needle.length > haystack.length) return false;
-  return needle.every(element => haystack.includes(element));
-};
-const _buildStats = (
-  features: Feature<
-    Geometry,
-    {
-      [name: string]: {[identifier: string]: any};
-    }
-  >[],
-) => {
-  if (features == null) return {};
-  const stats: {[identifier: string]: any} = {};
-  features.forEach(feature => {
-    const taxonomyIdentifiers = feature?.properties?.taxonomyIdentifiers || [];
-    taxonomyIdentifiers.forEach(taxonomyIdentifier => {
-      stats[taxonomyIdentifier] =
-        stats[taxonomyIdentifier] != null ? stats[taxonomyIdentifier] + 1 : 1;
-    });
-  });
-  return stats;
-};
-const _filterFeatureCollectionByInputTyped = (
-  featureCollection: FeatureCollection,
-  inputTyped: string,
-): FeatureCollection => {
-  if (inputTyped == null || inputTyped == '' || featureCollection == null) {
-    return featureCollection;
-  }
-  return {
-    type: 'FeatureCollection',
-    features: featureCollection.features.filter(feature => {
-      const p = feature?.properties;
-      const searchable = `${JSON.stringify(p?.name ?? '')}${p?.searchable ?? ''}`;
-      return searchable.toLowerCase().indexOf(inputTyped.toLocaleLowerCase()) >= 0;
-    }),
-  } as FeatureCollection;
-};
+function filterFeatureCollectionByInputTyped(featureCollection: any, inputTyped: any): any {
+  throw new Error('Function not implemented.');
+}
