@@ -4,7 +4,7 @@
     <ng-container *ngTemplateOutlet="taxonomies"></ng-container>
   </div>
   <ion-card-header>
-    <ng-container *ngIf="data?.name else skeletonTemplate">
+    <ng-container *ngIf="data!= null else skeletonTemplate">
       <ion-card-subtitle *ngIf="data?.taxonomyWheres!= null && data?.taxonomyWheres.length>0">
         {{ data.taxonomyWheres[data.taxonomyWheres.length-1] | wmtrans }}
       </ion-card-subtitle>
