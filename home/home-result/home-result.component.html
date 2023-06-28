@@ -1,26 +1,30 @@
-<ng-container *ngIf="(countAll$|async)>0">
+<ng-container *ngIf="(countAll$|async)>0; else noResult">
   <ion-segment [value]="showResultType$|async" (ionChange)="changeResultType($event)">
-    <ion-segment-button value="tracks" [disabled]="(tracks$|async) && (tracks$|async).length === 0">
-      <ion-label
-        >{{'Sentieri'|wmtrans}}
-        <ng-container *ngIf="tracksLoading$|async;else count">
-          <ion-spinner name="dots"></ion-spinner
-        ></ng-container>
-        <ng-template #count>
-          <span *ngIf="countTracks$|async as countTracks">
-            {{countTracks}}
+    <ng-container *ngIf="tracks$|async as tracks">
+      <ion-segment-button value="tracks" *ngIf="tracks.length > 0">
+        <ion-label>
+          {{'Sentieri'|wmtrans}}
+          <ng-container *ngIf="tracksLoading$|async;else count">
+            <ion-spinner name="dots"></ion-spinner>
+          </ng-container>
+          <ng-template #count>
+            <span *ngIf="countTracks$|async as countTracks">
+              {{countTracks}}
+            </span>
+          </ng-template>
+        </ion-label>
+      </ion-segment-button>
+    </ng-container>
+    <ng-container *ngIf="countPois$|async as countPois">
+      <ion-segment-button value="pois" *ngIf="countPois > 0">
+        <ion-label>
+          {{'Punti di interesse'|wmtrans}}
+          <span>
+            {{countPois}}
           </span>
-        </ng-template>
-      </ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="pois" *ngIf="pois$|async as pois">
-      <ion-label
-        >{{'Punti di interesse'|wmtrans}}
-        <span *ngIf="countPois$|async as countPois">
-          {{countPois}}
-        </span>
-      </ion-label>
-    </ion-segment-button>
+        </ion-label>
+      </ion-segment-button>
+    </ng-container>
   </ion-segment>
 </ng-container>
 
@@ -51,7 +55,7 @@
         </ion-list>
       </ng-container>
       <ng-container *ngIf="tracks$|async as tracks">
-        <ng-container *ngIf="tracks.length > 0; else noResult">
+        <ng-container *ngIf="tracks.length > 0">
           <wm-search-box
             *ngFor="let card of tracks|slice:0:200"
             [data]="card"
