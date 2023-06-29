@@ -52,4 +52,5 @@ export const wmIT = {
   'Filtri attivi': 'Filtri attivi',
   'Reset filtri': 'Reset filtri',
   'Torna alla home': 'Torna alla home',
+  'Caricamento in corso.': 'Caricamento in corso.',
 };

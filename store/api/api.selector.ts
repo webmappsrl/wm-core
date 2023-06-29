@@ -10,7 +10,7 @@ export const queryApi = createSelector(elasticSearchFeature, (state: SearchRespo
 export const countTracks = createSelector(elasticSearchFeature, (state: SearchResponse<IHIT>) =>
   state != null && state.hits != null && state?.hits?.total && state?.hits?.total
     ? (state?.hits?.total as any)?.value
-    : 0,
+    : undefined,
 );
 export const statsApi = createSelector(elasticSearchFeature, (state: SearchResponse<IHIT>) => {
   if (state != null && state.aggregations) {

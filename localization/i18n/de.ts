@@ -52,4 +52,5 @@ export const wmDE = {
   'Filtri attivi': 'Aktive Filter',
   'Reset filtri': 'Filter zurücksetzen',
   'Torna alla home': 'Zurück zur Startseite',
+  'Caricamento in corso.': 'Wird geladen.',
 };

@@ -51,4 +51,5 @@ export const wmPR = {
   'Filtri attivi': 'Filtros ativos',
   'Reset filtri': 'Redefinir filtros',
   'Torna alla home': 'Voltar para a página inicial',
+  'Caricamento in corso.': 'Carregando.',
 };

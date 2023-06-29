@@ -73,6 +73,13 @@
 </ion-content>
 <ng-template #noResult>
   <ion-item lines="none">
-    <h5>{{'Spiacenti non ci sono risultati con questi criteri di ricerca.'|wmtrans}}</h5>
+    <h5
+      *ngIf="((countPois$|async)!=null && (countTracks$|async)!=null)||(countAll$|async)===0;else loading"
+    >
+      {{'Spiacenti non ci sono risultati con questi criteri di ricerca.'|wmtrans}}
+    </h5>
+    <ng-template #loading>
+      <h5>{{'Caricamento in corso.'|wmtrans}}</h5>
+    </ng-template>
   </ion-item>
 </ng-template>

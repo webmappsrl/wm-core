@@ -49,9 +49,9 @@ export class WmHomeResultComponent implements OnDestroy {
     this._resultTypeSub$ = combineLatest([this.countTracks$, this.countPois$])
       .pipe(
         map(([tracks, pois]) => {
-          if ((tracks > 0 && pois === 0) || (tracks > 0 && pois > 0)) {
+          if (tracks != null && tracks > 0) {
             return 'tracks';
-          } else if (pois > 0 && tracks === 0) {
+          } else if (pois != null && pois > 0) {
             return 'pois';
           } else {
             return 'none';

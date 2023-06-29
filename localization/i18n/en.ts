@@ -52,4 +52,5 @@ export const wmEN = {
   'Filtri attivi': 'Active Filters',
   'Reset filtri': 'Reset Filters',
   'Torna alla home': 'Back to Home',
+  'Caricamento in corso.': 'Loading.',
 };

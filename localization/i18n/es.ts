@@ -51,4 +51,5 @@ export const wmES = {
   'Filtri attivi': 'Filtros activos',
   'Reset filtri': 'Restablecer filtros',
   'Torna alla home': 'Volver a la página principal',
+  'Caricamento in corso.': 'Cargando.',
 };

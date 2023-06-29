@@ -52,4 +52,5 @@ export const wmFR = {
   'Filtri attivi': 'Filtres actifs',
   'Reset filtri': 'Réinitialiser les filtres',
   'Torna alla home': "Retour à l'accueil",
+  'Caricamento in corso.': 'Chargement.',
 };
