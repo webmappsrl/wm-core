@@ -1,4 +1,4 @@
-<ng-container *ngIf="(countAll$|async)>0; else noResult">
+<ng-container *ngIf="(countAll$|async)>0;">
   <ion-segment [value]="showResultType$|async" (ionChange)="changeResultType($event)">
     <ng-container *ngIf="tracks$|async as tracks">
       <ion-segment-button value="tracks" *ngIf="tracks.length > 0">
@@ -70,16 +70,9 @@
       </wm-poi-box>
     </div>
   </ng-container>
-</ion-content>
-<ng-template #noResult>
-  <ion-item lines="none">
-    <h5
-      *ngIf="((countPois$|async)!=null && (countTracks$|async)!=null)||(countAll$|async)===0;else loading"
-    >
+  <ion-item lines="none" *ngIf="(countAll$|async)==0;">
+    <h5>
       {{'Spiacenti non ci sono risultati con questi criteri di ricerca.'|wmtrans}}
     </h5>
-    <ng-template #loading>
-      <h5>{{'Caricamento in corso.'|wmtrans}}</h5>
-    </ng-template>
   </ion-item>
-</ng-template>
+</ion-content>
