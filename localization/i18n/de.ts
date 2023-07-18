@@ -38,7 +38,7 @@ export const wmDE = {
   'Punto di partenza': 'Startpunkt',
   'Punto di arrivo': 'Zielpunkt',
   'Dettagli tecnici': 'Technische Details',
-  'Percorribilità': 'Befahrbarkeit',
+  'Attività': 'Aktivitäten',
   'Come arrivare': 'Anreise',
   'Bici muscolari': 'Muskelräder',
   'Bici elettriche': 'Elektroräder',
