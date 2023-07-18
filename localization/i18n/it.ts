@@ -38,7 +38,7 @@ export const wmIT = {
   'Punto di partenza': 'Punto di partenza',
   'Punto di arrivo': 'Punto di arrivo',
   'Dettagli tecnici': 'Dettagli tecnici',
-  'Percorribilità': 'Percorribilità',
+  'Attività': 'Attività',
   'Come arrivare': 'Come arrivare',
   'Bici muscolari': 'Bici muscolari',
   'Bici elettriche': 'Bici elettriche',

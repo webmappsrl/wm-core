@@ -37,7 +37,7 @@ export const wmES = {
   'Punto di partenza': 'Punto de partida',
   'Punto di arrivo': 'Punto de llegada',
   'Dettagli tecnici': 'Detalles técnicos',
-  'Percorribilità': 'Transitabilidad',
+  'Attività': 'Actividades',
   'Come arrivare': 'Cómo llegar',
   'Bici muscolari': 'Bicicletas convencionales',
   'Bici elettriche': 'Bicicletas eléctricas',

@@ -38,7 +38,7 @@ export const wmFR = {
   'Punto di partenza': 'Point de départ',
   'Punto di arrivo': "Point d'arrivée",
   'Dettagli tecnici': 'Détails techniques',
-  'Percorribilità': 'Practicabilité',
+  'Attività': 'Activités',
   'Come arrivare': 'Comment arriver',
   'Bici muscolari': 'Vélos musculaires',
   'Bici elettriche': 'Vélos électriques',

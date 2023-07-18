@@ -1,6 +1,6 @@
 <ng-container *ngIf="properties != null">
   <ng-container *ngIf="properties.taxonomy  as taxonomy">
-    <div class="webmapp-title">{{'Percorribilità'|wmtrans}}</div>
+    <div class="webmapp-title">{{'Attività'|wmtrans}}</div>
     <div class="webmapp-walkability" *ngIf="taxonomy.activity as activity">
       <ng-container *ngFor="let item of activity">
         <div class="webmapp-walkability-box" *ngIf="item.identifier ==='hiking'">

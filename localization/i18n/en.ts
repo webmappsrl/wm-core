@@ -38,7 +38,7 @@ export const wmEN = {
   'Punto di partenza': 'Start Point',
   'Punto di arrivo': 'Arrival Point',
   'Dettagli tecnici': 'Technical Details',
-  'Percorribilità': 'Practicability',
+  'Attività': 'Activities',
   'Come arrivare': 'How to Get',
   'Bici muscolari': 'Muscle Bikes',
   'Bici elettriche': 'Electric Bikes',
