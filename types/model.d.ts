@@ -17,6 +17,10 @@ interface IGeojsonGeometry {
 interface iLocalString {
   en?: string;
   it?: string;
+  fr?: string;
+  de?: string;
+  es?: string;
+  pr?: string;
 
   [key: string]: string;
 }
