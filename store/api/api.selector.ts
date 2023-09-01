@@ -99,7 +99,10 @@ export const countSelectedFilters = createSelector(
   (pFilters, tFilters) => pFilters.length + tFilters.length ?? 0,
 );
 
-export const filterWhere = createSelector(elasticSearchFeature, state => state.filterWhere);
+export const filterTaxonomies = createSelector(
+  elasticSearchFeature,
+  state => state.filterTaxonomies,
+);
 
 export const poisInitFeatureCollection = createSelector(
   elasticSearchFeature,
@@ -107,7 +110,7 @@ export const poisInitFeatureCollection = createSelector(
 );
 export const poisWhereFeatureCollection = createSelector(
   poisInitFeatureCollection,
-  filterWhere,
+  filterTaxonomies,
   (featureCollection, filter) => filterFeatureCollection(featureCollection, filter),
 );
 export const poisFilteredFeatureCollection = createSelector(

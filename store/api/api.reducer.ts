@@ -23,7 +23,7 @@ export interface Api {
   inputTyped?: string;
   poisInitFeatureCollection?: FeatureCollection;
   poisSelectedFilterIdentifiers?: string[];
-  filterWhere?: string[];
+  filterTaxonomies?: string[];
   goToHome: boolean;
 }
 export interface ApiRootState {
@@ -37,7 +37,7 @@ const initialConfState: Api = {
   inputTyped: null,
   poisInitFeatureCollection: null,
   poisSelectedFilterIdentifiers: null,
-  filterWhere: [],
+  filterTaxonomies: [],
   goToHome: false,
 };
 
@@ -60,23 +60,35 @@ export const elasticQueryReducer = createReducer(
     return newState;
   }),
   on(setLayer, (state, {layer}) => {
-    let filterWhere = null;
     let poisSelectedFilterIdentifiers = [];
-    if (layer && layer.taxonomy_wheres != null) {
-      filterWhere = layer.taxonomy_wheres
-        .filter(t => t.identifier != null)
-        .map(t => `where_${t.identifier}`);
+    const filterTaxonomies = layer
+      ? [
+          ...(layer.taxonomy_wheres ?? [])
+            .filter(t => t.identifier != null)
+            .map(t => `where_${t.identifier}`),
+          ...(layer.taxonomy_activities || [])
+            .filter(t => t.identifier != null)
+            .map(t => `${t.identifier}`),
+          ...(layer.taxonomy_themes || [])
+            .filter(t => t.identifier != null)
+            .map(t => `${t.identifier}`),
+        ]
+      : null;
+    if (filterTaxonomies) {
       poisSelectedFilterIdentifiers = (state.poisSelectedFilterIdentifiers ?? []).filter(
         i => i.indexOf('poi_') < 0,
       );
-      poisSelectedFilterIdentifiers = [...poisSelectedFilterIdentifiers, ...(filterWhere ?? [])];
+      poisSelectedFilterIdentifiers = [
+        ...poisSelectedFilterIdentifiers,
+        ...(filterTaxonomies ?? []),
+      ];
     }
     const newState: Api = {
       ...state,
       layer,
       loading: true,
       poisSelectedFilterIdentifiers,
-      filterWhere,
+      filterTaxonomies,
     };
     return newState;
   }),
@@ -132,7 +144,7 @@ export const elasticQueryReducer = createReducer(
 
     const newState: Api = {
       ...state,
-      filterWhere: where,
+      filterTaxonomies: where,
       poisSelectedFilterIdentifiers,
     };
     return newState;
