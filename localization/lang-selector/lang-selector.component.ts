@@ -1,5 +1,5 @@
 import {Component, ChangeDetectionStrategy, Input, ViewEncapsulation} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {LangService} from '../lang.service';
 @Component({
   selector: 'wm-lang-selector',
@@ -28,9 +28,9 @@ export class WmLangSelectorComponent {
     return this._langs;
   }
 
-  langForm: FormGroup;
+  langForm: UntypedFormGroup;
 
-  constructor(private _fb: FormBuilder, private _langSvc: LangService) {
+  constructor(private _fb: UntypedFormBuilder, private _langSvc: LangService) {
     const lang = this._langSvc.currentLang || this._langSvc.defaultLang;
     this.langForm = this._fb.group({
       lang,
