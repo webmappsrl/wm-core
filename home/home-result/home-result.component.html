@@ -3,12 +3,17 @@
     <ng-container *ngIf="tracks$|async as tracks">
       <ion-segment-button value="tracks" *ngIf="tracks.length > 0">
         <ion-label>
-          {{'Sentieri'|wmtrans}}
+          <ng-container *ngIf="(currentLayer$|async).track_type as trackType;">
+            {{trackType|wmtrans}}
+          </ng-container>
+          <ng-template #noLab>
+            {{'Sentieri'|wmtrans}}
+          </ng-template>
           <ng-container *ngIf="tracksLoading$|async;else count">
             <ion-spinner name="dots"></ion-spinner>
           </ng-container>
           <ng-template #count>
-            <span *ngIf="countTracks$|async as countTracks">
+            <span *ngIf="countTracks$|async as countTracks;">
               {{countTracks}}
             </span>
           </ng-template>

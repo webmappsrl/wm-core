@@ -16,6 +16,7 @@ import {
   countAll,
   featureCollection,
   queryApi,
+  apiElasticStateLayer,
 } from '../../store/api/api.selector';
 
 @Component({
@@ -34,6 +35,7 @@ export class WmHomeResultComponent implements OnDestroy {
   countAll$ = this._store.select(countAll);
   countPois$ = this._store.select(countPois);
   countTracks$ = this._store.select(countTracks);
+  currentLayer$ = this._store.select(apiElasticStateLayer)
   pois$: Observable<any[]> = this._store.select(featureCollection).pipe(
     filter(p => p != null),
     map(p => ((p as any).features || []).map(p => (p as any).properties || [])),
@@ -60,11 +62,11 @@ export class WmHomeResultComponent implements OnDestroy {
       });
   }
 
-  changeResultType(event): void {
-    this.showResultType$.next(event.target.value);
-  }
-
   ngOnDestroy(): void {
     this._resultTypeSub$.unsubscribe();
+  }
+
+  changeResultType(event): void {
+    this.showResultType$.next(event.target.value);
   }
 }
