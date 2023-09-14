@@ -13,8 +13,8 @@
   "author": "Webmapp core",
   "license": "ISC",
   "dependencies": {
-    "@ngx-translate/core": "^13.0.0",
-    "@ngx-translate/http-loader": "^6.0.0"
+    "@ngx-translate/core": "^15.0.0",
+    "@ngx-translate/http-loader": "^8.0.0"
   },
   "devDependencies": {
     "@compodoc/compodoc": "^1.1.19",
