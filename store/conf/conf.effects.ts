@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {from, of} from 'rxjs';
+import {of} from 'rxjs';
 import {catchError, map, switchMap} from 'rxjs/operators';
 import {loadConf, loadConfFail, loadConfSuccess} from './conf.actions';
 import {ConfService} from './conf.service';

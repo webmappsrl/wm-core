@@ -15,6 +15,10 @@ export class ApiService {
   private _geohubAppId: number = environment.geohubId;
   private _queryDic: {[query: string]: any} = {};
 
+  private get _baseUrl(): string {
+    return this._geohubAppId ? `${baseUrl}/?id=${this._geohubAppId}` : baseUrl;
+  }
+
   /**
    * Creates an instance of ElasticService.
    * @param {HttpClient} _http
@@ -28,10 +32,6 @@ export class ApiService {
         this._geohubAppId = newGeohubId;
       }
     }
-  }
-
-  private get _baseUrl(): string {
-    return this._geohubAppId ? `${baseUrl}/?id=${this._geohubAppId}` : baseUrl;
   }
 
   public getPois(): Observable<FeatureCollection> {
@@ -87,8 +87,7 @@ export class ApiService {
 
       query += `&filters=[${paramString.toString()}]`;
     }
-    if (this._queryDic[query] == null) {
-      console.log(query);
+    if (this._queryDic[query] == null && query != this._baseUrl) {
       const value = await this._http.request('get', query).toPromise();
       this._queryDic[query] = value;
     } else {
