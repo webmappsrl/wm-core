@@ -52,4 +52,6 @@ export const wmES = {
   'Reset filtri': 'Restablecer filtros',
   'Torna alla home': 'Volver a la página principal',
   'Caricamento in corso.': 'Cargando.',
+  'Spiacenti non ci sono risultati con questi criteri di ricerca.':
+    'Lo sentimos, no hay resultados con estos criterios de búsqueda',
 };

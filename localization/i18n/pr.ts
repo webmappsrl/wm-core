@@ -52,4 +52,6 @@ export const wmPR = {
   'Reset filtri': 'Redefinir filtros',
   'Torna alla home': 'Voltar para a página inicial',
   'Caricamento in corso.': 'Carregando.',
+  'Spiacenti non ci sono risultati con questi criteri di ricerca.':
+    'Desculpe, não há resultados com estes critérios de pesquisa',
 };

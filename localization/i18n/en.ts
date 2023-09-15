@@ -53,4 +53,6 @@ export const wmEN = {
   'Reset filtri': 'Reset Filters',
   'Torna alla home': 'Back to Home',
   'Caricamento in corso.': 'Loading.',
+  'Spiacenti non ci sono risultati con questi criteri di ricerca.':
+    'Sorry, there are no results with these search criteria',
 };

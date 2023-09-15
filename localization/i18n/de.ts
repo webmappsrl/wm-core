@@ -53,4 +53,6 @@ export const wmDE = {
   'Reset filtri': 'Filter zurücksetzen',
   'Torna alla home': 'Zurück zur Startseite',
   'Caricamento in corso.': 'Wird geladen.',
+  'Spiacenti non ci sono risultati con questi criteri di ricerca.':
+    'Leider gibt es keine Ergebnisse mit diesen Suchkriterien',
 };
