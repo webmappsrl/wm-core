@@ -1,6 +1,7 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
+import * as localForage from 'localforage';
 import {environment} from 'src/environments/environment';
 
 @Injectable({
@@ -8,16 +9,6 @@ import {environment} from 'src/environments/environment';
 })
 export class ConfService {
   private _geohubAppId: number = environment.geohubId;
-
-  constructor(private _http: HttpClient) {
-    const hostname: string = window.location.hostname;
-    if (hostname.indexOf('localhost') < 0) {
-      const newGeohubId = parseInt(hostname.split('.')[0], 10);
-      if (!Number.isNaN(newGeohubId)) {
-        this._geohubAppId = newGeohubId;
-      }
-    }
-  }
 
   public get configUrl(): string {
     return `${this._geohubApiBaseUrl}config`;
@@ -39,7 +30,40 @@ export class ConfService {
     return `${environment.api}/api/app/webmapp/${this._geohubAppId}/`;
   }
 
+  constructor(private _http: HttpClient) {
+    const hostname: string = window.location.hostname;
+    if (hostname.indexOf('localhost') < 0) {
+      const newGeohubId = parseInt(hostname.split('.')[0], 10);
+      if (!Number.isNaN(newGeohubId)) {
+        this._geohubAppId = newGeohubId;
+      }
+    }
+    localForage.config({
+      name: 'wm',
+      storeName: 'wm-core-store',
+    });
+  }
+
   public getConf(): Observable<ICONF> {
-    return this._http.get<ICONF>(`${this._geohubApiBaseUrl}config.json`);
+    return new Observable<ICONF>(observer => {
+      const url = `${this._geohubApiBaseUrl}config.json`;
+      localForage.getItem(url).then((cachedData: string | null) => {
+        if (cachedData) {
+          const parsedData = JSON.parse(cachedData);
+          observer.next(parsedData);
+          observer.complete();
+        }
+        this._http.get<ICONF>(url).subscribe(
+          conf => {
+            localForage.setItem(url, JSON.stringify(conf));
+            observer.next(conf);
+            observer.complete();
+          },
+          error => {
+            observer.error(error);
+          },
+        );
+      });
+    });
   }
 }

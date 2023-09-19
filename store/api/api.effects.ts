@@ -3,7 +3,6 @@ import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {from, of} from 'rxjs';
 import {catchError, map, switchMap, withLatestFrom} from 'rxjs/operators';
 import {
-  addTrackFilters,
   inputTyped,
   loadPois,
   loadPoisFail,
@@ -127,6 +126,7 @@ export class ApiEffects {
       }),
     ),
   );
+
   constructor(
     private _apiSVC: ApiService,
     private _actions$: Actions,

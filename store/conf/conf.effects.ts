@@ -3,6 +3,7 @@ import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {of} from 'rxjs';
 import {catchError, map, switchMap} from 'rxjs/operators';
 import {loadConf, loadConfFail, loadConfSuccess} from './conf.actions';
+import * as localForage from 'localforage';
 import {ConfService} from './conf.service';
 @Injectable({
   providedIn: 'root',
