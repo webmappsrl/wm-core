@@ -52,6 +52,7 @@ export class ApiService {
           return from(
             this._loadingCtrl.create({
               message: 'Loading pois...',
+              id: 'loading-pois',
             }),
           ).pipe(
             take(1),
