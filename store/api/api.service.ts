@@ -4,10 +4,11 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {SearchResponse} from 'elasticsearch';
 import {FeatureCollection} from 'geojson';
-import {Observable, of} from 'rxjs';
+import {from, Observable, of} from 'rxjs';
 import * as localForage from 'localforage';
 import {environment} from 'src/environments/environment';
-import {tap} from 'rxjs/operators';
+import {switchMap, tap} from 'rxjs/operators';
+import {LoadingController} from '@ionic/angular';
 // const baseUrl = 'http://localhost:3000/search';
 const baseUrl = 'https://elastic-json.webmapp.it/search';
 @Injectable({
@@ -15,7 +16,6 @@ const baseUrl = 'https://elastic-json.webmapp.it/search';
 })
 export class ApiService {
   private _geohubAppId: number = environment.geohubId;
-  private _poisUrl = `${environment.api}/api/v1/app/${this._geohubAppId}/pois.geojson`;
   private _queryDic: {[query: string]: any} = {};
 
   private get _baseUrl(): string {
@@ -27,7 +27,7 @@ export class ApiService {
    * @param {HttpClient} _http
    * @memberof ElasticService
    */
-  constructor(private _http: HttpClient) {
+  constructor(private _http: HttpClient, private _loadingCtrl: LoadingController) {
     const hostname: string = window.location.hostname;
     if (hostname.indexOf('localhost') < 0) {
       const newGeohubId = parseInt(hostname.split('.')[0], 10);
@@ -42,25 +42,37 @@ export class ApiService {
   }
 
   public getPois(): Observable<FeatureCollection> {
-    return new Observable<FeatureCollection>(observer => {
-      localForage.getItem(this._poisUrl).then((cachedData: string | null) => {
-        if (cachedData) {
-          const parsedData = JSON.parse(cachedData);
-          observer.next(parsedData);
-          observer.complete();
-        }
-        this._http.get<FeatureCollection>(this._poisUrl).subscribe(
-          pois => {
-            localForage.setItem(this._poisUrl, JSON.stringify(pois));
-            observer.next(pois);
-            observer.complete();
-          },
-          error => {
-            observer.error(error);
-          },
-        );
-      });
-    });
+    return from(
+      this._loadingCtrl.create({
+        message: 'Loading pois...',
+        id: 'pois',
+      }),
+    ).pipe(
+      switchMap(loading => {
+        loading.present();
+        return new Observable<FeatureCollection>(observer => {
+          const poisUrl = `${environment.api}/api/v1/app/${this._geohubAppId}/pois.geojson`;
+
+          localForage.getItem(poisUrl).then((cachedData: string | null) => {
+            if (cachedData) {
+              const parsedData = JSON.parse(cachedData);
+              observer.next(parsedData);
+              observer.complete();
+            }
+            this._http.get<FeatureCollection>(poisUrl).subscribe(
+              pois => {
+                localForage.setItem(poisUrl, JSON.stringify(pois));
+                observer.next(pois);
+                observer.complete();
+              },
+              error => {
+                observer.error(error);
+              },
+            );
+          });
+        });
+      }),
+    );
   }
 
   /**
