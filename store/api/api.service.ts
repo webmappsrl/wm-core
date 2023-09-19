@@ -7,7 +7,7 @@ import {FeatureCollection} from 'geojson';
 import {from, Observable, of} from 'rxjs';
 import * as localForage from 'localforage';
 import {environment} from 'src/environments/environment';
-import {switchMap, tap} from 'rxjs/operators';
+import {map, switchMap, take, tap} from 'rxjs/operators';
 import {LoadingController} from '@ionic/angular';
 // const baseUrl = 'http://localhost:3000/search';
 const baseUrl = 'https://elastic-json.webmapp.it/search';
@@ -42,35 +42,30 @@ export class ApiService {
   }
 
   public getPois(): Observable<FeatureCollection> {
-    return from(
-      this._loadingCtrl.create({
-        message: 'Loading pois...',
-        id: 'pois',
-      }),
-    ).pipe(
-      switchMap(loading => {
-        loading.present();
-        return new Observable<FeatureCollection>(observer => {
-          const poisUrl = `${environment.api}/api/v1/app/${this._geohubAppId}/pois.geojson`;
-
-          localForage.getItem(poisUrl).then((cachedData: string | null) => {
-            if (cachedData) {
-              const parsedData = JSON.parse(cachedData);
-              observer.next(parsedData);
-              observer.complete();
-            }
-            this._http.get<FeatureCollection>(poisUrl).subscribe(
-              pois => {
-                localForage.setItem(poisUrl, JSON.stringify(pois));
-                observer.next(pois);
-                observer.complete();
-              },
-              error => {
-                observer.error(error);
-              },
-            );
-          });
-        });
+    const poisUrl = `${environment.api}/api/v1/app/${this._geohubAppId}/pois.geojson`;
+    return from(localForage.getItem(poisUrl)).pipe(
+      switchMap((cachedData: string | null) => {
+        if (cachedData) {
+          const parsedData = JSON.parse(cachedData);
+          return of(parsedData as FeatureCollection);
+        } else {
+          return from(
+            this._loadingCtrl.create({
+              message: 'Loading pois...',
+            }),
+          ).pipe(
+            take(1),
+            switchMap(loading => {
+              loading.present();
+              return this._http.get<FeatureCollection>(poisUrl).pipe(
+                tap(pois => {
+                  localForage.setItem(poisUrl, JSON.stringify(pois));
+                  loading.dismiss();
+                }),
+              );
+            }),
+          );
+        }
       }),
     );
   }
