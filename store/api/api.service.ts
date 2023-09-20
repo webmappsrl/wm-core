@@ -9,6 +9,7 @@ import * as localForage from 'localforage';
 import {environment} from 'src/environments/environment';
 import {map, switchMap, take, tap} from 'rxjs/operators';
 import {LoadingController} from '@ionic/angular';
+import {WmLoadingService} from '../../services/loading.service';
 // const baseUrl = 'http://localhost:3000/search';
 const baseUrl = 'https://elastic-json.webmapp.it/search';
 @Injectable({
@@ -27,7 +28,7 @@ export class ApiService {
    * @param {HttpClient} _http
    * @memberof ElasticService
    */
-  constructor(private _http: HttpClient, private _loadingCtrl: LoadingController) {
+  constructor(private _http: HttpClient, private _loadingSvc: WmLoadingService) {
     const hostname: string = window.location.hostname;
     if (hostname.indexOf('localhost') < 0) {
       const newGeohubId = parseInt(hostname.split('.')[0], 10);
@@ -49,21 +50,10 @@ export class ApiService {
           const parsedData = JSON.parse(cachedData);
           return of(parsedData as FeatureCollection);
         } else {
-          return from(
-            this._loadingCtrl.create({
-              message: 'Loading pois...',
-              id: 'loading-pois',
-            }),
-          ).pipe(
-            take(1),
-            switchMap(loading => {
-              loading.present();
-              return this._http.get<FeatureCollection>(poisUrl).pipe(
-                tap(pois => {
-                  localForage.setItem(poisUrl, JSON.stringify(pois));
-                  loading.dismiss();
-                }),
-              );
+          this._loadingSvc.show('Loading pois...');
+          return this._http.get<FeatureCollection>(poisUrl).pipe(
+            tap(pois => {
+              localForage.setItem(poisUrl, JSON.stringify(pois));
             }),
           );
         }
