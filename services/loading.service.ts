@@ -1,16 +1,14 @@
-import {EventEmitter, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {LoadingController, LoadingOptions} from '@ionic/angular';
-import {BehaviorSubject, from, iif, Observable, of} from 'rxjs';
-import {delay, filter, mergeMap, switchMap, take, tap} from 'rxjs/operators';
+import {from, Observable, of} from 'rxjs';
+import {filter, mergeMap, switchMap, take, tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WmLoadingService {
   private _events$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
-  private _init$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _loading$: Observable<HTMLIonLoadingElement | null> = of(null);
-  private _loadingEVT: EventEmitter<LoadingOptions> = new EventEmitter<LoadingOptions>();
 
   constructor(private _loadingCtrl: LoadingController) {}
 
