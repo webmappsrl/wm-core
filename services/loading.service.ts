@@ -8,17 +8,28 @@ import {filter, mergeMap, switchMap, take, tap} from 'rxjs/operators';
 })
 export class WmLoadingService {
   private _events$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
-  private _loading$: Observable<HTMLIonLoadingElement | null> = of(null);
+  private _loading$: BehaviorSubject<HTMLIonLoadingElement | null> = new BehaviorSubject(null);
 
   constructor(private _loadingCtrl: LoadingController) {}
 
-  close(): void {
-    this.dismiss()
-      .pipe(take(1))
-      .subscribe(() => {
-        this._loading$ = of(null);
-        this._events$.next([]);
-      });
+  close(event?: string): void {
+    let events = this._events$.value;
+    if (event == null) {
+      events = [];
+    } else {
+      events = events.filter(e => e != event);
+    }
+    this._events$.next(events);
+    if (this._events$.value.length === 0) {
+      this.dismiss()
+        .pipe(take(1))
+        .subscribe(() => {
+          this._loading$.next(null);
+          this._events$.next([]);
+        });
+    } else {
+      this.message(events[events.length - 1]);
+    }
   }
 
   create(opts?: LoadingOptions): Observable<HTMLIonLoadingElement> {
@@ -33,13 +44,12 @@ export class WmLoadingService {
   }
 
   message(message: string): Observable<HTMLIonLoadingElement> {
-    return this._loading$.pipe(
-      tap(loading => {
-        if (loading != null) {
-          loading.message = message;
-        }
-      }),
-    );
+    const loading = this._loading$.value;
+    if (loading != null && loading.message != message) {
+      loading.message = message;
+      console.log('loading message: ' + loading.message);
+    }
+    return this._loading$;
   }
 
   present(): Observable<void> {
@@ -49,20 +59,22 @@ export class WmLoadingService {
   show(message: string): void {
     if (this._events$.value.includes(message) === false) {
       this._events$.next([...this._events$.value, message]);
-      this._loading$
+      const loading = this._loading$.value;
+      let obs: Observable<HTMLIonLoadingElement> = null;
+      if (loading != null) {
+        obs = this.message(message);
+      } else {
+        obs = this.create({message, duration: 10000});
+      }
+      obs
         .pipe(
-          mergeMap(loading => {
-            const condition = loading != null;
-            return condition ? this.message(message) : this.create({message});
-          }),
           switchMap(loading => {
-            this._loading$ = of(loading);
+            this._loading$.next(loading);
             return loading.present();
           }),
+          take(1),
         )
-        .subscribe(loading => {
-          console.log(loading);
-        });
+        .subscribe();
     }
   }
 }
