@@ -7,6 +7,7 @@ import {delay, filter, mergeMap, switchMap, take, tap} from 'rxjs/operators';
   providedIn: 'root',
 })
 export class WmLoadingService {
+  private _events$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   private _init$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _loading$: Observable<HTMLIonLoadingElement | null> = of(null);
   private _loadingEVT: EventEmitter<LoadingOptions> = new EventEmitter<LoadingOptions>();
@@ -16,7 +17,10 @@ export class WmLoadingService {
   close(): void {
     this.dismiss()
       .pipe(take(1))
-      .subscribe(() => (this._loading$ = of(null)));
+      .subscribe(() => {
+        this._loading$ = of(null);
+        this._events$.next([]);
+      });
   }
 
   create(opts?: LoadingOptions): Observable<HTMLIonLoadingElement> {
@@ -45,19 +49,22 @@ export class WmLoadingService {
   }
 
   show(message: string): void {
-    this._loading$
-      .pipe(
-        mergeMap(loading => {
-          const condition = loading != null;
-          return condition ? this.message(message) : this.create({message});
-        }),
-        switchMap(loading => {
-          this._loading$ = of(loading);
-          return loading.present();
-        }),
-      )
-      .subscribe(loading => {
-        console.log(loading);
-      });
+    if (this._events$.value.includes(message) === false) {
+      this._events$.next([...this._events$.value, message]);
+      this._loading$
+        .pipe(
+          mergeMap(loading => {
+            const condition = loading != null;
+            return condition ? this.message(message) : this.create({message});
+          }),
+          switchMap(loading => {
+            this._loading$ = of(loading);
+            return loading.present();
+          }),
+        )
+        .subscribe(loading => {
+          console.log(loading);
+        });
+    }
   }
 }

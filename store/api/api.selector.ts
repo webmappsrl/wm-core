@@ -128,27 +128,31 @@ export const featureCollection = createSelector(
   poisFilteredFeatureCollectionByInputType,
   poisFilteredFeatureCollectionByInputType => poisFilteredFeatureCollectionByInputType,
 );
-export const pois = createSelector(featureCollection, confPoisIcons, (featureCollection, icons) => {
-  let s = featureCollection;
-  if (s != null && s.features != null && icons != null) {
-    const iconKeys = Object.keys(icons);
-    const features = s.features.map(f => {
-      if (f != null && f.properties != null && f.properties.taxonomyIdentifiers != null) {
-        const filteredArray = f.properties.taxonomyIdentifiers.filter(value =>
-          iconKeys.includes(value),
-        );
-        if (filteredArray.length > 0) {
-          let p = {...f.properties, ...{svgIcon: icons[filteredArray[0]]}};
+export const pois = createSelector(
+  poisInitFeatureCollection,
+  confPoisIcons,
+  (featureCollection, icons) => {
+    let s = featureCollection;
+    if (s != null && s.features != null && icons != null) {
+      const iconKeys = Object.keys(icons);
+      const features = s.features.map(f => {
+        if (f != null && f.properties != null && f.properties.taxonomyIdentifiers != null) {
+          const filteredArray = f.properties.taxonomyIdentifiers.filter(value =>
+            iconKeys.includes(value),
+          );
+          if (filteredArray.length > 0) {
+            let p = {...f.properties, ...{svgIcon: icons[filteredArray[0]]}};
 
-          return {...f, ...{properties: p}};
+            return {...f, ...{properties: p}};
+          }
         }
-      }
-      return f;
-    });
-    return {...s, ...{features: features}};
-  }
-  return s;
-});
+        return f;
+      });
+      return {...s, ...{features: features}};
+    }
+    return s;
+  },
+);
 export const countPois = createSelector(
   featureCollection,
   featureCollection => featureCollection?.features?.length,

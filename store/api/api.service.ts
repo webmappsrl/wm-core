@@ -108,7 +108,7 @@ export class ApiService {
 
       query += `&filters=[${paramString.toString()}]`;
     }
-    if (this._queryDic[query] == null && query != this._baseUrl) {
+    if (this._queryDic[query] == null) {
       const value = await this._http.request('get', query).toPromise();
       this._queryDic[query] = value;
     } else {
