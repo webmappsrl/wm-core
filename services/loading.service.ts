@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {LoadingController, LoadingOptions} from '@ionic/angular';
-import {from, Observable, of} from 'rxjs';
+import {BehaviorSubject, from, Observable, of} from 'rxjs';
 import {filter, mergeMap, switchMap, take, tap} from 'rxjs/operators';
 
 @Injectable({
