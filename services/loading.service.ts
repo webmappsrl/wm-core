@@ -1,35 +1,59 @@
-import {Injectable} from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import {LoadingController, LoadingOptions} from '@ionic/angular';
 import {BehaviorSubject, from, Observable, of} from 'rxjs';
-import {filter, mergeMap, switchMap, take, tap} from 'rxjs/operators';
+import {debounceTime, filter, mergeMap, switchMap, take, tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WmLoadingService {
+  private _addMsgEvt$: EventEmitter<string> = new EventEmitter<string>();
   private _events$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   private _loading$: BehaviorSubject<HTMLIonLoadingElement | null> = new BehaviorSubject(null);
+  private _present$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _removeMsgEvt$: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(private _loadingCtrl: LoadingController) {}
+  constructor(private _loadingCtrl: LoadingController) {
+    this._addMsgEvt$.subscribe(addMsg => {
+      console.log('add: ' + addMsg);
+      this._events$.next([...this._events$.value, addMsg]);
+      console.log(this._events$.value);
+      if (this._events$.value.length === 1) {
+        this.create({message: addMsg})
+          .pipe(
+            take(1),
+            switchMap(loading => loading.present()),
+          )
+          .subscribe(() => this._present$.next(true));
+      }
+    });
+    this._removeMsgEvt$.subscribe(removeMsg => {
+      this._present$.pipe(filter(f => f)).subscribe(() => {
+        console.log('remove: ' + removeMsg);
+        this._events$.next(this._events$.value.filter(e => e != removeMsg));
+        if (this._events$.value.length === 0) {
+          from(this._loadingCtrl.getTop())
+            .pipe(
+              take(1),
+              switchMap(loading => loading.dismiss()),
+            )
+            .subscribe(() => this._present$.next(false));
+        } else {
+          console.log(this._events$.value);
+          from(this._loadingCtrl.getTop())
+            .pipe(take(1))
+            .subscribe(loading => {
+              if (loading.message === removeMsg) {
+                loading.message = this._events$.value[0];
+              }
+            });
+        }
+      });
+    });
+  }
 
   close(event?: string): void {
-    let events = this._events$.value;
-    if (event == null) {
-      events = [];
-    } else {
-      events = events.filter(e => e != event);
-    }
-    this._events$.next(events);
-    if (this._events$.value.length === 0) {
-      this.dismiss()
-        .pipe(take(1))
-        .subscribe(() => {
-          this._loading$.next(null);
-          this._events$.next([]);
-        });
-    } else {
-      this.message(events[events.length - 1]);
-    }
+    this._removeMsgEvt$.next(event);
   }
 
   create(opts?: LoadingOptions): Observable<HTMLIonLoadingElement> {
@@ -57,24 +81,6 @@ export class WmLoadingService {
   }
 
   show(message: string): void {
-    if (this._events$.value.includes(message) === false) {
-      this._events$.next([...this._events$.value, message]);
-      const loading = this._loading$.value;
-      let obs: Observable<HTMLIonLoadingElement> = null;
-      if (loading != null) {
-        obs = this.message(message);
-      } else {
-        obs = this.create({message, duration: 10000});
-      }
-      obs
-        .pipe(
-          switchMap(loading => {
-            this._loading$.next(loading);
-            return loading.present();
-          }),
-          take(1),
-        )
-        .subscribe();
-    }
+    this._addMsgEvt$.next(message);
   }
 }
