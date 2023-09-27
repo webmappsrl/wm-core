@@ -1,0 +1,63 @@
+<ion-grid *ngIf="edges!=null;else noEdges">
+  <ion-row>
+    <ion-col class="wm-track-edges-prev" *ngIf="edges!=null&&edges.prev as prev">
+      <ion-grid>
+        <ion-row *ngFor="let trackID of prev;let idx=index">
+          <ion-fab-button
+            [ngStyle]="{'--background': prevColors[idx]}"
+            (click)="goToTrack(trackID)"
+          >
+            <ion-icon src="assets/walk-prev-icon.svg"></ion-icon>
+          </ion-fab-button>
+        </ion-row>
+      </ion-grid>
+    </ion-col>
+    <ion-col size="6" class="wm-track-edges-from-to">
+      <ion-grid>
+        <ion-row
+          ><ion-col size="12">
+            <div *ngIf="properties.from as from" class="wm-track-edges-from">
+              <div>{{'Punto di partenza'|wmtrans}}</div>
+              <div>{{from}}</div>
+            </div>
+          </ion-col></ion-row
+        >
+        <ion-row
+          ><ion-col>
+            <div *ngIf="properties.to as to" class="wm-track-edges-to">
+              <div>{{'Punto di arrivo'|wmtrans}}</div>
+              <div>{{to}}</div>
+            </div>
+          </ion-col></ion-row
+        >
+      </ion-grid></ion-col
+    >
+    <ion-col class="wm-track-edges-next" *ngIf="edges!=null&&edges.next as next">
+      <ion-grid>
+        <ion-row>
+          <ion-col *ngFor="let trackID of next;let idx=index">
+            <ion-fab-button
+              [ngStyle]="{'--background': nextColors[idx]}"
+              (click)="goToTrack(trackID)"
+              ng-keyup="goToTrack(trackID)"
+            >
+              <ion-icon src="assets/walk-next-icon.svg"></ion-icon>
+            </ion-fab-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+<ng-template #noEdges>
+  <div *ngIf="(properties.from || properties.to)" class="webmapp-track-details-from-to">
+    <div *ngIf="properties.from as from" class="webmapp-track-details-from-to-box">
+      <div>{{'Punto di partenza'|wmtrans}}</div>
+      <div>{{from}}</div>
+    </div>
+    <div *ngIf="properties.to as to" class="webmapp-track-details-from-to-box">
+      <div>{{'Punto di arrivo'|wmtrans}}</div>
+      <div>{{to}}</div>
+    </div>
+  </div>
+</ng-template>

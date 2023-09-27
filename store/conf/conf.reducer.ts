@@ -92,11 +92,62 @@ const initialConfState: ICONF = {
     theme: 'webmapp',
   },
 };
+const edgeMock = [
+  {
+    76704: {
+      prev: [],
+      next: [76705],
+    },
+    76705: {
+      prev: [76704],
+      next: [76706],
+    },
+    76706: {
+      prev: [76705],
+      next: [],
+    },
+  },
+  {
+    76726: {
+      prev: [],
+      next: [76727, 76725],
+    },
+    76727: {
+      prev: [76726],
+      next: [],
+    },
+    76725: {
+      prev: [76726],
+      next: [],
+    },
+  },
+  {
+    76728: {
+      prev: [76730],
+      next: [76729],
+    },
+    76729: {
+      prev: [76728],
+      next: [76730],
+    },
+    76730: {
+      prev: [76729],
+      next: [76728],
+    },
+  },
+];
 export const confReducer = createReducer(
   initialConfState,
   on(loadConfSuccess, (state, {conf}) => {
     localStorage.setItem('appname', state.APP.name);
-    let MAP = {...state.MAP, ...conf.MAP};
+    let MAP = {...state.MAP, ...{...conf.MAP}};
+    if (conf.APP.geohubId === 3) {
+      const mockedMapLayers = conf.MAP.layers.map((layer, idx) => {
+        return {...layer, ...{edges: edgeMock[idx]}};
+      });
+
+      MAP = {...state.MAP, ...{...conf.MAP, ...{layers: mockedMapLayers}}};
+    }
     if (MAP != null) {
       if (MAP.controls) {
         MAP.controls = {...addIdToControls(MAP.controls)};

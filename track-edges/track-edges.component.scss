@@ -1,0 +1,22 @@
+wm-track-edges {
+  .wm-track-edges-from {
+    align-items: flex-start;
+  }
+  .wm-track-edges-to {
+    text-align: left;
+  }
+  .wm-track-edges-from > :first-child,
+  .wm-track-edges-to > :first-child {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+    letter-spacing: 0em;
+  }
+  .wm-track-edges-to > * {
+    text-align: right;
+  }
+
+  ion-icon {
+    font-size: 4vh;
+  }
+}
