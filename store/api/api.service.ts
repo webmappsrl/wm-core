@@ -30,9 +30,13 @@ export class ApiService {
   constructor(private _http: HttpClient, private _loadingSvc: WmLoadingService) {
     const hostname: string = window.location.hostname;
     if (hostname.indexOf('localhost') < 0) {
-      const newGeohubId = parseInt(hostname.split('.')[0], 10);
-      if (!Number.isNaN(newGeohubId)) {
-        this._geohubAppId = newGeohubId;
+      if (hostname.indexOf('sentieri.caiparma') > -1) {
+        this._geohubAppId = 33;
+      } else {
+        const newGeohubId = parseInt(hostname.split('.')[0], 10);
+        if (!Number.isNaN(newGeohubId)) {
+          this._geohubAppId = newGeohubId;
+        }
       }
     }
     localForage.config({
