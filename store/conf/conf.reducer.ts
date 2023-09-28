@@ -142,8 +142,22 @@ export const confReducer = createReducer(
     localStorage.setItem('appname', state.APP.name);
     let MAP = {...state.MAP, ...{...conf.MAP}};
     if (conf.APP.geohubId === 3) {
+      let res = {};
       const mockedMapLayers = conf.MAP.layers.map((layer, idx) => {
-        return {...layer, ...{edges: edgeMock[idx]}};
+        const edgesObj = edgeMock[idx];
+        const edgesKeys = Object.keys(edgesObj);
+        edgesKeys.forEach(edgeKey => {
+          let edgeObj = edgesObj[edgeKey];
+          const nextCrossroads = isCrossroads(edgesObj, +edgeKey, 'prev');
+          const prevCrossroads = isCrossroads(edgesObj, +edgeKey, 'next');
+          res[edgeKey] = {
+            ...edgeObj,
+            nextCrossroads,
+            prevCrossroads,
+          };
+        });
+
+        return {...layer, ...{edges: res}};
       });
 
       MAP = {...state.MAP, ...{...conf.MAP, ...{layers: mockedMapLayers}}};
@@ -178,4 +192,28 @@ const addIdToControls = (controls: ICONTROLS): ICONTROLS => {
     });
   });
   return controlsWithIDs;
+};
+
+const isCrossroads = (
+  edges: {[trackID: string]: {prev: number[]; next: number[]}},
+  trackID: number,
+  trend: 'prev' | 'next' = 'prev',
+): boolean => {
+  let count = 0;
+  const keys = Object.keys(edges).filter(k => +k != trackID);
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    const edge = edges[key];
+    const tracks = [...edge.prev, ...edge.next];
+    for (const track of edge[trend]) {
+      if (track === trackID) {
+        count++;
+      }
+      if (count > 1) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 };
