@@ -1,6 +1,6 @@
 <ion-grid *ngIf="edges!=null;else noEdges">
   <ion-row>
-    <ion-col class="wm-track-edges-prev" *ngIf="edges!=null&&edges.prev as prev">
+    <ion-col class="wm-track-edges-prev" *ngIf="conf!=null&&edges!=null&&edges.prev as prev">
       <ion-grid>
         <ion-row *ngFor="let trackID of prev;let idx=index">
           <ion-fab-button
