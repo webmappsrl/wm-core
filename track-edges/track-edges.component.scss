@@ -15,8 +15,47 @@ wm-track-edges {
   .wm-track-edges-to > * {
     text-align: right;
   }
-
+  .wm-track-edges-start-end-icons {
+    height: 25px;
+    width: 25px;
+  }
+  .wm-track-edges-start {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: flex-start;
+    align-items: flex-start;
+    ion-grid {
+      order: 0;
+      flex: 0 0 auto;
+      align-self: flex-start;
+    }
+  }
+  .wm-track-edges-end {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: flex-start;
+    align-items: flex-start;
+    ion-grid {
+      order: 0;
+      flex: 0 0 auto;
+      align-self: flex-end;
+    }
+  }
+  .wm-track-edges-prev,
+  .wm-track-edges-next {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: flex-start;
+    align-items: flex-start;
+  }
   ion-icon {
     font-size: 4vh;
+    color: #329f46;
+  }
+  ion-fab-button {
+    margin-bottom: 5px;
   }
 }
