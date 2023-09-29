@@ -1,54 +1,94 @@
 <ion-grid *ngIf="conf!=null&&edges!=null;else noEdges">
   <ion-row>
-    <ion-col class="wm-track-edges-prev" *ngIf="edges.prev as prev">
+    <ion-col
+      size="3"
+      class="wm-track-edges-prev"
+      *ngIf="edges?.prev?.length > 0; else elseBlockPrev"
+    >
       <ion-grid>
-        <ion-row *ngFor="let trackID of prev;let idx=index">
+        <ion-row *ngFor="let trackID of edges.prev;let idx=index">
           <ion-fab-button
             [ngStyle]="{'--background': prevColors[idx]}"
             (click)="goToTrack(trackID)"
           >
-            <ion-icon src="assets/walk-prev-icon.svg"></ion-icon>
+            <ion-icon name="arrow-back-outline" size="large"></ion-icon>
           </ion-fab-button>
         </ion-row>
       </ion-grid>
     </ion-col>
+    <ng-template #elseBlockPrev>
+      <ion-col size="3" class="wm-track-edges-start">
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-fab-button color="white">
+                <ion-icon
+                  class="wm-track-edges-start-end-icons"
+                  src="assets/start-icon.svg"
+                ></ion-icon>
+              </ion-fab-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-col>
+    </ng-template>
+
     <ion-col size="6" class="wm-track-edges-from-to">
       <ion-grid>
-        <ion-row
-          ><ion-col size="12">
+        <ion-row>
+          <ion-col size="12">
             <div *ngIf="properties.from as from" class="wm-track-edges-from">
               <div>{{'Punto di partenza'|wmtrans}}</div>
               <div>{{from}}</div>
             </div>
-          </ion-col></ion-row
-        >
-        <ion-row
-          ><ion-col>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
             <div *ngIf="properties.to as to" class="wm-track-edges-to">
               <div>{{'Punto di arrivo'|wmtrans}}</div>
               <div>{{to}}</div>
             </div>
-          </ion-col></ion-row
-        >
-      </ion-grid></ion-col
-    >
-    <ion-col class="wm-track-edges-next" *ngIf="edges.next as next">
-      <ion-grid>
-        <ion-row>
-          <ion-col *ngFor="let trackID of next;let idx=index">
-            <ion-fab-button
-              [ngStyle]="{'--background': nextColors[idx]}"
-              (click)="goToTrack(trackID)"
-              ng-keyup="goToTrack(trackID)"
-            >
-              <ion-icon src="assets/walk-next-icon.svg"></ion-icon>
-            </ion-fab-button>
           </ion-col>
         </ion-row>
       </ion-grid>
     </ion-col>
+
+    <ion-col
+      size="3"
+      class="wm-track-edges-next"
+      *ngIf="edges?.next?.length > 0; else elseBlockNext"
+    >
+      <ion-grid>
+        <ion-row *ngFor="let trackID of edges.next;let idx=index">
+          <ion-fab-button
+            [ngStyle]="{'--background': nextColors[idx]}"
+            (click)="goToTrack(trackID)"
+          >
+            <ion-icon name="arrow-forward-outline" size="large"></ion-icon>
+          </ion-fab-button>
+        </ion-row>
+      </ion-grid>
+    </ion-col>
+    <ng-template #elseBlockNext>
+      <ion-col class="wm-track-edges-end" size="3">
+        <ion-grid class="align-to-bottom">
+          <ion-row>
+            <ion-col>
+              <ion-fab-button color="white">
+                <ion-icon
+                  class="wm-track-edges-start-end-icons"
+                  src="assets/end-icon.svg"
+                ></ion-icon>
+              </ion-fab-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-col>
+    </ng-template>
   </ion-row>
 </ion-grid>
+
 <ng-template #noEdges>
   <div *ngIf="(properties.from || properties.to)" class="webmapp-track-details-from-to">
     <div *ngIf="properties.from as from" class="webmapp-track-details-from-to-box">
