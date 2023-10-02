@@ -15,9 +15,7 @@ export class WmLoadingService {
 
   constructor(private _loadingCtrl: LoadingController) {
     this._addMsgEvt$.subscribe(addMsg => {
-      console.log('add: ' + addMsg);
       this._events$.next([...this._events$.value, addMsg]);
-      console.log(this._events$.value);
       if (this._events$.value.length === 1) {
         this.create({message: addMsg})
           .pipe(
@@ -29,7 +27,6 @@ export class WmLoadingService {
     });
     this._removeMsgEvt$.subscribe(removeMsg => {
       this._present$.pipe(filter(f => f)).subscribe(() => {
-        console.log('remove: ' + removeMsg);
         this._events$.next(this._events$.value.filter(e => e != removeMsg));
         if (this._events$.value.length === 0) {
           from(this._loadingCtrl.getTop())
@@ -39,7 +36,6 @@ export class WmLoadingService {
             )
             .subscribe(() => this._present$.next(false));
         } else {
-          console.log(this._events$.value);
           from(this._loadingCtrl.getTop())
             .pipe(take(1))
             .subscribe(loading => {
@@ -71,7 +67,6 @@ export class WmLoadingService {
     const loading = this._loading$.value;
     if (loading != null && loading.message != message) {
       loading.message = message;
-      console.log('loading message: ' + loading.message);
     }
     return this._loading$;
   }
