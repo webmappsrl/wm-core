@@ -70,6 +70,14 @@ export class WmSlopeChartComponent implements OnChanges {
     Chart.register(...registerables);
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.currentTrack != null && changes.currentTrack.currentValue != null) {
+      setTimeout(() => {
+        this._setChart(this.currentTrack);
+      }, 400);
+    }
+  }
+
   /**
    * Return the distance in meters between two locations
    *
@@ -93,14 +101,6 @@ export class WmSlopeChartComponent implements OnChanges {
     return R * c;
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.currentTrack != null && changes.currentTrack.currentValue != null) {
-      setTimeout(() => {
-        this._setChart(this.currentTrack);
-      }, 400);
-    }
-  }
-
   /**
    * Create the chart
    *
@@ -114,6 +114,7 @@ export class WmSlopeChartComponent implements OnChanges {
     labels: Array<number>,
     length: number,
     maxAltitude: number,
+    minAltitude: number,
     surfaceValues: Array<{
       surface: string;
       values: Array<number>;
@@ -121,11 +122,10 @@ export class WmSlopeChartComponent implements OnChanges {
     }>,
     slopeValues: Array<[number, number]>,
   ) {
+    const delta = (maxAltitude - minAltitude) * 0.1;
     if (this._chartCanvas) {
       let surfaceDatasets: Array<ChartDataset> = [];
-
       this.slopeValues = slopeValues;
-
       for (let i in surfaceValues) {
         surfaceDatasets.push(
           this._getSlopeChartSurfaceDataset(
@@ -134,7 +134,9 @@ export class WmSlopeChartComponent implements OnChanges {
           ),
         );
       }
-
+      if (this._chart != null) {
+        this._chart.destroy();
+      }
       this._chart = new Chart(this._chartCanvas, {
         type: 'line',
         data: {
@@ -186,7 +188,8 @@ export class WmSlopeChartComponent implements OnChanges {
               title: {
                 display: false,
               },
-              max: maxAltitude,
+              max: Math.round(maxAltitude + delta),
+              min: Math.round(minAltitude - delta),
               ticks: {
                 maxTicksLimit: 2,
                 maxRotation: 0,
@@ -526,8 +529,12 @@ export class WmSlopeChartComponent implements OnChanges {
         };
         trackLength += this.getDistanceBetweenPoints(previousLocation, currentLocation);
 
-        if (!maxAlt || maxAlt < currentLocation.altitude) maxAlt = currentLocation.altitude;
-        if (!minAlt || minAlt > currentLocation.altitude) minAlt = currentLocation.altitude;
+        if (maxAlt < currentLocation.altitude) {
+          maxAlt = currentLocation.altitude;
+        }
+        if (minAlt > currentLocation.altitude) {
+          minAlt = currentLocation.altitude;
+        }
       }
 
       let step: number = 1,
@@ -600,7 +607,7 @@ export class WmSlopeChartComponent implements OnChanges {
         });
       }
 
-      this._createChart(labels, trackLength, maxAlt, surfaceValues, slopeValues);
+      this._createChart(labels, trackLength, maxAlt, minAlt, surfaceValues, slopeValues);
     }
   }
 
