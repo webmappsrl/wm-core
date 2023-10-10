@@ -1,7 +1,10 @@
 <ng-container *ngIf="filterName === 'poi_types';else track">
   <ion-accordion [value]="filterName">
     <ion-item slot="header" color="light">
-      <ion-label> {{filter.name|wmtrans}} {{parent?.countPois$|async}}</ion-label>
+      <ion-label> {{filter.name|wmtrans}} </ion-label>
+      <span class="wm-filters-count" *ngIf="parent?.countPois$|async as countPois"
+        >{{countPois}}
+      </span>
     </ion-item>
     <div class="ion-padding" slot="content">
       <div class="chip-list">
@@ -37,7 +40,12 @@
     <ng-container *ngIf="parent.trackFilters$|async as trackFilters">
       <ion-accordion [value]="filterName">
         <ion-item slot="header" color="light">
-          <ion-label> {{filter.name|wmtrans}} {{parent.countTracks$|async}}</ion-label>
+          <ion-label> {{filter.name|wmtrans}}</ion-label>
+          <span
+            class="wm-filters-count"
+            *ngIf="parent.countTracks$|async as countTracks"
+            >{{countTracks}}</span
+          >
         </ion-item>
         <div class="ion-padding" slot="content">
           <div class="chip-list">
