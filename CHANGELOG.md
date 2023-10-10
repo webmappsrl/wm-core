@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/webmappsrl/wm-core/compare/v1.0.0...v1.0.1) (2023-10-10)
+
+
+### Miscellaneous
+
+* Update select-filter component HTML and SCSS ([017b976](https://github.com/webmappsrl/wm-core/commit/017b9762c93c032d367cca738b9932d9422b2d39)), closes [#1858](https://github.com/webmappsrl/wm-core/issues/1858)
+
 ## 1.0.0 (2023-10-03)
 
 
