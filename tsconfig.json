@@ -14,7 +14,10 @@
     "skipLibCheck": true,
     "lib": ["es2018", "dom"],
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "wm-core/*": ["projects/wm-core/*"]
+    }
   },
   "angularCompilerOptions": {
     "strictTemplates": true

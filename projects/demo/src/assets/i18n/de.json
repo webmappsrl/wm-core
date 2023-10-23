@@ -1,0 +1,72 @@
+{
+  "trackDetails": {
+    "technicalData": {
+      "ascent": "Aufstieg",
+      "descent": "Abstieg",
+      "ele_from": "Start-Höhe",
+      "ele_to": "Ziel-Höhe",
+      "ele_min": "Minimale Höhe",
+      "ele_max": "Maximale Höhe",
+      "duration": "Dauer",
+      "duration_forward": "Hinweg-Dauer",
+      "duration_backward": "Rückweg-Dauer",
+      "distance": "Länge",
+      "difficulty": "Schwierigkeit"
+    },
+    "downloadUrls": {
+      "gpx": "GPX-Track herunterladen",
+      "kml": "KML-Track herunterladen",
+      "geojson": "GEOJSON-Track herunterladen"
+    },
+    "description": {
+      "readAll": "Alles lesen",
+      "hide": "Ausblenden"
+    },
+    "elevationChart": {
+      "slope": {
+        "label": "Steigung"
+      },
+      "surfaces": {
+        "asphalt": {
+          "label": "Asphalt"
+        },
+        "concrete": {
+          "label": "Beton"
+        },
+        "dirt": {
+          "label": "Erde"
+        },
+        "grass": {
+          "label": "Gras"
+        },
+        "gravel": {
+          "label": "Schotter"
+        },
+        "paved": {
+          "label": "Befestigt"
+        },
+        "sand": {
+          "label": "Sand"
+        }
+      }
+    }
+  },
+  "home": {
+    "duration": "Dauer",
+    "length": "Länge",
+    "difference": "Höhendifferenz"
+  },
+  "skitouring": "Skibergsteigen",
+  "walking": "Spaziergang",
+  "running": "Laufen",
+  "cycling": "Radfahren",
+  "Punto di partenza": "Startpunkt",
+  "Punto di arrivo": "Zielpunkt",
+  "Dettagli tecnici": "Technische Details",
+  "Attività": "Aktivitäten",
+  "Punti di interesse": "Interessante Orte",
+  "Collegamenti esterni": "Externe Links",
+  "Filtri": "Filter",
+  "where": "Orte",
+  "Spiacenti non ci sono risultati con questi criteri di ricerca.": "Leider gibt es keine Ergebnisse mit diesen Suchkriterien"
+}

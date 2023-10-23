@@ -1,0 +1,66 @@
+{
+  "trackDetails": {
+    "technicalData": {
+      "ascent": "Dislivello positivo",
+      "descent": "Dislivello negativo",
+      "ele_from": "Quota di partenza",
+      "ele_to": "Quota di arrivo",
+      "ele_min": "Quota minima",
+      "ele_max": "Quota massima",
+      "duration": "Durata",
+      "duration_forward": "Durata di andata",
+      "duration_backward": "Durata di ritorno",
+      "distance": "Lunghezza",
+      "difficulty": "Difficoltà"
+    },
+    "downloadUrls": {
+      "gpx": "Scarica il tracciato GPX",
+      "kml": "Scarica il tracciato KML",
+      "geojson": "Scarica il tracciato GEOJSON"
+    },
+    "description": {
+      "readAll": "Leggi tutto",
+      "hide": "Nascondi"
+    },
+    "elevationChart": {
+      "slope": {
+        "label": "Pendenza"
+      },
+      "surfaces": {
+        "asphalt": {
+          "label": "Asfalto"
+        },
+        "concrete": {
+          "label": "Cemento"
+        },
+        "dirt": {
+          "label": "Terra"
+        },
+        "grass": {
+          "label": "Erba"
+        },
+        "gravel": {
+          "label": "Ghiaia"
+        },
+        "paved": {
+          "label": "Lastricato"
+        },
+        "sand": {
+          "label": "Sabbia"
+        }
+      }
+    }
+  },
+  "home": {
+    "duration": "Durata",
+    "length": "Lunghezza",
+    "difference": "Dislivello"
+  },
+  "hiking": "Escursionismo",
+  "skitouring": "Scialpinismo",
+  "walking": "Passeggiata",
+  "running": "Corsa",
+  "cycling": "In bicicletta",
+  "poi_type": "Punti di interesse",
+  "where": "Luoghi"
+}

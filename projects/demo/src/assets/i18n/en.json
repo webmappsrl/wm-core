@@ -1,0 +1,72 @@
+{
+  "trackDetails": {
+    "technicalData": {
+      "ascent": "Positive elevation",
+      "descent": "Negative elevation",
+      "ele_from": "Starting altitude",
+      "ele_to": "Arrival altitude",
+      "ele_min": "Minimum altitude",
+      "ele_max": "Maximum altitude",
+      "duration": "Duration",
+      "duration_forward": "Outward duration",
+      "duration_backward": "Return duration",
+      "distance": "Length",
+      "difficulty": "Difficulty"
+    },
+    "downloadUrls": {
+      "gpx": "Download the GPX track",
+      "kml": "Download the KML track",
+      "geojson": "Download the GEOJSON track"
+    },
+    "description": {
+      "readAll": "Read all",
+      "hide": "Hide"
+    },
+    "elevationChart": {
+      "slope": {
+        "label": "Slope"
+      },
+      "surfaces": {
+        "asphalt": {
+          "label": "Asphalt"
+        },
+        "concrete": {
+          "label": "Concrete"
+        },
+        "dirt": {
+          "label": "Land"
+        },
+        "grass": {
+          "label": "Grass"
+        },
+        "gravel": {
+          "label": "Gravel"
+        },
+        "paved": {
+          "label": "Paved"
+        },
+        "sand": {
+          "label": "Sand"
+        }
+      }
+    }
+  },
+  "home": {
+    "duration": "Duration",
+    "length": "Length",
+    "difference": "Elevation"
+  },
+  "skitouring": "Ski touring",
+  "walking": "Walking",
+  "running": "Running",
+  "cycling": "Cycling",
+  "Punto di partenza": "Start point",
+  "Punto di arrivo": "End point",
+  "Dettagli tecnici": "Technical details",
+  "Attività": "Activities",
+  "Punti di interesse": "Points of interest",
+  "Collegamenti esterni": "External links",
+  "Filtri": "Filters",
+  "where": "Places",
+  "Spiacenti non ci sono risultati con questi criteri di ricerca.": "Sorry, there are no results with these search criteria"
+}
