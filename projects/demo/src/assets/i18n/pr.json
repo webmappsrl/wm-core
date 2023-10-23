@@ -1,0 +1,72 @@
+{
+  "trackDetails": {
+    "technicalData": {
+      "ascent": "Elevação positiva",
+      "descent": "Elevação negativa",
+      "ele_from": "Altitude de partida",
+      "ele_to": "Altitude de chegada",
+      "ele_min": "Altitude mínima",
+      "ele_max": "Altitude máxima",
+      "duration": "Duração",
+      "duration_forward": "Duração de ida",
+      "duration_backward": "Duração de volta",
+      "distance": "Distância",
+      "difficulty": "Dificuldade"
+    },
+    "downloadUrls": {
+      "gpx": "Baixar a trilha GPX",
+      "kml": "Baixar a trilha KML",
+      "geojson": "Baixar a trilha GEOJSON"
+    },
+    "description": {
+      "readAll": "Ler tudo",
+      "hide": "Ocultar"
+    },
+    "elevationChart": {
+      "slope": {
+        "label": "Inclinação"
+      },
+      "surfaces": {
+        "asphalt": {
+          "label": "Asfalto"
+        },
+        "concrete": {
+          "label": "Concreto"
+        },
+        "dirt": {
+          "label": "Terra"
+        },
+        "grass": {
+          "label": "Grama"
+        },
+        "gravel": {
+          "label": "Cascalho"
+        },
+        "paved": {
+          "label": "Pavimentado"
+        },
+        "sand": {
+          "label": "Areia"
+        }
+      }
+    }
+  },
+  "home": {
+    "duration": "Duração",
+    "length": "Distância",
+    "difference": "Elevação"
+  },
+  "skitouring": "Esqui alpino",
+  "walking": "Caminhada",
+  "running": "Corrida",
+  "cycling": "Ciclismo",
+  "Punto di partenza": "Ponto de partida",
+  "Punto di arrivo": "Ponto de chegada",
+  "Dettagli tecnici": "Detalhes técnicos",
+  "Attività": "Atividades",
+  "Punti di interesse": "Pontos de interesse",
+  "Collegamenti esterni": "Links externos",
+  "Filtri": "Filtros",
+  "where": "Locais",
+  "Spiacenti non ci sono risultati con questi criteri di ricerca.": "Desculpe, não há resultados com estes critérios de pesquisa"
+}
