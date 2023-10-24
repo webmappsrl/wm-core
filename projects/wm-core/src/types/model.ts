@@ -9,12 +9,12 @@ export type IMultiPolygon = Array<Array<Array<IPoint>>>;
 /**
  * Define the supported geometries
  */
-interface IGeojsonGeometry {
+export interface IGeojsonGeometry {
   coordinates: IPoint | ILineString | IMultiLineString | IPolygon | IMultiPolygon;
   type: EGeojsonGeometryTypes;
 }
 
-interface iLocalString {
+export interface iLocalString {
   de?: string;
   en?: string;
   es?: string;
@@ -26,7 +26,7 @@ interface iLocalString {
 /**
  * Define the supported properties
  */
-interface IGeojsonProperties {
+export interface IGeojsonProperties {
   ascent?: number;
   audio?: {[lang: string]: string};
   created_at?: Date;
@@ -75,17 +75,17 @@ interface IGeojsonProperties {
 /**
  * Define a feature
  */
-interface IGeojsonFeature {
+export interface IGeojsonFeature {
   geometry: IGeojsonGeometry;
   properties: IGeojsonProperties;
   type: 'Feature';
 }
 
-interface IGeojsonFeatureDownloaded extends IGeojsonFeature {
+export interface IGeojsonFeatureDownloaded extends IGeojsonFeature {
   size: number;
 }
 
-interface IWmImage {
+export interface IWmImage {
   api_url: string;
   caption: string;
   id: number;
@@ -104,12 +104,12 @@ interface IWmImage {
   url: string;
 }
 
-interface IGeojsonGeneric {
+export interface IGeojsonGeneric {
   geometry: IGeojsonGeometry;
   properties: any;
   type: string;
 }
-interface IGeojsonCluster extends IGeojsonGeneric {
+export interface IGeojsonCluster extends IGeojsonGeneric {
   properties: {
     ids: number[]; // Id di Ec Track che fanno parte del cluster
     images: string[]; // Massimo 3 url di immagini ottimizzate
@@ -118,7 +118,7 @@ interface IGeojsonCluster extends IGeojsonGeneric {
   type: 'Feature';
 }
 
-interface IGeojsonPoi extends IGeojsonGeneric {
+export interface IGeojsonPoi extends IGeojsonGeneric {
   isSmall?: boolean;
   properties: {
     id: number; // Id del poi
@@ -127,7 +127,7 @@ interface IGeojsonPoi extends IGeojsonGeneric {
   type: 'Point';
 }
 
-interface IGeojsonPoiDetailed extends IGeojsonPoi {
+export interface IGeojsonPoiDetailed extends IGeojsonPoi {
   properties: {
     id: number; // Id del poi
     image: string; // url image
@@ -142,18 +142,18 @@ interface IGeojsonPoiDetailed extends IGeojsonPoi {
     audio?: {[lang: string]: string};
   };
 }
-interface IGeojsonClusterApiResponse {
+export interface IGeojsonClusterApiResponse {
   features: IGeojsonCluster[];
 }
 
-interface PoiTypeTaxonomy {
+export interface PoiTypeTaxonomy {
   color: string;
   icon: string;
   id: number;
   identifier: string;
   name: iLocalString;
 }
-interface WhereTaxonomy {
+export interface WhereTaxonomy {
   admin_level: number;
   created_at: Date;
   description: string;
@@ -163,7 +163,7 @@ interface WhereTaxonomy {
   source_id: number;
   updated_at: Date;
 
-// excerpt: null,
+  // excerpt: null,
   // source: null,
   // user_id: null,
   // identifier: toscana,

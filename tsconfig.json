@@ -16,7 +16,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "wm-core/*": ["projects/wm-core/*"]
+      "wm-core/*": ["projects/wm-core/src/*"]
     }
   },
   "angularCompilerOptions": {
