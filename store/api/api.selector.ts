@@ -38,8 +38,10 @@ export const apiElasticState = createSelector(elasticSearchFeature, state => {
     filterTracks: state.filterTracks,
     inputTyped: state.inputTyped,
     loading: true,
+    lastFilterType: 'tracks',
   };
 });
+
 export const apiFilterTracks = createSelector(apiElasticState, state => {
   return state.filterTracks;
 });
@@ -71,7 +73,9 @@ export const showResult = createSelector(elasticSearchFeature, state => {
     (state.inputTyped && state.inputTyped != '')
   );
 });
-
+export const lastFilterType = createSelector(elasticSearchFeature, state => {
+  return state.lastFilterType;
+});
 export const poiFilterIdentifiers = createSelector(
   elasticSearchFeature,
   state => state.poisSelectedFilterIdentifiers ?? [],
@@ -108,6 +112,11 @@ export const poisInitFeatureCollection = createSelector(
   elasticSearchFeature,
   state => state.poisInitFeatureCollection,
 );
+export const poisInitCount = createSelector(
+  poisInitFeatureCollection,
+  featureCollection => featureCollection?.features?.length,
+);
+
 export const poisWhereFeatureCollection = createSelector(
   poisInitFeatureCollection,
   filterTaxonomies,

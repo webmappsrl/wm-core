@@ -35,7 +35,7 @@ export class FiltersComponent implements OnChanges {
       this.toggle$.next(false);
     }
   }
-
+  @Output() lastFilterTypeEvt: EventEmitter<'tracks' | 'pois'> = new EventEmitter();
   @Output() filterPoisEvt: EventEmitter<SelectFilterOption | SliderFilter | Filter> =
     new EventEmitter<SelectFilterOption | SliderFilter | Filter>();
   @Output() filterTracksEvt: EventEmitter<SelectFilterOption | SliderFilter | Filter> =
@@ -61,10 +61,12 @@ export class FiltersComponent implements OnChanges {
   constructor(private _store: Store) {}
 
   addPoisFilter(filter: any): void {
+    this.lastFilterTypeEvt.emit('pois');
     this.filterPoisEvt.emit(filter);
   }
 
   addTrackFilter(filter: SelectFilterOption, taxonomy?: string): void {
+    this.lastFilterTypeEvt.emit('tracks');
     this.filterTracksEvt.emit({...filter, taxonomy});
   }
 

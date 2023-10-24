@@ -17,6 +17,8 @@ import {
   featureCollection,
   queryApi,
   apiElasticStateLayer,
+  poisInitCount,
+  lastFilterType,
 } from '../../store/api/api.selector';
 
 @Component({
@@ -34,6 +36,8 @@ export class WmHomeResultComponent implements OnDestroy {
 
   countAll$ = this._store.select(countAll);
   countPois$ = this._store.select(countPois);
+  countInitPois$ = this._store.select(poisInitCount);
+  lastFilterType$ = this._store.select(lastFilterType);
   countTracks$ = this._store.select(countTracks);
   currentLayer$ = this._store.select(apiElasticStateLayer);
   pois$: Observable<any[]> = this._store.select(featureCollection).pipe(
@@ -45,13 +49,25 @@ export class WmHomeResultComponent implements OnDestroy {
   tracksLoading$: Observable<boolean> = this._store.select(apiElasticStateLoading);
 
   constructor(private _store: Store) {
-    this._resultTypeSub$ = combineLatest([this.countTracks$, this.countPois$])
+    this._resultTypeSub$ = combineLatest([
+      this.countTracks$,
+      this.countPois$,
+      this.countInitPois$,
+      this.lastFilterType$,
+    ])
       .pipe(
-        map(([tracks, pois]) => {
-          if (tracks != null && tracks > 0) {
-            return 'tracks';
-          } else if (pois != null && pois > 0) {
+        map(([tracks, pois, initPois, lastFilterType]) => {
+          if (
+            lastFilterType != null &&
+            lastFilterType === 'pois' &&
+            pois != null &&
+            pois > 0 &&
+            pois != null &&
+            pois < initPois
+          ) {
             return 'pois';
+          } else if (tracks != null && tracks > 0) {
+            return 'tracks';
           } else {
             return 'none';
           }

@@ -13,6 +13,7 @@ import {
   toggleTrackFilter,
   updateTrackFilter,
   goToHome,
+  setLastFilterType,
 } from './api.actions';
 
 export const searchKey = 'search';
@@ -58,6 +59,9 @@ export const elasticQueryReducer = createReducer(
       loading: true,
     };
     return newState;
+  }),
+  on(setLastFilterType, (state, lastFilterType) => {
+    return {...state, ...{lastFilterType: lastFilterType.filter}};
   }),
   on(setLayer, (state, {layer}) => {
     let poisSelectedFilterIdentifiers = [];
