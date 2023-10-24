@@ -1,7 +1,7 @@
 import {HttpClient} from '@angular/common/http';
 
 /* eslint-disable quote-props */
-import {Injectable} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {SearchResponse} from 'elasticsearch';
 import {FeatureCollection} from 'geojson';
 import {from, Observable, of} from 'rxjs';
@@ -9,15 +9,16 @@ import * as localForage from 'localforage';
 // @ts-ignore
 import {filter, switchMap, tap} from 'rxjs/operators';
 import {WmLoadingService} from '../../services/loading.service';
-import { Filter, SliderFilter } from '../../types/config';
-import { IELASTIC } from '../../types/elastic';
+import {Filter, SliderFilter} from '../../types/config';
+import {IELASTIC} from '../../types/elastic';
+import {EnvironmentConfig, ENVIRONMENT_CONFIG} from '../conf/conf.token';
 // const baseUrl = 'http://localhost:3000/search';
 const baseUrl = 'https://elastic-json.webmapp.it/search';
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  private _geohubAppId: number = 3
+  private _geohubAppId: number = this.environment.geohubId;
   private _queryDic: {[query: string]: any} = {};
 
   private get _baseUrl(): string {
@@ -29,7 +30,11 @@ export class ApiService {
    * @param {HttpClient} _http
    * @memberof ElasticService
    */
-  constructor(private _http: HttpClient, private _loadingSvc: WmLoadingService) {
+  constructor(
+    @Inject(ENVIRONMENT_CONFIG) public environment: EnvironmentConfig,
+    private _http: HttpClient,
+    private _loadingSvc: WmLoadingService,
+  ) {
     const hostname: string = window.location.hostname;
     if (hostname.indexOf('localhost') < 0) {
       if (hostname.indexOf('sentieri.caiparma') > -1) {
@@ -50,7 +55,7 @@ export class ApiService {
   public getPois(): Observable<FeatureCollection> {
     const poisUrl = `/api/v1/app/${this._geohubAppId}/pois.geojson`;
     return from(localForage.getItem(poisUrl)).pipe(
-      filter((f:any)=>f),
+      filter((f: any) => f),
       switchMap((cachedData: string | null) => {
         if (cachedData != null) {
           const parsedData = JSON.parse(cachedData as string);
