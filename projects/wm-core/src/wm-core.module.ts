@@ -74,6 +74,6 @@ const modules = [WmSharedModule, WmPipeModule, BoxModule, WmLocalizationModule, 
     ...modules,
   ],
   providers: [LangService],
-  exports: [...declarations, ...modules, TranslateModule],
+  exports: [...declarations, ...modules, TranslateModule, IonicModule],
 })
 export class WmCoreModule {}

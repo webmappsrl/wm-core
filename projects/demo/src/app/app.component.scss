@@ -1,0 +1,74 @@
+.wm-core-demo-side-menu {
+  width: 200px;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #f4f4f4;
+  overflow-y: auto;
+
+  .wm-core-demo-menu-header {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .wm-core-demo-menu-content {
+    padding: 10px;
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+
+      li {
+        padding: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        border: 1px solid #e4e4e4;
+        text-align: center;
+
+        &:hover {
+          background-color: #e4e4e4;
+        }
+      }
+    }
+  }
+}
+
+.wm-core-demo-component-container {
+  display: flex;
+  flex-direction: column;
+  margin-left: 260px;
+  padding: 20px;
+  align-items: center;
+  .wm-core--component {
+    flex: 1 1 auto;
+    align-self: auto;
+  }
+  .wm-core-demo-component-example {
+    width: 350px;
+    height: 176px;
+  }
+  .wm-core-demo-description {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #777;
+    max-width: 80%;
+    line-height: 1.4;
+  }
+
+  .wm-core-demo-figma-link {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #0acf83; // Questo è il colore principale di Figma
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: #009966; // Una tonalità leggermente più scura per l'effetto hover
+    }
+  }
+}
