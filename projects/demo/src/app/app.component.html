@@ -4,8 +4,8 @@
   </div>
   <div class="wm-core-demo-menu-content">
     <ul>
-      <li *ngFor="let component of components" (click)="showComponent(component.name)">
-        {{ component.label }}
+      <li *ngFor="let component of components" (click)="showComponent(component)">
+        {{ component }}
       </li>
     </ul>
   </div>
@@ -133,7 +133,7 @@
         [data]="{
         box_type: 'layer', 
         title: 'wm-layer-box', 
-        layer: exampleLayer
+        layer: demoLayer
     }"
       >
       </wm-layer-box>
@@ -230,7 +230,7 @@
   <div *ngIf="selectedComponent === 'wm-search-box'">
     <h3>Esempio</h3>
     <div class="wm-core-demo-component-example">
-      <wm-search-box class="wm-core-demo-component" [data]="exampleCard"></wm-search-box>
+      <wm-search-box class="wm-core-demo-component" [data]="demoCard"></wm-search-box>
     </div>
     <br />
     <div>
