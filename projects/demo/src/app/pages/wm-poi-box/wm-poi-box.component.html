@@ -1,0 +1,33 @@
+<h3>Esempio</h3>
+<wm-poi-box class="wm-core-demo-component" [data]="demoCard"></wm-poi-box>
+<br />
+<div>
+  <a
+    class="wm-core-demo-figma-link"
+    target="_blank"
+    href="https://www.figma.com/file/asngSNMmuSZEamZOQuhdPI/wm-core?type=design&node-id=60%3A6477&mode=design&t=N0LZAFaC7sacOCp0-1"
+    >Figma</a
+  >
+</div>
+<div class="wm-core-demo-description">
+  <h3>Descrizione del componente wm-poi-box</h3>
+  <p>
+    Il componente `wm-poi-box` è progettato per visualizzare i dettagli di un punto d'interesse
+    (POI). Questo componente eredita dalla classe `BaseBoxComponent`, che significa che accetta un
+    oggetto di tipo `IHIT` come dato in ingresso.
+  </p>
+  <p>
+    Il componente visualizza un'immagine di copertina, se presente, attraverso il tag `wm-img`. Al
+    di sotto dell'immagine, mostra il nome del POI tradotto attraverso il pipe `wmtrans`.
+  </p>
+  <p>
+    Inoltre, il componente può mostrare una lista di taxonomie associate al POI, se presenti. Ogni
+    taxonomia viene mostrata con una icona e un nome. Le icone vengono recuperate attraverso il pipe
+    `getIcn` e i nomi delle taxonomie sono tradotti e convertiti in minuscolo attraverso i pipes
+    `lowercase` e `wmtrans`.
+  </p>
+  <p>
+    Il componente offre anche un'interazione cliccabile, attraverso l'evento `(clickEVT)`, che può
+    essere utilizzato per eseguire azioni quando l'utente clicca sul box del POI.
+  </p>
+</div>

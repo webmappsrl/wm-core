@@ -1,0 +1,53 @@
+<h3>Esempio</h3>
+<div class="wm-core-demo-component-example">
+  <wm-layer-box
+    class="wm-core-demo-component"
+    [data]="{
+    box_type: 'layer', 
+    title: 'wm-layer-box', 
+    layer: demoLayer
+}"
+  >
+  </wm-layer-box>
+</div>
+<br />
+<div>
+  <a
+    class="wm-core-demo-figma-link"
+    target="_blank"
+    href="https://www.figma.com/file/asngSNMmuSZEamZOQuhdPI/wm-core?type=design&node-id=32%3A5&mode=design&t=FoMzhp5AmdLLyzZN-1"
+    >Figma</a
+  >
+</div>
+<div class="wm-core-demo-description">
+  <h3>Descrizione del componente wm-layer-box</h3>
+  <p>
+    Il componente `wm-layer-box` è un contenitore specializzato progettato per visualizzare e
+    interagire con layers geografici in un'applicazione. Estende la funzionalità del componente di
+    base `BaseBoxComponent` e prende come input principale un oggetto `data` che può avere le
+    seguenti proprietà:
+  </p>
+  <ul>
+    <li><strong>box_type:</strong> Tipo di box, che in questo caso è sempre 'layer'.</li>
+    <li>
+      <strong>title:</strong> Titolo del box, utilizzato come fallback se non viene fornito un
+      titolo specifico del layer.
+    </li>
+    <li>
+      <strong>layer:</strong> Un oggetto che rappresenta le informazioni specifiche del layer,
+      incluse l'immagine, lo stile, il titolo e altre proprietà.
+    </li>
+    <li>
+      <strong>icon (opzionale):</strong> Una rappresentazione SVG dell'icona associata al layer.
+    </li>
+    <li>
+      <strong>color (opzionale):</strong> Un colore specifico da utilizzare per il layer, utilizzato
+      principalmente per l'indicatore di colore sul lato sinistro del box.
+    </li>
+  </ul>
+  <p>
+    La struttura del componente offre una vista compatta delle informazioni essenziali relative al
+    layer, con un'immagine rappresentativa, un titolo e un'icona. Gli utenti possono interagire con
+    il componente cliccando su di esso, scatenando l'evento `clickEVT`.
+  </p>
+</div>

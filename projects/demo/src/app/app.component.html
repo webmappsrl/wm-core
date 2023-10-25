@@ -1,276 +1,31 @@
-<div class="wm-core-demo-side-menu">
-  <div class="wm-core-demo-menu-header">
-    <h1>wm-core</h1>
-  </div>
-  <div class="wm-core-demo-menu-content">
-    <ul>
-      <li *ngFor="let component of components" (click)="showComponent(component)">
-        {{ component }}
-      </li>
-    </ul>
-  </div>
-</div>
+<app-left-bar (componentSelected)="onComponentSelected($event)"></app-left-bar>
 
 <div class="wm-core-demo-component-container" id="main-content">
-  <div *ngIf="selectedComponent === 'webmapp-title'">
-    <h3>Esempio</h3>
-    <webmapp-title class="wm-core-demo-component">Contenuto titolo</webmapp-title>
-    <br />
-    <div>
-      <a
-        class="wm-core-demo-figma-link"
-        target="_blank"
-        href="https://www.figma.com/file/asngSNMmuSZEamZOQuhdPI/wm-core?type=design&node-id=26%3A1586&mode=design&t=6N5ZoKvsilN11BAE-1"
-        >Figma</a
-      >
-    </div>
-    <div class="wm-core-demo-description">
-      <h3>Descrizione del componente webmapp-title</h3>
-      <p>
-        Il componente webmapp-title è progettato per fornire un titolo ben formattato e facilmente
-        personalizzabile per la tua applicazione. Grazie alla sua semplice struttura basata su
-        <ng-content></ng-content>, esso consente di inserire qualsiasi contenuto desiderato tra i
-        tag del componente, che verrà poi visualizzato con le proprietà di stile predefinite del
-        componente stesso. Queste proprietà includono una dimensione del carattere di 21px, un peso
-        del carattere di 700, un'interlinea di 25px, e una formattazione del testo allineata a
-        sinistra. Inoltre, grazie all'uso delle variabili CSS, è possibile personalizzare il font
-        utilizzato, fornendo una flessibilità maggiore nella scelta dell'aspetto del titolo. La
-        strategia di rilevamento delle modifiche OnPush garantisce che il componente venga
-        ricontrollato solo quando i suoi input cambiano, offrendo prestazioni ottimizzate. Infine,
-        l'encapsulation ViewEncapsulation.None garantisce che gli stili del componente possano
-        essere sovrascritti facilmente se necessario.
-      </p>
-    </div>
-  </div>
+  <ng-container *ngIf="selectedComponent === 'webmapp-title'"
+    ><app-webmapp-title></app-webmapp-title
+  ></ng-container>
 
-  <div *ngIf="selectedComponent === 'wm-slug-box'">
-    <h3>Esempio</h3>
-    <div class="wm-core-demo-component-example">
-      <wm-slug-box
-        class="wm-core-demo-component"
-        [data]="{box_type:'slug',title:'title',slug:'sono slug box', image_url: 'https://picsum.photos/200/300'}"
-      ></wm-slug-box>
-    </div>
-    <br />
-    <div>
-      <a
-        class="wm-core-demo-figma-link"
-        target="_blank"
-        href="https://www.figma.com/file/asngSNMmuSZEamZOQuhdPI/wm-core?type=design&node-id=73%3A174&mode=design&t=FoMzhp5AmdLLyzZN-1"
-        >Figma</a
-      >
-    </div>
-    <div class="wm-core-demo-description">
-      <h3>Descrizione del componente wm-slug-box</h3>
-      <p>
-        Il componente <code>wm-slug-box</code> è un elemento visivo interattivo che eredita dalla
-        direttiva di base <code>BaseBoxComponent</code>. Esso combina una rappresentazione grafica
-        attraverso un'immagine di anteprima e un titolo descrittivo.
-      </p>
-      <ul>
-        <li>
-          <strong>Anteprima Immagine</strong>: Il componente ha un'area dedicata all'anteprima
-          dell'immagine. In caso di assenza di un'immagine, viene utilizzato un percorso predefinito
-          per un'immagine di fallback, ossia <code>/assets/icon/no-photo.svg</code>.
-        </li>
-        <li>
-          <strong>Titolo Descrittivo</strong>: Fornisce un titolo che descrive il contenuto o il
-          contesto dell'immagine. Questo titolo può essere tradotto utilizzando il filtro
-          <code>wmtrans</code>.
-        </li>
-        <li>
-          <strong>Interattività</strong>: Il componente è interattivo. Un click sul box innescerà un
-          evento personalizzato <code>clickEVT</code>, che può emettere un valore numerico o nessun
-          valore. Inoltre, vi è un'icona a forma di freccia sulla destra che indica che l'elemento
-          può essere cliccato per ulteriori dettagli o azioni.
-        </li>
-        <li>
-          <strong>Ereditarietà</strong>: Grazie all'ereditarietà da <code>BaseBoxComponent</code>,
-          questo componente possiede proprietà e metodi comuni a tutti i box, rendendolo flessibile
-          e facilmente estendibile.
-        </li>
-        <li>
-          <strong>Stile e Design</strong>: Dall'immagine fornita, il componente presenta uno stile
-          moderno e pulito, con bordi arrotondati, colori chiari e un'icona di freccia sottolineata.
-          La combinazione di immagini e testi offre all'utente una chiara e immediata comprensione
-          del contenuto rappresentato.
-        </li>
-      </ul>
-      <h4>Dettagli dell'attributo 'data'</h4>
-      <p>
-        L'attributo <code>[data]</code> serve per passare al componente
-        <code>wm-slug-box</code> tutte le informazioni necessarie per la sua visualizzazione. Esso
-        eredita questa proprietà dalla direttiva di base, consentendo una maggiore modularità e
-        riutilizzo del codice. L'attributo accetta un oggetto che contiene le informazioni chiave
-        relative al box:
-      </p>
-      <ul>
-        <li>
-          <strong>box_type</strong>: Definisce il tipo di box. Nel caso specifico, il valore è
-          'slug'.
-        </li>
-        <li><strong>image_url</strong>: URL dell'immagine di anteprima da visualizzare.</li>
-        <li><strong>title</strong>: Il titolo descrittivo che accompagna l'immagine.</li>
-        <li>
-          <strong>slug</strong>: Una stringa univoca che identifica il contenuto o il contesto
-          rappresentato dal box.
-        </li>
-      </ul>
-      <p>
-        Nel tuo esempio, il componente <code>wm-slug-box</code> utilizza l'attributo
-        <code>[data]</code> per accettare l'oggetto <code>box</code>, che contiene tutte le
-        informazioni necessarie. L'evento <code>clickEVT</code> emette sia lo <code>slug</code> che
-        l'indice <code>idx</code> quando l'utente clicca sul box.
-      </p>
-    </div>
-  </div>
+  <ng-container *ngIf="selectedComponent === 'wm-slug-box'">
+    <app-wm-slug-box></app-wm-slug-box>
+  </ng-container>
 
-  <div *ngIf="selectedComponent === 'wm-layer-box'">
-    <h3>Esempio</h3>
-    <div class="wm-core-demo-component-example">
-      <wm-layer-box
-        class="wm-core-demo-component"
-        [data]="{
-        box_type: 'layer', 
-        title: 'wm-layer-box', 
-        layer: demoLayer
-    }"
-      >
-      </wm-layer-box>
-    </div>
-    <br />
-    <div>
-      <a
-        class="wm-core-demo-figma-link"
-        target="_blank"
-        href="https://www.figma.com/file/asngSNMmuSZEamZOQuhdPI/wm-core?type=design&node-id=32%3A5&mode=design&t=FoMzhp5AmdLLyzZN-1"
-        >Figma</a
-      >
-    </div>
-    <div class="wm-core-demo-description">
-      <h3>Descrizione del componente wm-layer-box</h3>
-      <p>
-        Il componente `wm-layer-box` è un contenitore specializzato progettato per visualizzare e
-        interagire con layers geografici in un'applicazione. Estende la funzionalità del componente
-        di base `BaseBoxComponent` e prende come input principale un oggetto `data` che può avere le
-        seguenti proprietà:
-      </p>
-      <ul>
-        <li><strong>box_type:</strong> Tipo di box, che in questo caso è sempre 'layer'.</li>
-        <li>
-          <strong>title:</strong> Titolo del box, utilizzato come fallback se non viene fornito un
-          titolo specifico del layer.
-        </li>
-        <li>
-          <strong>layer:</strong> Un oggetto che rappresenta le informazioni specifiche del layer,
-          incluse l'immagine, lo stile, il titolo e altre proprietà.
-        </li>
-        <li>
-          <strong>icon (opzionale):</strong> Una rappresentazione SVG dell'icona associata al layer.
-        </li>
-        <li>
-          <strong>color (opzionale):</strong> Un colore specifico da utilizzare per il layer,
-          utilizzato principalmente per l'indicatore di colore sul lato sinistro del box.
-        </li>
-      </ul>
-      <p>
-        La struttura del componente offre una vista compatta delle informazioni essenziali relative
-        al layer, con un'immagine rappresentativa, un titolo e un'icona. Gli utenti possono
-        interagire con il componente cliccando su di esso, scatenando l'evento `clickEVT`.
-      </p>
-    </div>
-  </div>
+  <ng-container *ngIf="selectedComponent === 'wm-layer-box'">
+    <app-wm-layer-box></app-wm-layer-box>
+  </ng-container>
 
-  <div *ngIf="selectedComponent === 'wm-status-filter'">
-    <h3>Esempio</h3>
-    <div class="wm-core-demo-component-example">
-      <wm-status-filter class="wm-core-demo-component"></wm-status-filter>
-    </div>
-    <br />
-    <div>
-      <a
-        class="wm-core-demo-figma-link"
-        target="_blank"
-        href="https://www.figma.com/file/asngSNMmuSZEamZOQuhdPI/wm-core?type=design&node-id=51%3A4356&mode=design&t=d0uKNuEYeLGOzORi-1"
-        >Figma</a
-      >
-    </div>
-    <div class="wm-core-demo-description">
-      <h3>Descrizione del componente wm-status-filter</h3>
-      <p>
-        Il componente wm-status-filter fornisce una visualizzazione interattiva dei filtri attivi in
-        una applicazione. Questo componente utilizza chip-style labels per mostrare ogni filtro
-        attivo, permettendo all'utente di rimuovere velocemente ogni filtro singolarmente o tutti i
-        filtri insieme, ritornando alla home dell'applicazione.
-      </p>
-      <p>
-        <strong>Input:</strong>
-      </p>
-      <ul>
-        <li>
-          <em>countAll$: Observable&lt;number&gt;</em>: Mostra il conteggio totale dei filtri
-          attivi.
-        </li>
-        <li><em>layer$</em>: Rappresenta i dati del layer attivo.</li>
-        <li><em>poiFilters$: Observable&lt;any&gt;</em>: Elenca i filtri POI attivi.</li>
-        <li><em>trackFilters$: Observable&lt;any[]&gt;</em>: Elenca i filtri di traccia attivi.</li>
-      </ul>
-      <p>
-        <strong>Output:</strong>
-      </p>
-      <ul>
-        <li><em>removeLayerEVT</em>: Emesso quando un layer viene rimosso.</li>
-        <li><em>removePoiFilterEVT</em>: Emesso quando un filtro POI viene rimosso.</li>
-        <li><em>removeTrackFilterEVT</em>: Emesso quando un filtro di traccia viene rimosso.</li>
-        <li><em>resetFiltersEVT</em>: Emesso quando tutti i filtri vengono azzerati.</li>
-      </ul>
-    </div>
-  </div>
+  <ng-container *ngIf="selectedComponent === 'wm-status-filter'">
+    <app-wm-status-filter></app-wm-status-filter>
+  </ng-container>
 
-  <div *ngIf="selectedComponent === 'wm-search-box'">
-    <h3>Esempio</h3>
-    <div class="wm-core-demo-component-example">
-      <wm-search-box class="wm-core-demo-component" [data]="demoCard"></wm-search-box>
-    </div>
-    <br />
-    <div>
-      <a
-        class="wm-core-demo-figma-link"
-        target="_blank"
-        href="https://www.figma.com/file/asngSNMmuSZEamZOQuhdPI/wm-core?type=design&node-id=60%3A6477&mode=design&t=FoMzhp5AmdLLyzZN-1"
-        >Figma</a
-      >
-    </div>
-    <div class="wm-core-demo-description">
-      <h3>Descrizione del componente wm-search-box</h3>
-      <p>
-        Il componente `wm-search-box` è una soluzione chiave per la presentazione dei risultati di
-        ricerca nel tuo progetto Angular. Progettato come un elemento card, integra l'immagine, il
-        titolo, il sottotitolo e altre proprietà correlate all'oggetto di ricerca.
-      </p>
-      <p>
-        L'input principale di questo componente è la proprietà `data`. Questo oggetto contiene
-        diverse informazioni:
-      </p>
-      <ul>
-        <li><strong>feature_image:</strong> L'URL dell'immagine da visualizzare nella card.</li>
-        <li><strong>name:</strong> Il titolo principale della card.</li>
-        <li>
-          <strong>taxonomyWheres:</strong> Un sottotitolo o una categoria per ulteriori dettagli.
-        </li>
-        <li><strong>distance:</strong> La distanza associata, se applicabile.</li>
-        <li><strong>size:</strong> La dimensione dell'oggetto o del file, se pertinente.</li>
-        <li>
-          <strong>taxonomyActivities:</strong> Attività o caratteristiche associate, presentate come
-          icone e testo.
-        </li>
-      </ul>
-      <p>
-        La flessibilità di `wm-search-box` permette di adattarsi a vari scenari di utilizzo, dalla
-        visualizzazione di percorsi trekking alla presentazione di file o prodotti. La sua struttura
-        modulare e le sue proprietà personalizzabili lo rendono un'aggiunta essenziale per qualsiasi
-        progetto che richieda una presentazione chiara e concisa dei dati.
-      </p>
-    </div>
-  </div>
+  <ng-container *ngIf="selectedComponent === 'wm-search-box'">
+    <app-wm-search-box></app-wm-search-box>
+  </ng-container>
+
+  <ng-container *ngIf="selectedComponent === 'wm-poi-box'">
+    <app-wm-poi-box></app-wm-poi-box>
+  </ng-container>
+
+  <ng-container *ngIf="selectedComponent === 'wm-horizontal-scroll-box'">
+    <app-wm-horizontal-scroll-box></app-wm-horizontal-scroll-box>
+  </ng-container>
 </div>

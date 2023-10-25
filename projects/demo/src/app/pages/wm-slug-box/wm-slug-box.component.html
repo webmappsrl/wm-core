@@ -1,0 +1,74 @@
+<h3>Esempio</h3>
+<div class="wm-core-demo-component-example">
+  <wm-slug-box class="wm-core-demo-component" [data]="demoSlugBox"></wm-slug-box>
+</div>
+<br />
+<div>
+  <a
+    class="wm-core-demo-figma-link"
+    target="_blank"
+    href="https://www.figma.com/file/asngSNMmuSZEamZOQuhdPI/wm-core?type=design&node-id=73%3A174&mode=design&t=FoMzhp5AmdLLyzZN-1"
+    >Figma</a
+  >
+</div>
+<div class="wm-core-demo-description">
+  <h3>Descrizione del componente wm-slug-box</h3>
+  <p>
+    Il componente <code>wm-slug-box</code> è un elemento visivo interattivo che eredita dalla
+    direttiva di base <code>BaseBoxComponent</code>. Esso combina una rappresentazione grafica
+    attraverso un'immagine di anteprima e un titolo descrittivo.
+  </p>
+  <ul>
+    <li>
+      <strong>Anteprima Immagine</strong>: Il componente ha un'area dedicata all'anteprima
+      dell'immagine. In caso di assenza di un'immagine, viene utilizzato un percorso predefinito per
+      un'immagine di fallback, ossia <code>/assets/icon/no-photo.svg</code>.
+    </li>
+    <li>
+      <strong>Titolo Descrittivo</strong>: Fornisce un titolo che descrive il contenuto o il
+      contesto dell'immagine. Questo titolo può essere tradotto utilizzando il filtro
+      <code>wmtrans</code>.
+    </li>
+    <li>
+      <strong>Interattività</strong>: Il componente è interattivo. Un click sul box innescerà un
+      evento personalizzato <code>clickEVT</code>, che può emettere un valore numerico o nessun
+      valore. Inoltre, vi è un'icona a forma di freccia sulla destra che indica che l'elemento può
+      essere cliccato per ulteriori dettagli o azioni.
+    </li>
+    <li>
+      <strong>Ereditarietà</strong>: Grazie all'ereditarietà da <code>BaseBoxComponent</code>,
+      questo componente possiede proprietà e metodi comuni a tutti i box, rendendolo flessibile e
+      facilmente estendibile.
+    </li>
+    <li>
+      <strong>Stile e Design</strong>: Dall'immagine fornita, il componente presenta uno stile
+      moderno e pulito, con bordi arrotondati, colori chiari e un'icona di freccia sottolineata. La
+      combinazione di immagini e testi offre all'utente una chiara e immediata comprensione del
+      contenuto rappresentato.
+    </li>
+  </ul>
+  <h4>Dettagli dell'attributo 'data'</h4>
+  <p>
+    L'attributo <code>[data]</code> serve per passare al componente <code>wm-slug-box</code> tutte
+    le informazioni necessarie per la sua visualizzazione. Esso eredita questa proprietà dalla
+    direttiva di base, consentendo una maggiore modularità e riutilizzo del codice. L'attributo
+    accetta un oggetto che contiene le informazioni chiave relative al box:
+  </p>
+  <ul>
+    <li>
+      <strong>box_type</strong>: Definisce il tipo di box. Nel caso specifico, il valore è 'slug'.
+    </li>
+    <li><strong>image_url</strong>: URL dell'immagine di anteprima da visualizzare.</li>
+    <li><strong>title</strong>: Il titolo descrittivo che accompagna l'immagine.</li>
+    <li>
+      <strong>slug</strong>: Una stringa univoca che identifica il contenuto o il contesto
+      rappresentato dal box.
+    </li>
+  </ul>
+  <p>
+    Nel tuo esempio, il componente <code>wm-slug-box</code> utilizza l'attributo
+    <code>[data]</code> per accettare l'oggetto <code>box</code>, che contiene tutte le informazioni
+    necessarie. L'evento <code>clickEVT</code> emette sia lo <code>slug</code> che l'indice
+    <code>idx</code> quando l'utente clicca sul box.
+  </p>
+</div>

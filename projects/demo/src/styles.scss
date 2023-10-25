@@ -3,3 +3,40 @@ body,
 html {
   font-family: 'Roboto', sans-serif;
 }
+
+.wm-core-demo-component-container {
+  display: flex;
+  flex-direction: column;
+  margin-left: 260px;
+  padding: 20px;
+  align-items: center;
+  .wm-core--component {
+    flex: 1 1 auto;
+    align-self: auto;
+  }
+  .wm-core-demo-component-example {
+    width: 350px;
+    height: 176px;
+  }
+  .wm-core-demo-description {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #777;
+    max-width: 80%;
+    line-height: 1.4;
+  }
+
+  .wm-core-demo-figma-link {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #0acf83; // Questo è il colore principale di Figma
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: #009966; // Una tonalità leggermente più scura per l'effetto hover
+    }
+  }
+}

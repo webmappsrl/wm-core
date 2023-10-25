@@ -1,0 +1,42 @@
+<h3>Esempio</h3>
+<div class="wm-core-demo-component-example">
+  <wm-status-filter class="wm-core-demo-component"></wm-status-filter>
+</div>
+<br />
+<div>
+  <a
+    class="wm-core-demo-figma-link"
+    target="_blank"
+    href="https://www.figma.com/file/asngSNMmuSZEamZOQuhdPI/wm-core?type=design&node-id=51%3A4356&mode=design&t=d0uKNuEYeLGOzORi-1"
+    >Figma</a
+  >
+</div>
+<div class="wm-core-demo-description">
+  <h3>Descrizione del componente wm-status-filter</h3>
+  <p>
+    Il componente wm-status-filter fornisce una visualizzazione interattiva dei filtri attivi in una
+    applicazione. Questo componente utilizza chip-style labels per mostrare ogni filtro attivo,
+    permettendo all'utente di rimuovere velocemente ogni filtro singolarmente o tutti i filtri
+    insieme, ritornando alla home dell'applicazione.
+  </p>
+  <p>
+    <strong>Input:</strong>
+  </p>
+  <ul>
+    <li>
+      <em>countAll$: Observable&lt;number&gt;</em>: Mostra il conteggio totale dei filtri attivi.
+    </li>
+    <li><em>layer$</em>: Rappresenta i dati del layer attivo.</li>
+    <li><em>poiFilters$: Observable&lt;any&gt;</em>: Elenca i filtri POI attivi.</li>
+    <li><em>trackFilters$: Observable&lt;any[]&gt;</em>: Elenca i filtri di traccia attivi.</li>
+  </ul>
+  <p>
+    <strong>Output:</strong>
+  </p>
+  <ul>
+    <li><em>removeLayerEVT</em>: Emesso quando un layer viene rimosso.</li>
+    <li><em>removePoiFilterEVT</em>: Emesso quando un filtro POI viene rimosso.</li>
+    <li><em>removeTrackFilterEVT</em>: Emesso quando un filtro di traccia viene rimosso.</li>
+    <li><em>resetFiltersEVT</em>: Emesso quando tutti i filtri vengono azzerati.</li>
+  </ul>
+</div>
