@@ -18,6 +18,7 @@ import {WmStatusFilterModule} from './pages/wm-status-filter/wm-status-filter.mo
 import {WmSearchBoxModule} from './pages/wm-search-box/wm-search-box.module';
 import {WmPoiBoxModule} from './pages/wm-poi-box/wm-poi-box.module';
 import {WmHorizontalScrollBoxModule} from './pages/wm-horizontal-scroll-box/wm-horizontal-scroll-box.module';
+import { IonicModule } from '@ionic/angular';
 
 @NgModule({
   declarations: [AppComponent],
@@ -40,6 +41,7 @@ import {WmHorizontalScrollBoxModule} from './pages/wm-horizontal-scroll-box/wm-h
       maxAge: 25,
       logOnly: environment.production, // Restrict extension to log-only mode
     }),
+    IonicModule.forRoot(),
   ],
   providers: [{provide: ENVIRONMENT_CONFIG, useValue: environment}],
   bootstrap: [AppComponent],
