@@ -1,31 +1,15 @@
 <app-left-bar (componentSelected)="onComponentSelected($event)"></app-left-bar>
 
 <div class="wm-core-demo-component-container" id="main-content">
-  <ng-container *ngIf="selectedComponent === 'webmapp-title'"
-    ><app-webmapp-title></app-webmapp-title
-  ></ng-container>
-
-  <ng-container *ngIf="selectedComponent === 'wm-slug-box'">
-    <app-wm-slug-box></app-wm-slug-box>
-  </ng-container>
-
-  <ng-container *ngIf="selectedComponent === 'wm-layer-box'">
-    <app-wm-layer-box></app-wm-layer-box>
-  </ng-container>
-
-  <ng-container *ngIf="selectedComponent === 'wm-status-filter'">
-    <app-wm-status-filter></app-wm-status-filter>
-  </ng-container>
-
-  <ng-container *ngIf="selectedComponent === 'wm-search-box'">
-    <app-wm-search-box></app-wm-search-box>
-  </ng-container>
-
-  <ng-container *ngIf="selectedComponent === 'wm-poi-box'">
-    <app-wm-poi-box></app-wm-poi-box>
-  </ng-container>
-
-  <ng-container *ngIf="selectedComponent === 'wm-horizontal-scroll-box'">
-    <app-wm-horizontal-scroll-box></app-wm-horizontal-scroll-box>
+  <ng-container [ngSwitch]="selectedComponent">
+    <app-webmapp-title *ngSwitchCase="'webmapp-title'"></app-webmapp-title>
+    <app-wm-slug-box *ngSwitchCase="'wm-slug-box'"></app-wm-slug-box>
+    <app-wm-layer-box *ngSwitchCase="'wm-layer-box'"></app-wm-layer-box>
+    <app-wm-status-filter *ngSwitchCase="'wm-status-filter'"></app-wm-status-filter>
+    <app-wm-search-box *ngSwitchCase="'wm-search-box'"></app-wm-search-box>
+    <app-wm-poi-box *ngSwitchCase="'wm-poi-box'"></app-wm-poi-box>
+    <app-wm-horizontal-scroll-box
+      *ngSwitchCase="'wm-horizontal-scroll-box'"
+    ></app-wm-horizontal-scroll-box>
   </ng-container>
 </div>
