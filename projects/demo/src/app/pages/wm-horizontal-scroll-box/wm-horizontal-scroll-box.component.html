@@ -1,19 +1,58 @@
-<h3>Esempio</h3>
-<div>
-  <wm-horizontal-scroll-box
-    class="wm-core-demo-component"
-    [data]="demoScrollBox"
-  ></wm-horizontal-scroll-box>
-</div>
-<br />
-<div>
-  <a
-    class="wm-core-demo-figma-link"
-    target="_blank"
-    href="https://www.figma.com/file/asngSNMmuSZEamZOQuhdPI/wm-core?type=design&node-id=60%3A6477&mode=design&t=N0LZAFaC7sacOCp0-1"
-    >Figma</a
-  >
-</div>
-<div class="wm-core-demo-description">
-  <h3>Descrizione del componente wm-horizontal-scroll-boxx</h3>
-</div>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Esempio horizontal-scroll-box</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<wm-horizontal-scroll-box
+  class="wm-core-demo-component"
+  [data]="demoScrollBox"
+></wm-horizontal-scroll-box>
+
+<app-demo-figma
+  figmaUrl="https://www.figma.com/file/asngSNMmuSZEamZOQuhdPI/wm-core?type=design&node-id=78%3A835&mode=design&t=Ay5OfIjxCBcq7SrI-1"
+>
+  <iframe
+    style="border: 1px solid rgba(0, 0, 0, 0.1);"
+    width="100%"
+    height="450"
+    src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FasngSNMmuSZEamZOQuhdPI%2Fwm-core%3Ftype%3Ddesign%26node-id%3D78%253A835%26mode%3Ddesign%26t%3DAy5OfIjxCBcq7SrI-1"
+    allowfullscreen
+  ></iframe>
+</app-demo-figma>
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Descrizione</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <p>
+      La struttura del componente offre una presentazione compatta degli elementi, permettendo
+      all'utente di scorrere tra di essi attraverso frecce posizionate ai lati. L'interazione con un
+      elemento scatena l'evento `clickEVT`, fornendo dettagli sull'elemento selezionato.
+    </p>
+    <ion-list>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>box_type:</strong> Tipo di box, che in questo caso è 'horizontal_scroll'.
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>title:</strong> Titolo del box visualizzato in alto.
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>items:</strong> Una lista di elementi da visualizzare all'interno della scatola
+          scorrevole. Ogni elemento ha un titolo, un'immagine e una proprietà 'res' che contiene
+          dettagli aggiuntivi.
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>image_url (opzionale):</strong> Un'immagine di sfondo per il box.
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card-content>
+</ion-card>

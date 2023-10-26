@@ -2,13 +2,32 @@
 
 <div class="wm-core-demo-component-container" id="main-content">
   <ng-container [ngSwitch]="selectedComponent">
-    <app-webmapp-title *ngSwitchCase="'webmapp-title'"></app-webmapp-title>
-    <app-wm-slug-box *ngSwitchCase="'wm-slug-box'"></app-wm-slug-box>
-    <app-wm-layer-box *ngSwitchCase="'wm-layer-box'"></app-wm-layer-box>
-    <app-wm-status-filter *ngSwitchCase="'wm-status-filter'"></app-wm-status-filter>
-    <app-wm-search-box *ngSwitchCase="'wm-search-box'"></app-wm-search-box>
-    <app-wm-poi-box *ngSwitchCase="'wm-poi-box'"></app-wm-poi-box>
+    <app-webmapp-title
+      class="wm-core-demo-component-content"
+      *ngSwitchCase="'webmapp-title'"
+    ></app-webmapp-title>
+    <app-wm-slug-box
+      class="wm-core-demo-component-content"
+      *ngSwitchCase="'wm-slug-box'"
+    ></app-wm-slug-box>
+    <app-wm-layer-box
+      class="wm-core-demo-component-content"
+      *ngSwitchCase="'wm-layer-box'"
+    ></app-wm-layer-box>
+    <app-wm-status-filter
+      class="wm-core-demo-component-content"
+      *ngSwitchCase="'wm-status-filter'"
+    ></app-wm-status-filter>
+    <app-wm-search-box
+      class="wm-core-demo-component-content"
+      *ngSwitchCase="'wm-search-box'"
+    ></app-wm-search-box>
+    <app-wm-poi-box
+      class="wm-core-demo-component-content"
+      *ngSwitchCase="'wm-poi-box'"
+    ></app-wm-poi-box>
     <app-wm-horizontal-scroll-box
+      class="wm-core-demo-component-content"
       *ngSwitchCase="'wm-horizontal-scroll-box'"
     ></app-wm-horizontal-scroll-box>
   </ng-container>

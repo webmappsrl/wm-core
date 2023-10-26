@@ -10,7 +10,14 @@ html {
   margin-left: 260px;
   padding: 20px;
   align-items: center;
-  .wm-core--component {
+  overflow: auto;
+  height: 99%;
+
+  .wm-core-demo-component-content {
+    width: 60%;
+  }
+
+  .wm-core-component {
     flex: 1 1 auto;
     align-self: auto;
   }

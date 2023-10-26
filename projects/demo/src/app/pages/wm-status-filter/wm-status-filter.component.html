@@ -1,42 +1,82 @@
-<h3>Esempio</h3>
-<div class="wm-core-demo-component-example">
-  <wm-status-filter class="wm-core-demo-component"></wm-status-filter>
-</div>
-<br />
-<div>
-  <a
-    class="wm-core-demo-figma-link"
-    target="_blank"
-    href="https://www.figma.com/file/asngSNMmuSZEamZOQuhdPI/wm-core?type=design&node-id=51%3A4356&mode=design&t=d0uKNuEYeLGOzORi-1"
-    >Figma</a
-  >
-</div>
-<div class="wm-core-demo-description">
-  <h3>Descrizione del componente wm-status-filter</h3>
-  <p>
-    Il componente wm-status-filter fornisce una visualizzazione interattiva dei filtri attivi in una
-    applicazione. Questo componente utilizza chip-style labels per mostrare ogni filtro attivo,
-    permettendo all'utente di rimuovere velocemente ogni filtro singolarmente o tutti i filtri
-    insieme, ritornando alla home dell'applicazione.
-  </p>
-  <p>
-    <strong>Input:</strong>
-  </p>
-  <ul>
-    <li>
-      <em>countAll$: Observable&lt;number&gt;</em>: Mostra il conteggio totale dei filtri attivi.
-    </li>
-    <li><em>layer$</em>: Rappresenta i dati del layer attivo.</li>
-    <li><em>poiFilters$: Observable&lt;any&gt;</em>: Elenca i filtri POI attivi.</li>
-    <li><em>trackFilters$: Observable&lt;any[]&gt;</em>: Elenca i filtri di traccia attivi.</li>
-  </ul>
-  <p>
-    <strong>Output:</strong>
-  </p>
-  <ul>
-    <li><em>removeLayerEVT</em>: Emesso quando un layer viene rimosso.</li>
-    <li><em>removePoiFilterEVT</em>: Emesso quando un filtro POI viene rimosso.</li>
-    <li><em>removeTrackFilterEVT</em>: Emesso quando un filtro di traccia viene rimosso.</li>
-    <li><em>resetFiltersEVT</em>: Emesso quando tutti i filtri vengono azzerati.</li>
-  </ul>
-</div>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Esempio status-filter</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<wm-status-filter class="wm-core-demo-component"></wm-status-filter>
+
+<app-demo-figma
+  figmaUrl="https://www.figma.com/file/asngSNMmuSZEamZOQuhdPI/wm-core?type=design&node-id=51%3A4356&mode=design&t=d0uKNuEYeLGOzORi-1"
+>
+  <iframe
+    style="border: 1px solid rgba(0, 0, 0, 0.1);"
+    width="100%"
+    height="450"
+    src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FasngSNMmuSZEamZOQuhdPI%2Fwm-core%3Ftype%3Ddesign%26node-id%3D51%253A4356%26mode%3Ddesign%26t%3DEkljo18fS7xfoN68-1"
+    allowfullscreen
+  ></iframe>
+</app-demo-figma>
+
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Descrizione</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <p>
+      Il componente <code>wm-status-filter</code> fornisce una visualizzazione interattiva dei
+      filtri attivi in una applicazione. Questo componente utilizza chip-style labels per mostrare
+      ogni filtro attivo, permettendo all'utente di rimuovere velocemente ogni filtro singolarmente
+      o tutti i filtri insieme, ritornando alla home dell'applicazione.
+    </p>
+    <h4>Input:</h4>
+    <ion-list>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>countAll$</strong>: <em>Observable&lt;number&gt;</em>
+          Mostra il conteggio totale dei filtri attivi.
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>layer$</strong>: Rappresenta i dati del layer attivo.
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>poiFilters$</strong>: <em>Observable&lt;any&gt;</em>
+          Elenca i filtri POI attivi.
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>trackFilters$</strong>: <em>Observable&lt;any[]&gt;</em>
+          Elenca i filtri di traccia attivi.
+        </ion-label>
+      </ion-item>
+    </ion-list>
+    <h4>Output:</h4>
+    <ion-list>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>removeLayerEVT</strong>: Emesso quando un layer viene rimosso.
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>removePoiFilterEVT</strong>: Emesso quando un filtro POI viene rimosso.
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>removeTrackFilterEVT</strong>: Emesso quando un filtro di traccia viene rimosso.
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>resetFiltersEVT</strong>: Emesso quando tutti i filtri vengono azzerati.
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card-content>
+</ion-card>

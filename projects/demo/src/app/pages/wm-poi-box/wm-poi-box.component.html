@@ -1,33 +1,66 @@
-<h3>Esempio</h3>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Esempio poi-box</ion-title>
+  </ion-toolbar>
+</ion-header>
+
 <wm-poi-box class="wm-core-demo-component" [data]="demoCard"></wm-poi-box>
-<br />
-<div>
-  <a
-    class="wm-core-demo-figma-link"
-    target="_blank"
-    href="https://www.figma.com/file/asngSNMmuSZEamZOQuhdPI/wm-core?type=design&node-id=60%3A6477&mode=design&t=N0LZAFaC7sacOCp0-1"
-    >Figma</a
-  >
-</div>
-<div class="wm-core-demo-description">
-  <h3>Descrizione del componente wm-poi-box</h3>
-  <p>
-    Il componente `wm-poi-box` è progettato per visualizzare i dettagli di un punto d'interesse
-    (POI). Questo componente eredita dalla classe `BaseBoxComponent`, che significa che accetta un
-    oggetto di tipo `IHIT` come dato in ingresso.
-  </p>
-  <p>
-    Il componente visualizza un'immagine di copertina, se presente, attraverso il tag `wm-img`. Al
-    di sotto dell'immagine, mostra il nome del POI tradotto attraverso il pipe `wmtrans`.
-  </p>
-  <p>
-    Inoltre, il componente può mostrare una lista di taxonomie associate al POI, se presenti. Ogni
-    taxonomia viene mostrata con una icona e un nome. Le icone vengono recuperate attraverso il pipe
-    `getIcn` e i nomi delle taxonomie sono tradotti e convertiti in minuscolo attraverso i pipes
-    `lowercase` e `wmtrans`.
-  </p>
-  <p>
-    Il componente offre anche un'interazione cliccabile, attraverso l'evento `(clickEVT)`, che può
-    essere utilizzato per eseguire azioni quando l'utente clicca sul box del POI.
-  </p>
-</div>
+
+<app-demo-figma
+  figmaUrl="https://www.figma.com/file/asngSNMmuSZEamZOQuhdPI/wm-core?type=design&node-id=60%3A6477&mode=design&t=XizbfrpKzddQx2Vs-1"
+>
+  <iframe
+    style="border: 1px solid rgba(0, 0, 0, 0.1);"
+    width="100%"
+    height="450"
+    src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FasngSNMmuSZEamZOQuhdPI%2Fwm-core%3Ftype%3Ddesign%26node-id%3D60%253A6477%26mode%3Ddesign%26t%3DXizbfrpKzddQx2Vs-1"
+    allowfullscreen
+  ></iframe>
+</app-demo-figma>
+
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Descrizione</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <p>
+      Il componente `wm-poi-box` è progettato per presentare in modo efficiente i dettagli di un
+      punto d'interesse (POI). In sintesi, `wm-poi-box` offre una visione chiara e organizzata delle
+      informazioni essenziali relative a un POI, combinando immagini, titoli, icone e interazioni in
+      un'unica soluzione compatta. Ecco le sue principali caratteristiche e funzionalità:
+    </p>
+    <ion-list>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>Eredita da BaseBoxComponent:</strong> Accetta un oggetto di tipo `IHIT` come dato
+          in ingresso, offrendo un'ampia compatibilità.
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>Visualizzazione dell'Immagine:</strong> Mostra un'immagine di copertina attraverso
+          il tag `wm-img`, se fornita.
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>Nome del POI:</strong> Presenta il nome tradotto del POI attraverso il pipe
+          `wmtrans`.
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>Lista delle Taxonomie:</strong> Se disponibili, le taxonomie associate al POI sono
+          mostrate con icona e nome. Le icone sono ottenute tramite il pipe `getIcn`, mentre i nomi
+          vengono tradotti e convertiti in minuscolo attraverso i pipes `lowercase` e `wmtrans`.
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>Interazione Cliccabile:</strong> Gli utenti possono interagire cliccando sul box,
+          scatenando l'evento `(clickEVT)`, utilizzato per eseguire azioni specifiche.
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card-content>
+</ion-card>
