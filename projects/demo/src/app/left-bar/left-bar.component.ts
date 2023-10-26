@@ -6,7 +6,7 @@ import {Component, EventEmitter, Output} from '@angular/core';
   styleUrls: ['./left-bar.component.scss'],
 })
 export class LeftBarComponent {
-  components = [
+  allComponents = [
     'webmapp-title',
     'wm-layer-box',
     'wm-slug-box',
@@ -14,12 +14,18 @@ export class LeftBarComponent {
     'wm-search-box',
     'wm-poi-box',
     'wm-horizontal-scroll-box',
+    'wm-tab-detail',
   ];
+
+  boxComponents = this.allComponents.filter(component => component.includes('box'));
+  otherComponents = this.allComponents.filter(component => !component.includes('box'));
+
   selectedComponent: string = '';
   @Output() componentSelected = new EventEmitter<string>();
 
   constructor() {
-    this.components.sort();
+    this.boxComponents.sort();
+    this.otherComponents.sort();
   }
 
   showComponent(component: string) {

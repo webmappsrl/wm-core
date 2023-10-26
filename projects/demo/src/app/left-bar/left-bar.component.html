@@ -5,10 +5,27 @@
     </ion-toolbar>
   </ion-header>
   <ion-content class="wm-core-demo-menu-content">
-    <ion-list [inset]="true">
-      <ion-item *ngFor="let component of components" (click)="showComponent(component)">
-        {{ component }}
-      </ion-item>
-    </ion-list>
+    <ion-accordion-group expand="inset">
+      <!-- Accordion per i box componenti -->
+      <ion-accordion value="box">
+        <ion-item slot="header">
+          <ion-label>Box Components</ion-label>
+        </ion-item>
+        <div slot="content">
+          <ion-list [inset]="true">
+            <ion-item *ngFor="let component of boxComponents" (click)="showComponent(component)">
+              {{ component }}
+            </ion-item>
+          </ion-list>
+        </div>
+      </ion-accordion>
+
+      <!-- Lista per gli altri componenti (non box) -->
+      <ion-list [inset]="true">
+        <ion-item *ngFor="let component of otherComponents" (click)="showComponent(component)">
+          {{ component }}
+        </ion-item>
+      </ion-list>
+    </ion-accordion-group>
   </ion-content>
 </ion-content>
