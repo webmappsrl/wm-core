@@ -241,6 +241,7 @@ interface ICONTROLSBUTTON {
   label: iLocalString;
   type: 'button';
   url: string;
+  default: boolean;
 }
 interface IFILTERS {
   [key: string]: IFILTERSELECT | IFILTERSLIDER;
