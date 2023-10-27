@@ -6,7 +6,6 @@
   </ion-header>
   <ion-content class="wm-core-demo-menu-content">
     <ion-accordion-group expand="inset">
-      <!-- Accordion per i box componenti -->
       <ion-accordion value="box">
         <ion-item slot="header">
           <ion-label>Box Components</ion-label>
@@ -19,8 +18,18 @@
           </ion-list>
         </div>
       </ion-accordion>
-
-      <!-- Lista per gli altri componenti (non box) -->
+      <ion-accordion value="tab">
+        <ion-item slot="header">
+          <ion-label>Tab Components</ion-label>
+        </ion-item>
+        <div slot="content">
+          <ion-list [inset]="true">
+            <ion-item *ngFor="let component of tabComponents" (click)="showComponent(component)">
+              {{ component }}
+            </ion-item>
+          </ion-list>
+        </div>
+      </ion-accordion>
       <ion-list [inset]="true">
         <ion-item *ngFor="let component of otherComponents" (click)="showComponent(component)">
           {{ component }}

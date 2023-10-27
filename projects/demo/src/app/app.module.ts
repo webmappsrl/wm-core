@@ -19,6 +19,8 @@ import {WmSearchBoxModule} from './pages/wm-search-box/wm-search-box.module';
 import {WmPoiBoxModule} from './pages/wm-poi-box/wm-poi-box.module';
 import {WmHorizontalScrollBoxModule} from './pages/wm-horizontal-scroll-box/wm-horizontal-scroll-box.module';
 import {IonicModule} from '@ionic/angular';
+import {DemoTabDetailModule} from './pages/demo-tab-detail/demo-tab-detail.module';
+import {DemoTabHowtoModule} from './pages/demo-tab-howto/demo-tab-howto.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -35,6 +37,8 @@ import {IonicModule} from '@ionic/angular';
     WmSearchBoxModule,
     WmPoiBoxModule,
     WmHorizontalScrollBoxModule,
+    DemoTabDetailModule,
+    DemoTabHowtoModule,
     StoreModule.forRoot({}, {}),
     EffectsModule.forRoot(),
     StoreDevtoolsModule.instrument({

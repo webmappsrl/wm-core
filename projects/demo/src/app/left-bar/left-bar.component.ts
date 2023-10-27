@@ -15,17 +15,26 @@ export class LeftBarComponent {
     'wm-poi-box',
     'wm-horizontal-scroll-box',
     'wm-tab-detail',
+    'wm-tab-howto',
   ];
 
   boxComponents = this.allComponents.filter(component => component.includes('box'));
-  otherComponents = this.allComponents.filter(component => !component.includes('box'));
+  tabComponents = this.allComponents.filter(component => component.includes('tab'));
+  otherComponents: string[] = [];
 
   selectedComponent: string = '';
   @Output() componentSelected = new EventEmitter<string>();
 
   constructor() {
     this.boxComponents.sort();
-    this.otherComponents.sort();
+    this.tabComponents.sort();
+    this.filterOtherComponents();
+  }
+
+  filterOtherComponents() {
+    this.otherComponents = this.allComponents.filter(
+      component => !component.includes('box') && !component.includes('tab'),
+    );
   }
 
   showComponent(component: string) {

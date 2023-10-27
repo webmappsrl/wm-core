@@ -1,5 +1,8 @@
 wm-horizontal-scroll-box {
+  position: relative;
 }
-div.wm-item-arrow.right {
-  margin-right: 260px !important;
+
+.wm-item-arrow.left,
+.wm-item-arrow.right {
+  position: absolute;
 }
