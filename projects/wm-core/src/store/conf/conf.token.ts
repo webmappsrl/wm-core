@@ -1,4 +1,4 @@
-import { InjectionToken } from '@angular/core';
+import {InjectionToken} from '@angular/core';
 export interface EnvironmentConfig {
   production: boolean;
   geohubId: number;
