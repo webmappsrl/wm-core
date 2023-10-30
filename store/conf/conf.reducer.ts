@@ -138,7 +138,7 @@ export const confReducer = createReducer(
 );
 
 const addIdToControls = (controls: ICONTROLS): ICONTROLS => {
-  let mockup = {};
+  /*   let mockup = {};
 
   if (controls.tiles) {
     const tiles = controls.tiles.map((tile, index) =>
@@ -175,7 +175,7 @@ const addIdToControls = (controls: ICONTROLS): ICONTROLS => {
     },
     ...mockup,
   };
-
+ */
   const keys = Object.keys(controls);
   let controlsWithIDs = {...controls};
   keys.forEach(key => {
