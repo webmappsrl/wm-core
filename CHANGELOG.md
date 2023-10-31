@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.0.0](https://github.com/webmappsrl/wm-core/compare/v1.0.0...v2.0.0) (2023-10-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* **api:** This change introduces a new feature that tracks the last filter type used in the application.
+
+### Features
+
+* **api:** add last filter type tracking ([ba4c829](https://github.com/webmappsrl/wm-core/commit/ba4c829927099b907f8709bd35dd523f628dff16))
+
+
+### Miscellaneous
+
+* Comment out unused code in conf.reducer.ts ([7749eaa](https://github.com/webmappsrl/wm-core/commit/7749eaad35e1f0b2550a2d3fa4e5ebb04e66e954))
+* Update API service and configuration reducer ([2aa5e2d](https://github.com/webmappsrl/wm-core/commit/2aa5e2d719de4e012b2ee7a4e7ec35c523b424e6))
+* Update config types ([b7ac97b](https://github.com/webmappsrl/wm-core/commit/b7ac97b9326bf510e5d2fe1f7ce6f68900f796df))
+* Update select-filter component HTML and SCSS ([017b976](https://github.com/webmappsrl/wm-core/commit/017b9762c93c032d367cca738b9932d9422b2d39)), closes [#1858](https://github.com/webmappsrl/wm-core/issues/1858)
+* Update wm-core module imports and paths ([f310e91](https://github.com/webmappsrl/wm-core/commit/f310e91e70b93e8fbfa48ad12e227a1744f4e5ae))
+
 ## 1.0.0 (2023-10-03)
 
 
