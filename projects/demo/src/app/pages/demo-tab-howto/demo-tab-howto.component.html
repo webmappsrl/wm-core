@@ -21,4 +21,42 @@
   <ion-card-header>
     <ion-card-title>Descrizione</ion-card-title>
   </ion-card-header>
+  <ion-card-content>
+    <p>
+      Il componente `wm-tab-howto` offre una visualizzazione dettagliata delle proprietà associate a
+      una particolare entità geografica. Queste proprietà possono includere informazioni come
+      attività, descrizione, difficoltà e immagini correlate. L'interfaccia del componente presenta
+      icone descrittive per le diverse attività e informazioni associate.
+    </p>
+    <ion-list>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>properties:</strong> Oggetto che contiene le proprietà associate a una specifica
+          entità geografica. Queste proprietà possono includere dettagli come ascensione,
+          descrizione, difficoltà, distanza, durata, immagini e altre informazioni correlate.
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>taxonomy:</strong> Una sottocategoria delle proprietà che può includere diverse
+          attività come trekking, ciclismo, corsa, ecc. Viene visualizzata attraverso icone
+          specifiche e dettagliate.
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>webmapp-walkability:</strong> Una classe che definisce la struttura e la
+          presentazione delle diverse attività. Ogni attività è rappresentata da un'icona specifica
+          e una descrizione.
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label class="ion-text-wrap">
+          <strong>IGeojsonProperties:</strong> Una interfaccia che definisce la struttura delle
+          proprietà passate al componente, assicurandosi che rispettino un formato specifico e
+          contengano le informazioni necessarie.
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card-content>
 </ion-card>

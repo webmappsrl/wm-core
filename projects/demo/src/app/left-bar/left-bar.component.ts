@@ -6,6 +6,8 @@ import {Component, EventEmitter, Output} from '@angular/core';
   styleUrls: ['./left-bar.component.scss'],
 })
 export class LeftBarComponent {
+  @Output() componentSelected = new EventEmitter<string>();
+
   allComponents = [
     'webmapp-title',
     'wm-layer-box',
@@ -16,14 +18,13 @@ export class LeftBarComponent {
     'wm-horizontal-scroll-box',
     'wm-tab-detail',
     'wm-tab-howto',
+    'wm-tab-image-gallery',
+    'wm-tab-description',
   ];
-
   boxComponents = this.allComponents.filter(component => component.includes('box'));
-  tabComponents = this.allComponents.filter(component => component.includes('tab'));
   otherComponents: string[] = [];
-
   selectedComponent: string = '';
-  @Output() componentSelected = new EventEmitter<string>();
+  tabComponents = this.allComponents.filter(component => component.includes('tab'));
 
   constructor() {
     this.boxComponents.sort();

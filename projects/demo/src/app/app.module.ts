@@ -21,6 +21,7 @@ import {WmHorizontalScrollBoxModule} from './pages/wm-horizontal-scroll-box/wm-h
 import {IonicModule} from '@ionic/angular';
 import {DemoTabDetailModule} from './pages/demo-tab-detail/demo-tab-detail.module';
 import {DemoTabHowtoModule} from './pages/demo-tab-howto/demo-tab-howto.module';
+import {DemoTabImageGalleryModule} from './pages/demo-tab-image-gallery/demo-tab-image-gallery.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -39,6 +40,7 @@ import {DemoTabHowtoModule} from './pages/demo-tab-howto/demo-tab-howto.module';
     WmHorizontalScrollBoxModule,
     DemoTabDetailModule,
     DemoTabHowtoModule,
+    DemoTabImageGalleryModule,
     StoreModule.forRoot({}, {}),
     EffectsModule.forRoot(),
     StoreDevtoolsModule.instrument({
