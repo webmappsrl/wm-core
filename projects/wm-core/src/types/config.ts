@@ -232,14 +232,17 @@ export interface IOVERLAYERS {
 export interface IOVERLAYERTITLE {
   label: iLocalString;
 }
-export interface ICONTROLSTITLE {
+
+export interface ICONTROL {
   label: iLocalString;
+  type: string;
+}
+export interface ICONTROLSTITLE extends ICONTROL {
   type: 'title';
 }
-export interface ICONTROLSBUTTON {
+export interface ICONTROLSBUTTON extends ICONTROL {
   icon: string;
   id?: number;
-  label: iLocalString;
   type: 'button';
   url: string;
   default: boolean;
