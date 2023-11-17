@@ -57,4 +57,10 @@ export const wmEN = {
   'Caricamento in corso.': 'Loading.',
   'Spiacenti non ci sono risultati con questi criteri di ricerca.':
     'Sorry, there are no results with these search criteria',
+  'Lista percorsi personali': 'list of paths',
+  'nome del percorso': 'name of path',
+  'modifica': 'edit',
+  'elimina': 'delete',
+  'non hai percorsi': 'no paths',
+  'al momento non hai nessun percorso salvato.': 'in this moment you dont have any saved paths.',
 };
