@@ -25,7 +25,9 @@ export const wmEN = {
   'hiking': 'Hiking',
   'Escursionismo': 'Hiking',
   'escursionismo': 'Hiking',
-  'i miei percorsi': 'My Paths',
+  'i miei percorsi': 'Draw path',
+  'Clicca sulla mappa per avviare la creazione di un percorso':
+    'Click on the map to start creating a path',
   'metri': 'Meters',
   'Vedi su OpenStreetMap': 'See on OpenStreetMap',
   'Descrizione Audio': 'Audio Description',
