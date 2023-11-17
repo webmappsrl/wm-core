@@ -25,7 +25,7 @@ export const wmIT = {
   'hiking': 'Escursionismo',
   'Escursionismo': 'Escursionismo',
   'escursionismo': 'Escursionismo',
-  'i miei percorsi': 'I miei percorsi',
+  'i miei percorsi': 'Disegna percorso',
   'metri': 'Metri',
   'Vedi su OpenStreetMap': 'Vedi su OpenStreetMap',
   'Descrizione Audio': 'Descrizione Audio',
