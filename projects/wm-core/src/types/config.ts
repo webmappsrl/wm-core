@@ -241,11 +241,11 @@ export interface ICONTROLSTITLE extends ICONTROL {
   type: 'title';
 }
 export interface ICONTROLSBUTTON extends ICONTROL {
+  default: boolean;
   icon: string;
   id?: number;
   type: 'button';
   url: string;
-  default: boolean;
 }
 export interface IFILTERS {
   [key: string]: IFILTERSELECT | IFILTERSLIDER;
@@ -378,6 +378,8 @@ export interface IWEBAPP {
 export interface ICONF {
   APP: IAPP;
   AUTH?: IAUTH;
+  CREDITS?: IPROJECT;
+  DISCLAIMER?: IPROJECT
   HOME?: IHOME[];
   JIDO_UPDATE_TIME?: number;
   LANGUAGES?: ILANGUAGES;

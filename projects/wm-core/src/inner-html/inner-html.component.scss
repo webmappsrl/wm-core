@@ -1,10 +1,11 @@
 wm-inner-component-html {
-  margin: 5%;
+  padding: 5%;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   justify-content: space-around;
   align-content: stretch;
+  color: black;
   align-items: stretch;
   .dismiss {
     flex: 0 1 auto;

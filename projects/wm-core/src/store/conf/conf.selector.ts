@@ -2,8 +2,8 @@ import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {getCSSVariables} from '../../theme/theme';
 
 import {confFeatureKey} from './conf.reducer';
-import { IHIT } from '../../types/elastic';
-import { ICONF, IHOME, ILAYER, ITHEME } from '../../types/config';
+import {IHIT} from '../../types/elastic';
+import {ICONF, IHOME, ILAYER, ITHEME} from '../../types/config';
 
 const confFeature = createFeatureSelector<ICONF>(confFeatureKey);
 export const MAX_TRACKS = 200;
@@ -52,8 +52,8 @@ export const confPOISFilter = createSelector(confMAP, map => {
 export const confPoisIcons = createSelector(confPOISFilter, taxonomies => {
   const res = {};
   if (taxonomies != null && taxonomies.poi_type != null) {
-    const icons = taxonomies.poi_type.filter((p:any) => p.icon != null);
-    icons.forEach((icon:{[key:string]:string}) => {
+    const icons = taxonomies.poi_type.filter((p: any) => p.icon != null);
+    icons.forEach((icon: {[key: string]: string}) => {
       //@ts-ignore
       res[icon.identifier] = icon.icon;
     });
@@ -63,6 +63,13 @@ export const confPoisIcons = createSelector(confPOISFilter, taxonomies => {
 });
 export const confTHEME = createSelector(confFeature, state => state.THEME);
 export const confPROJECT = createSelector(confFeature, state => state.PROJECT);
+export const confCREDITS = createSelector(confFeature, state => state.CREDITS);
+export const confPAGES = createSelector(confFeature, state => ({
+  PROJECT: state.PROJECT,
+  CREDITS: state.CREDITS,
+  DISCLAIMER: state.DISCLAIMER,
+}));
+export const confDISCLAIMER = createSelector(confFeature, state => state.DISCLAIMER);
 
 export const confTHEMEVariables = createSelector(confTHEME, (theme: ITHEME) =>
   getCSSVariables(theme),
@@ -78,7 +85,7 @@ export const confPOIS = createSelector(confMAP, map => {
 export const confHOME = createSelector(confFeature, confFILTERS, (state, filters) => {
   if (state.HOME != null && state.MAP != null) {
     const home: IHOME[] = [];
-    state.HOME.forEach((el:IHOME) => {
+    state.HOME.forEach((el: IHOME) => {
       if (el.box_type === 'layer') {
         if (state.MAP.layers != null) {
           const layers = getLayers([el.layer as unknown as number], state.MAP.layers, []);
@@ -87,9 +94,9 @@ export const confHOME = createSelector(confFeature, confFILTERS, (state, filters
       } else if (el.box_type === 'horizontal_scroll') {
         if (filters[el.item_type] != null) {
           const horizontalScrollFiltersOpt = filters[el.item_type].options;
-          const enrichItems = el.items.map((i:any) => {
+          const enrichItems = el.items.map((i: any) => {
             const enrichItem =
-              horizontalScrollFiltersOpt.filter((opt:any) => i.title === opt.identifier)[0] ?? {};
+              horizontalScrollFiltersOpt.filter((opt: any) => i.title === opt.identifier)[0] ?? {};
             return {...i, ...enrichItem};
           });
           home.push({...el, ...{items: enrichItems}});
