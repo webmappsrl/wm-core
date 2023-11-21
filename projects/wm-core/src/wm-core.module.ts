@@ -31,6 +31,7 @@ import {WmTabHowtoComponent} from './tab-howto/tab-howto.component';
 import {WmTabNearestPoiComponent} from './tab-nearest-poi/tab-nearest-poi.component';
 import {WmTrackAudioComponent} from './track-audio/track-audio.component';
 import {WmTrackEdgesComponent} from './track-edges/track-edges.component';
+import {WmInnerHtmlComponent} from './inner-html/inner-html.component';
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -51,6 +52,7 @@ const declarations = [
   WmHomeResultComponent,
   WmHomeLayerComponent,
   WmTrackEdgesComponent,
+  WmInnerHtmlComponent,
 ];
 const modules = [WmSharedModule, WmPipeModule, BoxModule, WmLocalizationModule, WmFiltersModule];
 

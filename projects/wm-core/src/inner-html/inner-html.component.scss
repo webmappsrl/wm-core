@@ -1,0 +1,22 @@
+wm-inner-component-html {
+  margin: 5%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-around;
+  align-content: stretch;
+  align-items: stretch;
+  .dismiss {
+    flex: 0 1 auto;
+    align-self: auto;
+    text-align: end;
+    font-size: 40px;
+    cursor: pointer;
+  }
+  .content {
+    overflow-y: auto;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    align-self: auto;
+  }
+}
