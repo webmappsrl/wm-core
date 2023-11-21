@@ -4,7 +4,7 @@ import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@ang
 import {DomSanitizer} from '@angular/platform-browser';
 import {ModalController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
-import {confPROJECT} from 'wm-core/store/conf/conf.selector';
+import {iLocalString} from 'wm-core/types/config';
 
 @Component({
   selector: 'wm-inner-component-html',
@@ -14,7 +14,7 @@ import {confPROJECT} from 'wm-core/store/conf/conf.selector';
   encapsulation: ViewEncapsulation.None,
 })
 export class WmInnerHtmlComponent {
-  @Input() html: string;
+  @Input() html: string | iLocalString;
 
   constructor(
     private _store: Store,
