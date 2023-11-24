@@ -21,6 +21,7 @@ export interface IAPP {
   id?: string;
   name: string;
   poi_acquisition_form?: any;
+  socialShareText?:iLocalString
   welcome?: string;
 }
 
