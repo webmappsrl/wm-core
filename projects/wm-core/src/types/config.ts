@@ -218,6 +218,7 @@ export interface IAUTH {
 }
 export interface IPROJECT {
   HTML: string;
+  html: iLocalString;
 }
 export interface iLocalString {
   en?: string;
@@ -380,7 +381,7 @@ export interface ICONF {
   APP: IAPP;
   AUTH?: IAUTH;
   CREDITS?: IPROJECT;
-  DISCLAIMER?: IPROJECT
+  DISCLAIMER?: IPROJECT;
   HOME?: IHOME[];
   JIDO_UPDATE_TIME?: number;
   LANGUAGES?: ILANGUAGES;
