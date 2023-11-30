@@ -4,7 +4,7 @@
       <ion-segment-button value="tracks" *ngIf="tracks.length > 0">
         <ion-label>
           <ng-container *ngIf="(currentLayer$|async)?.track_type as trackType;else noLab">
-            {{(currentLayer$|async)?.track_type|wmtrans}}
+            {{trackType|wmtrans}}
           </ng-container>
           <ng-template #noLab>
             {{'Sentieri'|wmtrans}}

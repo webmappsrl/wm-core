@@ -121,8 +121,6 @@ export class ApiService {
     if (this._queryDic[query] == null) {
       const value = await this._http.request('get', query).toPromise();
       this._queryDic[query] = value;
-    } else {
-      console.log(`stored: ${query}`);
     }
     return this._queryDic[query];
   }

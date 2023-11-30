@@ -28,7 +28,10 @@
 </ion-card>
 
 <ng-template #taxonomies>
-  <div class="wm-box-taxonomies" *ngIf="data?.taxonomyActivities">
+  <div
+    class="wm-box-taxonomies"
+    *ngIf="data?.taxonomyActivities!= null && data?.taxonomyActivities.length>0 &&data?.taxonomyActivities != '[]'"
+  >
     <div class="wm-box-taxonomy" *ngFor="let item of data?.taxonomyActivities">
       <i [class]="item|getIcn"></i>
       <div>{{item|lowercase|wmtrans}}</div>
