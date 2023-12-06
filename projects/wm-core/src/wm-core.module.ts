@@ -32,6 +32,7 @@ import {WmTabNearestPoiComponent} from './tab-nearest-poi/tab-nearest-poi.compon
 import {WmTrackAudioComponent} from './track-audio/track-audio.component';
 import {WmTrackEdgesComponent} from './track-edges/track-edges.component';
 import {WmInnerHtmlComponent} from './inner-html/inner-html.component';
+import {ButtonsModule} from './buttons/export-to/buttons.module';
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -54,7 +55,14 @@ const declarations = [
   WmTrackEdgesComponent,
   WmInnerHtmlComponent,
 ];
-const modules = [WmSharedModule, WmPipeModule, BoxModule, WmLocalizationModule, WmFiltersModule];
+const modules = [
+  WmSharedModule,
+  WmPipeModule,
+  BoxModule,
+  ButtonsModule,
+  WmLocalizationModule,
+  WmFiltersModule,
+];
 
 @NgModule({
   declarations,

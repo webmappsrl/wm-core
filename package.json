@@ -44,7 +44,7 @@
     "ol": "7.1.0",
     "ol-ext": "^4.0.2",
     "rxjs": "~7.8.0",
-    "togpx": "^0.5.4",
+    "@dwayneparton/geojson-to-gpx": "0.0.30",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0",
     "@angular-devkit/architect": "^0.1602.1",
