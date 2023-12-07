@@ -10,6 +10,6 @@ export interface IHIT {
   name: string;
   ref: string;
   size?: any;
-  taxonomyActivities: string[];
+  taxonomyActivities: any;
   taxonomyWheres: string[];
 }
