@@ -14,6 +14,7 @@ import {iLocalString} from 'wm-core/types/config';
   encapsulation: ViewEncapsulation.None,
 })
 export class WmInnerHtmlComponent {
+  @Input() enableDismiss = true;
   @Input() html: string | iLocalString;
 
   constructor(
@@ -24,7 +25,7 @@ export class WmInnerHtmlComponent {
     public sanitizer: DomSanitizer,
   ) {}
 
-  dismiss() {
+  dismiss(): void {
     this._modalCtrl.dismiss();
     this._router.navigate([], {
       relativeTo: this._route,
