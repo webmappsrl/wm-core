@@ -33,7 +33,7 @@
   </ion-segment>
 </ng-container>
 
-<ion-content style="--offset-top:56px; --offset-bottom:56px;" class="wm-home-content">
+<ion-content class="wm-home-content">
   <ng-container *ngIf="showResultType$|async as showResulType;">
     <ng-container *ngIf="showResulType === 'tracks'|| showResulType == null">
       <ng-container *ngIf="tracksLoading$|async">
