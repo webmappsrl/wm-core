@@ -11,6 +11,12 @@ wm-status-filter {
     align-items: stretch;
     max-height: 200px;
     overflow: auto;
+    .wm-status-filter-icn {
+      height: 55%;
+      * {
+        height: 180%;
+      }
+    }
     ion-chip {
       order: 0;
       flex: 1 1 auto;

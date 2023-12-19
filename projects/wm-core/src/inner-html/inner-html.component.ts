@@ -3,7 +3,6 @@ import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@ang
 
 import {DomSanitizer} from '@angular/platform-browser';
 import {ModalController} from '@ionic/angular';
-import {Store} from '@ngrx/store';
 import {iLocalString} from 'wm-core/types/config';
 
 @Component({
@@ -18,7 +17,6 @@ export class WmInnerHtmlComponent {
   @Input() html: string | iLocalString;
 
   constructor(
-    private _store: Store,
     private _modalCtrl: ModalController,
     private _route: ActivatedRoute,
     private _router: Router,
