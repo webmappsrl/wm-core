@@ -20,7 +20,7 @@ import {
   poisInitCount,
   lastFilterType,
 } from '../../store/api/api.selector';
-import { IHIT } from '../../types/elastic';
+import {IHIT} from '../../types/elastic';
 
 @Component({
   selector: 'wm-home-result',
@@ -70,7 +70,7 @@ export class WmHomeResultComponent implements OnDestroy {
           } else if (tracks != null && tracks > 0) {
             return 'tracks';
           } else {
-            return 'none';
+            return 'pois';
           }
         }),
       )
