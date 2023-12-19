@@ -36,11 +36,11 @@ export class WmHomeResultComponent implements OnDestroy {
   @Output() trackEVT: EventEmitter<number> = new EventEmitter();
 
   countAll$ = this._store.select(countAll);
-  countPois$ = this._store.select(countPois);
   countInitPois$ = this._store.select(poisInitCount);
-  lastFilterType$ = this._store.select(lastFilterType);
+  countPois$ = this._store.select(countPois);
   countTracks$ = this._store.select(countTracks);
   currentLayer$ = this._store.select(apiElasticStateLayer);
+  lastFilterType$ = this._store.select(lastFilterType);
   pois$: Observable<any[]> = this._store.select(featureCollection).pipe(
     filter(p => p != null),
     map(p => ((p as any).features || []).map(p => (p as any).properties || [])),
