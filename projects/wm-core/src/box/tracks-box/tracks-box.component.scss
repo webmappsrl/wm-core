@@ -1,5 +1,6 @@
 wm-tracks-box {
   .wm-tracks-wrapper {
+    position: relative;
     display: flex;
     align-items: center;
     margin: 0;
@@ -7,7 +8,6 @@ wm-tracks-box {
     .wm-track-arrow {
       background: white;
       position: absolute;
-      top: 50;
       border-radius: 100%;
       box-shadow: 5px 5px 5px #0000000e;
       cursor: pointer;
@@ -18,7 +18,6 @@ wm-tracks-box {
       text-decoration: none;
       display: inline-block;
       border-radius: 30px;
-      position: absolute;
       padding: 0px;
       width: 30px;
       height: 30px;
