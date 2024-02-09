@@ -1,16 +1,90 @@
 import {IHIT} from './elastic';
-export interface PoiTypeTaxonomy {
-  color: string;
-  icon: string;
-  id: number;
-  identifier: string;
+
+export type IBASEBOX = IBOX & {
+  box_type: 'base';
+  items: IHOMEITEMTRACK[];
+  image_url?: string;
+};
+export type IBOX = {
+  box_type:
+    | 'title'
+    | 'layer'
+    | 'track'
+    | 'base'
+    | 'external_url'
+    | 'slug'
+    | 'poi_type_filter'
+    | 'horizontal_scroll';
+  title: iLocalString | string;
+};
+export type IDETAILSMAPBEHAVIOUR = 'all' | 'track' | 'poi' | 'route';
+export type IEXTERNALURLBOX = IHOMEBASEITEM & {
+  box_type: 'external_url';
+  url: string;
+};
+export type IHOME =
+  | ITITLEBOX
+  | ILAYERBOX
+  | IBASEBOX
+  | IEXTERNALURLBOX
+  | ISLUGBOX
+  | ITRACKBOX
+  | IPOITYPEFILTERBOX
+  | IHORIZONTALSCROLLBOX;
+export type IHOMEBASEITEM = {
+  title: iLocalString | string;
   image_url: string;
+};
+export type IHOMEITEM = IHOMEITEMTRACK | IHOMEITEMURL | IHORIZONTALSCROLLBOXITEM;
+export type IHOMEITEMTRACK = IHOMEBASEITEM & {
+  track_id: number;
+  taxonomy_activities: string[];
+  taaxonomy_where: string[];
+  distance: string;
+  cai_scale: string;
+};
+export type IHOMEITEMURL = IHOMEBASEITEM & {
+  url: string;
+};
+export type IHORIZONTALSCROLLBOX = IBOX & {
+  box_type: 'horizontal_scroll';
+  item_type: string;
+  items: IHORIZONTALSCROLLBOXITEM[];
+  image_url?: string;
+};
+export type IHORIZONTALSCROLLBOXITEM = IHOMEBASEITEM & {
+  res: any;
+};
+export type ILAYERBOX = IBOX & {
+  box_type: 'layer';
+  layer: ILAYER;
+  icon?: string;
+  color?: string;
+};
+export type IPOITYPEFILTERBOX = {
+  box_type: 'poi_type_filter';
+} & PoiTypeTaxonomy;
+export type ISLUGBOX = IHOMEBASEITEM & {
+  box_type: 'slug';
+  slug: string;
+};
+export type ITAXONOMY = 'activity' | 'theme' | 'when' | 'where' | 'who' | 'webmapp_category';
+export type ITITLEBOX = IBOX & {
+  box_type: 'title';
+};
+export type ITRACKBOX = IBOX & {
+  box_type: 'track';
+  track_id: number;
+  image_url: string;
+};
+
+export interface Filter {
+  identifier: string;
+  lower?: number;
   name: iLocalString;
-}
-export interface IGEOLOCATION {
-  record: {
-    enable: boolean;
-  };
+  taxonomy?: string;
+  type: 'select' | 'slider';
+  upper?: number;
 }
 
 export interface IAPP {
@@ -21,8 +95,72 @@ export interface IAPP {
   id?: string;
   name: string;
   poi_acquisition_form?: any;
-  socialShareText?:iLocalString
+  socialShareText?: iLocalString;
+  track_acquisition_form?: any;
   welcome?: string;
+}
+
+export interface IAPPDOWNLOADBUTTONS {
+  all: boolean;
+  poi: boolean;
+  route: boolean;
+  track: boolean;
+}
+
+export interface IAUTH {
+  customCreatePostRoles?: boolean;
+  enable?: boolean;
+  facebook?: IFACEBOOK;
+  force?: boolean;
+  google?: IGOOGLE;
+  hideCountry?: boolean;
+  loginToGeohub?: boolean;
+  showAtStartup?: boolean;
+  skipToDownloadPublicRoute?: boolean;
+}
+
+export interface ICLUSTERING {
+  enable: boolean;
+  highZoom?: number;
+  highZoomRadius: number;
+  radius: number;
+}
+
+export interface ICONF {
+  APP: IAPP;
+  AUTH?: IAUTH;
+  CREDITS?: IPROJECT;
+  DISCLAIMER?: IPROJECT;
+  GEOLOCATION?: IGEOLOCATION;
+  HOME?: IHOME[];
+  JIDO_UPDATE_TIME?: number;
+  LANGUAGES?: ILANGUAGES;
+  MAP?: IMAP;
+  OPTIONS: IOPTIONS;
+  PROJECT?: IPROJECT;
+  THEME?: ITHEME;
+  WEBAPP?: IWEBAPP;
+}
+
+export interface ICONTROL {
+  label: iLocalString;
+  type: string;
+}
+
+export interface ICONTROLS {
+  [key: string]: (ICONTROLSTITLE | ICONTROLSBUTTON)[];
+}
+
+export interface ICONTROLSBUTTON extends ICONTROL {
+  default: boolean;
+  icon: string;
+  id?: number;
+  type: 'button';
+  url: string;
+}
+
+export interface ICONTROLSTITLE extends ICONTROL {
+  type: 'title';
 }
 
 export interface IConfig {
@@ -31,32 +169,51 @@ export interface IConfig {
   PROJECT: IPROJECT;
 }
 
-export interface ITHEME {
-  danger?: string;
-  dark?: string;
-  defaultFeatureColor?: string;
-  fontFamilyContent?: string;
-  fontFamilyHeader?: string;
-  fontLg?: string;
-  fontMd?: string;
-  fontSm?: string;
-  fontXlg?: string;
-  fontXsm?: string;
-  fontXxlg?: string;
-  fontXxxlg?: string;
-  light?: string;
-  medium?: string;
-  primary?: string;
-  secondary?: string;
-  select?: string;
-  success?: string;
-  tertiary?: string;
-  theme?: string;
-  warning?: string;
+export interface IFACEBOOK {
+  id: string;
+  name: string;
 }
-export interface ILANGUAGES {
-  available?: string[];
-  default?: string;
+
+export interface IFILTER {
+  name: iLocalString;
+  type: 'select' | 'slider';
+}
+
+export interface IFILTEROPTION {
+  color: string;
+  icon: string;
+  id: number;
+  identifier: string;
+  name: iLocalString;
+}
+
+export interface IFILTERS {
+  [key: string]: IFILTERSELECT | IFILTERSLIDER;
+}
+
+export interface IFILTERSELECT extends IFILTER {
+  options: IFILTEROPTION[];
+  type: 'select';
+}
+
+export interface IFILTERSLIDER extends IFILTER {
+  identifier: string;
+  max: number;
+  min: number;
+  type: 'slider';
+}
+
+export interface IGEOLOCATION {
+  gps_accuracy_default: number;
+  record: {
+    enable: boolean;
+  };
+}
+
+export interface IGOOGLE {
+  id: string;
+  iosId: string;
+  name: string;
 }
 
 export interface IHOMEOLD {
@@ -72,84 +229,59 @@ export interface IHOMEOLD {
   view: string;
 }
 
-export type IBOX = {
-  box_type:
-    | 'title'
-    | 'layer'
-    | 'track'
-    | 'base'
-    | 'external_url'
-    | 'slug'
-    | 'poi_type_filter'
-    | 'horizontal_scroll';
-  title: iLocalString | string;
-};
-export type ITITLEBOX = IBOX & {
-  box_type: 'title';
-};
-export type ILAYERBOX = IBOX & {
-  box_type: 'layer';
-  layer: ILAYER;
-  icon?: string;
-  color?: string;
-};
+export interface ILANGUAGES {
+  available?: string[];
+  default?: string;
+}
 
-export type ITRACKBOX = IBOX & {
-  box_type: 'track';
-  track_id: number;
-  image_url: string;
-};
+export interface ILAYER {
+  bbox: [number, number, number, number];
+  behaviour: {[name: string]: string};
+  data_use_bbox: boolean;
+  data_use_only_my_data: boolean;
+  description: string;
+  feature_image: string;
+  icon?: any;
+  id: string;
+  name: string;
+  params?: {[id: string]: string};
+  style: {[name: string]: string};
+  subtitle: string;
+  title: string;
+  tracks?: {[name: string]: IHIT[]};
+}
 
-export type IHOMEBASEITEM = {
-  title: iLocalString | string;
-  image_url: string;
-};
-export type IEXTERNALURLBOX = IHOMEBASEITEM & {
-  box_type: 'external_url';
-  url: string;
-};
-export type ISLUGBOX = IHOMEBASEITEM & {
-  box_type: 'slug';
-  slug: string;
-};
-export type IPOITYPEFILTERBOX = {
-  box_type: 'poi_type_filter';
-} & PoiTypeTaxonomy;
+export interface IMAP {
+  alert_poi_radius?: number;
+  alert_poi_show?: boolean;
+  bbox: [number, number, number, number];
+  center?: [number, number];
+  controls: ICONTROLS;
+  defZoom: number;
+  edges?: {[trackId: number]: {prev: number[]; next: number[]}};
+  filters?: {[key: string]: any};
+  flow_line_quote_orange?: number;
+  flow_line_quote_red?: number;
+  flow_line_quote_show?: boolean;
+  layers?: ILAYER[];
+  maxStrokeWidth?: number;
+  maxZoom: number;
+  minStrokeWidth?: number;
+  minZoom: number;
+  pois?: any;
+  record_track_show?: boolean;
+  ref_on_track_min_zoom?: number;
+  ref_on_track_show?: boolean;
+  start_end_icons_min_zoom?: number;
+  start_end_icons_show?: boolean;
+  tiles: {[name: string]: string}[];
+  tracks?: any[];
+}
 
-export type IHORIZONTALSCROLLBOXITEM = IHOMEBASEITEM & {
-  res: any;
-};
-export type IHOMEITEMTRACK = IHOMEBASEITEM & {
-  track_id: number;
-  taxonomy_activities: string[];
-  taaxonomy_where: string[];
-  distance: string;
-  cai_scale: string;
-};
-export type IHOMEITEMURL = IHOMEBASEITEM & {
-  url: string;
-};
-export type IHOMEITEM = IHOMEITEMTRACK | IHOMEITEMURL | IHORIZONTALSCROLLBOXITEM;
-export type IBASEBOX = IBOX & {
-  box_type: 'base';
-  items: IHOMEITEMTRACK[];
-  image_url?: string;
-};
-export type IHORIZONTALSCROLLBOX = IBOX & {
-  box_type: 'horizontal_scroll';
-  item_type: string;
-  items: IHORIZONTALSCROLLBOXITEM[];
-  image_url?: string;
-};
-export type IHOME =
-  | ITITLEBOX
-  | ILAYERBOX
-  | IBASEBOX
-  | IEXTERNALURLBOX
-  | ISLUGBOX
-  | ITRACKBOX
-  | IPOITYPEFILTERBOX
-  | IHORIZONTALSCROLLBOX;
+export interface IMAPATTRIBUTION {
+  label?: string;
+  url?: string;
+}
 
 export interface IOPTIONS {
   addArrowsOverTracks: boolean;
@@ -205,119 +337,13 @@ export interface IOPTIONS {
   useFeatureClassicSelectionStyle: boolean;
   voucherUrl?: string;
 }
-export interface IAUTH {
-  customCreatePostRoles?: boolean;
-  enable?: boolean;
-  facebook?: IFACEBOOK;
-  force?: boolean;
-  google?: IGOOGLE;
-  hideCountry?: boolean;
-  loginToGeohub?: boolean;
-  showAtStartup?: boolean;
-  skipToDownloadPublicRoute?: boolean;
-}
-export interface IPROJECT {
-  HTML: string;
-  html: iLocalString;
-}
-export interface iLocalString {
-  en?: string;
-  it?: string;
 
-  [lang: string]: string;
-}
 export interface IOVERLAYERS {
   icon?: string;
   label: iLocalString;
   url: string;
 }
-export interface IOVERLAYERTITLE {
-  label: iLocalString;
-}
 
-export interface ICONTROL {
-  label: iLocalString;
-  type: string;
-}
-export interface ICONTROLSTITLE extends ICONTROL {
-  type: 'title';
-}
-export interface ICONTROLSBUTTON extends ICONTROL {
-  default: boolean;
-  icon: string;
-  id?: number;
-  type: 'button';
-  url: string;
-}
-export interface IFILTERS {
-  [key: string]: IFILTERSELECT | IFILTERSLIDER;
-}
-export interface IFILTER {
-  name: iLocalString;
-  type: 'select' | 'slider';
-}
-export interface IFILTERSELECT extends IFILTER {
-  options: IFILTEROPTION[];
-  type: 'select';
-}
-export interface IFILTERSLIDER extends IFILTER {
-  identifier: string;
-  max: number;
-  min: number;
-  type: 'slider';
-}
-export interface IFILTEROPTION {
-  color: string;
-  icon: string;
-  id: number;
-  identifier: string;
-  name: iLocalString;
-}
-export interface ICONTROLS {
-  [key: string]: (ICONTROLSTITLE | ICONTROLSBUTTON)[];
-}
-export interface IMAP {
-  alert_poi_radius?: number;
-  alert_poi_show?: boolean;
-  bbox: [number, number, number, number];
-  center?: [number, number];
-  controls: ICONTROLS;
-  defZoom: number;
-  edges?: {[trackId: number]: {prev: number[]; next: number[]}};
-  filters?: {[key: string]: any};
-  flow_line_quote_orange?: number;
-  flow_line_quote_red?: number;
-  flow_line_quote_show?: boolean;
-  layers?: ILAYER[];
-  maxStrokeWidth?: number;
-  maxZoom: number;
-  minStrokeWidth?: number;
-  minZoom: number;
-  pois?: any;
-  record_track_show?: boolean;
-  ref_on_track_min_zoom?: number;
-  ref_on_track_show?: boolean;
-  start_end_icons_min_zoom?: number;
-  start_end_icons_show?: boolean;
-  tiles: {[name: string]: string}[];
-  tracks?: any[];
-}
-export interface ILAYER {
-  bbox: [number, number, number, number];
-  behaviour: {[name: string]: string};
-  data_use_bbox: boolean;
-  data_use_only_my_data: boolean;
-  description: string;
-  feature_image: string;
-  icon?: any;
-  id: string;
-  name: string;
-  params?: {[id: string]: string};
-  style: {[name: string]: string};
-  subtitle: string;
-  title: string;
-  tracks?: {[name: string]: IHIT[]};
-}
 export interface IOVERLAYERS {
   alert?: boolean;
   color?: string;
@@ -345,51 +371,42 @@ export interface IOVERLAYERS {
   zindex?: number;
 }
 
-export type IDETAILSMAPBEHAVIOUR = 'all' | 'track' | 'poi' | 'route';
-export type ITAXONOMY = 'activity' | 'theme' | 'when' | 'where' | 'who' | 'webmapp_category';
+export interface IOVERLAYERTITLE {
+  label: iLocalString;
+}
 
-export interface IFACEBOOK {
-  id: string;
-  name: string;
+export interface IPROJECT {
+  HTML: string;
+  html: iLocalString;
 }
-export interface IGOOGLE {
-  id: string;
-  iosId: string;
-  name: string;
+
+export interface ITHEME {
+  danger?: string;
+  dark?: string;
+  defaultFeatureColor?: string;
+  fontFamilyContent?: string;
+  fontFamilyHeader?: string;
+  fontLg?: string;
+  fontMd?: string;
+  fontSm?: string;
+  fontXlg?: string;
+  fontXsm?: string;
+  fontXxlg?: string;
+  fontXxxlg?: string;
+  light?: string;
+  medium?: string;
+  primary?: string;
+  secondary?: string;
+  select?: string;
+  success?: string;
+  tertiary?: string;
+  theme?: string;
+  warning?: string;
 }
-export interface ICLUSTERING {
-  enable: boolean;
-  highZoom?: number;
-  highZoomRadius: number;
-  radius: number;
-}
-export interface IMAPATTRIBUTION {
-  label?: string;
-  url?: string;
-}
-export interface IAPPDOWNLOADBUTTONS {
-  all: boolean;
-  poi: boolean;
-  route: boolean;
-  track: boolean;
-}
+
 export interface IWEBAPP {
   draw_track_show: boolean;
   editing_inline_show: boolean;
-}
-export interface ICONF {
-  APP: IAPP;
-  AUTH?: IAUTH;
-  CREDITS?: IPROJECT;
-  DISCLAIMER?: IPROJECT;
-  HOME?: IHOME[];
-  JIDO_UPDATE_TIME?: number;
-  LANGUAGES?: ILANGUAGES;
-  MAP?: IMAP;
-  OPTIONS: IOPTIONS;
-  PROJECT?: IPROJECT;
-  THEME?: ITHEME;
-  WEBAPP?: IWEBAPP;
 }
 
 export interface IWmImage {
@@ -411,14 +428,20 @@ export interface IWmImage {
   url: string;
 }
 
-export interface Filter {
+export interface PoiTypeTaxonomy {
+  color: string;
+  icon: string;
+  id: number;
   identifier: string;
-  lower?: number;
+  image_url: string;
   name: iLocalString;
-  taxonomy?: string;
-  type: 'select' | 'slider';
-  upper?: number;
 }
+
+export interface SelectFilter extends Filter {
+  options: SelectFilterOption[];
+  type: 'select';
+}
+
 export interface SelectFilterOption {
   color?: string;
   icon?: string;
@@ -428,11 +451,6 @@ export interface SelectFilterOption {
   taxonomy?: string;
 }
 
-export interface SelectFilter extends Filter {
-  options: SelectFilterOption[];
-  type: 'select';
-}
-
 export interface SliderFilter extends Filter {
   identifier: string;
   max: number;
@@ -440,4 +458,11 @@ export interface SliderFilter extends Filter {
   steps: number;
   type: 'slider';
   units: string;
+}
+
+export interface iLocalString {
+  en?: string;
+  it?: string;
+
+  [lang: string]: string;
 }

@@ -11,6 +11,7 @@ export const confAPP = createSelector(confFeature, state => state.APP);
 export const confGeohubId = createSelector(confAPP, state => state.geohubId);
 export const confWEBAPP = createSelector(confFeature, state => state.WEBAPP);
 export const confPOIFORMS = createSelector(confAPP, app => app.poi_acquisition_form);
+export const confTRACKFORMS = createSelector(confAPP, app => app.track_acquisition_form);
 export const confLANGUAGES = createSelector(confFeature, state => state.LANGUAGES);
 export const confOPTIONS = createSelector(confFeature, state => state.OPTIONS);
 export const confAUTH = createSelector(confFeature, state => state.AUTH);
@@ -70,6 +71,7 @@ export const confPAGES = createSelector(confFeature, state => ({
   DISCLAIMER: state.DISCLAIMER,
 }));
 export const confDISCLAIMER = createSelector(confFeature, state => state.DISCLAIMER);
+export const confGEOLOCATION = createSelector(confFeature, state => state.GEOLOCATION);
 
 export const confTHEMEVariables = createSelector(confTHEME, (theme: ITHEME) =>
   getCSSVariables(theme),
