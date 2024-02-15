@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
@@ -8,13 +7,12 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {BaseBoxComponent} from '../box';
-import { IBASEBOX } from '../../types/config';
+import {IBASEBOX} from '../../types/config';
 
 @Component({
   selector: 'wm-tracks-box',
   templateUrl: './tracks-box.component.html',
   styleUrls: ['./tracks-box.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
 export class TracksBoxComponent extends BaseBoxComponent<IBASEBOX> {
