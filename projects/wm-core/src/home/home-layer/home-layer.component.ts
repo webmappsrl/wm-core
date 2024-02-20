@@ -1,5 +1,6 @@
-import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
+import { LangService } from 'wm-core/localization/lang.service';
 import {apiElasticStateLayer} from '../../store/api/api.selector';
 
 @Component({
@@ -11,5 +12,10 @@ import {apiElasticStateLayer} from '../../store/api/api.selector';
 })
 export class WmHomeLayerComponent {
   layer$ = this._store.select(apiElasticStateLayer);
-  constructor(private _store: Store) {}
+
+  constructor(private _store: Store,private _langSvc:LangService,private _cdr:ChangeDetectorRef) {
+    this._langSvc.onLangChange.subscribe(() => {
+      this._cdr.markForCheck();
+    });
+  }
 }

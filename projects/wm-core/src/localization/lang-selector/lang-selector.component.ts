@@ -39,5 +39,8 @@ export class WmLangSelectorComponent {
       this._langSvc.use(lang.lang);
       localStorage.setItem('wm-lang', lang.lang);
     });
+    this._langSvc.onLangChange.subscribe(lang => {
+      this.langForm.controls['lang'].setValue(lang.lang);
+    });
   }
 }
