@@ -14,7 +14,6 @@ import {map} from 'rxjs/operators';
   selector: 'wm-track-audio',
   templateUrl: './track-audio.component.html',
   styleUrls: ['./track-audio.component.scss'],
-  providers: [LangService],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -1,6 +1,6 @@
 import {Component, ChangeDetectionStrategy, Input, ViewEncapsulation} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
-import {LangService} from '../lang.service';
+import {LangService} from 'wm-core/localization/lang.service';
 @Component({
   selector: 'wm-lang-selector',
   templateUrl: './lang-selector.component.html',
