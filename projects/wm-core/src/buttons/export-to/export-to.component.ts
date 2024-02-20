@@ -28,27 +28,33 @@ export class ExportToBtnComponent {
   export(): void {
     this._loadingSvc.show(`build ${this.to} file`);
     let output;
-    let g = this._toGeoJSON(this.track.geojson);
-    g.properties = {...g.properties, ...this.track.rawData, ...{title: this.track.title}};
-    switch (this.to) {
-      case 'gpx':
-        const options = {
-          metadata: {
-            name: this.track.title,
-            ...g.properties,
-          },
-        };
-        output = GeoJsonToGpx(g, options);
-        output = new XMLSerializer().serializeToString(output);
-        break;
-      case 'kml':
-        output = tokml(g);
-        break;
-      case 'geojson':
-        output = JSON.stringify(g);
-        break;
-      default:
-        throw new Error('Unsupported format');
+    try {
+      let g = this._toGeoJSON(this.track.geojson);
+      g.properties = {...g.properties, ...this.track.rawData, ...{title: this.track.title}};
+      switch (this.to) {
+        case 'gpx':
+          const options = {
+            metadata: {
+              name: this.track.title,
+              ...g.properties,
+            },
+          };
+          output = GeoJsonToGpx(g, options);
+          output = new XMLSerializer().serializeToString(output);
+          break;
+        case 'kml':
+          output = tokml(g);
+          break;
+        case 'geojson':
+          output = JSON.stringify(g);
+          break;
+        default:
+          throw new Error('Unsupported format');
+      }
+    } catch (e) {
+      console.error(e);
+      console.log('---------');
+      this._loadingSvc.close(`build ${this.to} file`);
     }
     this._loadingSvc.close(`build ${this.to} file`);
     this.saveFileFn(output, this.to, this.track);
