@@ -9,7 +9,7 @@
         {{ data.taxonomyWheres[data.taxonomyWheres.length-1] | wmtrans }}
       </ion-card-subtitle>
       <ion-card-title>
-        {{ data.name  | wmtrans }}
+        {{ data.properties?.name?? data.name  | wmtrans }}
       </ion-card-title>
       <div class="wm-search-box-properties">
         <ion-label *ngIf="data?.distance" class="wm-search-box-property">
