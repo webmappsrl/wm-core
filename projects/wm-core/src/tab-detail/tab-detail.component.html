@@ -33,8 +33,8 @@
 
   <ion-item *ngIf="properties?.duration_forward as duration_forward">
     <i class="icon-outline-duration webmapp-pageroute-tabdetail-icon"> </i>
-    <ion-label start class="webmapp-pageroute-tabdetail-label"
-      >{{ "pages.route.detail.duration_forward" | wmtrans }}
+    <ion-label start class="webmapp-pageroute-tabdetail-label">
+      {{ (properties?.roundtrip ? "duration":"pages.route.detail.duration_forward") | wmtrans }}
     </ion-label>
     <ion-note slot="end" class="webmapp-pageroute-tabdetail-value"
       >{{duration_forward| duration }}

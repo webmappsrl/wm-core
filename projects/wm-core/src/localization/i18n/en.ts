@@ -63,4 +63,5 @@ export const wmEN = {
   'elimina': 'delete',
   'non hai percorsi': 'no paths',
   'al momento non hai nessun percorso salvato.': 'in this moment you dont have any saved paths.',
+  'duration': 'Duration',
 };
