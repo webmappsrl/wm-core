@@ -23,7 +23,7 @@
         <ng-container *ngFor="let f of trackFilters$|async">
           <ion-chip (click)="removeTrackFilter(f)">
             <ng-container *ngIf="f.icon != null">
-              <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
+              <div appBuildSvg style="height:55%" [svg]="f.icon" [color]="f.color"></div>
             </ng-container>
             <ion-label>{{f.name|wmtrans}} {{f|wmUnits}}</ion-label>
             <ion-icon name="close"></ion-icon>
