@@ -39,6 +39,8 @@ export class ApiService {
     if (hostname.indexOf('localhost') < 0) {
       if (hostname.indexOf('sentieri.caiparma') > -1) {
         this._geohubAppId = 33;
+      } else if (hostname.indexOf('motomappa.motoabbigliament') > -1) {
+        this._geohubAppId = 53;
       } else {
         const newGeohubId = parseInt(hostname.split('.')[0], 10);
         if (!Number.isNaN(newGeohubId)) {

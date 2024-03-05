@@ -1,9 +1,9 @@
 import {HttpClient} from '@angular/common/http';
-import {Inject,Injectable} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import * as localForage from 'localforage';
-import { ICONF } from '../../types/config';
-import { ENVIRONMENT_CONFIG, EnvironmentConfig } from './conf.token';
+import {ICONF} from '../../types/config';
+import {ENVIRONMENT_CONFIG, EnvironmentConfig} from './conf.token';
 @Injectable({
   providedIn: 'root',
 })
@@ -30,11 +30,16 @@ export class ConfService {
     return `${this.config.api}/api/app/webmapp/${this._geohubAppId}/`;
   }
 
-  constructor(@Inject(ENVIRONMENT_CONFIG) public config: EnvironmentConfig,private _http: HttpClient) {
+  constructor(
+    @Inject(ENVIRONMENT_CONFIG) public config: EnvironmentConfig,
+    private _http: HttpClient,
+  ) {
     const hostname: string = window.location.hostname;
     if (hostname.indexOf('localhost') < 0) {
       if (hostname.indexOf('sentieri.caiparma') > -1) {
         this._geohubAppId = 33;
+      } else if (hostname.indexOf('motomappa.motoabbigliament') > -1) {
+        this._geohubAppId = 53;
       } else {
         const newGeohubId = parseInt(hostname.split('.')[0], 10);
         if (!Number.isNaN(newGeohubId)) {
@@ -51,7 +56,7 @@ export class ConfService {
   public getConf(): Observable<ICONF> {
     return new Observable<ICONF>(observer => {
       const url = `${this._geohubApiBaseUrl}config.json`;
-      localForage.getItem(url).then((cachedData: unknown ) => {
+      localForage.getItem(url).then((cachedData: unknown) => {
         if (cachedData) {
           const parsedData = JSON.parse(cachedData as string);
           observer.next(parsedData);
