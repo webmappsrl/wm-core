@@ -1,5 +1,6 @@
 wm-inner-component-html {
-  padding: 5%;
+  padding: max(5%, env(safe-area-inset-top)) max(5%, env(safe-area-inset-right))
+    max(5%, env(safe-area-inset-bottom)) max(5%, env(safe-area-inset-left));
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
