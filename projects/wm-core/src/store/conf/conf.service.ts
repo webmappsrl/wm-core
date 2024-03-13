@@ -40,6 +40,8 @@ export class ConfService {
         this._geohubAppId = 33;
       } else if (hostname.indexOf('motomappa.motoabbigliament') > -1) {
         this._geohubAppId = 53;
+      } else if (hostname.indexOf('maps.parcoforestecasentinesi.it') > -1) {
+        this._geohubAppId = 49;
       } else {
         const newGeohubId = parseInt(hostname.split('.')[0], 10);
         if (!Number.isNaN(newGeohubId)) {
