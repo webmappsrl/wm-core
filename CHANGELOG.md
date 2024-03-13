@@ -1,5 +1,47 @@
 # Changelog
 
+## [2.1.0](https://github.com/webmappsrl/wm-core/compare/v2.0.0...v2.1.0) (2024-03-13)
+
+
+### Features
+
+* Add export-to button module id:2214 ([98a1736](https://github.com/webmappsrl/wm-core/commit/98a1736960e0d496288739dd3cbc25e6c734475e))
+* **filters:** add color to filter icons ([d7be46b](https://github.com/webmappsrl/wm-core/commit/d7be46b6412289eb5cb76c295fb8a067e1aab88c))
+* **inner-html:** add enableDismiss input ([1dece2e](https://github.com/webmappsrl/wm-core/commit/1dece2eeeb5e350fd7105258cfee92391a71dfe0))
+* **inner-html:** add inner html component ([68a8c4a](https://github.com/webmappsrl/wm-core/commit/68a8c4a923bed2b541f11692fa06b891aaaca3d2))
+* **select-filter:** add icon support to select filter component ([a3c8bd6](https://github.com/webmappsrl/wm-core/commit/a3c8bd6ef018e39c73ac4178c5e297b97f3bd80a))
+
+
+### Bug Fixes
+
+* **api:** add support for motomappa.motoabbigliament ([4f33d82](https://github.com/webmappsrl/wm-core/commit/4f33d8205e1f120d9bb5f1a6ba6d9c9b94286992))
+* **inner-html.component:** added safe area ([cbacf3d](https://github.com/webmappsrl/wm-core/commit/cbacf3d417ef69cd3c9e7cea257af75c6e7e1f38))
+* **style:** horizontal scroll & track box id: 2635 ([a386ebd](https://github.com/webmappsrl/wm-core/commit/a386ebd63e14d3ec8609d124065ccc9f95f43e9b))
+* **style:** select filter revert old style ([b9af543](https://github.com/webmappsrl/wm-core/commit/b9af543388cf6a1570eb073ae138c9917561bb0f))
+* **types:** update type for taxonomyActivities in IHIT interface ([db150c8](https://github.com/webmappsrl/wm-core/commit/db150c825f53bcd7faf3c8b10ae2230e3b7fabe1))
+* update lang ([36e02be](https://github.com/webmappsrl/wm-core/commit/36e02be7339df2312405d2e636ff6e9cf18c5d20))
+
+
+### Miscellaneous
+
+* **inner-component:** minor fix ([48f2fde](https://github.com/webmappsrl/wm-core/commit/48f2fdeec1395a38587e3c2407e76ea0b452f457))
+* Refactor exportToBtnComponent.export() method ([01483e1](https://github.com/webmappsrl/wm-core/commit/01483e1408df1c55e4f9d9814a11912b86426a31))
+* Remove unnecessary margin-bottom in home-result.component.scss ([37102b5](https://github.com/webmappsrl/wm-core/commit/37102b5659b6d9058054b2955572d30ac76f432c))
+* Remove unused import and providers in poi-type-filter-box.component.ts ([021cb9d](https://github.com/webmappsrl/wm-core/commit/021cb9d09b60bc29c96b4bb7be9b48f32d8959b0))
+* Update API and Conf services ([30fd5bf](https://github.com/webmappsrl/wm-core/commit/30fd5bfdd2822b830182a2294fb0dc5c39f27b17))
+* Update dependencies and imports ([ebe49f3](https://github.com/webmappsrl/wm-core/commit/ebe49f391ffb5d4b4de27b7462f5bc999f8fe4f1))
+* Update filters.component.scss ([83f821a](https://github.com/webmappsrl/wm-core/commit/83f821a28863b55ea641528e113e557a4747d009))
+* Update home-layer.component.ts and lang-selector.component.ts ([3d68681](https://github.com/webmappsrl/wm-core/commit/3d6868146d4c8753af1c29798ea9517d5287d432))
+* Update home-result.component.ts ([bda57b4](https://github.com/webmappsrl/wm-core/commit/bda57b40581c2e7c274bb4eda482e46d75733852))
+* update IAPP interface ([041cd26](https://github.com/webmappsrl/wm-core/commit/041cd26be370994a559f4c5f713385b14cb43e15))
+* Update localization files ([87b3476](https://github.com/webmappsrl/wm-core/commit/87b3476e434113073340b0525d4923bfab700fe9))
+* Update search-box and home-result components ([ffad3b2](https://github.com/webmappsrl/wm-core/commit/ffad3b2f2a920b17d7dd2f892999e9985ffc02c4))
+* Update search-box.component.html and elastic.ts ([caed57f](https://github.com/webmappsrl/wm-core/commit/caed57f81e6c1f59252453f285a6cb1cc9a0c9ac))
+* Update status-filter and home-result components st:2242 ([ac0f0f3](https://github.com/webmappsrl/wm-core/commit/ac0f0f3171e244e8d0f6b49cab62c1a2a43cdb28))
+* Update status-filter component ([25a8475](https://github.com/webmappsrl/wm-core/commit/25a84750cbddd81a9c76e2a045793b1fe36a04c6))
+* Update status-filter.component.scss and home-result.component.ts ([42250ff](https://github.com/webmappsrl/wm-core/commit/42250ff3491fa69c406050fc3ea4f1b782dba2cd))
+* Update subproject components ([3e8d39e](https://github.com/webmappsrl/wm-core/commit/3e8d39e7eb626b9ce9cbfce769f2f795ecfe8cd9))
+
 ## [2.0.0](https://github.com/webmappsrl/wm-core/compare/v1.0.0...v2.0.0) (2023-10-31)
 
 
