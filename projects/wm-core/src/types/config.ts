@@ -326,6 +326,7 @@ export interface IOPTIONS {
   showMapViewfinder: boolean;
   showPoiListOffline: boolean;
   showTrackRefLabel: boolean;
+  show_searchbar?:boolean
   skipRouteIndexDownload: boolean;
   startFiltersDisabled: boolean;
   startUrl: string;

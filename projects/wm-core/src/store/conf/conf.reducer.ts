@@ -45,6 +45,7 @@ const initialConfState: ICONF = {
     forceWelcomePagePopup: false,
     skipRouteIndexDownload: false,
     downloadFullGemoetryRouteIndex: false,
+    show_searchbar: true,
     enableTrackAdoption: false,
     highlightReadMoreButton: false,
     trackRefLabelZoom: 12,
