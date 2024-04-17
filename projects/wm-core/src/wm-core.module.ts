@@ -33,6 +33,7 @@ import {WmTrackAudioComponent} from './track-audio/track-audio.component';
 import {WmTrackEdgesComponent} from './track-edges/track-edges.component';
 import {WmInnerHtmlComponent} from './inner-html/inner-html.component';
 import {ButtonsModule} from './buttons/export-to/buttons.module';
+import { WmTrackDownloadUrlsComponent } from './track-download-urls/track-download-urls.component';
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -54,6 +55,7 @@ const declarations = [
   WmHomeLayerComponent,
   WmTrackEdgesComponent,
   WmInnerHtmlComponent,
+  WmTrackDownloadUrlsComponent
 ];
 const modules = [
   WmSharedModule,

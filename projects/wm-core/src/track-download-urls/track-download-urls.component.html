@@ -1,0 +1,27 @@
+<ion-list id="webmapp-track-download-urls-list">
+  <ion-item *ngIf="gpx" [href]="gpx" class="webmapp-track-download-urls-item">
+    <ion-icon name="download" slot="start"></ion-icon>
+    <ion-label class="webmapp-track-download-urls-item-label">
+      {{ "trackDetails.downloadUrls.gpx" | wmtrans }}
+    </ion-label>
+  </ion-item>
+  <ion-item *ngIf="kml" [href]="kml" class="webmapp-track-download-urls-item">
+    <ion-icon name="download" slot="start"></ion-icon>
+    <ion-label class="webmapp-track-download-urls-item-label">
+      {{ "trackDetails.downloadUrls.kml" | wmtrans }}
+    </ion-label>
+  </ion-item>
+  <ion-item *ngIf="geojson" [href]="geojson" class="webmapp-track-download-urls-item">
+    <ion-icon name="download" slot="start"></ion-icon>
+    <ion-label class="webmapp-track-download-urls-item-label">
+      {{ "trackDetails.downloadUrls.geojson" | wmtrans }}
+    </ion-label>
+  </ion-item>
+  <ion-item *ngIf="osm" [href]="osm" class="webmapp-track-download-urls-item" target="_blank">
+    <ion-icon class="wm-icn icon-link" slot="start"> </ion-icon>
+    <ion-label class="webmapp-track-download-urls-item-label">
+      {{ "Vedi su OpenStreetMap" | wmtrans }}
+    </ion-label>
+  </ion-item>
+  <ng-content></ng-content>
+</ion-list>
