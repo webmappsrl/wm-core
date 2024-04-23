@@ -1,5 +1,6 @@
 export const wmIT = {
   'skitouring': 'Scialpinismo',
+  'horse': 'A cavallo',
   'walking': 'Passeggiata',
   'running': 'Corsa',
   'cycling': 'In bicicletta',

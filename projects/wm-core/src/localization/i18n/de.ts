@@ -1,5 +1,6 @@
 export const wmDE = {
   'skitouring': 'Skibergsteigen',
+  'horse': 'Zu Pferde',
   'walking': 'Wandern',
   'running': 'Laufen',
   'cycling': 'Radfahren',

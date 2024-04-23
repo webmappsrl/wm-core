@@ -1,5 +1,6 @@
 export const wmES = {
   'skitouring': 'Esquí de travesía',
+  'horse': 'A caballo',
   'walking': 'Caminata',
   'running': 'Correr',
   'cycling': 'Ciclismo',

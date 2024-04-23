@@ -1,5 +1,6 @@
 export const wmFR = {
   'skitouring': 'Ski de randonnée',
+  'horse': 'À cheval',
   'walking': 'Marche',
   'running': 'Course',
   'cycling': 'Cyclisme',

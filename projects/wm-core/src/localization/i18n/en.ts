@@ -1,5 +1,6 @@
 export const wmEN = {
   'skitouring': 'Ski touring',
+  'horse': 'On horseback',
   'walking': 'Walking',
   'running': 'Running',
   'cycling': 'Cycling',
