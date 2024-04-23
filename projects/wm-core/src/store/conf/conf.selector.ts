@@ -18,7 +18,7 @@ export const confAUTH = createSelector(confFeature, state => state.AUTH);
 export const confAUTHEnable = createSelector(confAUTH, auth => auth?.enable ?? false);
 export const confMAP = createSelector(confFeature, state => state.MAP);
 export const confJIDOUPDATETIME = createSelector(confFeature, state => state.JIDO_UPDATE_TIME);
-
+export const confTRANSLATIONS = createSelector(confFeature, state => state.TRANSLATIONS);
 export const confFILTERS = createSelector(confMAP, map => {
   if (map == null || map.filters == null) return undefined;
   let filters = {...map.filters};

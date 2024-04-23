@@ -139,6 +139,8 @@ export interface ICONF {
   OPTIONS: IOPTIONS;
   PROJECT?: IPROJECT;
   THEME?: ITHEME;
+  TRANSLATIONS?: {[lang:string]: {[key:string]:string}}
+
   WEBAPP?: IWEBAPP;
 }
 

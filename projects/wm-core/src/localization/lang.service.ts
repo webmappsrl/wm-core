@@ -25,11 +25,14 @@ import {wmDE} from './i18n/de';
 import {wmFR} from './i18n/fr';
 import {wmPR} from './i18n/pr';
 import {wmES} from './i18n/es';
-
-import {setUserProjection} from 'ol/proj';
+import {Store} from '@ngrx/store';
+import {confTRANSLATIONS} from 'wm-core/store/conf/conf.selector';
+import {filter, take} from 'rxjs/operators';
 
 @Injectable()
 export class LangService extends TranslateService implements TranslateService {
+  private _confTRANSLATIONS = this._store.select(confTRANSLATIONS);
+
   constructor(
     public override store: TranslateStore,
     public override currentLoader: TranslateLoader,
@@ -38,6 +41,7 @@ export class LangService extends TranslateService implements TranslateService {
     public override missingTranslationHandler: MissingTranslationHandler,
     @Inject(USE_DEFAULT_LANG) useDefaultLang: boolean = true,
     @Inject(USE_STORE) isolate: boolean = false,
+    private _store: Store<any>,
   ) {
     super(
       store,
@@ -56,6 +60,21 @@ export class LangService extends TranslateService implements TranslateService {
     this.setTranslation('fr', wmFR);
     this.setTranslation('pr', wmPR);
     this.setTranslation('es', wmES);
+    this._confTRANSLATIONS
+      .pipe(
+        filter(f => f != null),
+        take(1),
+      )
+      .subscribe((translations: {[lang: string]: {[key: string]: string}}) => {
+        if (translations['it'] != null) {
+          const it = {...wmIT, ...translations['it']};
+          this.setTranslation('it', it);
+        }
+        if (translations['en'] != null) {
+          const en = {...wmIT, ...translations['en']};
+          this.setTranslation('en', en);
+        }
+      });
   }
 
   initLang(defLang: string): void {
