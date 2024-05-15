@@ -61,6 +61,11 @@
   "horse": "A cavallo",
   "walking": "Passeggiata",
   "running": "Corsa",
+  "asphalt": "Asfalto",
+  "bitumenduro": "Bitumenduro",
+  "onoff": "Onoff",
+  "real-dirt": "Sterrato vero",
+  "bar": "Bar",
   "cycling": "In bicicletta",
   "poi_type": "Punti di interesse",
   "where": "Luoghi"

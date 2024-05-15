@@ -26,6 +26,26 @@
           <i class="icon-outline-nordic-walking"></i>
           <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
         </div>
+        <div class="webmapp-walkability-box" *ngIf="item.identifier === 'asphalt'">
+          <i class="icon-outline-track"></i>
+          <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
+        </div>
+        <div class="webmapp-walkability-box" *ngIf="item.identifier === 'bitumenduro'">
+          <i class="icon-outline-track"></i>
+          <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
+        </div>
+        <div class="webmapp-walkability-box" *ngIf="item.identifier === 'onoff'">
+          <i class="icon-outline-filters"></i>
+          <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
+        </div>
+        <div class="webmapp-walkability-box" *ngIf="item.identifier === 'real-dirt'">
+          <i class="icon-outline-track"></i>
+          <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
+        </div>
+        <div class="webmapp-walkability-box" *ngIf="item.identifier === 'bar'">
+          <i class="icon-outline-group"></i>
+          <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
+        </div>
       </ng-container>
     </div>
   </ng-container>
