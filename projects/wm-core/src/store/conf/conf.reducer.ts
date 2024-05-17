@@ -15,6 +15,7 @@ const initialConfState: ICONF = {
   WEBAPP: {
     draw_track_show: false,
     editing_inline_show: false,
+    splash_screen_show: false,
   },
   OPTIONS: {
     baseUrl: '-',

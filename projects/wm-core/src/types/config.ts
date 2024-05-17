@@ -139,8 +139,7 @@ export interface ICONF {
   OPTIONS: IOPTIONS;
   PROJECT?: IPROJECT;
   THEME?: ITHEME;
-  TRANSLATIONS?: {[lang:string]: {[key:string]:string}}
-
+  TRANSLATIONS?: {[lang: string]: {[key: string]: string}};
   WEBAPP?: IWEBAPP;
 }
 
@@ -328,7 +327,7 @@ export interface IOPTIONS {
   showMapViewfinder: boolean;
   showPoiListOffline: boolean;
   showTrackRefLabel: boolean;
-  show_searchbar?:boolean
+  show_searchbar?: boolean;
   skipRouteIndexDownload: boolean;
   startFiltersDisabled: boolean;
   startUrl: string;
@@ -410,6 +409,7 @@ export interface ITHEME {
 export interface IWEBAPP {
   draw_track_show: boolean;
   editing_inline_show: boolean;
+  splash_screen_show: boolean;
 }
 
 export interface IWmImage {
