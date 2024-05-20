@@ -65,10 +65,12 @@ export const confPoisIcons = createSelector(confPOISFilter, taxonomies => {
 export const confTHEME = createSelector(confFeature, state => state.THEME);
 export const confPROJECT = createSelector(confFeature, state => state.PROJECT);
 export const confCREDITS = createSelector(confFeature, state => state.CREDITS);
+export const confPRIVACY = createSelector(confFeature, state => state.PRIVACY);
 export const confPAGES = createSelector(confFeature, state => ({
   PROJECT: state.PROJECT,
   CREDITS: state.CREDITS,
   DISCLAIMER: state.DISCLAIMER,
+  PRIVACY: state.PRIVACY,
 }));
 export const confDISCLAIMER = createSelector(confFeature, state => state.DISCLAIMER);
 export const confGEOLOCATION = createSelector(confFeature, state => state.GEOLOCATION);

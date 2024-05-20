@@ -137,6 +137,7 @@ export interface ICONF {
   LANGUAGES?: ILANGUAGES;
   MAP?: IMAP;
   OPTIONS: IOPTIONS;
+  PRIVACY?: IPROJECT;
   PROJECT?: IPROJECT;
   THEME?: ITHEME;
   TRANSLATIONS?: {[lang: string]: {[key: string]: string}};
