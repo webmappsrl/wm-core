@@ -24,7 +24,6 @@ export class ApiService {
     'motomappa.motoabbigliament': 53,
     'maps.parcoforestecasentinesi': 49,
     'maps.parcopan': 63,
-
   };
   private _queryDic: {[query: string]: any} = {};
 

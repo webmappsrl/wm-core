@@ -9,6 +9,12 @@ import {ENVIRONMENT_CONFIG, EnvironmentConfig} from './conf.token';
 })
 export class ConfService {
   private _geohubAppId: number = this.config.geohubId;
+  private _hostToGeohubAppId: { [key: string]: number } = {
+    'sentieri.caiparma': 33,
+    'motomappa.motoabbigliament': 53,
+    'maps.parcoforestecasentinesi': 49,
+    'maps.parcopan': 63,
+  };
 
   public get configUrl(): string {
     return `${this._geohubApiBaseUrl}config`;
@@ -36,12 +42,12 @@ export class ConfService {
   ) {
     const hostname: string = window.location.hostname;
     if (hostname.indexOf('localhost') < 0) {
-      if (hostname.indexOf('sentieri.caiparma') > -1) {
-        this._geohubAppId = 33;
-      } else if (hostname.indexOf('motomappa.motoabbigliament') > -1) {
-        this._geohubAppId = 53;
-      } else if (hostname.indexOf('maps.parcoforestecasentinesi') > -1) {
-        this._geohubAppId = 49;
+      const matchedHost = Object.keys(this._hostToGeohubAppId).find((host) =>
+        hostname.includes(host)
+      );
+    
+      if (matchedHost) {
+        this._geohubAppId = this._hostToGeohubAppId[matchedHost];
       } else {
         const newGeohubId = parseInt(hostname.split('.')[0], 10);
         if (!Number.isNaN(newGeohubId)) {
