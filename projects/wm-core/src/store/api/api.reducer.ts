@@ -81,7 +81,7 @@ export const elasticQueryReducer = createReducer(
       : null;
     if (filterTaxonomies) {
       poisSelectedFilterIdentifiers = (state.poisSelectedFilterIdentifiers ?? []).filter(
-        i => i.indexOf('poi_') < 0,
+        i => i.indexOf('poi_') < 0 && i.indexOf('where_') < 0,
       );
       poisSelectedFilterIdentifiers = [
         ...poisSelectedFilterIdentifiers,
