@@ -25,6 +25,7 @@ export class ApiService {
     'maps.parcoforestecasentinesi': 49,
     'maps.parcopan': 63,
     'maps.acquasorgente.cai.it': 58,
+    'maps.caipontedera.it': 59,
   };
   private _queryDic: {[query: string]: any} = {};
 

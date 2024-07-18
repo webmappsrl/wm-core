@@ -15,6 +15,7 @@ export class ConfService {
     'maps.parcoforestecasentinesi': 49,
     'maps.parcopan': 63,
     'maps.acquasorgente.cai.it': 58,
+    'maps.caipontedera.it': 59,
   };
 
   public get configUrl(): string {
