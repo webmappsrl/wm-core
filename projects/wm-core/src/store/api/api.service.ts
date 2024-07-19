@@ -24,8 +24,8 @@ export class ApiService {
     'motomappa.motoabbigliament': 53,
     'maps.parcoforestecasentinesi': 49,
     'maps.parcopan': 63,
-    'maps.acquasorgente.cai.it': 58,
-    'maps.caipontedera.it': 59,
+    'maps.acquasorgente.cai': 58,
+    'maps.caipontedera': 59,
   };
   private _queryDic: {[query: string]: any} = {};
 
