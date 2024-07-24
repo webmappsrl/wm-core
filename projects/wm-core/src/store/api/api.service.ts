@@ -26,6 +26,7 @@ export class ApiService {
     'maps.parcopan': 63,
     'maps.acquasorgente.cai': 58,
     'maps.caipontedera': 59,
+    'maps.parcoapuane': 62,
   };
   private _queryDic: {[query: string]: any} = {};
 
