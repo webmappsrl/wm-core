@@ -1,9 +1,9 @@
 import {HttpClient} from '@angular/common/http';
 import {Inject, Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import * as localForage from 'localforage';
 import {ICONF} from '../../types/config';
 import {ENVIRONMENT_CONFIG, EnvironmentConfig} from './conf.token';
+import {apiLocalForage} from '../api/utils';
 @Injectable({
   providedIn: 'root',
 })
@@ -58,16 +58,12 @@ export class ConfService {
         }
       }
     }
-    localForage.config({
-      name: 'wm',
-      storeName: 'wm-core-store',
-    });
   }
 
   public getConf(): Observable<ICONF> {
     return new Observable<ICONF>(observer => {
       const url = `${this._geohubApiBaseUrl}config.json`;
-      localForage.getItem(url).then((cachedData: unknown) => {
+      apiLocalForage.getItem(url).then((cachedData: unknown) => {
         if (cachedData) {
           const parsedData = JSON.parse(cachedData as string);
           observer.next(parsedData);
@@ -75,7 +71,7 @@ export class ConfService {
         }
         this._http.get<ICONF>(url).subscribe(
           conf => {
-            localForage.setItem(url, JSON.stringify(conf));
+            apiLocalForage.setItem(url, JSON.stringify(conf));
             observer.next(conf);
             observer.complete();
           },

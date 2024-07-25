@@ -5,13 +5,13 @@ import {Inject, Injectable} from '@angular/core';
 import {SearchResponse} from 'elasticsearch';
 import {FeatureCollection} from 'geojson';
 import {from, Observable, of} from 'rxjs';
-import * as localForage from 'localforage';
 // @ts-ignore
-import {filter, switchMap, tap} from 'rxjs/operators';
+import {switchMap, tap} from 'rxjs/operators';
 import {WmLoadingService} from '../../services/loading.service';
 import {Filter, SliderFilter} from '../../types/config';
 import {IELASTIC} from '../../types/elastic';
 import {EnvironmentConfig, ENVIRONMENT_CONFIG} from '../conf/conf.token';
+import {apiLocalForage} from './utils';
 // const baseUrl = 'http://localhost:3000/search';
 const baseUrl = 'https://elastic-json.webmapp.it/search';
 @Injectable({
@@ -59,15 +59,11 @@ export class ApiService {
         }
       }
     }
-    localForage.config({
-      name: 'wm',
-      storeName: 'wm-core-store',
-    });
   }
 
   public getPois(): Observable<FeatureCollection> {
     const poisUrl = `${this.environment.api}/api/v1/app/${this._geohubAppId}/pois.geojson`;
-    return from(localForage.getItem(poisUrl)).pipe(
+    return from(apiLocalForage.getItem(poisUrl)).pipe(
       switchMap((cachedData: string | null) => {
         if (cachedData != null) {
           const parsedData = JSON.parse(cachedData as string);
@@ -76,7 +72,7 @@ export class ApiService {
           this._loadingSvc.show('Loading pois...');
           return this._http.get<FeatureCollection>(poisUrl).pipe(
             tap(pois => {
-              localForage.setItem(poisUrl, JSON.stringify(pois));
+              apiLocalForage.setItem(poisUrl, JSON.stringify(pois));
             }),
           );
         }

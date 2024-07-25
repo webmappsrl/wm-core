@@ -1,4 +1,5 @@
 import {Feature, FeatureCollection, Geometry} from 'geojson';
+import localforage from 'localforage';
 
 export const filterFeatureCollection = (
   featureCollection: FeatureCollection,
@@ -55,3 +56,8 @@ export const filterFeatureCollectionByInputTyped = (
     }),
   } as FeatureCollection;
 };
+
+export  const apiLocalForage= localforage.createInstance({
+  name: 'wm-core',
+  storeName: 'wm-api',
+});
