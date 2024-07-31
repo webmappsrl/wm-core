@@ -16,7 +16,7 @@ export class ConfService {
     'maps.parcopan': 63,
     'maps.acquasorgente.cai': 58,
     'maps.caipontedera': 59,
-    'maps.parcoapuane': 62,
+    'maps.parcapuane': 62,
   };
 
   public get configUrl(): string {
