@@ -11,7 +11,8 @@ import {WmLoadingService} from 'wm-core/services/loading.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class ExportToBtnComponent {
-  @Input() saveFileFn = (data: string, format: string, track: any): void => {
+  @Input() input: any;
+  @Input() saveFileFn = (data: string, format: string, input: any): void => {
     const blob = new Blob([data], {type: 'text/plain'});
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -20,22 +21,24 @@ export class ExportToBtnComponent {
     a.click();
     window.URL.revokeObjectURL(url);
   };
-  @Input() to: 'gpx' | 'kml' | 'geojson' = 'gpx';
-  @Input() track: any;
+  @Input() to: 'gpx' | 'kml' | 'geojson' | 'json' = 'gpx';
 
   constructor(private _loadingSvc: WmLoadingService) {}
 
   export(): void {
     this._loadingSvc.show(`build ${this.to} file`);
     let output;
+    let g;
     try {
-      let g = this._toGeoJSON(this.track.geojson);
-      g.properties = {...g.properties, ...this.track.rawData, ...{title: this.track.title}};
+      if(this.input && this.input.geojson) {
+      let g = this._toGeoJSON(this.input.geojson);
+      g.properties = {...g.properties, ...this.input.rawData, ...{title: this.input.title}};
+      }
       switch (this.to) {
         case 'gpx':
           const options = {
             metadata: {
-              name: this.track.title,
+              name: this.input.title,
               ...g.properties,
             },
           };
@@ -48,6 +51,9 @@ export class ExportToBtnComponent {
         case 'geojson':
           output = JSON.stringify(g);
           break;
+        case 'json':
+          output = JSON.stringify(this.input);
+          break;
         default:
           throw new Error('Unsupported format');
       }
@@ -57,7 +63,7 @@ export class ExportToBtnComponent {
       this._loadingSvc.close(`build ${this.to} file`);
     }
     this._loadingSvc.close(`build ${this.to} file`);
-    this.saveFileFn(output, this.to, this.track);
+    this.saveFileFn(output, this.to, this.input);
   }
 
   private _toGeoJSON(obj): any {
@@ -72,7 +78,7 @@ export class ExportToBtnComponent {
         properties: {...obj._properties},
       };
     } else {
-      throw new Error("L'oggetto fornito non è un LineString valido.");
+      throw new Error(`L'oggetto fornito non è un ${this.to} valido.`);
     }
   }
 }
