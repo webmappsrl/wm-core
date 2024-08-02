@@ -1,5 +1,64 @@
 # Changelog
 
+## [2.1.0](https://github.com/webmappsrl/wm-core/compare/v2.0.0...v2.1.0) (2024-08-02)
+
+
+### Features
+
+* Add export-to button module id:2214 ([98a1736](https://github.com/webmappsrl/wm-core/commit/98a1736960e0d496288739dd3cbc25e6c734475e))
+* **conf:** add show_searchbar option to config ([6f83622](https://github.com/webmappsrl/wm-core/commit/6f8362266d8e23802dc3ab4a5c109dd4f60def23))
+* **conf:** add splash_screen_show to WEBAPP configuration oc: 2556 ([b5c3a48](https://github.com/webmappsrl/wm-core/commit/b5c3a48f029c936699f08df44d88f3fc14b1204b))
+* **filters:** add color to filter icons ([d7be46b](https://github.com/webmappsrl/wm-core/commit/d7be46b6412289eb5cb76c295fb8a067e1aab88c))
+* **inner-html:** add enableDismiss input ([1dece2e](https://github.com/webmappsrl/wm-core/commit/1dece2eeeb5e350fd7105258cfee92391a71dfe0))
+* **inner-html:** add inner html component ([68a8c4a](https://github.com/webmappsrl/wm-core/commit/68a8c4a923bed2b541f11692fa06b891aaaca3d2))
+* **select-filter:** add icon support to select filter component ([a3c8bd6](https://github.com/webmappsrl/wm-core/commit/a3c8bd6ef018e39c73ac4178c5e297b97f3bd80a))
+* **track-download-urls:** Add track download URLs component ([08370a3](https://github.com/webmappsrl/wm-core/commit/08370a328f6097ca075b633e6504b182c72b5837))
+
+
+### Bug Fixes
+
+* **api:** add support for motomappa.motoabbigliament ([4f33d82](https://github.com/webmappsrl/wm-core/commit/4f33d8205e1f120d9bb5f1a6ba6d9c9b94286992))
+* **inner-html.component:** added safe area ([cbacf3d](https://github.com/webmappsrl/wm-core/commit/cbacf3d417ef69cd3c9e7cea257af75c6e7e1f38))
+* **style:** horizontal scroll & track box id: 2635 ([a386ebd](https://github.com/webmappsrl/wm-core/commit/a386ebd63e14d3ec8609d124065ccc9f95f43e9b))
+* **style:** select filter revert old style ([b9af543](https://github.com/webmappsrl/wm-core/commit/b9af543388cf6a1570eb073ae138c9917561bb0f))
+* **types:** update type for taxonomyActivities in IHIT interface ([db150c8](https://github.com/webmappsrl/wm-core/commit/db150c825f53bcd7faf3c8b10ae2230e3b7fabe1))
+* update lang ([36e02be](https://github.com/webmappsrl/wm-core/commit/36e02be7339df2312405d2e636ff6e9cf18c5d20))
+
+
+### Miscellaneous
+
+* Add PRIVACY field to confFeature selector and ICONF interface ([#12](https://github.com/webmappsrl/wm-core/issues/12)) ([feec553](https://github.com/webmappsrl/wm-core/commit/feec553e0266fff23805f2b177c7fd330f14a059))
+* **api:** Update elasticQueryReducer to filter out 'where_' identifiers ([0d7d169](https://github.com/webmappsrl/wm-core/commit/0d7d1690c360fc6c1536a3a615124e36920bf80f))
+* **inner-component:** minor fix ([48f2fde](https://github.com/webmappsrl/wm-core/commit/48f2fdeec1395a38587e3c2407e76ea0b452f457))
+* Refactor exportToBtnComponent.export() method ([01483e1](https://github.com/webmappsrl/wm-core/commit/01483e1408df1c55e4f9d9814a11912b86426a31))
+* Remove unnecessary margin-bottom in home-result.component.scss ([37102b5](https://github.com/webmappsrl/wm-core/commit/37102b5659b6d9058054b2955572d30ac76f432c))
+* Remove unused import and providers in poi-type-filter-box.component.ts ([021cb9d](https://github.com/webmappsrl/wm-core/commit/021cb9d09b60bc29c96b4bb7be9b48f32d8959b0))
+* Update API and Conf services ([30fd5bf](https://github.com/webmappsrl/wm-core/commit/30fd5bfdd2822b830182a2294fb0dc5c39f27b17))
+* Update API service to dynamically assign geohub app IDs based on hostname ([73006c5](https://github.com/webmappsrl/wm-core/commit/73006c5b00b01578dac51a7c9c303ed4f9870cc0))
+* Update configuration with new map source URL. Add 'maps.acquasorgente.cai.it' to map sources. oc: 3578 ([ded82f4](https://github.com/webmappsrl/wm-core/commit/ded82f4027d0b0dcff0fdfa8f3d7a6bb3ab92931))
+* Update dependencies and imports ([ebe49f3](https://github.com/webmappsrl/wm-core/commit/ebe49f391ffb5d4b4de27b7462f5bc999f8fe4f1))
+* Update filters.component.scss ([83f821a](https://github.com/webmappsrl/wm-core/commit/83f821a28863b55ea641528e113e557a4747d009))
+* Update geohubAppId for different hostnames ([134e652](https://github.com/webmappsrl/wm-core/commit/134e652d47242485bc3988af9ae3e41dee823575))
+* Update geohubAppId for different hostnames ([e6b43b3](https://github.com/webmappsrl/wm-core/commit/e6b43b3539f73a3cd234eab0d396a1238cad06b8))
+* Update geohubAppId mappings in ApiService and ConfService ([52c6f69](https://github.com/webmappsrl/wm-core/commit/52c6f6957867836713c9784ce8795a432ee8e08e))
+* Update home-layer.component.ts and lang-selector.component.ts ([3d68681](https://github.com/webmappsrl/wm-core/commit/3d6868146d4c8753af1c29798ea9517d5287d432))
+* Update home-result.component.ts ([bda57b4](https://github.com/webmappsrl/wm-core/commit/bda57b40581c2e7c274bb4eda482e46d75733852))
+* update IAPP interface ([041cd26](https://github.com/webmappsrl/wm-core/commit/041cd26be370994a559f4c5f713385b14cb43e15))
+* Update lang.service.ts and conf.selector.ts ([e2b9f4d](https://github.com/webmappsrl/wm-core/commit/e2b9f4d0a006a612b50a769b2ece168d55191830))
+* Update localization files ([87b3476](https://github.com/webmappsrl/wm-core/commit/87b3476e434113073340b0525d4923bfab700fe9))
+* Update localization files with new translations for multiple languages and add corresponding UI elements. ([#11](https://github.com/webmappsrl/wm-core/issues/11)) ([ca92b50](https://github.com/webmappsrl/wm-core/commit/ca92b507d807763a03687b107799eba3a36f94dc))
+* Update search-box and home-result components ([ffad3b2](https://github.com/webmappsrl/wm-core/commit/ffad3b2f2a920b17d7dd2f892999e9985ffc02c4))
+* Update search-box.component.html and elastic.ts ([caed57f](https://github.com/webmappsrl/wm-core/commit/caed57f81e6c1f59252453f285a6cb1cc9a0c9ac))
+* Update status-filter and home-result components st:2242 ([ac0f0f3](https://github.com/webmappsrl/wm-core/commit/ac0f0f3171e244e8d0f6b49cab62c1a2a43cdb28))
+* Update status-filter component ([25a8475](https://github.com/webmappsrl/wm-core/commit/25a84750cbddd81a9c76e2a045793b1fe36a04c6))
+* Update status-filter.component.scss and home-result.component.ts ([42250ff](https://github.com/webmappsrl/wm-core/commit/42250ff3491fa69c406050fc3ea4f1b782dba2cd))
+* Update subproject components ([3e8d39e](https://github.com/webmappsrl/wm-core/commit/3e8d39e7eb626b9ce9cbfce769f2f795ecfe8cd9))
+* Update subproject with new map configuration data. Add 'maps.caipontedera.it' to the map configurations. ([57eb630](https://github.com/webmappsrl/wm-core/commit/57eb630d83a48c06d27dc8ba8ba0f18af41d5781))
+* Update subproject with new map data for 'parcoapuane' location. ([de86025](https://github.com/webmappsrl/wm-core/commit/de86025fcd1b9329e2b6392b6bc049adb23c7699))
+* Update tab-detail.component.html to fix icon classes oc:3019 ([6b915f0](https://github.com/webmappsrl/wm-core/commit/6b915f017734e1458b69dba966acdeb65b1e17b7))
+* Update track-download-urls.component.html ([9fa14aa](https://github.com/webmappsrl/wm-core/commit/9fa14aa9a060e3576d757e2e38ced6717b9c40d9))
+* Update translations for various activities in multiple languages. Added translations for "horse" activity. ([2b571fb](https://github.com/webmappsrl/wm-core/commit/2b571fb615433bfaff0baaa4e48d30f952f482a4))
+
 ## [2.0.0](https://github.com/webmappsrl/wm-core/compare/v1.0.0...v2.0.0) (2023-10-31)
 
 
