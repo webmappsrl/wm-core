@@ -1,0 +1,90 @@
+<webmapp-modal-header
+  class="webmapp-login-header"
+  [title]="'modals.login.title' | wmtrans"
+  (dismiss)="dismiss()"
+>
+</webmapp-modal-header>
+<ion-content scrollY="false">
+  <form class="webmapp-login-form" (ngSubmit)="login()" [formGroup]="loginForm">
+    <h1>
+      {{ "modals.login.welcome" | wmtrans }}
+    </h1>
+    <p>
+      {{ "modals.login.message" | wmtrans }}
+    </p>
+
+    <div class="webmapp-login-field-container">
+      <ion-label class="webmapp-login-label">
+        {{ "modals.login.email" | wmtrans }}
+      </ion-label>
+      <ion-item
+        class="webmapp-login-field"
+        [ngClass]="{
+          'webmapp-login-field-has-error':
+          (submitted$|async) && !!errorControl.email.errors
+        }"
+      >
+        <ion-input
+          type="text"
+          inputmode="email"
+          required
+          #email
+          class="webmapp-login-input"
+          formControlName="email"
+        ></ion-input>
+      </ion-item>
+      <ng-container *ngIf="(submitted$|async) && !!errorControl.email.errors">
+        <span class="webmapp-login-field-error" *ngIf="errorControl.email.errors?.required">
+          {{ "modals.login.errors.form.emailRequired" | wmtrans }}
+        </span>
+        <span class="webmapp-login-field-error" *ngIf="errorControl.email.errors?.email">
+          {{ "modals.login.errors.form.emailInvalid" | wmtrans }}
+        </span>
+      </ng-container>
+    </div>
+    <div class="webmapp-login-field-container">
+      <ion-label class="webmapp-login-label">
+        {{ "modals.login.password" | wmtrans }}
+      </ion-label>
+      <ion-item
+        class="webmapp-login-field"
+        [ngClass]="{
+          'webmapp-login-field-has-error':
+          (submitted$|async) && !!errorControl.password.errors
+        }"
+      >
+        <ion-input
+          [type]="(showPassword$|async) ? 'text' : 'password'"
+          required="true"
+          #password
+          class="webmapp-login-input"
+          formControlName="password"
+        ></ion-input>
+        <ion-button
+          class="webmapp-login-input-button"
+          slot="end"
+          (click)="togglePasswordVisibility()"
+        >
+          <ion-icon [name]="(showPassword$|async) ? 'eye-off-outline' : 'eye-outline'"> </ion-icon>
+        </ion-button>
+      </ion-item>
+      <ng-container *ngIf="(submitted$|async) && !!errorControl.password.errors">
+        <span class="webmapp-login-field-error" *ngIf="errorControl.password.errors?.required">
+          {{ "modals.login.errors.form.passwordRequired" | wmtrans }}
+        </span>
+      </ng-container>
+    </div>
+    <div class="webmapp-login-buttons-container">
+      <button class="webmapp-login-submit-button">
+        {{ "modals.login.login" | wmtrans }}
+      </button>
+      <button
+        type="button"
+        (click)="openUrl('https://geohub.webmapp.it/password/reset')"
+        class="webmapp-login-forgot-password-button"
+      >
+        {{ "modals.login.forgotPassword" | wmtrans }}
+      </button>
+    </div>
+  </form>
+</ion-content>

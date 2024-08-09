@@ -1,0 +1,26 @@
+.webmapp-modal-header-container {
+  display: block;
+  width: 100%;
+  .webmapp-modal-header-toolbar {
+    .webmapp-modal-header-dismiss {
+      font-size: var(--wm-font-sm);
+      --background: var(--wm-color-light);
+      --color: var(--wm-color-dark);
+      --box-shadow: none;
+      --background-activated: var(--wm-color-dark);
+      --background-activated-opacity: 0.25;
+      --background-focused: var(--wm-color-light);
+      --background-focused-opacity: 0;
+      --background-hover: var(--wm-color-light);
+      --background-hover-opacity: 0;
+    }
+
+    .webmapp-modal-header-title {
+      font-size: var(--wm-font-md);
+    }
+  }
+
+  .webmapp-modal-header-close{
+    font-size: 14px;
+  }
+}

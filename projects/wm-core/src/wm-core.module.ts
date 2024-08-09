@@ -37,6 +37,9 @@ import { WmTrackDownloadUrlsComponent } from './track-download-urls/track-downlo
 import { AuthInterceptor } from './store/auth/auth.interceptor';
 import { AuthEffects } from './store/auth/auth.effects';
 import { authReducer } from './store/auth/auth.reducer';
+import { ModalHeaderComponent } from './modal-header/modal-header.component';
+import { LoginComponent } from './login/login.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -58,7 +61,9 @@ const declarations = [
   WmHomeLayerComponent,
   WmTrackEdgesComponent,
   WmInnerHtmlComponent,
-  WmTrackDownloadUrlsComponent
+  WmTrackDownloadUrlsComponent,
+  LoginComponent,
+  ModalHeaderComponent
 ];
 const modules = [
   WmSharedModule,
@@ -67,6 +72,7 @@ const modules = [
   ButtonsModule,
   WmLocalizationModule,
   WmFiltersModule,
+  ReactiveFormsModule,
 ];
 
 @NgModule({

@@ -4,11 +4,28 @@ import * as AuthActions from './auth.actions';
 import { catchError, map, switchMap, tap } from "rxjs/operators";
 import { AuthService } from "./auth.service";
 import { of } from "rxjs";
+import { LoadingController, NavController } from "@ionic/angular";
 
 @Injectable()
 export class AuthEffects {
+  loadSignup$ = createEffect(() => {
+    return this._actions$.pipe(
+      ofType(AuthActions.loadSignUps),
+      switchMap(action =>
+        this._authSvc.signUp(action.name, action.email, action.password, action.referrer).pipe(
+          map(user => {
+            return AuthActions.loadSignUpsSuccess({user});
+          }),
+          catchError(error => {
+            return of(AuthActions.loadSignUpsFailure({error}));
+          }),
+        ),
+      ),
+    );
+  });
+
   loadSignin$ = createEffect(() => {
-    return this.actions$.pipe(
+    return this._actions$.pipe(
       ofType(AuthActions.loadSignIns),
       switchMap(action =>
         this._authSvc.login(action.email, action.password).pipe(
@@ -23,8 +40,67 @@ export class AuthEffects {
     );
   });
 
+  loadAuth$ = createEffect(() => {
+    return this._actions$.pipe(
+      ofType(AuthActions.loadAuths),
+      switchMap(action =>
+        this._authSvc.getUser().pipe(
+          map(user => {
+            return AuthActions.loadAuthsSuccess({user});
+          }),
+          catchError(error => {
+            return of(AuthActions.loadAuthsFailure({error}));
+          }),
+        ),
+      ),
+    );
+  });
+
+  logout$ = createEffect(() => {
+    return this._actions$.pipe(
+      ofType(AuthActions.loadSignOuts),
+      switchMap(action =>
+        this._authSvc.logout().pipe(
+          map(_ => {
+            return AuthActions.loadSignOutsSuccess();
+          }),
+          catchError(error => {
+            return of(AuthActions.loadSignOutsFailure({error}));
+          }),
+        ),
+      ),
+    );
+  });
+
+  deleteUser$ = createEffect(() => {
+    return this._actions$.pipe(
+      ofType(AuthActions.deleteUser),
+      switchMap(action =>
+        this._authSvc.delete().pipe(
+          map(user => {
+            return AuthActions.deleteUserSuccess();
+          }),
+          catchError(error => {
+            return of(AuthActions.deleteUserFailure({error}));
+          }),
+        ),
+      ),
+    );
+  });
+
+  navigateToHome$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(AuthActions.loadSignUpsSuccess),
+        map(() => this._navController.navigateForward('home')),
+      ),
+    { dispatch: false },
+  );
+
   constructor(
-    private actions$: Actions,
-    private _authSvc: AuthService
+    private _actions$: Actions,
+    private _authSvc: AuthService,
+    private _navController: NavController,
+    private _loadingCtrl: LoadingController,
   ){}
 }
