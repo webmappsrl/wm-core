@@ -65,4 +65,13 @@ export const wmEN = {
   'non hai percorsi': 'no paths',
   'al momento non hai nessun percorso salvato.': 'in this moment you dont have any saved paths.',
   'duration': 'Duration',
+  'Bentornato!': 'Welcome!',
+  'Accedi con le tue credenziali per continuare.': 'Log in with your credentials to continue.',
+  'E-mail': 'E-mail',
+  'L\'e-mail è obbligatoria': 'Email is required',
+  'Hai inserito un\'e-mail non valida': 'You have entered an invalid email',
+  'Password': 'Password',
+  'La password è obbligatoria': 'Password is required',
+  'Accedi': 'Login',
+  'Hai dimenticato la password?': 'Did you forget your password?'
 };

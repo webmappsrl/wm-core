@@ -1,10 +1,10 @@
-import { Injectable } from "@angular/core";
-import { Actions, createEffect, ofType } from "@ngrx/effects";
+import {Injectable} from '@angular/core';
+import {Actions, createEffect, ofType} from '@ngrx/effects';
 import * as AuthActions from './auth.actions';
-import { catchError, map, switchMap, tap } from "rxjs/operators";
-import { AuthService } from "./auth.service";
-import { of } from "rxjs";
-import { LoadingController, NavController } from "@ionic/angular";
+import {catchError, map, switchMap} from 'rxjs/operators';
+import {AuthService} from './auth.service';
+import {of} from 'rxjs';
+import {NavController} from '@ionic/angular';
 
 @Injectable()
 export class AuthEffects {
@@ -92,15 +92,14 @@ export class AuthEffects {
     () =>
       this._actions$.pipe(
         ofType(AuthActions.loadSignUpsSuccess),
-        map(() => this._navController.navigateForward('home')),
+        map(() => this._navCtrl.navigateForward('home')),
       ),
-    { dispatch: false },
+    {dispatch: false},
   );
 
   constructor(
     private _actions$: Actions,
     private _authSvc: AuthService,
-    private _navController: NavController,
-    private _loadingCtrl: LoadingController,
-  ){}
+    private _navCtrl: NavController,
+  ) {}
 }

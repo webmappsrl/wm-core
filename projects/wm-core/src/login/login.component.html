@@ -1,26 +1,26 @@
-<webmapp-modal-header
-  class="webmapp-login-header"
-  [title]="'modals.login.title' | wmtrans"
+<wm-modal-header
+  class="wm-login-header"
+  [title]="'Accedi' | wmtrans"
   (dismiss)="dismiss()"
 >
-</webmapp-modal-header>
+</wm-modal-header>
 <ion-content scrollY="false">
-  <form class="webmapp-login-form" (ngSubmit)="login()" [formGroup]="loginForm">
+  <form class="wm-login-form" (ngSubmit)="login()" [formGroup]="loginForm">
     <h1>
-      {{ "modals.login.welcome" | wmtrans }}
+      {{ "Bentornato!" | wmtrans }}
     </h1>
     <p>
-      {{ "modals.login.message" | wmtrans }}
+      {{ "Accedi con le tue credenziali per continuare." | wmtrans }}
     </p>
 
-    <div class="webmapp-login-field-container">
-      <ion-label class="webmapp-login-label">
-        {{ "modals.login.email" | wmtrans }}
+    <div class="wm-login-field-container">
+      <ion-label class="wm-login-label">
+        {{ "E-mail" | wmtrans }}
       </ion-label>
       <ion-item
-        class="webmapp-login-field"
+        class="wm-login-field"
         [ngClass]="{
-          'webmapp-login-field-has-error':
+          'wm-login-field-has-error':
           (submitted$|async) && !!errorControl.email.errors
         }"
       >
@@ -29,27 +29,27 @@
           inputmode="email"
           required
           #email
-          class="webmapp-login-input"
+          class="wm-login-input"
           formControlName="email"
         ></ion-input>
       </ion-item>
       <ng-container *ngIf="(submitted$|async) && !!errorControl.email.errors">
-        <span class="webmapp-login-field-error" *ngIf="errorControl.email.errors?.required">
-          {{ "modals.login.errors.form.emailRequired" | wmtrans }}
+        <span class="wm-login-field-error" *ngIf="errorControl.email.errors?.required">
+          {{ "L'e-mail è obbligatoria" | wmtrans }}
         </span>
-        <span class="webmapp-login-field-error" *ngIf="errorControl.email.errors?.email">
-          {{ "modals.login.errors.form.emailInvalid" | wmtrans }}
+        <span class="wm-login-field-error" *ngIf="errorControl.email.errors?.email">
+          {{ "Hai inserito un'e-mail non valida" | wmtrans }}
         </span>
       </ng-container>
     </div>
-    <div class="webmapp-login-field-container">
-      <ion-label class="webmapp-login-label">
-        {{ "modals.login.password" | wmtrans }}
+    <div class="wm-login-field-container">
+      <ion-label class="wm-login-label">
+        {{ "Password" | wmtrans }}
       </ion-label>
       <ion-item
-        class="webmapp-login-field"
+        class="wm-login-field"
         [ngClass]="{
-          'webmapp-login-field-has-error':
+          'wm-login-field-has-error':
           (submitted$|async) && !!errorControl.password.errors
         }"
       >
@@ -57,11 +57,11 @@
           [type]="(showPassword$|async) ? 'text' : 'password'"
           required="true"
           #password
-          class="webmapp-login-input"
+          class="wm-login-input"
           formControlName="password"
         ></ion-input>
         <ion-button
-          class="webmapp-login-input-button"
+          class="wm-login-input-button"
           slot="end"
           (click)="togglePasswordVisibility()"
         >
@@ -69,21 +69,21 @@
         </ion-button>
       </ion-item>
       <ng-container *ngIf="(submitted$|async) && !!errorControl.password.errors">
-        <span class="webmapp-login-field-error" *ngIf="errorControl.password.errors?.required">
-          {{ "modals.login.errors.form.passwordRequired" | wmtrans }}
+        <span class="wm-login-field-error" *ngIf="errorControl.password.errors?.required">
+          {{ "La password è obbligatoria" | wmtrans }}
         </span>
       </ng-container>
     </div>
-    <div class="webmapp-login-buttons-container">
-      <button class="webmapp-login-submit-button">
-        {{ "modals.login.login" | wmtrans }}
+    <div class="wm-login-buttons-container">
+      <button class="wm-login-submit-button">
+        {{ "Accedi" | wmtrans }}
       </button>
       <button
         type="button"
         (click)="openUrl('https://geohub.webmapp.it/password/reset')"
-        class="webmapp-login-forgot-password-button"
+        class="wm-login-forgot-password-button"
       >
-        {{ "modals.login.forgotPassword" | wmtrans }}
+        {{ "Hai dimenticato la password?" | wmtrans }}
       </button>
     </div>
   </form>

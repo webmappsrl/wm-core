@@ -56,4 +56,13 @@ export const wmDE = {
   'Caricamento in corso.': 'Wird geladen.',
   'Spiacenti non ci sono risultati con questi criteri di ricerca.':
     'Leider gibt es keine Ergebnisse mit diesen Suchkriterien',
+  'Bentornato!': 'Willkommen zurück!',
+  'Accedi con le tue credenziali per continuare.': 'Melden Sie sich mit Ihren Zugangsdaten an, um fortzufahren.',
+  'E-mail': 'E-mail',
+  'L\'e-mail è obbligatoria': 'E-Mail ist erforderlich',
+  'Hai inserito un\'e-mail non valida': 'Sie haben eine ungültige E-Mail eingegeben',
+  'Password': 'Passwort',
+  'La password è obbligatoria': 'Passwort erforderlich ist',
+  'Accedi': 'Login',
+  'Hai dimenticato la password?': 'Sie haben Ihr Passwort vergessen?'
 };

@@ -55,4 +55,13 @@ export const wmPR = {
   'Caricamento in corso.': 'Carregando.',
   'Spiacenti non ci sono risultati con questi criteri di ricerca.':
     'Desculpe, não há resultados com estes critérios de pesquisa',
+  'Bentornato!': 'Boas-vindas!',
+  'Accedi con le tue credenziali per continuare.': 'Faça login com as suas credenciais para continuar.',
+  'E-mail': 'E-mail',
+  'L\'e-mail è obbligatoria': 'O e-mail é obrigatório',
+  'Hai inserito un\'e-mail non valida': 'Introduziu um e-mail inválido',
+  'Password': 'Senha',
+  'La password è obbligatoria': 'A senha é obrigatória',
+  'Accedi': 'Conecte-se',
+  'Hai dimenticato la password?': 'Esqueceu-se da sua senha?'
 };

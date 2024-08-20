@@ -1,16 +1,15 @@
-import {HttpErrorResponse} from '@angular/common/http';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
-import {AlertController, IonInput, ModalController} from '@ionic/angular';
+import {IonInput, ModalController} from '@ionic/angular';
 import {select, Store} from '@ngrx/store';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, take } from 'rxjs/operators';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {filter, take} from 'rxjs/operators';
 import {LangService} from 'wm-core/localization/lang.service';
 import {loadSignIns} from 'wm-core/store/auth/auth.actions';
-import { isLogged } from 'wm-core/store/auth/auth.selectors';
+import {isLogged} from 'wm-core/store/auth/auth.selectors';
 
 @Component({
-  selector: 'webmapp-login-component',
+  selector: 'wm-login-component',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
   providers: [LangService],
@@ -52,23 +51,26 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     setTimeout(() => {
       this.setFocus();
     }, 1000);
 
-    this.isLogged$.pipe(
-      filter(l => l),
-      take(1),
-    )
-    .subscribe(() => {this.dismiss();})
+    this.isLogged$
+      .pipe(
+        filter(l => l),
+        take(1),
+      )
+      .subscribe(() => {
+        this.dismiss();
+      });
   }
 
   openUrl(url: string): void {
     window.open(url, '_blank');
   }
 
-  setFocus() {
+  setFocus(): void {
     this.emailField.setFocus();
   }
 

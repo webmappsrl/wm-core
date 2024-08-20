@@ -56,4 +56,14 @@ export const wmFR = {
   'Caricamento in corso.': 'Chargement.',
   'Spiacenti non ci sono risultati con questi criteri di ricerca.':
     "Désolé, il n'y a aucun résultat avec ces critères de recherche",
+
+  'Bentornato!': 'Bienvenue!',
+  'Accedi con le tue credenziali per continuare.': 'Connectez-vous avec vos identifiants pour continuer.',
+  'E-mail': 'E-mail',
+  'L\'e-mail è obbligatoria': 'L\'e-mail est requis',
+  'Hai inserito un\'e-mail non valida': 'Vous avez entré un email invalide',
+  'Password': 'Mot de passe',
+  'La password è obbligatoria': 'Mot de passe requis',
+  'Accedi': 'Connexion',
+  'Hai dimenticato la password?': 'Avez-vous oublié votre mot de passe?'
 };

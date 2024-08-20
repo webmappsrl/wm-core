@@ -1,18 +1,18 @@
-.webmapp-login-header {
+.wm-login-header {
   color: #000;
 }
 
-.webmapp-login-form {
+.wm-login-form {
   padding: 15px;
-  .webmapp-login-label {
+  .wm-login-label {
     font-size: var(--wm-font-sm);
     font-weight: var(--wm-font-weight-bold);
   }
-  .webmapp-login-field-container {
+  .wm-login-field-container {
     margin-bottom: 15px;
-    .webmapp-login-field {
+    .wm-login-field {
       --padding-start: 0;
-      .webmapp-login-input-button {
+      .wm-login-input-button {
         font-size: var(--wm-font-md);
         --color: var(--wm-color-dark);
         --background: var(--wm-color-light);
@@ -27,21 +27,21 @@
       &.item-has-focus {
         --border-color: var(--wm-color-secondary);
       }
-      &.webmapp-login-field-has-error {
+      &.wm-login-field-has-error {
         --border-color: var(--ion-color-danger);
       }
     }
-    .webmapp-login-field-error {
+    .wm-login-field-error {
       color: var(--ion-color-danger);
       font-size: var(--wm-font-sm);
     }
   }
-  .webmapp-login-toggle-container {
+  .wm-login-toggle-container {
     display: flex;
     justify-content: flex-start;
     align-items: center;
 
-    .webmapp-login-toggle {
+    .wm-login-toggle {
       --background: var(--wm-color-darkgrey);
       --background-checked: var(--wm-color-primary);
       --handle-background: var(--wm-color-light);
@@ -50,7 +50,7 @@
       height: 24px;
       --handle-width: 20px;
     }
-    .webmapp-login-toggle-label {
+    .wm-login-toggle-label {
       padding: 0 15px;
       --font-size: var(--wm-font-sm);
       --color: var(--wm-color-darkgrey);
@@ -58,7 +58,7 @@
   }
 }
 
-.webmapp-login-buttons-container {
+.wm-login-buttons-container {
   display: grid;
   position: absolute;
   bottom: 0;
@@ -66,21 +66,21 @@
   width: 100%;
   grid-template-columns: auto auto auto;
   padding-bottom: 60px;
-  .webmapp-login-submit-button,
-  .webmapp-login-forgot-password-button {
+  .wm-login-submit-button,
+  .wm-login-forgot-password-button {
     grid-column-start: 2;
     grid-column-end: 2;
     font-size: var(--wm-font-md);
     padding: 10px;
     margin: 10px;
   }
-  .webmapp-login-submit-button {
+  .wm-login-submit-button {
     border-radius: 36px;
     border: 1px solid var(--wm-color-primary);
     background: var(--wm-color-primary);
     color: var(--wm-color-light);
   }
-  .webmapp-login-forgot-password-button {
+  .wm-login-forgot-password-button {
     color: var(--wm-color-darkgrey);
     background: var(--wm-color-light);
     text-decoration: underline;

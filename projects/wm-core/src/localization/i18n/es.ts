@@ -55,4 +55,13 @@ export const wmES = {
   'Caricamento in corso.': 'Cargando.',
   'Spiacenti non ci sono risultati con questi criteri di ricerca.':
     'Lo sentimos, no hay resultados con estos criterios de búsqueda',
+  'Bentornato!': 'Bienvenido de nuevo!',
+  'Accedi con le tue credenziali per continuare.': 'Inicie sesión con sus credenciales para continuar.',
+  'E-mail': 'E-mail',
+  'L\'e-mail è obbligatoria': 'Se requiere correo electrónico',
+  'Hai inserito un\'e-mail non valida': 'Has introducido un correo electrónico no válido',
+  'Password': 'Contraseña',
+  'La password è obbligatoria': 'La contraseña es obligatoria',
+  'Accedi': 'Acceso',
+  'Hai dimenticato la password?': '¿Has olvidado tu contraseña?'
 };

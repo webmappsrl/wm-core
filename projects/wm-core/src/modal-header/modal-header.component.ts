@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
-  selector: 'webmapp-modal-header',
+  selector: 'wm-modal-header',
   templateUrl: './modal-header.component.html',
   styleUrls: ['./modal-header.component.scss'],
 })
-export class ModalHeaderComponent implements OnInit {
+export class ModalHeaderComponent {
   @Input('title') title: string;
   @Output('dismiss') dismiss: EventEmitter<MouseEvent>;
 
@@ -13,9 +13,7 @@ export class ModalHeaderComponent implements OnInit {
     this.dismiss = new EventEmitter<MouseEvent>();
   }
 
-  ngOnInit() {}
-
-  emitDismiss(event: MouseEvent) {
+  emitDismiss(event: MouseEvent): void {
     this.dismiss.emit(event);
   }
 }

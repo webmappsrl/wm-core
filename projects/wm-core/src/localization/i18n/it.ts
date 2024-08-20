@@ -62,4 +62,13 @@ export const wmIT = {
   'Spiacenti non ci sono risultati con questi criteri di ricerca.':
     'Spiacenti non ci sono risultati con questi criteri di ricerca.',
   'duration': 'Durata',
+  'Bentornato!': 'Bentornato!',
+  'Accedi con le tue credenziali per continuare.': 'Accedi con le tue credenziali per continuare.',
+  'E-mail': 'E-mail',
+  'L\'e-mail è obbligatoria': 'L\'e-mail è obbligatoria',
+  'Hai inserito un\'e-mail non valida': 'Hai inserito un\'e-mail non valida',
+  'Password': 'Password',
+  'La password è obbligatoria': 'La password è obbligatoria',
+  'Accedi': 'Accedi',
+  'Hai dimenticato la password?': 'Hai dimenticato la password?'
 };
