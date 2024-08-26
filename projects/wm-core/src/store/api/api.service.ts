@@ -20,14 +20,15 @@ const baseUrl = 'https://elastic-json.webmapp.it/search';
 export class ApiService {
   private _geohubAppId: number = this.environment.geohubId;
   private _hostToGeohubAppId: { [key: string]: number } = {
-    'sentieri.caiparma': 33,
-    'motomappa.motoabbigliament': 53,
-    'maps.parcoforestecasentinesi': 49,
-    'maps.parcopan': 63,
-    'maps.acquasorgente.cai': 58,
-    'maps.caipontedera': 59,
-    'maps.parcapuane': 62,
+    'sentieri.caiparma.it': 33,
+    'motomappa.motoabbigliamento.it': 53,
+    'maps.parcoforestecasentinesi.it': 49,
+    'maps.parcopan.org': 63,
+    'maps.acquasorgente.cai.it': 58,
+    'maps.caipontedera.it': 59,
+    'maps.parcapuane.it': 62,
   };
+
   private _queryDic: {[query: string]: any} = {};
 
   private get _baseUrl(): string {
@@ -49,7 +50,7 @@ export class ApiService {
       const matchedHost = Object.keys(this._hostToGeohubAppId).find((host) =>
         hostname.includes(host)
       );
-    
+
       if (matchedHost) {
         this._geohubAppId = this._hostToGeohubAppId[matchedHost];
       } else {

@@ -10,13 +10,13 @@ import {apiLocalForage} from '../api/utils';
 export class ConfService {
   private _geohubAppId: number = this.config.geohubId;
   private _hostToGeohubAppId: { [key: string]: number } = {
-    'sentieri.caiparma': 33,
-    'motomappa.motoabbigliament': 53,
-    'maps.parcoforestecasentinesi': 49,
-    'maps.parcopan': 63,
-    'maps.acquasorgente.cai': 58,
-    'maps.caipontedera': 59,
-    'maps.parcapuane': 62,
+    'sentieri.caiparma.it': 33,
+    'motomappa.motoabbigliamento.it': 53,
+    'maps.parcoforestecasentinesi.it': 49,
+    'maps.parcopan.org': 63,
+    'maps.acquasorgente.cai.it': 58,
+    'maps.caipontedera.it': 59,
+    'maps.parcapuane.it': 62,
   };
 
   public get configUrl(): string {
@@ -48,7 +48,7 @@ export class ConfService {
       const matchedHost = Object.keys(this._hostToGeohubAppId).find((host) =>
         hostname.includes(host)
       );
-    
+
       if (matchedHost) {
         this._geohubAppId = this._hostToGeohubAppId[matchedHost];
       } else {
@@ -58,6 +58,11 @@ export class ConfService {
         }
       }
     }
+  }
+
+  public getHost(): string | undefined{
+    const host = Object.entries(this._hostToGeohubAppId).find(([key, val]) => val === this._geohubAppId);
+    return host ? host[0] : undefined;
   }
 
   public getConf(): Observable<ICONF> {
