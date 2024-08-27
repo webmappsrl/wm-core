@@ -19,15 +19,6 @@ const baseUrl = 'https://elastic-json.webmapp.it/search';
 })
 export class ApiService {
   private _geohubAppId: number = this.environment.geohubId;
-  private _hostToGeohubAppId: { [key: string]: number } = {
-    'sentieri.caiparma.it': 33,
-    'motomappa.motoabbigliamento.it': 53,
-    'maps.parcoforestecasentinesi.it': 49,
-    'maps.parcopan.org': 63,
-    'maps.acquasorgente.cai.it': 58,
-    'maps.caipontedera.it': 59,
-    'maps.parcapuane.it': 62,
-  };
 
   private _queryDic: {[query: string]: any} = {};
 
@@ -47,12 +38,12 @@ export class ApiService {
   ) {
     const hostname: string = window.location.hostname;
     if (hostname.indexOf('localhost') < 0) {
-      const matchedHost = Object.keys(this._hostToGeohubAppId).find((host) =>
+      const matchedHost = Object.keys(hostToGeohubAppId).find((host) =>
         hostname.includes(host)
       );
 
       if (matchedHost) {
-        this._geohubAppId = this._hostToGeohubAppId[matchedHost];
+        this._geohubAppId = hostToGeohubAppId[matchedHost];
       } else {
         const newGeohubId = parseInt(hostname.split('.')[0], 10);
         if (!Number.isNaN(newGeohubId)) {
@@ -135,3 +126,13 @@ export class ApiService {
     return this._queryDic[query];
   }
 }
+
+export const hostToGeohubAppId: { [key: string]: number } = {
+  'sentieri.caiparma.it': 33,
+  'motomappa.motoabbigliamento.it': 53,
+  'maps.parcoforestecasentinesi.it': 49,
+  'maps.parcopan.org': 63,
+  'maps.acquasorgente.cai.it': 58,
+  'maps.caipontedera.it': 59,
+  'maps.parcapuane.it': 62,
+};
