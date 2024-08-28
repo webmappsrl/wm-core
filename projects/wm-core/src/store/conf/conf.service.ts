@@ -4,20 +4,12 @@ import {Observable} from 'rxjs';
 import {ICONF} from '../../types/config';
 import {ENVIRONMENT_CONFIG, EnvironmentConfig} from './conf.token';
 import {apiLocalForage} from '../api/utils';
+import { hostToGeohubAppId } from '../api/api.service';
 @Injectable({
   providedIn: 'root',
 })
 export class ConfService {
   private _geohubAppId: number = this.config.geohubId;
-  private _hostToGeohubAppId: { [key: string]: number } = {
-    'sentieri.caiparma.it': 33,
-    'motomappa.motoabbigliamento.it': 53,
-    'maps.parcoforestecasentinesi.it': 49,
-    'maps.parcopan.org': 63,
-    'maps.acquasorgente.cai.it': 58,
-    'maps.caipontedera.it': 59,
-    'maps.parcapuane.it': 62,
-  };
 
   public get configUrl(): string {
     return `${this._geohubApiBaseUrl}config`;
@@ -45,12 +37,12 @@ export class ConfService {
   ) {
     const hostname: string = window.location.hostname;
     if (hostname.indexOf('localhost') < 0) {
-      const matchedHost = Object.keys(this._hostToGeohubAppId).find((host) =>
+      const matchedHost = Object.keys(hostToGeohubAppId).find((host) =>
         hostname.includes(host)
       );
 
       if (matchedHost) {
-        this._geohubAppId = this._hostToGeohubAppId[matchedHost];
+        this._geohubAppId = hostToGeohubAppId[matchedHost];
       } else {
         const newGeohubId = parseInt(hostname.split('.')[0], 10);
         if (!Number.isNaN(newGeohubId)) {
@@ -61,7 +53,7 @@ export class ConfService {
   }
 
   public getHost(): string | undefined{
-    const host = Object.entries(this._hostToGeohubAppId).find(([key, val]) => val === this._geohubAppId);
+    const host = Object.entries(hostToGeohubAppId).find(([key, val]) => val === this._geohubAppId);
     return host ? host[0] : undefined;
   }
 
