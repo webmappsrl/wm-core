@@ -1,0 +1,10 @@
+
+<h3 class="wm-profile-data-title">{{"Downloads" | wmtrans}}</h3>
+<ion-list>
+  <ion-item (click)="open('tracks')" button detail>
+    {{"Tracce scaricate" | wmtrans}}
+  </ion-item>
+  <ion-item (click)="open('data')" button detail *ngIf="false">
+    {{"Utilizzo dati" | wmtrans}}
+  </ion-item>
+</ion-list>

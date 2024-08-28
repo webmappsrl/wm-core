@@ -1,7 +1,7 @@
 import {createReducer, on} from '@ngrx/store';
 import { ICONF, ICONTROLS, ILAYER } from 'wm-core/types/config';
-
 import {loadConfSuccess} from './conf.actions';
+import { Capacitor } from '@capacitor/core';
 export const confFeatureKey = 'conf';
 export interface IConfRootState {
   [confFeatureKey]: ICONF;
@@ -70,6 +70,7 @@ const initialConfState: ICONF = {
       route: false,
       all: false,
     },
+    isMobile: false
   },
   THEME: {
     primary: '#3880ff',
@@ -100,6 +101,7 @@ export const confReducer = createReducer(
   initialConfState,
   on(loadConfSuccess, (state, {conf}) => {
     localStorage.setItem('appname', state.APP.name);
+    const isMobile = Capacitor.getPlatform() != 'web';
     let MAP = {...state.MAP, ...{...conf.MAP}};
     if (conf.APP.geohubId === 3) {
       let res = {};
@@ -134,7 +136,7 @@ export const confReducer = createReducer(
         APP: {...state.APP, ...conf.APP},
         WEBAPP: {...state.WEBAPP, ...conf.WEBAPP},
         THEME: {...state.THEME, ...conf.THEME},
-        OPTIONS: {...state.OPTIONS, ...conf.OPTIONS},
+        OPTIONS: {...state.OPTIONS, ...conf.OPTIONS, isMobile},
         MAP,
       },
     };
@@ -218,7 +220,7 @@ const isCrossroads = (
 };
 export const layersSVG = `<?xml version="1.0" encoding="iso-8859-1"?>
 <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-<svg fill="#000000" height="800px" width="800px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+<svg fill="#000000" height="800px" width="800px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
 	 viewBox="0 0 512 512" xml:space="preserve">
 <g>
 	<g>

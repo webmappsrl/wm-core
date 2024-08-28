@@ -4,7 +4,7 @@ import * as AuthActions from './auth.actions';
 import {catchError, map, switchMap} from 'rxjs/operators';
 import {AuthService} from './auth.service';
 import {of} from 'rxjs';
-import {NavController} from '@ionic/angular';
+import {AlertController, NavController} from '@ionic/angular';
 
 @Injectable()
 export class AuthEffects {
@@ -97,9 +97,32 @@ export class AuthEffects {
     {dispatch: false},
   );
 
+  openAlertSignOutSuccess$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(AuthActions.loadSignOutsSuccess),
+        switchMap(() => this._alertCtrl.create({
+          mode: 'ios',
+          header: 'Logout effettuato con successo',
+          message: '',
+          buttons: [
+            {
+              text: 'ok',
+            },
+          ],
+        })),
+        switchMap(alert => {
+          alert.present();
+          return alert.onWillDismiss();
+        }),
+      ),
+    {dispatch: false},
+  );
+
   constructor(
     private _actions$: Actions,
     private _authSvc: AuthService,
     private _navCtrl: NavController,
+    private _alertCtrl: AlertController
   ) {}
 }
