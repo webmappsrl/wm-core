@@ -95,7 +95,6 @@ export interface IAPP {
   id?: string;
   name: string;
   poi_acquisition_form?: any;
-  socialShareText?: iLocalString;
   track_acquisition_form?: any;
   welcome?: string;
 }
