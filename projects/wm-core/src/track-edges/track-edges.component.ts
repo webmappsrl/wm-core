@@ -20,8 +20,22 @@ export class WmTrackEdgesComponent implements OnDestroy, OnChanges {
   @Input() properties: {[property: string]: any};
 
   edges: null | {prev: number[]; next: number[]} = null;
-  nextColors = ['#FFF500', '#FFA13D', '#2DFE54', '#3F8DFF'];
-  prevColors = ['#B0B0B0', '#8DAFD3', '#88C5A7', '#E9B1C2'];
+  nextColors = [  '#FFF500',
+    '#FFA13D',
+    '#2DFE54',
+    '#3F8DFF',
+    '#FFD700',
+    '#FF8A00',
+    '#1DE43F',
+    '#0066FF',];
+  prevColors = [  '#B0B0B0',
+    '#8DAFD3',
+    '#88C5A7',
+    '#E9B1C2',
+    '#A0A0A0',
+    '#7D9DC3',
+    '#78B597',
+    '#D9A1B2',];
 
   constructor(private _router: Router, private _route: ActivatedRoute) {}
 
