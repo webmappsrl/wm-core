@@ -1,0 +1,24 @@
+<ng-container *ngIf="(isLogged$|async)">
+  <div class="wm-profile-user-container">
+    <ion-avatar
+      class="wm-profile-user-avatar"
+      [ngClass]="{
+      'wm-profile-user-avatar-icon': !avatarUrl
+    }"
+    >
+      <i class="wm-icon-user-outline"></i>
+    </ion-avatar>
+    <div class="wm-profile-user-header-container">
+      <h4 class="wm-profile-user-name">{{(user$|async)?.name}}</h4>
+      <div class="wm-profile-user-email">{{(user$|async)?.email}}</div>
+      <ion-button
+        (click)="deleteUserAlert()"
+        size="small"
+        expand="block"
+        fill="outline"
+        color="danger"
+        ><ion-icon name="close-outline"></ion-icon>{{'elimina'|wmtrans}}</ion-button
+      >
+    </div>
+  </div>
+</ng-container>

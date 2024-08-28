@@ -42,9 +42,9 @@ export const deleteUserFailure = createAction(
   props<{error: HttpErrorResponse}>(),
 );
 
-export const loadSignOuts = createAction('[Auth] Logout');
-export const loadSignOutsSuccess = createAction('[Auth] Logout success');
+export const loadSignOuts = createAction('[Auth] Load SignOut');
+export const loadSignOutsSuccess = createAction('[Auth] Load SignOut Success');
 export const loadSignOutsFailure = createAction(
-  '[Auth] Logout failure',
+  '[Auth] Load SignOut Failure',
   props<{error: HttpErrorResponse}>(),
 );
