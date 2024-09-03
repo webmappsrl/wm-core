@@ -16,6 +16,7 @@ import {
   setLastFilterType,
 } from './api.actions';
 import { Filter } from '../../types/config';
+import { IHIT } from 'wm-core/types/elastic';
 
 export const searchKey = 'search';
 export interface Api {
@@ -27,6 +28,7 @@ export interface Api {
   poisSelectedFilterIdentifiers?: string[];
   filterTaxonomies?: string[];
   goToHome: boolean;
+  hits?: IHIT[];
 }
 export interface ApiRootState {
   [searchKey]: Api;
@@ -41,6 +43,7 @@ const initialConfState: Api = {
   poisSelectedFilterIdentifiers: null,
   filterTaxonomies: [],
   goToHome: false,
+  hits: [],
 };
 
 export const elasticQueryReducer = createReducer(
@@ -97,8 +100,8 @@ export const elasticQueryReducer = createReducer(
     };
     return newState;
   }),
-  on(queryApiSuccess, (state, {search}) => {
-    const newState: Api = {...state, ...search, loading: false};
+  on(queryApiSuccess, (state, {hits}) => {
+    const newState: Api = {...state, hits, loading: false};
     return newState;
   }),
   on(queryApiFail, state => {

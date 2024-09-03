@@ -241,6 +241,7 @@ export interface ILAYER {
   data_use_bbox: boolean;
   data_use_only_my_data: boolean;
   description: string;
+  edges?: {[trackId: number]: {prev: number[]; next: number[]}};
   feature_image: string;
   icon?: any;
   id: string;

@@ -10,8 +10,7 @@ export interface IHIT {
   id: number;
   layers: number[];
   name: string;
-  properties: {[key:string]:any}
-
+  properties: {[key:string]:any};
   ref: string;
   size?: any;
   taxonomyActivities: any;

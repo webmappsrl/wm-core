@@ -3,15 +3,14 @@ import {SearchResponse} from 'elasticsearch';
 import {confFILTERSTRACKS, confPOISFilter, confPoisIcons} from '../conf/conf.selector';
 import {buildStats, filterFeatureCollection, filterFeatureCollectionByInputTyped} from './utils';
 import { IELASTIC, IHIT } from '../../types/elastic';
+import { Api } from './api.reducer';
 
 export const elasticSearchFeature = createFeatureSelector<IELASTIC>('query');
-export const queryApi = createSelector(elasticSearchFeature as any, (state: SearchResponse<IHIT>) =>
-  state != null && state.hits && state.hits.hits ? state.hits.hits.map(hit => hit._source) : [],
+export const queryApi = createSelector(elasticSearchFeature as any, (state: Api) =>
+  state.hits??[],
 );
-export const countTracks = createSelector(elasticSearchFeature as any, (state: SearchResponse<IHIT>) =>
-  state != null && state.hits != null && state?.hits?.total && state?.hits?.total
-    ? (state?.hits?.total as any)?.value
-    : undefined,
+export const countTracks = createSelector(elasticSearchFeature as any, (state: Api) =>
+  state.hits.length ?? undefined
 );
 // @ts-ignore
 export const statsApi = createSelector(elasticSearchFeature as any, (state: SearchResponse<IHIT>) => {

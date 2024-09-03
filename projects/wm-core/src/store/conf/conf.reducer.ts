@@ -1,7 +1,7 @@
 import {createReducer, on} from '@ngrx/store';
+import { ICONF, ICONTROLS, ILAYER } from 'wm-core/types/config';
 
 import {loadConfSuccess} from './conf.actions';
-import {ICONF, ICONTROLS, ILAYER} from '../../types/config';
 export const confFeatureKey = 'conf';
 export interface IConfRootState {
   [confFeatureKey]: ICONF;
@@ -104,7 +104,7 @@ export const confReducer = createReducer(
     if (conf.APP.geohubId === 3) {
       let res = {};
       const mockedMapLayers = conf.MAP.layers.map((layer: ILAYER) => {
-        const edgesObj = (layer as any).edges;
+        const edgesObj = layer.edges ?? {};
         const edgesKeys = Object.keys(edgesObj);
         edgesKeys.forEach(edgeKey => {
           let edgeObj = edgesObj[edgeKey];

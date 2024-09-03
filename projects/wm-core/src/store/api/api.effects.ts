@@ -17,9 +17,9 @@ import {
 import {ApiService} from './api.service';
 import {ApiRootState} from './api.reducer';
 import {Store} from '@ngrx/store';
-import {SearchResponse} from 'elasticsearch';
 import {apiTrackFilterIdentifier} from './api.selector';
-import { Filter } from '../../types/config';
+import {Filter} from '../../types/config';
+import {IHIT} from 'wm-core/types/elastic';
 
 @Injectable({
   providedIn: 'root',
@@ -68,7 +68,7 @@ export class ApiEffects {
         const api = state['query'];
         if (action.init) {
           return from(this._apiSVC.getQuery({})).pipe(
-            map((search: SearchResponse<any>) => queryApiSuccess({search})),
+            map((hits: IHIT[]) => queryApiSuccess({hits})),
             catchError(e => of(queryApiFail())),
           );
         }
@@ -82,7 +82,7 @@ export class ApiEffects {
           ...{inputTyped: api.inputTyped},
         };
         return from(this._apiSVC.getQuery(newAction)).pipe(
-          map((search: SearchResponse<any>) => queryApiSuccess({search})),
+          map((hits: IHIT[]) => queryApiSuccess({hits})),
           catchError(e => of(queryApiFail())),
         );
       }),
@@ -114,11 +114,11 @@ export class ApiEffects {
       withLatestFrom(this._store),
       //@ts-ignore
       switchMap(([action, state]) => {
-        let filters:Filter[] = [];
+        let filters: Filter[] = [];
         try {
           filters = state['conf']['MAP'].filters[action.taxonomy].options;
         } catch (_) {}
-        let filter = filters.filter((f) => f.identifier === action.identifier);
+        let filter = filters.filter(f => f.identifier === action.identifier);
         if (filter.length > 0) {
           return of({
             type: '[api] toggle track filter',

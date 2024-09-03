@@ -2,28 +2,25 @@ import {HttpClient} from '@angular/common/http';
 
 /* eslint-disable quote-props */
 import {Inject, Injectable} from '@angular/core';
-import {SearchResponse} from 'elasticsearch';
 import {FeatureCollection} from 'geojson';
 import {from, Observable, of} from 'rxjs';
 // @ts-ignore
 import {switchMap, tap} from 'rxjs/operators';
 import {WmLoadingService} from '../../services/loading.service';
 import {Filter, SliderFilter} from '../../types/config';
-import {IELASTIC} from '../../types/elastic';
 import {EnvironmentConfig, ENVIRONMENT_CONFIG} from '../conf/conf.token';
 import {apiLocalForage} from './utils';
-// const baseUrl = 'http://localhost:3000/search';
-const baseUrl = 'https://elastic-json.webmapp.it/search';
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
+  private _elasticApi:string = this.environment.elasticApi;
   private _geohubAppId: number = this.environment.geohubId;
-
   private _queryDic: {[query: string]: any} = {};
+  private _shard = 'geohub_app'
 
   private get _baseUrl(): string {
-    return this._geohubAppId ? `${baseUrl}/?id=${this._geohubAppId}` : baseUrl;
+    return this._geohubAppId ? `${this._elasticApi}/?app=${this._shard}_${this._geohubAppId}` : this._elasticApi;
   }
 
   /**
@@ -89,7 +86,7 @@ export class ApiService {
     inputTyped?: string;
     layer?: any;
     filterTracks?: Filter[];
-  }): Promise<SearchResponse<IELASTIC>> {
+  }): Promise<any[]> {
     let query = this._baseUrl;
 
     if (options.inputTyped) {

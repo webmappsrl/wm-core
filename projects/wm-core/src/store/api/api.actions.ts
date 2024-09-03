@@ -1,7 +1,7 @@
 import {createAction, props} from '@ngrx/store';
 import {FeatureCollection} from 'geojson';
+import { IHIT } from 'wm-core/types/elastic';
 import { Filter } from '../../types/config';
-import { IELASTIC } from '../../types/elastic';
 
 export const query = createAction(
   '[api] Query',
@@ -12,7 +12,7 @@ export const query = createAction(
     filterTracks?: {identifier: string}[];
   }>(),
 );
-export const queryApiSuccess = createAction('[api] Search Success', props<{search: IELASTIC}>());
+export const queryApiSuccess = createAction('[api] Search Success', props<{hits: IHIT[]}>());
 export const queryApiFail = createAction('[api] Search Fail');
 export const addTrackFilters = createAction(
   '[api] add track filters',
