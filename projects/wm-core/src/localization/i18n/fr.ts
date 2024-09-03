@@ -65,7 +65,6 @@ export const wmFR = {
   'La password è obbligatoria': 'Mot de passe requis',
   'Accedi': 'Connexion',
   'Hai dimenticato la password?': 'Avez-vous oublié votre mot de passe?',
-
   'Accedi e scarica i tuoi percorsi preferiti': 'Accédez et téléchargez vos itinéraires favoris',
   'Puoi anche condividerli con i tuoi compagni di viaggio': 'Vous pouvez également les partager avec vos compagnons de voyage',
   'Registrati': 'S\'inscrire',
@@ -96,5 +95,9 @@ export const wmFR = {
   "Registrazione in corso": "Inscription en cours",
   "Perchè ti chiediamo il Codice Fiscale?": "Pourquoi vous demande-t-on le Code Fiscal ?",
   "Se sei Socia/o CAI inserisci il tuo CF al momento della registrazione. Per te il download delle tappe del Sentiero Italia CAI sarà automaticamente gratuito!":
-    "Si vous êtes membre CAI, inscrivez votre CF lors de votre inscription. Pour vous, le téléchargement des étapes du Sentiero Italia CAI sera automatiquement gratuit !"
+    "Si vous êtes membre CAI, inscrivez votre CF lors de votre inscription. Pour vous, le téléchargement des étapes du Sentiero Italia CAI sera automatiquement gratuit !",
+  "Origine dell'immagine": "Origine de l'image",
+  "Annulla": "Annuler",
+  "Dalla libreria": "De la bibliothèque",
+  "Scatta una foto": "Prendre une photo",
 };

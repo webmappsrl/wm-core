@@ -94,5 +94,9 @@ export const wmES = {
   "Registrazione in corso": "Inscripción en proceso",
   "Perchè ti chiediamo il Codice Fiscale?": "¿Por qué te pedimos el Código Fiscal?",
   "Se sei Socia/o CAI inserisci il tuo CF al momento della registrazione. Per te il download delle tappe del Sentiero Italia CAI sarà automaticamente gratuito!":
-    "Si eres Socio CAI, introduce tu CF al registrarte. ¡La descarga de las etapas del CAI Sentiero Italia será automáticamente gratuita para ti!"
+    "Si eres Socio CAI, introduce tu CF al registrarte. ¡La descarga de las etapas del CAI Sentiero Italia será automáticamente gratuita para ti!",
+  "Origine dell'immagine": "Fuente de la imagen",
+  "Annulla": "Cancelar",
+  "Dalla libreria": "De la biblioteca",
+  "Scatta una foto": "Toma una fotografía",
 };
