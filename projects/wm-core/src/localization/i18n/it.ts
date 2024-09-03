@@ -71,7 +71,6 @@ export const wmIT = {
   'La password è obbligatoria': 'La password è obbligatoria',
   'Accedi': 'Accedi',
   'Hai dimenticato la password?': 'Hai dimenticato la password?',
-
   'Accedi e scarica i tuoi percorsi preferiti': 'Accedi e scarica i tuoi percorsi preferiti',
   'Puoi anche condividerli con i tuoi compagni di viaggio': 'Puoi anche condividerli con i tuoi compagni di viaggio',
   'Registrati': 'Registrati',
@@ -103,5 +102,9 @@ export const wmIT = {
   "Registrazione in corso": "Registrazione in corso",
   "Perchè ti chiediamo il Codice Fiscale?": "Perchè ti chiediamo il Codice Fiscale?",
   "Se sei Socia/o CAI inserisci il tuo CF al momento della registrazione. Per te il download delle tappe del Sentiero Italia CAI sarà automaticamente gratuito!":
-    "Se sei Socia/o CAI inserisci il tuo CF al momento della registrazione. Per te il download delle tappe del Sentiero Italia CAI sarà automaticamente gratuito!"
+    "Se sei Socia/o CAI inserisci il tuo CF al momento della registrazione. Per te il download delle tappe del Sentiero Italia CAI sarà automaticamente gratuito!",
+  "Origine dell'immagine": "Origine dell'immagine",
+  "Annulla": "Annulla",
+  "Dalla libreria": "Dalla libreria",
+  "Scatta una foto": "Scatta una foto",
 };

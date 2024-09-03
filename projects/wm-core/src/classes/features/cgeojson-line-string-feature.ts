@@ -1,7 +1,8 @@
-import {EGeojsonGeometryTypes} from '../../types/egeojson-geometry-types.enum';
-import {IPoint, ILineString, IGeojsonGeometry} from '../../types/model';
+import { IGeojsonGeometry, ILineString, IPoint } from 'wm-core/types/model';
 import {CGeojsonFeature} from './cgeojson-feature';
-import {Location} from '../../types/location';
+import { EGeojsonGeometryTypes } from 'wm-core/types/egeojson-geometry-types.enum';
+import { Location } from 'wm-core/types/location';
+
 export class CGeojsonLineStringFeature extends CGeojsonFeature {
   constructor(geometry?: IGeojsonGeometry) {
     super();
@@ -15,9 +16,13 @@ export class CGeojsonLineStringFeature extends CGeojsonFeature {
    */
   addCoordinates(location: Location): void {
     if (!this._geometry) this._initializeGeometry();
-    const newPoint: IPoint = [location.longitude, location.latitude];
-    if (location.altitude) newPoint.push(location.altitude);
-    (this._geometry.coordinates as ILineString).push(newPoint);
+    try {
+      const newPoint: IPoint = [location.longitude, location.latitude];
+      if (location.altitude) newPoint.push(location.altitude);
+      (this._geometry.coordinates as ILineString).push(newPoint);
+    } catch (e) {
+      console.warn(e);
+    }
   }
 
   /**
@@ -32,7 +37,7 @@ export class CGeojsonLineStringFeature extends CGeojsonFeature {
   /**
    * Initialize the geometry field
    */
-  private _initializeGeometry() {
+  private _initializeGeometry(): void {
     this._geometry = {
       type: EGeojsonGeometryTypes.LINE_STRING,
       coordinates: [],

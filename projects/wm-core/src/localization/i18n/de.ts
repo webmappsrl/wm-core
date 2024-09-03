@@ -95,5 +95,9 @@ export const wmDE = {
   "Registrazione in corso": "Registrierung läuft",
   "Perchè ti chiediamo il Codice Fiscale?": "Warum fragen wir Sie nach der Abgabenordnung?",
   "Se sei Socia/o CAI inserisci il tuo CF al momento della registrazione. Per te il download delle tappe del Sentiero Italia CAI sarà automaticamente gratuito!":
-    "Wenn Sie CAI-Mitglied sind, geben Sie bei der Registrierung Ihre CF ein. Für Sie ist der Download der Etappen des Sentiero Italia CAI automatisch kostenlos!"
+    "Wenn Sie CAI-Mitglied sind, geben Sie bei der Registrierung Ihre CF ein. Für Sie ist der Download der Etappen des Sentiero Italia CAI automatisch kostenlos!",
+  "Origine dell'immagine": "Bildquelle",
+  "Annulla": "Stornieren",
+  "Dalla libreria": "Aus der Bibliothek",
+  "Scatta una foto": "Ein Foto machen",
 };

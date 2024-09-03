@@ -94,5 +94,9 @@ export const wmPR = {
   "Registrazione in corso": "Registo em andamento",
   "Perchè ti chiediamo il Codice Fiscale?": "Porque lhe pedimos o Código Fiscal?",
   "Se sei Socia/o CAI inserisci il tuo CF al momento della registrazione. Per te il download delle tappe del Sentiero Italia CAI sarà automaticamente gratuito!":
-    "Se é Membro CAI, insira o seu CF no momento da inscrição. Para si, o download dos passos do Sentiero Italia CAI será automaticamente gratuito!"
+    "Se é Membro CAI, insira o seu CF no momento da inscrição. Para si, o download dos passos do Sentiero Italia CAI será automaticamente gratuito!",
+  "Origine dell'immagine": "Fonte da imagem",
+  "Annulla": "Cancelar",
+  "Dalla libreria": "Da biblioteca",
+  "Scatta una foto": "Tire uma fotografia",
 };
