@@ -29,6 +29,7 @@ export interface Api {
   filterTaxonomies?: string[];
   goToHome: boolean;
   hits?: IHIT[];
+  aggregations?: any;
 }
 export interface ApiRootState {
   [searchKey]: Api;
@@ -100,8 +101,8 @@ export const elasticQueryReducer = createReducer(
     };
     return newState;
   }),
-  on(queryApiSuccess, (state, {hits}) => {
-    const newState: Api = {...state, hits, loading: false};
+  on(queryApiSuccess, (state, {response}) => {
+    const newState: Api = {...state, hits:response.hits, aggregations:response.aggregations, loading: false};
     return newState;
   }),
   on(queryApiFail, state => {

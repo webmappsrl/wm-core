@@ -16,3 +16,8 @@ export interface IHIT {
   taxonomyActivities: any;
   taxonomyWheres: string[];
 }
+
+export interface IRESPONSE {
+  aggregations:any;
+  hits:IHIT[];
+}

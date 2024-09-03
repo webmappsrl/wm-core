@@ -19,7 +19,7 @@ import {ApiRootState} from './api.reducer';
 import {Store} from '@ngrx/store';
 import {apiTrackFilterIdentifier} from './api.selector';
 import {Filter} from '../../types/config';
-import {IHIT} from 'wm-core/types/elastic';
+import {IHIT, IRESPONSE} from 'wm-core/types/elastic';
 
 @Injectable({
   providedIn: 'root',
@@ -68,7 +68,7 @@ export class ApiEffects {
         const api = state['query'];
         if (action.init) {
           return from(this._apiSVC.getQuery({})).pipe(
-            map((hits: IHIT[]) => queryApiSuccess({hits})),
+            map((response: IRESPONSE) => queryApiSuccess({response})),
             catchError(e => of(queryApiFail())),
           );
         }
@@ -82,7 +82,7 @@ export class ApiEffects {
           ...{inputTyped: api.inputTyped},
         };
         return from(this._apiSVC.getQuery(newAction)).pipe(
-          map((hits: IHIT[]) => queryApiSuccess({hits})),
+          map((response: IRESPONSE) => queryApiSuccess({response})),
           catchError(e => of(queryApiFail())),
         );
       }),

@@ -1,6 +1,6 @@
 import {createAction, props} from '@ngrx/store';
 import {FeatureCollection} from 'geojson';
-import { IHIT } from 'wm-core/types/elastic';
+import { IHIT, IRESPONSE } from 'wm-core/types/elastic';
 import { Filter } from '../../types/config';
 
 export const query = createAction(
@@ -12,7 +12,7 @@ export const query = createAction(
     filterTracks?: {identifier: string}[];
   }>(),
 );
-export const queryApiSuccess = createAction('[api] Search Success', props<{hits: IHIT[]}>());
+export const queryApiSuccess = createAction('[api] Search Success', props<{response: IRESPONSE}>());
 export const queryApiFail = createAction('[api] Search Fail');
 export const addTrackFilters = createAction(
   '[api] add track filters',

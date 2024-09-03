@@ -6,6 +6,7 @@ import {FeatureCollection} from 'geojson';
 import {from, Observable, of} from 'rxjs';
 // @ts-ignore
 import {switchMap, tap} from 'rxjs/operators';
+import { IRESPONSE } from 'wm-core/types/elastic';
 import {WmLoadingService} from '../../services/loading.service';
 import {Filter, SliderFilter} from '../../types/config';
 import {EnvironmentConfig, ENVIRONMENT_CONFIG} from '../conf/conf.token';
@@ -33,6 +34,7 @@ export class ApiService {
     private _http: HttpClient,
     private _loadingSvc: WmLoadingService,
   ) {
+    this._elasticApi = this.environment.elasticApi;
     const hostname: string = window.location.hostname;
     if (hostname.indexOf('localhost') < 0) {
       const matchedHost = Object.keys(hostToGeohubAppId).find((host) =>
@@ -86,7 +88,7 @@ export class ApiService {
     inputTyped?: string;
     layer?: any;
     filterTracks?: Filter[];
-  }): Promise<any[]> {
+  }): Promise<IRESPONSE> {
     let query = this._baseUrl;
 
     if (options.inputTyped) {
