@@ -1,26 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'wm-profile-data',
   templateUrl: './profile-data.component.html',
   styleUrls: ['./profile-data.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class ProfileDataComponent {
-
   constructor(
-    private _navController: NavController
+    private _navCtrl: NavController
   ) { }
 
   open(section) {
     switch (section) {
       case 'tracks':
-        this._navController.navigateForward(['downloadlist']);
+        this._navCtrl.navigateForward(['downloadlist']);
         break;
       case 'data':
-        // this._navController.navigateForward(['downloaddata']);
+        // this._navCtrl.navigateForward(['downloaddata']);
         break;
-
     }
   }
 }

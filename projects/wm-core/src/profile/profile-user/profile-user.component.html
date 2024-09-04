@@ -8,9 +8,9 @@
     >
       <i class="wm-icon-user-outline"></i>
     </ion-avatar>
-    <div class="wm-profile-user-header-container">
-      <h4 class="wm-profile-user-name">{{(user$|async)?.name}}</h4>
-      <div class="wm-profile-user-email">{{(user$|async)?.email}}</div>
+    <div class="wm-profile-user-header-container" *ngIf="user$|async as user">
+      <h4 class="wm-profile-user-name">{{user?.name}}</h4>
+      <div class="wm-profile-user-email">{{user?.email}}</div>
       <ion-button
         (click)="deleteUserAlert()"
         size="small"

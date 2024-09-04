@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { AlertController, NavController } from '@ionic/angular';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
+import { AlertController } from '@ionic/angular';
 import { select, Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { from, Observable } from 'rxjs';
@@ -14,22 +13,20 @@ import { confAUTHEnable } from 'wm-core/store/conf/conf.selector';
   selector: 'wm-profile-user',
   templateUrl: './profile-user.component.html',
   styleUrls: ['./profile-user.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class ProfileUserComponent {
   authEnable$: Observable<boolean> = this._store.select(confAUTHEnable);
+  avatarUrl: string;
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
   user$: Observable<IUser> = this._store.pipe(select(user));
-
-  avatarUrl: string;
 
   constructor(
     private _store: Store,
     private _alertCtrl: AlertController,
     private _tranlateSvc: TranslateService,
-    private _router: Router,
-    private _navCtrl: NavController,
   ) {}
-
 
   deleteUserAlert(): void {
     from(

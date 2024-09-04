@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
 import {
   AbstractControl,
   UntypedFormBuilder,
@@ -22,45 +22,43 @@ import {confPAGES, confPRIVACY} from 'wm-core/store/conf/conf.selector';
   selector: 'wm-register-component',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
   providers: [LangService],
 })
 export class RegisterComponent {
-  // private cfregex =
-  //   '/^(?:[A-Z][AEIOU][AEIOUX]|[B-DF-HJ-NP-TV-Z]{2}[A-Z]){2}(?:[dLMNP-V]{2}(?:[A-EHLMPR-T](?:[04LQ][1-9MNP-V]|[15MR][dLMNP-V]|[26NS][0-8LMNP-U])|[DHPS][37PT][0L]|[ACELMRT][37PT][01LM]|[AC-EHLMPR-T][26NS][9V])|(?:[02468LNQSU][048LQU]|[13579MPRTV][26NS])B[26NS][9V])(?:[A-MZ][1-9MNP-V][dLMNP-V]{2}|[A-M][0L](?:[1-9MNP-V][dLMNP-V]|[0L][1-9MNP-V]))[A-Z]$/i';
-
   get errorControl() {
     return this.registerForm.controls;
   }
+
+  @Input() referrer: string;
 
   checkPasswords: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
     let pass = group.get('password').value;
     let confirmPass = group.get('confirmPassword').value;
     return pass === confirmPass ? null : {notSame: true};
   };
-  public confPages$: Observable<any>;
-  public confPrivacy$: Observable<any>;
-  submitted$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  public loadingString = '';
-  public registerForm: UntypedFormGroup;
-  public showError = false;
+  confPages$: Observable<any>;
+  confPrivacy$: Observable<any>;
   isValid$: Observable<boolean> = of(false);
-
-  @Input() referrer: string;
+  loadingString = '';
+  registerForm: UntypedFormGroup;
+  showError = false;
+  submitted$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(
-    private _navCtrl: NavController,
     private _formBuilder: UntypedFormBuilder,
-    private _popoverCtrlr: PopoverController,
+    private _navCtrl: NavController,
+    private _popoverCtrl: PopoverController,
     private _loadingCtrl: LoadingController,
+    private _modalCtrl: ModalController,
     private _langSvc: LangService,
     private _store: Store<any>,
-    private _modalCtrl: ModalController,
   ) {
     this.registerForm = this._formBuilder.group(
       {
         name: ['', [Validators.required]],
         email: ['', [Validators.required, Validators.email]],
-        //cf: ['', [Validators.pattern(this.cfregex),]],
         password: ['', [Validators.required]],
         confirmPassword: ['', [Validators.required]],
       },
@@ -71,7 +69,7 @@ export class RegisterComponent {
     this.confPages$ = this._store.select(confPAGES);
   }
 
-  back() {
+  back(): void {
     this._navCtrl.back();
   }
 
@@ -94,7 +92,7 @@ export class RegisterComponent {
       .subscribe(modal => modal.present());
   }
 
-  register() {
+  register(): void {
     const loader$ = from(
       this._loadingCtrl.create({
         message: this._langSvc.instant("Registrazione in corso"),
@@ -120,8 +118,8 @@ export class RegisterComponent {
     );
   }
 
-  async showCfInfo(ev) {
-    const popover = await this._popoverCtrlr.create({
+  async showCfInfo(ev): Promise<void> {
+    const popover = await this._popoverCtrl.create({
       component: GenericPopoverComponent,
       event: ev,
       translucent: true,

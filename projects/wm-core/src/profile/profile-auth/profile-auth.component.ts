@@ -1,5 +1,5 @@
-import {Component, Input} from '@angular/core';
-import { ModalController, NavController } from '@ionic/angular';
+import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
+import { ModalController } from '@ionic/angular';
 import {select, Store} from '@ngrx/store';
 import {from, Observable, of} from 'rxjs';
 import { concatMap, switchMap } from 'rxjs/operators';
@@ -11,6 +11,8 @@ import {isLogged} from 'wm-core/store/auth/auth.selectors';
   selector: 'wm-profile-auth',
   templateUrl: './profile-auth.component.html',
   styleUrls: ['./profile-auth.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class ProfileAuthComponent {
   @Input() slide1: string;
@@ -22,7 +24,6 @@ export class ProfileAuthComponent {
   constructor(
     private _store: Store,
     private _modalCtrl: ModalController,
-    private _navCtrl: NavController
   ) {
     this.loggedOutSliderOptions = {
       initialSlide: 0,
