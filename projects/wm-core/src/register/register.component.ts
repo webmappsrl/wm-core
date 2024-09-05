@@ -15,7 +15,7 @@ import {GenericPopoverComponent} from 'wm-core/generic-popover/generic-popover.c
 import {WmInnerHtmlComponent} from 'wm-core/inner-html/inner-html.component';
 import {LangService} from 'wm-core/localization/lang.service';
 import {loadSignUps} from 'wm-core/store/auth/auth.actions';
-import {selectAuthState} from 'wm-core/store/auth/auth.selectors';
+import {isLogged, selectAuthState} from 'wm-core/store/auth/auth.selectors';
 import {confPAGES, confPRIVACY} from 'wm-core/store/conf/conf.selector';
 
 @Component({
@@ -32,6 +32,7 @@ export class RegisterComponent {
   }
 
   @Input() referrer: string;
+  isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
 
   checkPasswords: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
     let pass = group.get('password').value;
@@ -67,6 +68,15 @@ export class RegisterComponent {
     this.isValid$ = this.registerForm.statusChanges.pipe(map(status => status === 'VALID'));
     this.confPrivacy$ = this._store.select(confPRIVACY);
     this.confPages$ = this._store.select(confPAGES);
+
+    this.isLogged$
+      .pipe(
+        filter(l => l),
+        take(1),
+      )
+      .subscribe(() => {
+        this.dismiss();
+      });
   }
 
   back(): void {

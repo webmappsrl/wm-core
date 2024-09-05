@@ -89,15 +89,6 @@ export class AuthEffects {
     );
   });
 
-  navigateToHome$ = createEffect(
-    () =>
-      this._actions$.pipe(
-        ofType(AuthActions.loadSignUpsSuccess),
-        map(() => this._navCtrl.navigateForward('home')),
-      ),
-    {dispatch: false},
-  );
-
   openAlertSignOutSuccess$ = createEffect(
     () =>
       this._actions$.pipe(
