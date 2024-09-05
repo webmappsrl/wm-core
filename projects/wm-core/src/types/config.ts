@@ -339,7 +339,6 @@ export interface IOPTIONS {
   useCaiScaleStyle: boolean;
   useFeatureClassicSelectionStyle: boolean;
   voucherUrl?: string;
-  isMobile: boolean;
 }
 
 export interface IOVERLAYERS {

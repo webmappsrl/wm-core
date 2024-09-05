@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import * as AuthActions from './auth.actions';
-import {catchError, map, switchMap} from 'rxjs/operators';
+import {catchError, filter, map, switchMap, tap} from 'rxjs/operators';
 import {AuthService} from './auth.service';
 import {of} from 'rxjs';
 import {AlertController, NavController} from '@ionic/angular';
+import {LangService} from 'wm-core/localization/lang.service';
 
 @Injectable()
 export class AuthEffects {
@@ -101,16 +102,72 @@ export class AuthEffects {
     () =>
       this._actions$.pipe(
         ofType(AuthActions.loadSignOutsSuccess),
-        switchMap(() => this._alertCtrl.create({
-          mode: 'ios',
-          header: 'Logout effettuato con successo',
-          message: '',
-          buttons: [
-            {
-              text: 'ok',
-            },
-          ],
-        })),
+        switchMap(() =>
+          this._alertCtrl.create({
+            mode: 'ios',
+            header: this._langSvc.instant('Logout effettuato con successo'),
+            message: '',
+            buttons: [
+              {
+                text: 'ok',
+              },
+            ],
+          }),
+        ),
+        switchMap(alert => {
+          alert.present();
+          return alert.onWillDismiss();
+        }),
+      ),
+    {dispatch: false},
+  );
+
+  openAlertSignInSuccess$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(AuthActions.loadSignInsSuccess),
+        switchMap(() =>
+          this._alertCtrl.create({
+            mode: 'ios',
+            header: this._langSvc.instant('Login effettuato con successo'),
+            message: '',
+            buttons: [
+              {
+                text: 'ok',
+              },
+            ],
+          }),
+        ),
+        switchMap(alert => {
+          alert.present();
+          return alert.onWillDismiss();
+        }),
+      ),
+    {dispatch: false},
+  );
+
+  openAlertOnError$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(
+          AuthActions.loadSignInsFailure,
+          AuthActions.loadSignUpsFailure,
+          AuthActions.loadAuthsFailure,
+        ),
+        filter(r => r != null && r.error.error.error != 'Unauthorized'),
+        switchMap((resposne) => {
+          const error = resposne.error.error;
+          return this._alertCtrl.create({
+            mode: 'ios',
+            header: this._langSvc.instant(error),
+            message: '',
+            buttons: [
+              {
+                text: 'ok',
+              },
+            ],
+          })
+        }),
         switchMap(alert => {
           alert.present();
           return alert.onWillDismiss();
@@ -123,6 +180,7 @@ export class AuthEffects {
     private _actions$: Actions,
     private _authSvc: AuthService,
     private _navCtrl: NavController,
-    private _alertCtrl: AlertController
+    private _alertCtrl: AlertController,
+    private _langSvc: LangService,
   ) {}
 }

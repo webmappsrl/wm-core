@@ -9,21 +9,21 @@ import { NavController } from '@ionic/angular';
   encapsulation: ViewEncapsulation.None,
 })
 export class ProfileRecordsComponent  {
-  constructor(private _navController: NavController) {}
+  constructor(private _navCtrl: NavController) {}
 
   open(section) {
     switch (section) {
       case 'tracks':
-        this._navController.navigateForward(['tracklist']);
+        this._navCtrl.navigateForward(['tracklist']);
         break;
       case 'photos':
-        this._navController.navigateForward(['photolist']);
+        this._navCtrl.navigateForward(['photolist']);
         break;
       case 'waypoints':
-        this._navController.navigateForward(['waypointlist']);
+        this._navCtrl.navigateForward(['waypointlist']);
         break;
       case 'vocals':
-        this._navController.navigateForward(['vocallist']);
+        this._navCtrl.navigateForward(['vocallist']);
         break;
     }
   }

@@ -1,7 +1,6 @@
 import {createReducer, on} from '@ngrx/store';
 import { ICONF, ICONTROLS, ILAYER } from 'wm-core/types/config';
 import {loadConfSuccess} from './conf.actions';
-import { Capacitor } from '@capacitor/core';
 export const confFeatureKey = 'conf';
 export interface IConfRootState {
   [confFeatureKey]: ICONF;
@@ -69,8 +68,7 @@ const initialConfState: ICONF = {
       poi: false,
       route: false,
       all: false,
-    },
-    isMobile: false
+    }
   },
   THEME: {
     primary: '#3880ff',
@@ -101,7 +99,6 @@ export const confReducer = createReducer(
   initialConfState,
   on(loadConfSuccess, (state, {conf}) => {
     localStorage.setItem('appname', state.APP.name);
-    const isMobile = Capacitor.getPlatform() != 'web';
     let MAP = {...state.MAP, ...{...conf.MAP}};
     if (conf.APP.geohubId === 3) {
       let res = {};
@@ -136,7 +133,7 @@ export const confReducer = createReducer(
         APP: {...state.APP, ...conf.APP},
         WEBAPP: {...state.WEBAPP, ...conf.WEBAPP},
         THEME: {...state.THEME, ...conf.THEME},
-        OPTIONS: {...state.OPTIONS, ...conf.OPTIONS, isMobile},
+        OPTIONS: {...state.OPTIONS, ...conf.OPTIONS},
         MAP,
       },
     };

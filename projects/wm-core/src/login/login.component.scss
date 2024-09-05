@@ -1,88 +1,90 @@
-.wm-login-header {
-  color: #000;
-}
-
-.wm-login-form {
-  padding: 15px;
-  .wm-login-label {
-    font-size: var(--wm-font-sm);
-    font-weight: var(--wm-font-weight-bold);
+wm-login-component{
+  .wm-login-header {
+    color: #000;
   }
-  .wm-login-field-container {
-    margin-bottom: 15px;
-    .wm-login-field {
-      --padding-start: 0;
-      .wm-login-input-button {
-        font-size: var(--wm-font-md);
-        --color: var(--wm-color-dark);
-        --background: var(--wm-color-light);
-        --background-activated: var(--background);
-        --background-activated-opacity: 1;
-        --background-focused: var(--background);
-        --background-focused-opacity: 1;
-        --background-hover: var(--background);
-        --background-hover-opacity: 1;
-      }
 
-      &.item-has-focus {
-        --border-color: var(--wm-color-secondary);
-      }
-      &.wm-login-field-has-error {
-        --border-color: var(--ion-color-danger);
-      }
-    }
-    .wm-login-field-error {
-      color: var(--ion-color-danger);
+  .wm-login-form {
+    padding: 15px;
+    .wm-login-label {
       font-size: var(--wm-font-sm);
+      font-weight: var(--wm-font-weight-bold);
     }
-  }
-  .wm-login-toggle-container {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
+    .wm-login-field-container {
+      margin-bottom: 15px;
+      .wm-login-field {
+        --padding-start: 0;
+        .wm-login-input-button {
+          font-size: var(--wm-font-md);
+          --color: var(--wm-color-dark);
+          --background: var(--wm-color-light);
+          --background-activated: var(--background);
+          --background-activated-opacity: 1;
+          --background-focused: var(--background);
+          --background-focused-opacity: 1;
+          --background-hover: var(--background);
+          --background-hover-opacity: 1;
+        }
 
-    .wm-login-toggle {
-      --background: var(--wm-color-darkgrey);
-      --background-checked: var(--wm-color-primary);
-      --handle-background: var(--wm-color-light);
-      --handle-background-checked: var(--wm-color-light);
-      width: 46px;
-      height: 24px;
-      --handle-width: 20px;
+        &.item-has-focus {
+          --border-color: var(--wm-color-secondary);
+        }
+        &.wm-login-field-has-error {
+          --border-color: var(--ion-color-danger);
+        }
+      }
+      .wm-login-field-error {
+        color: var(--ion-color-danger);
+        font-size: var(--wm-font-sm);
+      }
     }
-    .wm-login-toggle-label {
-      padding: 0 15px;
-      --font-size: var(--wm-font-sm);
-      --color: var(--wm-color-darkgrey);
-    }
-  }
-}
+    .wm-login-toggle-container {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
 
-.wm-login-buttons-container {
-  display: grid;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  grid-template-columns: auto auto auto;
-  padding-bottom: 60px;
-  .wm-login-submit-button,
-  .wm-login-forgot-password-button {
-    grid-column-start: 2;
-    grid-column-end: 2;
-    font-size: var(--wm-font-md);
-    padding: 10px;
-    margin: 10px;
+      .wm-login-toggle {
+        --background: var(--wm-color-darkgrey);
+        --background-checked: var(--wm-color-primary);
+        --handle-background: var(--wm-color-light);
+        --handle-background-checked: var(--wm-color-light);
+        width: 46px;
+        height: 24px;
+        --handle-width: 20px;
+      }
+      .wm-login-toggle-label {
+        padding: 0 15px;
+        --font-size: var(--wm-font-sm);
+        --color: var(--wm-color-darkgrey);
+      }
+    }
   }
-  .wm-login-submit-button {
-    border-radius: 36px;
-    border: 1px solid var(--wm-color-primary);
-    background: var(--wm-color-primary);
-    color: var(--wm-color-light);
-  }
-  .wm-login-forgot-password-button {
-    color: var(--wm-color-darkgrey);
-    background: var(--wm-color-light);
-    text-decoration: underline;
+
+  .wm-login-buttons-container {
+    display: grid;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    grid-template-columns: auto auto auto;
+    padding-bottom: 60px;
+    .wm-login-submit-button,
+    .wm-login-forgot-password-button {
+      grid-column-start: 2;
+      grid-column-end: 2;
+      font-size: var(--wm-font-md);
+      padding: 10px;
+      margin: 10px;
+    }
+    .wm-login-submit-button {
+      border-radius: 36px;
+      border: 1px solid var(--wm-color-primary);
+      background: var(--wm-color-primary);
+      color: var(--wm-color-light);
+    }
+    .wm-login-forgot-password-button {
+      color: var(--wm-color-darkgrey);
+      background: var(--wm-color-light);
+      text-decoration: underline;
+    }
   }
 }

@@ -1,53 +1,55 @@
-.wm-registeruser-form {
-  padding: 15px;
-  .wm-registeruser-label {
-      font-size: var(--wm-font-sm);
-      font-weight: var(--wm-font-weight-bold);
-  }
-  .wm-registeruser-field-container {
-      margin-bottom: 15px;
-      position: relative;
-      .wm-registeruser-field {
-          --padding-start: 0;
+wm-register-component{
+  .wm-registeruser-form {
+    padding: 15px;
+    .wm-registeruser-label {
+        font-size: var(--wm-font-sm);
+        font-weight: var(--wm-font-weight-bold);
+    }
+    .wm-registeruser-field-container {
+        margin-bottom: 15px;
+        position: relative;
+        .wm-registeruser-field {
+            --padding-start: 0;
 
-          &.item-has-focus {
-              --border-color: var(--wm-color-secondary);
-          }
-          &.wm-registeruser-field-has-error {
-              --border-color: var(--ion-color-danger);
-          }
-      }
-      .wm-registeruser-field-error {
-          color: var(--ion-color-danger);
-          font-size: var(--wm-font-sm);
-      }
+            &.item-has-focus {
+                --border-color: var(--wm-color-secondary);
+            }
+            &.wm-registeruser-field-has-error {
+                --border-color: var(--ion-color-danger);
+            }
+        }
+        .wm-registeruser-field-error {
+            color: var(--ion-color-danger);
+            font-size: var(--wm-font-sm);
+        }
 
-      .wm-registeruser-extrainfo{
-          position: absolute;
-          top: 0;
-          right: 0;
-          font-size: var(--wm-font-xsm);
-      }
-  }
+        .wm-registeruser-extrainfo{
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: var(--wm-font-xsm);
+        }
+    }
 
-  .wm-registeruser-policy {
-      display: block;
-      padding: 10px 40px;
-      font-size: var(--wm-font-sm);
-      color: var(--wm-color-grey);
-      .wm-registeruser-policylink {
-          text-decoration: none;
-      }
-  }
+    .wm-registeruser-policy {
+        display: block;
+        padding: 10px 40px;
+        font-size: var(--wm-font-sm);
+        color: var(--wm-color-grey);
+        .wm-registeruser-policylink {
+            text-decoration: none;
+        }
+    }
 
-  .wm-registeruser-buttoncontainer {
-      width: 100%;
-      text-align: center;
-      padding: 20px 0;
-      .wm-registeruser-button {
-          --border-radius: 20px;
-          --padding-start: 80px;
-          --padding-end: 80px;
-      }
+    .wm-registeruser-buttoncontainer {
+        width: 100%;
+        text-align: center;
+        padding: 20px 0;
+        .wm-registeruser-button {
+            --border-radius: 20px;
+            --padding-start: 80px;
+            --padding-end: 80px;
+        }
+    }
   }
 }
