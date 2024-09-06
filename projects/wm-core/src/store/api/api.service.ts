@@ -134,5 +134,6 @@ export const hostToGeohubAppId: { [key: string]: number } = {
   'maps.acquasorgente.cai.it': 58,
   'maps.caipontedera.it': 59,
   'maps.parcapuane.it': 62,
-  'fiemaps.it': 29
+  'fiemaps.it': 29,
+  'fiemaps.eu': 29
 };
