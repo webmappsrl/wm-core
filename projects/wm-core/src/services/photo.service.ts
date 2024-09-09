@@ -13,8 +13,8 @@ import {Filesystem, Directory, GetUriResult} from '@capacitor/filesystem';
 import {GeolocationService} from './geolocation.service';
 import {ActionSheetController} from '@ionic/angular';
 import {LangService} from 'wm-core/localization/lang.service';
-import { Location } from 'wm-core/types/location';
-import { DeviceService } from './device.service';
+import {Location} from 'wm-core/types/location';
+import {DeviceService} from './device.service';
 
 export interface IPhotoItem extends IRegisterItem {
   blob?: Blob;
@@ -46,19 +46,19 @@ export class PhotoService {
           header: this._lanSvc.instant("Origine dell'immagine"),
           buttons: [
             {
-              text: this._lanSvc.instant("Scatta una foto"),
+              text: this._lanSvc.instant('Scatta una foto'),
               handler: () => {
                 this.shotPhoto(false).then(photo => resolve([photo]));
               },
             },
             {
-              text: this._lanSvc.instant("Dalla libreria"),
+              text: this._lanSvc.instant('Dalla libreria'),
               handler: () => {
                 this.getPhotos(null).then(photos => resolve(photos));
               },
             },
             {
-              text: this._lanSvc.instant("Annulla"),
+              text: this._lanSvc.instant('Annulla'),
               role: 'cancel',
               handler: () => {
                 reject();
@@ -113,7 +113,11 @@ export class PhotoService {
       blob = new Blob([arrayBuffer]);
       blob = blob.slice(0, blob.size, blobType);
     } else {
-      blob = await this._http.get(photo.photoURL, {responseType: 'blob'}).toPromise();
+      try {
+        blob = await this._http.get(photo.photoURL, {responseType: 'blob'}).toPromise();
+      } catch (err) {
+        throw(err);
+      }
     }
     return blob;
   }
@@ -245,9 +249,9 @@ export class PhotoService {
       // presentationStyle: 'fullscreen',	//"fullscreen" | "popover"	iOS only: The presentation style of the Camera.Defaults to fullscreen.
       webUseInput: this._deviceSvc.isBrowser ? null : true, //boolean	Web only: Whether to use the PWA Element experience or file input.The default is to use PWA Elements if installed and fall back to file input.To always use file input, set this to true.Learn more about PWA Elements: https://capacitorjs.com/docs/pwa-elements
       promptLabelHeader: this._lanSvc.instant("Origine dell'immagine"), //string	If use CameraSource.Prompt only, can change Prompt label.default: promptLabelHeader: ‘Photo’ // iOS only promptLabelCancel : ‘Cancel’ // iOS only promptLabelPhoto : ‘From Photos’ promptLabelPicture : ‘Take Picture’
-      promptLabelCancel: this._lanSvc.instant("Annulla"), //string
-      promptLabelPhoto: this._lanSvc.instant("Dalla libreria"), //string
-      promptLabelPicture: this._lanSvc.instant("Scatta una foto"), //string
+      promptLabelCancel: this._lanSvc.instant('Annulla'), //string
+      promptLabelPhoto: this._lanSvc.instant('Dalla libreria'), //string
+      promptLabelPicture: this._lanSvc.instant('Scatta una foto'), //string
     });
     const res: IPhotoItem = {
       id: '1',

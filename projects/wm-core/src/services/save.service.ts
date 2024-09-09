@@ -117,7 +117,10 @@ export class SaveService {
       const element = wp.storedPhotoKeys[i];
       const photo = await this._getGenericById(element);
       if (photo != null) {
-        photo.rawData = window.URL.createObjectURL(await this._photoService.getPhotoFile(photo));
+        try{
+          photo.rawData = window.URL.createObjectURL(await this._photoService.getPhotoFile(photo));
+        }
+        catch (err) {console.log(err.message)}
         wp.photos.push(photo);
       }
     }
@@ -568,7 +571,10 @@ export class SaveService {
       const element = track.storedPhotoKeys[i];
       const photo = await this._getGenericById(element);
       if (photo != null) {
-        photo.rawData = window.URL.createObjectURL(await this._photoService.getPhotoFile(photo));
+        try{
+          photo.rawData = window.URL.createObjectURL(await this._photoService.getPhotoFile(photo));
+        }
+        catch (err) {console.error(err.message)}
         track.photos.push(photo);
       }
     }
