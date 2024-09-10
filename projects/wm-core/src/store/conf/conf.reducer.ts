@@ -1,6 +1,5 @@
 import {createReducer, on} from '@ngrx/store';
 import { ICONF, ICONTROLS, ILAYER } from 'wm-core/types/config';
-
 import {loadConfSuccess} from './conf.actions';
 export const confFeatureKey = 'conf';
 export interface IConfRootState {
@@ -69,7 +68,7 @@ const initialConfState: ICONF = {
       poi: false,
       route: false,
       all: false,
-    },
+    }
   },
   THEME: {
     primary: '#3880ff',
@@ -218,7 +217,7 @@ const isCrossroads = (
 };
 export const layersSVG = `<?xml version="1.0" encoding="iso-8859-1"?>
 <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-<svg fill="#000000" height="800px" width="800px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+<svg fill="#000000" height="800px" width="800px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
 	 viewBox="0 0 512 512" xml:space="preserve">
 <g>
 	<g>

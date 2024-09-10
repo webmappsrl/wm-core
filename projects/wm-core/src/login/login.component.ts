@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {IonInput, ModalController} from '@ionic/angular';
 import {select, Store} from '@ngrx/store';
@@ -12,6 +12,8 @@ import {isLogged} from 'wm-core/store/auth/auth.selectors';
   selector: 'wm-login-component',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
   providers: [LangService],
 })
 export class LoginComponent implements OnInit {
@@ -23,32 +25,20 @@ export class LoginComponent implements OnInit {
   @ViewChild('password') passwordField: IonInput;
 
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
-  submitted$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   loginForm: UntypedFormGroup;
   showPassword$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  submitted$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(
     private _formBuilder: UntypedFormBuilder,
-    private _modalController: ModalController,
+    private _modalCtrl: ModalController,
     private _store: Store,
+
   ) {
     this.loginForm = this._formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
     });
-  }
-
-  dismiss(): void {
-    this._modalController.dismiss();
-  }
-
-  forgotPassword(): void {}
-
-  login(): void {
-    this.submitted$.next(true);
-    if (this.loginForm.valid) {
-      this._store.dispatch(loadSignIns(this.loginForm.value));
-    }
   }
 
   ngOnInit(): void {
@@ -64,6 +54,19 @@ export class LoginComponent implements OnInit {
       .subscribe(() => {
         this.dismiss();
       });
+  }
+
+  dismiss(): void {
+    this._modalCtrl.dismiss();
+  }
+
+  forgotPassword(): void {}
+
+  login(): void {
+    this.submitted$.next(true);
+    if (this.loginForm.valid) {
+      this._store.dispatch(loadSignIns(this.loginForm.value));
+    }
   }
 
   openUrl(url: string): void {

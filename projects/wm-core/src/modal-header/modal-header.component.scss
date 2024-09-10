@@ -1,26 +1,28 @@
-.wm-modal-header-container {
-  display: block;
-  width: 100%;
-  .wm-modal-header-toolbar {
-    .wm-modal-header-dismiss {
-      font-size: var(--wm-font-sm);
-      --background: var(--wm-color-light);
-      --color: var(--wm-color-dark);
-      --box-shadow: none;
-      --background-activated: var(--wm-color-dark);
-      --background-activated-opacity: 0.25;
-      --background-focused: var(--wm-color-light);
-      --background-focused-opacity: 0;
-      --background-hover: var(--wm-color-light);
-      --background-hover-opacity: 0;
+wm-modal-header{
+  .wm-modal-header-container {
+    display: block;
+    width: 100%;
+    .wm-modal-header-toolbar {
+      .wm-modal-header-dismiss {
+        font-size: var(--wm-font-sm);
+        --background: var(--wm-color-light);
+        --color: var(--wm-color-dark);
+        --box-shadow: none;
+        --background-activated: var(--wm-color-dark);
+        --background-activated-opacity: 0.25;
+        --background-focused: var(--wm-color-light);
+        --background-focused-opacity: 0;
+        --background-hover: var(--wm-color-light);
+        --background-hover-opacity: 0;
+      }
+
+      .wm-modal-header-title {
+        font-size: var(--wm-font-md);
+      }
     }
 
-    .wm-modal-header-title {
-      font-size: var(--wm-font-md);
+    .wm-modal-header-close{
+      font-size: 14px;
     }
-  }
-
-  .wm-modal-header-close{
-    font-size: 14px;
   }
 }

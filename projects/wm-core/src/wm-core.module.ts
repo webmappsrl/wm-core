@@ -40,6 +40,9 @@ import { authReducer } from './store/auth/auth.reducer';
 import { ModalHeaderComponent } from './modal-header/modal-header.component';
 import { LoginComponent } from './login/login.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { WmProfileModule } from './profile/profile.module';
+import { RegisterComponent } from './register/register.component';
+import { GenericPopoverComponent } from './generic-popover/generic-popover.component';
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -63,7 +66,9 @@ const declarations = [
   WmInnerHtmlComponent,
   WmTrackDownloadUrlsComponent,
   LoginComponent,
-  ModalHeaderComponent
+  RegisterComponent,
+  GenericPopoverComponent,
+  ModalHeaderComponent,
 ];
 const modules = [
   WmSharedModule,
@@ -73,6 +78,7 @@ const modules = [
   WmLocalizationModule,
   WmFiltersModule,
   ReactiveFormsModule,
+  WmProfileModule,
 ];
 
 @NgModule({

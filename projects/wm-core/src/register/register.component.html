@@ -1,0 +1,194 @@
+<wm-modal-header
+  class="wm-login-header"
+  [title]="'Unisciti alla community di webmapp!' | wmtrans"
+  (dismiss)="dismiss()"
+>
+</wm-modal-header>
+
+<ion-content scrollY="false">
+  <form class="wm-registeruser-form"  [formGroup]="registerForm">
+    <div class="wm-registeruser-field-container">
+      <ion-label class="wm-registeruser-label">
+        {{ "Nome" | wmtrans }}
+      </ion-label>
+      <ion-item
+        class="wm-registeruser-field"
+        [ngClass]="{'wm-registeruser-field-has-error': !!errorControl.name.errors && (errorControl.name.dirty || errorControl.name.touched)}"
+      >
+        <ion-input
+          type="text"
+          placeholder="{{ 'inserisci il tuo nome' | wmtrans }}"
+          required
+          #name
+          class="wm-registeruser-input"
+          formControlName="name"
+        >
+        </ion-input>
+      </ion-item>
+      <ng-container *ngIf="!!errorControl.name.errors && (errorControl.name.dirty || errorControl.name.touched)">
+        <span class="wm-registeruser-field-error" *ngIf="errorControl.name.errors?.required">
+          {{ "E' necessario inserire un nome" | wmtrans }}
+        </span>
+      </ng-container>
+    </div>
+
+    <div class="wm-registeruser-field-container">
+      <ion-label class="wm-registeruser-label">
+        {{ "Email" | wmtrans }}
+      </ion-label>
+      <ion-item
+        class="wm-registeruser-field"
+        [ngClass]="{'wm-registeruser-field-has-error': !!errorControl.email.errors && (errorControl.email.dirty || errorControl.email.touched)}"
+      >
+        <ion-input
+          type="text"
+          inputmode="email"
+          placeholder="{{ 'esempio@email.com' | wmtrans }}"
+          required
+          #email
+          class="wm-registeruser-input"
+          formControlName="email"
+        >
+        </ion-input>
+      </ion-item>
+      <ng-container *ngIf="!!errorControl.email.errors && (errorControl.email.dirty || errorControl.email.touched)">
+        <span class="wm-registeruser-field-error" *ngIf="errorControl.email.errors?.required">
+          {{ "E' necessario inserire una email" | wmtrans }}
+        </span>
+        <span class="wm-registeruser-field-error" *ngIf="errorControl.email.errors?.email">
+          {{ "L'email inserita non è un'email valida" | wmtrans }}
+        </span>
+      </ng-container>
+    </div>
+
+    <div class="wm-registeruser-field-container" *ngIf="false">
+      <ion-label class="wm-registeruser-label">
+        {{ "Codice Fiscale" | wmtrans }}
+      </ion-label>
+
+      <div class="wm-registeruser-extrainfo" (click)="showCfInfo($event)">
+        <i class="wm-icon-info"></i>
+        {{ "Perché ti chiediamo il CF?" | wmtrans }}
+      </div>
+
+      <ion-item
+        class="wm-registeruser-field"
+        [ngClass]="{'wm-registeruser-field-has-error':!!errorControl.cf.errors && (errorControl.cf.dirty || errorControl.cf.touched)}"
+      >
+        <ion-input
+          type="text"
+          #cf
+          placeholder="{{ 'XXXXXXXXXXXXXXXX' | wmtrans }}"
+          class="wm-registeruser-input"
+          formControlName="cf"
+        >
+        </ion-input>
+      </ion-item>
+      <ng-container *ngIf="!!errorControl.cf.errors && (errorControl.cf.dirty || errorControl.cf.touched)">
+        <span class="wm-registeruser-field-error" *ngIf="errorControl.cf.errors?.pattern">
+          {{ "Il codice fiscale inserito non è valido" | wmtrans }}
+        </span>
+      </ng-container>
+    </div>
+
+    <div class="wm-registeruser-field-container">
+      <ion-label class="wm-registeruser-label">
+        {{ "Password" | wmtrans }}
+      </ion-label>
+      <ion-item
+        class="wm-registeruser-field"
+        [ngClass]="{'wm-registeruser-field-has-error': !!errorControl.password.errors && (errorControl.password.dirty || errorControl.password.touched)}"
+      >
+        <ion-input
+          type="text"
+          type="password"
+          placeholder="{{ 'inserisci password' | wmtrans }}"
+          required
+          #password
+          class="wm-registeruser-input"
+          formControlName="password"
+        >
+        </ion-input>
+      </ion-item>
+      <ng-container *ngIf="!!errorControl.password.errors && (errorControl.password.dirty || errorControl.password.touched)">
+        <span
+          class="wm-registeruser-field-error"
+          *ngIf="errorControl.password.errors?.required"
+        >
+          {{ "E' necessario inserire la password" | wmtrans }}
+        </span>
+      </ng-container>
+    </div>
+
+    <div class="wm-registeruser-field-container">
+      <ion-label class="wm-registeruser-label">
+        {{ "Conferma password" | wmtrans }}
+      </ion-label>
+      <ion-item
+        class="wm-registeruser-field"
+        [ngClass]="{'wm-registeruser-field-has-error': !!errorControl.confirmPassword.errors && (errorControl.confirmPassword.dirty || errorControl.confirmPassword.touched)}"
+      >
+        <ion-input
+          type="text"
+          type="password"
+          placeholder="{{ 'Ripeti password' | wmtrans }}"
+          required
+          #confirmPassword
+          class="wm-registeruser-input"
+          formControlName="confirmPassword"
+        >
+        </ion-input>
+      </ion-item>
+      <ng-container *ngIf="!!errorControl.confirmPassword.errors && (errorControl.confirmPassword.dirty || errorControl.confirmPassword.touched)">
+        <span
+          class="wm-registeruser-field-error"
+          *ngIf="errorControl.confirmPassword.errors?.required"
+        >
+          {{ "E' necessario confermare la password" | wmtrans }}
+        </span>
+      </ng-container>
+      <ng-container *ngIf="!! registerForm.hasError('notSame')">
+        <span class="wm-registeruser-field-error">
+          {{ "La conferma non corrisponde con la password inserita sopra" | wmtrans }}
+        </span>
+      </ng-container>
+    </div>
+
+    <ion-label class="wm-registeruser-policy">
+      <ng-container *ngIf="(confPrivacy$ | async) as privacy; else wmDefaultPrivacy">
+        <ng-container *ngIf="privacy!= null && privacy.html != null; else wmDefaultPrivacy">
+          <a class="wm-registeruser-policylink" (click)="openCmp(privacy)">
+            {{ "Cliccando su \"Registrati\" accetti la nostra" | wmtrans }}
+          </a>
+        </ng-container>
+      </ng-container>
+      <ng-template #wmDefaultPrivacy>
+        <a
+          class="wm-registeruser-policylink"
+          target="_blank"
+          href="https://webmapp.it/privacy-policy/"
+        >
+          {{ "Cliccando su \"Registrati\" accetti la nostra" | wmtrans }}
+        </a>
+      </ng-template>
+      {{ "e i" | wmtrans }}
+      <a
+        class="wm-registeruser-policylink"
+        target="_blank"
+        href="https://webmapp.it/privacy-policy/"
+        >{{ "Termini e condizioni" | wmtrans }}</a
+      >
+      {{ "" | wmtrans }}
+    </ion-label>
+
+    <div class="wm-registeruser-buttoncontainer">
+      <ion-button [disabled]="!(isValid$|async)" (click)="register()" class="webmapp-registeruser-button">
+        {{ "Registrati" | wmtrans }}
+      </ion-button>
+    </div>
+  </form>
+
+  <ion-label *ngIf="showError" class="wm-registeruser-field-error">
+    {{ "Errore durante la registrazione dell'utente" | wmtrans }}
+  </ion-label>
+</ion-content>

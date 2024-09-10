@@ -26,7 +26,7 @@ export class AuthService {
   }
 
   logout(): Observable<any> {
-    return this._http.post(`${this.environment.api}/api/auth/me`, {}) as Observable<any>;
+    return this._http.post(`${this.environment.api}/api/auth/logout`, {}) as Observable<any>;
   }
 
   signUp(name: string, email: string, password: string, referrer?: string): Observable<IUser> {

@@ -8,3 +8,4 @@ export interface EnvironmentConfig {
   production: boolean;
 }
 export const ENVIRONMENT_CONFIG = new InjectionToken<EnvironmentConfig>('environmentConfig');
+export const APP_ID = new InjectionToken<string>('appIdToken');
