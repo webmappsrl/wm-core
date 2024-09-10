@@ -1,6 +1,7 @@
 import {InjectionToken} from '@angular/core';
 export interface EnvironmentConfig {
   api: string;
+  awsApi: string;
   elasticApi: string;
   geohubId: number;
   graphhopperHost: string;

@@ -53,7 +53,7 @@ export class ApiService {
   }
 
   public getPois(): Observable<FeatureCollection> {
-    const poisUrl = `${this.environment.api}/api/v1/app/${this._geohubAppId}/pois.geojson`;
+    const poisUrl = `${this.environment.awsApi}/pois/${this._geohubAppId}.geojson`;
     return from(apiLocalForage.getItem(poisUrl)).pipe(
       switchMap((cachedData: string | null) => {
         if (cachedData != null) {

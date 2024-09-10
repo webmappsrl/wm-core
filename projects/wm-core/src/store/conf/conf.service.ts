@@ -52,14 +52,9 @@ export class ConfService {
     }
   }
 
-  public getHost(): string | undefined{
-    const host = Object.entries(hostToGeohubAppId).find(([key, val]) => val === this._geohubAppId);
-    return host ? host[0] : undefined;
-  }
-
   public getConf(): Observable<ICONF> {
     return new Observable<ICONF>(observer => {
-      const url = `${this._geohubApiBaseUrl}config.json`;
+      const url = `${this.config.awsApi}/conf/${this._geohubAppId}.json`;
       apiLocalForage.getItem(url).then((cachedData: unknown) => {
         if (cachedData) {
           const parsedData = JSON.parse(cachedData as string);
@@ -78,5 +73,10 @@ export class ConfService {
         );
       });
     });
+  }
+
+  public getHost(): string | undefined{
+    const host = Object.entries(hostToGeohubAppId).find(([key, val]) => val === this._geohubAppId);
+    return host ? host[0] : undefined;
   }
 }
