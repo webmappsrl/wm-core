@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
+import { AppRoutingModule } from './demo-routing.module';
+import { DemoComponent } from './demo.component';
 import { ENVIRONMENT_CONFIG } from '../../../wm-core/src/store/conf/conf.token';
 import { environment } from '../environments/environment';
 import { WmCoreModule } from '../../../wm-core/src/wm-core.module';
@@ -13,7 +13,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
-    AppComponent
+    DemoComponent
   ],
   imports: [
     BrowserModule,
@@ -34,6 +34,6 @@ import { HttpClientModule } from '@angular/common/http';
   providers: [
     { provide: ENVIRONMENT_CONFIG, useValue: environment }
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [DemoComponent]
 })
 export class AppModule { }
