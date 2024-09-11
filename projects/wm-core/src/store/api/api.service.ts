@@ -5,7 +5,7 @@ import {Inject, Injectable} from '@angular/core';
 import {FeatureCollection} from 'geojson';
 import {from, Observable, of} from 'rxjs';
 // @ts-ignore
-import {switchMap, tap} from 'rxjs/operators';
+import {catchError, switchMap, tap} from 'rxjs/operators';
 import { IRESPONSE } from 'wm-core/types/elastic';
 import {WmLoadingService} from '../../services/loading.service';
 import {Filter, SliderFilter} from '../../types/config';
@@ -52,7 +52,7 @@ export class ApiService {
     }
   }
 
-  public getEctrack(id: string | number): Observable<FeatureCollection> {
+  public getEcTrack(id: string | number): Observable<FeatureCollection> {
     if (id == null) return null;
     if (+id > -1) {
       const url = `${this.environment.awsApi}/tracks/${id}.geojson`;
