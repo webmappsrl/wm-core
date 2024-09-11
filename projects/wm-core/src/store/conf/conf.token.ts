@@ -9,3 +9,4 @@ export interface EnvironmentConfig {
 }
 export const ENVIRONMENT_CONFIG = new InjectionToken<EnvironmentConfig>('environmentConfig');
 export const APP_ID = new InjectionToken<string>('appIdToken');
+export const APP_VERSION = new InjectionToken<string>('APP_VERSION');
