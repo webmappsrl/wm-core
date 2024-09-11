@@ -28,12 +28,12 @@ export class ExportToBtnComponent {
   export(): void {
     this._loadingSvc.show(`build ${this.to} file`);
     let output;
-    let g;
     try {
-      if(this.input && this.input.geojson) {
-      let g = this._toGeoJSON(this.input.geojson);
+    if (this.input == null && this.input.geojson == null) {
+      throw new Error('no data to export');
+    }
+      const g = this._toGeoJSON(this.input.geojson);
       g.properties = {...g.properties, ...this.input.rawData, ...{title: this.input.title}};
-      }
       switch (this.to) {
         case 'gpx':
           const options = {
