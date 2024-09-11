@@ -53,9 +53,9 @@ export class ApiService {
   }
 
   public getEcTrack(id: string | number): Observable<FeatureCollection> {
-    if (id == null) return null;
+    if (id == null) return of(null);
     if (+id > -1) {
-      const url = `${this.environment.awsApi}/tracks/${id}.geojson`;
+      const url = `${this.environment.awsApi}/tracks/${id}.json`;
       return this._http.get<FeatureCollection>(url);
     }
   }
