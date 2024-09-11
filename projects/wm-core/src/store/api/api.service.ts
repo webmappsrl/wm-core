@@ -52,6 +52,14 @@ export class ApiService {
     }
   }
 
+  public getEctrack(id: string | number): Observable<FeatureCollection> {
+    if (id == null) return null;
+    if (+id > -1) {
+      const url = `${this.environment.awsApi}/tracks/${id}.geojson`;
+      return this._http.get<FeatureCollection>(url);
+    }
+  }
+
   public getPois(): Observable<FeatureCollection> {
     const poisUrl = `${this.environment.awsApi}/pois/${this._geohubAppId}.geojson`;
     return from(apiLocalForage.getItem(poisUrl)).pipe(
