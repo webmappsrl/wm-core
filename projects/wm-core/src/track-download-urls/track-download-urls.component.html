@@ -1,17 +1,17 @@
 <ion-list id="webmapp-track-download-urls-list">
-  <ion-item *ngIf="gpx" [href]="gpx" class="webmapp-track-download-urls-item">
+  <ion-item *ngIf="gpx" (click)="export('gpx')" class="webmapp-track-download-urls-item">
     <ion-icon name="download" slot="start"></ion-icon>
     <ion-label class="webmapp-track-download-urls-item-label">
       {{ "Scarica il tracciato GPX" | wmtrans }}
     </ion-label>
   </ion-item>
-  <ion-item *ngIf="kml" [href]="kml" class="webmapp-track-download-urls-item">
+  <ion-item *ngIf="kml" (click)="export('kml')" class="webmapp-track-download-urls-item">
     <ion-icon name="download" slot="start"></ion-icon>
     <ion-label class="webmapp-track-download-urls-item-label">
       {{ "Scarica il tracciato KML" | wmtrans }}
     </ion-label>
   </ion-item>
-  <ion-item *ngIf="geojson" [href]="geojson" class="webmapp-track-download-urls-item">
+  <ion-item *ngIf="geojson" (click)="export('geojson')" class="webmapp-track-download-urls-item">
     <ion-icon name="download" slot="start"></ion-icon>
     <ion-label class="webmapp-track-download-urls-item-label">
       {{ "Scarica il tracciato GEOJSON" | wmtrans }}
