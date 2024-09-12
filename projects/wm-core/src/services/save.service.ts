@@ -189,9 +189,30 @@ export class SaveService {
   }
 
   async syncUgc(): Promise<void> {
-    const _ugcUgcTracks: FeatureCollection = await this._ugc.getUgcTracks();
-    const _ugcUgcPois: FeatureCollection = await this._ugc.getUgcPois();
-    const _ugcUgcMedias: FeatureCollection = await this._ugc.getUgcMedias();
+    let _ugcUgcPois: FeatureCollection | null = null;
+    let _ugcUgcTracks: FeatureCollection | null = null;
+    let _ugcUgcMedias: FeatureCollection | null = null;
+    
+    try {
+      _ugcUgcPois = await this._ugc.getUgcPois();
+      console.log("getUgcPois eseguito correttamente");
+    } catch (error) {
+      console.error("Errore durante getUgcPois:", error);
+    }
+    
+    try {
+      _ugcUgcTracks = await this._ugc.getUgcTracks();
+      console.log("getUgcTracks eseguito correttamente");
+    } catch (error) {
+      console.error("Errore durante getUgcTracks:", error);
+    }
+    
+    try {
+      _ugcUgcMedias = await this._ugc.getUgcMedias();
+      console.log("getUgcMedias eseguito correttamente");
+    } catch (error) {
+      console.error("Errore durante getUgcMedias:", error);
+    }
     const deviceUgcMedias: any[] = await this.getPhotos();
     const deviceUgcTracks = await this.getTracks();
     const deviceUgcPois = await this.getWaypoints();
