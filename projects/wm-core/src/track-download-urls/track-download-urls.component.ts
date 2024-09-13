@@ -98,7 +98,7 @@ export class WmTrackDownloadUrlsComponent {
   }
 
   save(data,format):void {
-    this._deviceSvc.isBrowser ? this.webSave(data, format):this.mobileSave(data, format);
+    this._deviceSvc.isMobile ? this.mobileSave(data, format):this.webSave(data, format);
   }
 
   async showSuccessPopup(fileName: string, fileUrl: string): Promise<void> {

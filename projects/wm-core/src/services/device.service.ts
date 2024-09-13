@@ -56,6 +56,10 @@ export class DeviceService {
     return this._isLocalServer;
   }
 
+  get isMobile(): boolean { 
+    return this.isAndroid || this.isIos;
+  }
+
   get width(): number {
     return this._width;
   }

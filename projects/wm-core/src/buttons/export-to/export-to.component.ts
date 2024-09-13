@@ -90,7 +90,7 @@ export class ExportToBtnComponent {
 
   save(data, format, properties): void {
     const name = this._getName(properties.name);
-    this._deviceSvc.isBrowser ? this.webSave(data, format,name) : this.mobileSave(data, format, name);
+    this._deviceSvc.isMobile ?  this.mobileSave(data, format, name):this.webSave(data, format,name);
   }
 
   async showSuccessPopup(fileName: string, fileUrl: string): Promise<void> {
