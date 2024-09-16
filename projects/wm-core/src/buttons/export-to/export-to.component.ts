@@ -6,8 +6,6 @@ import tokml from 'geojson-to-kml';
 import {DeviceService} from 'wm-core/services/device.service';
 import {WmLoadingService} from 'wm-core/services/loading.service';
 import {Share} from '@capacitor/share';
-import {Plugins} from '@capacitor/core';
-const {Permissions} = Plugins;
 @Component({
   selector: 'wm-export-to-btn',
   templateUrl: './export-to.component.html',
@@ -68,34 +66,25 @@ export class ExportToBtnComponent {
   }
 
   async mobileSave(data, format, name): Promise<void> {
-    this.requestStoragePermission();
-
     const fileName = `${name}.${format}`;
     try {
-      const optionsDocuments: WriteFileOptions = {
+      const options: WriteFileOptions = {
         path: fileName,
         data,
-        directory: Directory.Documents,
+        directory: Directory.Cache,
         encoding: Encoding.UTF8,
+        recursive: true,
       };
-      const writeResult = await Filesystem.writeFile(optionsDocuments);
-
+      const writeResult = await Filesystem.writeFile(options);
       // Prepara il file per la condivisione
-      const fileUrl = writeResult.uri;
-      this.showSuccessPopup(fileName, fileUrl, data);
+      const url = writeResult.uri;
+      await Share.share({
+        title: `Condividi il file ${fileName}`,
+        url,
+        dialogTitle: `Condividi il tuo file ${fileName}`,
+      });
     } catch (e) {
       console.error("Errore durante l'esportazione e la condivisione:", e);
-    }
-  }
-
-  async requestStoragePermission() {
-    const permission = await Permissions.query({name: 'storage'});
-
-    if (permission.state !== 'granted') {
-      const result = await Permissions.request({name: 'storage'});
-      if (result.state !== 'granted') {
-        throw new Error('Permesso di archiviazione non concesso');
-      }
     }
   }
 

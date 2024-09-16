@@ -5,8 +5,6 @@ import GeoJsonToGpx from '@dwayneparton/geojson-to-gpx';
 import {AlertController} from '@ionic/angular';
 import tokml from 'geojson-to-kml';
 import {DeviceService} from 'wm-core/services/device.service';
-import {Plugins} from '@capacitor/core';
-const {Permissions} = Plugins;
 @Component({
   selector: 'wm-track-download-urls',
   templateUrl: './track-download-urls.component.html',
@@ -62,74 +60,28 @@ export class WmTrackDownloadUrlsComponent {
     const name = this._getName(this._properties?.name);
     const fileName = `${name}.${format}`;
     try {
-      const optionsDocuments: WriteFileOptions = {
+      const options: WriteFileOptions = {
         path: fileName,
         data,
-        directory: Directory.Documents,
+        directory: Directory.Cache,
         encoding: Encoding.UTF8,
+        recursive: true,
       };
-      const writeResult = await Filesystem.writeFile(optionsDocuments);
-
+      const writeResult = await Filesystem.writeFile(options);
       // Prepara il file per la condivisione
-      const fileUrl = writeResult.uri;
-      this.showSuccessPopup(fileName, fileUrl, data);
+      const url = writeResult.uri;
+      await Share.share({
+        title: `Condividi il file ${fileName}`,
+        url,
+        dialogTitle: `Condividi il tuo file ${fileName}`,
+      });
     } catch (e) {
       console.error("Errore durante l'esportazione e la condivisione:", e);
     }
   }
 
-  async requestStoragePermission() {
-    const permission = await Permissions.query({name: 'storage'});
-
-    if (permission.state !== 'granted') {
-      const result = await Permissions.request({name: 'storage'});
-      if (result.state !== 'granted') {
-        throw new Error('Permesso di archiviazione non concesso');
-      }
-    }
-  }
-
   save(data, format): void {
     this._deviceSvc.isBrowser ? this.webSave(data, format):this.mobileSave(data, format); 
-  }
-
-  async showSuccessPopup(fileName: string, fileUrl: string, data: any): Promise<void> {
-    const alert = await this._alertCtrl.create({
-      header: 'File salvato',
-      message: `File correttamente salvato in ${fileUrl} come ${fileName} Vuoi condividerlo?`,
-      buttons: [
-        {
-          text: 'No',
-          role: 'cancel',
-          handler: () => {
-            console.log('Condivisione annullata');
-          },
-        },
-        {
-          text: 'Sì',
-          handler: async () => {
-            // Scrivi il file nel filesystem
-            const options: WriteFileOptions = {
-              path: fileName,
-              data,
-              directory: Directory.Cache,
-              encoding: Encoding.UTF8,
-              recursive: true,
-            };
-            const writeResult = await Filesystem.writeFile(options);
-            // Prepara il file per la condivisione
-            const fileUrl = writeResult.uri;
-            await Share.share({
-              title: `Condividi il file ${fileName}`,
-              url: fileUrl,
-              dialogTitle: `Condividi il tuo file ${fileName}`,
-            });
-          },
-        },
-      ],
-    });
-
-    await alert.present();
   }
 
   webSave(data: string, format: any): void {
