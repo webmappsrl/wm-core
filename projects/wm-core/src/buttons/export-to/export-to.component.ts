@@ -1,12 +1,13 @@
 import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
 import GeoJsonToGpx from '@dwayneparton/geojson-to-gpx';
-import {Filesystem, Directory, Encoding} from '@capacitor/filesystem';
+import {Filesystem, Directory, Encoding, WriteFileOptions} from '@capacitor/filesystem';
 import {AlertController} from '@ionic/angular';
 import tokml from 'geojson-to-kml';
 import {DeviceService} from 'wm-core/services/device.service';
 import {WmLoadingService} from 'wm-core/services/loading.service';
 import {Share} from '@capacitor/share';
-
+import {Plugins} from '@capacitor/core';
+const {Permissions} = Plugins;
 @Component({
   selector: 'wm-export-to-btn',
   templateUrl: './export-to.component.html',
@@ -22,8 +23,7 @@ export class ExportToBtnComponent {
     private _loadingSvc: WmLoadingService,
     private _deviceSvc: DeviceService,
     private _alertCtrl: AlertController,
-  ) {
-  }
+  ) {}
 
   export(): void {
     this._loadingSvc.show(`build ${this.to} file`);
@@ -68,35 +68,48 @@ export class ExportToBtnComponent {
   }
 
   async mobileSave(data, format, name): Promise<void> {
+    this.requestStoragePermission();
+
     const fileName = `${name}.${format}`;
     try {
-      // Scrivi il file nel filesystem
-      const writeResult = await Filesystem.writeFile({
-        path: `${fileName}`,
+      const optionsDocuments: WriteFileOptions = {
+        path: fileName,
         data,
         directory: Directory.Documents,
         encoding: Encoding.UTF8,
-      });
+      };
+      const writeResult = await Filesystem.writeFile(optionsDocuments);
 
       // Prepara il file per la condivisione
       const fileUrl = writeResult.uri;
-
-      // Mostra il popup con il messaggio e la richiesta di condivisione
-      await this.showSuccessPopup(fileName, fileUrl);
+      this.showSuccessPopup(fileName, fileUrl, data);
     } catch (e) {
       console.error("Errore durante l'esportazione e la condivisione:", e);
     }
   }
 
-  save(data, format, properties): void {
-    const name = this._getName(properties.name);
-    this._deviceSvc.isMobile ?  this.mobileSave(data, format, name):this.webSave(data, format,name);
+  async requestStoragePermission() {
+    const permission = await Permissions.query({name: 'storage'});
+
+    if (permission.state !== 'granted') {
+      const result = await Permissions.request({name: 'storage'});
+      if (result.state !== 'granted') {
+        throw new Error('Permesso di archiviazione non concesso');
+      }
+    }
   }
 
-  async showSuccessPopup(fileName: string, fileUrl: string): Promise<void> {
+  save(data, format, properties): void {
+    const name = this._getName(properties.name);
+    this._deviceSvc.isMobile
+      ? this.mobileSave(data, format, name)
+      : this.webSave(data, format, name);
+  }
+
+  async showSuccessPopup(fileName: string, fileUrl: string, data: any): Promise<void> {
     const alert = await this._alertCtrl.create({
       header: 'File salvato',
-      message: `File correttamente salvato in Documenti come ${fileName} Vuoi condividerlo?`,
+      message: `File correttamente salvato in ${fileUrl} come ${fileName} Vuoi condividerlo?`,
       buttons: [
         {
           text: 'No',
@@ -108,6 +121,17 @@ export class ExportToBtnComponent {
         {
           text: 'Sì',
           handler: async () => {
+            // Scrivi il file nel filesystem
+            const options: WriteFileOptions = {
+              path: fileName,
+              data,
+              directory: Directory.Cache,
+              encoding: Encoding.UTF8,
+              recursive: true,
+            };
+            const writeResult = await Filesystem.writeFile(options);
+            // Prepara il file per la condivisione
+            const fileUrl = writeResult.uri;
             await Share.share({
               title: `Condividi il file ${fileName}`,
               url: fileUrl,
@@ -121,8 +145,27 @@ export class ExportToBtnComponent {
     await alert.present();
   }
 
-  webSave(data: string, format: any, name:string): void {
-    const blob = new Blob([data], {type: 'text/plain'});
+  webSave(data: string, format: any, name: string): void {
+    let mimeType: string;
+
+    // Imposta il tipo MIME corretto in base al formato
+    switch (format) {
+      case 'gpx':
+        mimeType = 'application/gpx+xml';
+        break;
+      case 'kml':
+        mimeType = 'application/vnd.google-earth.kml+xml';
+        break;
+      case 'geojson':
+        mimeType = 'application/geo+json';
+        break;
+      case 'json':
+        mimeType = 'application/json';
+        break;
+      default:
+        mimeType = 'text/plain'; // Tipo MIME generico
+    }
+    const blob = new Blob([data], {type: mimeType});
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -131,15 +174,15 @@ export class ExportToBtnComponent {
     window.URL.revokeObjectURL(url);
   }
 
-  private _getName(name: string | { [keys: string]: string | undefined }): string {
+  private _getName(name: string | {[keys: string]: string | undefined}): string {
     if (name == null) {
       return 'export';
     }
     if (typeof name === 'string') {
-      return name.replace(/\s+/g, '');  // Rimuove tutti gli spazi
+      return name.replace(/\s+/g, ''); // Rimuove tutti gli spazi
     }
     const values = Object.values(name);
-    return values[0] ? values[0].replace(/\s+/g, '') : 'export';  // Rimuove spazi dal primo valore non undefined
+    return values[0] ? values[0].replace(/\s+/g, '') : 'export'; // Rimuove spazi dal primo valore non undefined
   }
 
   private _toGeoJSON(obj): any {
