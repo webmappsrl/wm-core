@@ -12,6 +12,7 @@ import {
   queryApiSuccess,
   removeTrackFilters,
   setLayer,
+  setUgc,
   toggleTrackFilterByIdentifier,
 } from './api.actions';
 import {ApiService} from './api.service';
@@ -20,6 +21,8 @@ import {Store} from '@ngrx/store';
 import {apiTrackFilterIdentifier} from './api.selector';
 import {Filter} from '../../types/config';
 import {IHIT, IRESPONSE} from 'wm-core/types/elastic';
+import { SaveService } from 'wm-core/services/save.service';
+import { ITrack } from 'wm-core/types/track';
 
 @Injectable({
   providedIn: 'root',
@@ -108,6 +111,28 @@ export class ApiEffects {
       }),
     ),
   );
+  setUgc$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(setUgc),
+      switchMap(_ =>
+        from(this._saveSvc.getTracks()).pipe(
+          map(ugcTracks => {
+            // CREAO HITS?
+            const hits = this._iTracksToHits(ugcTracks);
+            console.log('iTrack trasformate in its', hits);
+            const response: IRESPONSE = {
+              aggregations: {},
+              hits
+            }
+            return queryApiSuccess({response});
+          }),
+          catchError(_ => {
+            return of(queryApiFail());
+          }),
+        )
+      ),
+    ),
+  );
   toggleTrackFilterByIdentifier$ = createEffect(() =>
     this._actions$.pipe(
       ofType(toggleTrackFilterByIdentifier),
@@ -129,8 +154,32 @@ export class ApiEffects {
     ),
   );
 
+  private _iTracksToHits(tracks: ITrack[]): IHIT[]{
+    const hits: IHIT[] = [];
+
+    tracks.forEach(track => {
+      const hit:IHIT = {
+        id: `ugc:${track.key}`,
+        taxonomyActivities: [track.activity],
+        taxonomyWheres: [],
+        cai_scale: '',
+        distance: '',
+        feature_image: null,
+        layers: [],
+        name: track.title,
+        properties: {},
+        ref: ''
+      }
+
+      hits.push(hit);
+    });
+
+    return hits;
+  }
+
   constructor(
     private _apiSVC: ApiService,
+    private _saveSvc: SaveService,
     private _actions$: Actions,
     private _store: Store<ApiRootState>,
   ) {}

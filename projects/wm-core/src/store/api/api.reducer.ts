@@ -14,6 +14,7 @@ import {
   updateTrackFilter,
   goToHome,
   setLastFilterType,
+  setUgc,
 } from './api.actions';
 import { Filter } from '../../types/config';
 import { IHIT } from 'wm-core/types/elastic';
@@ -23,6 +24,7 @@ export interface Api {
   filterTracks: Filter[];
   loading: boolean;
   layer?: any;
+  ugcSelected: boolean;
   inputTyped?: string;
   poisInitFeatureCollection?: FeatureCollection;
   poisSelectedFilterIdentifiers?: string[];
@@ -38,6 +40,7 @@ export interface ApiRootState {
 const initialConfState: Api = {
   filterTracks: [],
   layer: null,
+  ugcSelected: false,
   loading: true,
   inputTyped: null,
   poisInitFeatureCollection: null,
@@ -101,6 +104,10 @@ export const elasticQueryReducer = createReducer(
     };
     return newState;
   }),
+  on(setUgc, (state, {ugcSelected}) => ({
+    ...state,
+    ugcSelected
+  })),
   on(queryApiSuccess, (state, {response}) => {
     const newState: Api = {...state, hits:response.hits, aggregations:response.aggregations, loading: false};
     return newState;

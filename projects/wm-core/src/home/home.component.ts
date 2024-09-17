@@ -6,10 +6,13 @@ import {
   EventEmitter,
 } from '@angular/core';
 import {Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
-import {togglePoiFilter, toggleTrackFilterByIdentifier} from '../store/api/api.actions';
+import {from, Observable} from 'rxjs';
+import {setUgc, togglePoiFilter, toggleTrackFilterByIdentifier} from '../store/api/api.actions';
 import {confHOME} from '../store/conf/conf.selector';
 import { IHOME,IHORIZONTALSCROLLBOX } from '../types/config';
+import { isLogged } from 'wm-core/store/auth/auth.selectors';
+import { SaveService } from 'wm-core/services/save.service';
+import { ITrack } from 'wm-core/types/track';
 
 @Component({
   selector: 'wm-home-page',
@@ -26,6 +29,12 @@ export class WmHomeComponent {
   @Output() slugBoxEVT: EventEmitter<[string, number]> = new EventEmitter();
   @Output() tracksBoxEVT: EventEmitter<number> = new EventEmitter();
   confHOME$: Observable<IHOME[]|undefined> = this._store.select(confHOME);
+  isLogged$: Observable<boolean> = this._store.select(isLogged);
+  ugcTracks$: Observable<ITrack[]>  = from(this._saveSvc.getTracks());
+
+  setUgcFilter(){
+    this._store.dispatch(setUgc({ugcSelected:true}));
+  }
 
   sendHorizontalScrollBoxEVT(identifier: string, box: IHORIZONTALSCROLLBOX): void {
     const filter = {identifier, taxonomy: box.item_type};
@@ -50,5 +59,9 @@ export class WmHomeComponent {
     }
   }
 
-  constructor(private _store: Store) {}
+  constructor(
+    private _store: Store,
+    private _saveSvc: SaveService
+  )
+  {}
 }

@@ -74,7 +74,8 @@ export const showResult = createSelector(elasticSearchFeature, state => {
     state.layer != null ||
     state.filterTracks.length > 0 ||
     (state.poisSelectedFilterIdentifiers && state.poisSelectedFilterIdentifiers.length > 0) ||
-    (state.inputTyped && state.inputTyped != '')
+    (state.inputTyped && state.inputTyped != '') ||
+    state.ugcSelected
   );
 });
 export const lastFilterType = createSelector(elasticSearchFeature, state => {
@@ -217,4 +218,8 @@ export const hasActiveFilters = createSelector(
   (apiFilterTracks, poiFilters, showPoisResult) => {
     return apiFilterTracks.length > 0 || poiFilters.length > 0 || showPoisResult;
   },
+);
+
+export const isUgcSelected = createSelector(elasticSearchFeature as any, (state: Api) =>
+  state.ugcSelected,
 );

@@ -1,0 +1,30 @@
+wm-home-ugc {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  align-content: stretch;
+  overflow-y: auto;
+  height: fit-content;
+  position: relative;
+  padding: 16px;
+  // wm-img{
+  //   margin: 10px;
+  // }
+  // .wm-box-title {
+  //   font-size: 26px;
+  //   font-family: var(--wm-font-family-content, inherit);
+  //   font-style: normal;
+  //   font-weight: 700;
+  //   color: white;
+  //   position: absolute;
+  //   bottom: 0;
+  //   padding: 6%;
+
+  //   line-height: 31px;
+  //   letter-spacing: 0em;
+  //   text-align: left;
+  //   white-space: break-spaces;
+  // }
+}

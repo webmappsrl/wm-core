@@ -28,6 +28,7 @@ export const removeTrackFilters = createAction(
 );
 export const resetTrackFilters = createAction('[api] reset track filters');
 export const setLayer = createAction('[api] set Layer', props<{layer: any | null}>());
+export const setUgc = createAction('[api] set Ugc', props<{ugcSelected: boolean}>());
 export const setLastFilterType = createAction(
   '[api] set last filter type',
   props<{filter: 'tracks' | 'pois' | null}>(),

@@ -14,6 +14,7 @@ import {
   resetPoiFilters,
   resetTrackFilters,
   setLayer,
+  setUgc,
   togglePoiFilter,
   toggleTrackFilter,
 } from '../../store/api/api.actions';
@@ -58,6 +59,7 @@ export class StatusFilterComponent {
 
   resetFilters(): void {
     this._store.dispatch(setLayer(null));
+    this._store.dispatch(setUgc({ugcSelected:false}));
     this._store.dispatch(resetPoiFilters());
     this._store.dispatch(resetTrackFilters());
     this._store.dispatch(goToHome());

@@ -43,6 +43,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { WmProfileModule } from './profile/profile.module';
 import { RegisterComponent } from './register/register.component';
 import { GenericPopoverComponent } from './generic-popover/generic-popover.component';
+import { WmHomeUgcComponent } from './home/home-ugc/home-ugc.component';
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -62,6 +63,7 @@ const declarations = [
   WmHomeComponent,
   WmHomeResultComponent,
   WmHomeLayerComponent,
+  WmHomeUgcComponent,
   WmTrackEdgesComponent,
   WmInnerHtmlComponent,
   WmTrackDownloadUrlsComponent,

@@ -1,0 +1,12 @@
+<div class="wm-box" (click)="clickEVT.emit()">
+  <div
+    class="color"
+  ></div>
+  <wm-img
+    class="webmapp-card-big-image-container wm-result-img"
+    [src]="defaultPhotoPath"
+    size="225x100"
+  ></wm-img>
+  <div class="wm-box-title">{{"I miei percorsi" | wmtrans}}</div>
+  <ng-content></ng-content>
+</div>

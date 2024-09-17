@@ -14,7 +14,8 @@ export type IBOX = {
     | 'external_url'
     | 'slug'
     | 'poi_type_filter'
-    | 'horizontal_scroll';
+    | 'horizontal_scroll'
+    | 'ugc';
   title: iLocalString | string;
 };
 export type IDETAILSMAPBEHAVIOUR = 'all' | 'track' | 'poi' | 'route';
@@ -30,7 +31,8 @@ export type IHOME =
   | ISLUGBOX
   | ITRACKBOX
   | IPOITYPEFILTERBOX
-  | IHORIZONTALSCROLLBOX;
+  | IHORIZONTALSCROLLBOX
+  | IUGCBOX;
 export type IHOMEBASEITEM = {
   title: iLocalString | string;
   image_url: string;
@@ -77,6 +79,11 @@ export type ITRACKBOX = IBOX & {
   track_id: number;
   image_url: string;
 };
+
+export type IUGCBOX = IBOX & {
+  box_type: 'ugc';
+
+}
 
 export interface Filter {
   identifier: string;
