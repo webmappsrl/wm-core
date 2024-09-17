@@ -1,4 +1,4 @@
-@import 'src/theme/mixins.scss';
+@import '../theme/mixins.scss';
 wm-form {
   ion-card {
     margin: 0;
@@ -105,5 +105,5 @@ ion-alert{
     line-clamp: 3;
     -webkit-box-orient: vertical;
     line-height: 1;
-  } 
+  }
 }
