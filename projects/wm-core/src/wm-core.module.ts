@@ -44,6 +44,7 @@ import { WmProfileModule } from './profile/profile.module';
 import { RegisterComponent } from './register/register.component';
 import { GenericPopoverComponent } from './generic-popover/generic-popover.component';
 import { WmHomeUgcComponent } from './home/home-ugc/home-ugc.component';
+import { WmFormComponent } from './form/form.component';
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -71,6 +72,7 @@ const declarations = [
   RegisterComponent,
   GenericPopoverComponent,
   ModalHeaderComponent,
+  WmFormComponent,
 ];
 const modules = [
   WmSharedModule,
