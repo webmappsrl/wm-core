@@ -73,9 +73,14 @@ export class ApiService {
             tap(pois => {
               apiLocalForage.setItem(poisUrl, JSON.stringify(pois));
             }),
+            catchError((_) => { 
+              this._loadingSvc.close('Loading pois...');
+              return([]);
+             }),
           );
         }
-      }),
+
+}),
     );
   }
 

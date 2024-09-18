@@ -94,23 +94,7 @@ export class AuthEffects {
           AuthActions.loadAuthsFailure,
         ),
         filter(r => r != null && r.error.error.error != 'Unauthorized'),
-        switchMap((resposne) => {
-          const error = resposne.error.error;
-          return this._alertCtrl.create({
-            mode: 'ios',
-            header: this._langSvc.instant(error),
-            message: '',
-            buttons: [
-              {
-                text: 'ok',
-              },
-            ],
-          })
-        }),
-        switchMap(alert => {
-          alert.present();
-          return alert.onWillDismiss();
-        }),
+
       ),
     {dispatch: false},
   );
