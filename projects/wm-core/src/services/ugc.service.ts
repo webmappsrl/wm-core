@@ -119,9 +119,9 @@ export class UgcService {
         geometry = track.geojson.geometry
           ? JSON.parse(JSON.stringify(track.geojson.geometry))
           : null;
-        geometry.coordinates = geometry.coordinates.map((x: any) => {
-          return [x[0], x[1]];
-        });
+        // geometry.coordinates = geometry.coordinates.map((x: any) => {
+        //   return [x[0], x[1]];
+        // });
       }
 
       const propeties = {...track};
