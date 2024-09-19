@@ -72,6 +72,7 @@ export class ApiService {
           return this._http.get<FeatureCollection>(poisUrl).pipe(
             tap(pois => {
               apiLocalForage.setItem(poisUrl, JSON.stringify(pois));
+              this._loadingSvc.close('Loading pois...');
             }),
             catchError((_) => { 
               this._loadingSvc.close('Loading pois...');
