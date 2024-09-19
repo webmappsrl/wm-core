@@ -15,6 +15,7 @@ import {WmAsAny} from './wm-as-any.pipe';
 import {WmIsSelected} from './wm-filter-is-selected.pipe';
 import { getFormFieldIcnPipe } from './get-form-field-icn.pipe';
 import { getFormFieldValuePipe } from './get-form-field-value.pipe';
+import { WmCreateBlobPipe } from './wm-create-blob.pipe';
 
 const pipes = [
   WmTransPipe,
@@ -31,7 +32,8 @@ const pipes = [
   WmAsAny,
   WmIsSelected,
   getFormFieldIcnPipe,
-  getFormFieldValuePipe
+  getFormFieldValuePipe,
+  WmCreateBlobPipe
 ];
 @NgModule({
   declarations: pipes,
