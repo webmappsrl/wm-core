@@ -4,7 +4,9 @@ import {Share} from '@capacitor/share';
 import GeoJsonToGpx from '@dwayneparton/geojson-to-gpx';
 import {Feature} from 'geojson';
 import tokml from 'geojson-to-kml';
+import { Observable } from 'rxjs';
 import {DeviceService} from 'wm-core/services/device.service';
+import { isUgcSelected } from 'wm-core/store/api/api.selector';
 @Component({
   selector: 'wm-track-download-urls',
   templateUrl: './track-download-urls.component.html',
@@ -12,14 +14,18 @@ import {DeviceService} from 'wm-core/services/device.service';
 })
 export class WmTrackDownloadUrlsComponent implements OnInit {
   @Input() track: Feature;
+  isUgcSelected$: Observable<boolean> = this._store.select(isUgcSelected);
 
   osm: string;
 
-  constructor(private _deviceSvc: DeviceService) {}
 
   ngOnInit(): void {
     this.osm = this.track.properties?.osm_url;
   }
+  constructor(
+    private _deviceSvc: DeviceService,
+    private _store: Store
+  ) {}
 
   export(to: string): void {
     let output;
