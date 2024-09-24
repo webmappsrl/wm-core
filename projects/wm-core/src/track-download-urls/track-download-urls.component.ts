@@ -1,8 +1,8 @@
-import {Component, Input} from '@angular/core';
-import {Filesystem, Directory, Encoding, WriteFileOptions, PermissionStatus} from '@capacitor/filesystem';
+import {Component, Input, OnInit} from '@angular/core';
+import {Filesystem, Directory, Encoding, WriteFileOptions} from '@capacitor/filesystem';
 import {Share} from '@capacitor/share';
 import GeoJsonToGpx from '@dwayneparton/geojson-to-gpx';
-import {AlertController} from '@ionic/angular';
+import {Feature} from 'geojson';
 import tokml from 'geojson-to-kml';
 import {DeviceService} from 'wm-core/services/device.service';
 @Component({
@@ -10,22 +10,15 @@ import {DeviceService} from 'wm-core/services/device.service';
   templateUrl: './track-download-urls.component.html',
   styleUrls: ['./track-download-urls.component.scss'],
 })
-export class WmTrackDownloadUrlsComponent {
-  private _properties: {[key: string]: any};
+export class WmTrackDownloadUrlsComponent implements OnInit {
+  @Input() track: Feature;
 
-  @Input() set properties(value: {[key: string]: any}) {
-    this._properties = value;
-    this._initializeDownloadUrls();
-  }
-
-  @Input() track: any;
-
-  geojson: string;
-  gpx: string;
-  kml: string;
   osm: string;
 
-  constructor(private _deviceSvc: DeviceService, private _alertCtrl: AlertController) {
+  constructor(private _deviceSvc: DeviceService) {}
+
+  ngOnInit(): void {
+    this.osm = this.track.properties?.osm_url;
   }
 
   export(to: string): void {
@@ -57,7 +50,7 @@ export class WmTrackDownloadUrlsComponent {
   }
 
   async mobileSave(data, format): Promise<void> {
-    const name = this._getName(this._properties?.name);
+    const name = this._getName(this.track.properties?.name);
     const fileName = `${name}.${format}`;
     try {
       const options: WriteFileOptions = {
@@ -81,7 +74,7 @@ export class WmTrackDownloadUrlsComponent {
   }
 
   save(data, format): void {
-    this._deviceSvc.isBrowser ? this.webSave(data, format):this.mobileSave(data, format); 
+    this._deviceSvc.isBrowser ? this.webSave(data, format) : this.mobileSave(data, format);
   }
 
   webSave(data: string, format: any): void {
@@ -105,7 +98,7 @@ export class WmTrackDownloadUrlsComponent {
         mimeType = 'text/plain'; // Tipo MIME generico
     }
     const blob = new Blob([data], {type: mimeType});
-    const name = this._getName(this._properties?.name);
+    const name = this._getName(this.track.properties?.name);
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -123,12 +116,5 @@ export class WmTrackDownloadUrlsComponent {
     }
     const values = Object.values(name);
     return values[0] ? values[0].replace(/\s+/g, '') : 'export'; // Rimuove spazi dal primo valore non undefined
-  }
-
-  private _initializeDownloadUrls(): void {
-    this.gpx = this._properties?.gpx_url;
-    this.kml = this._properties?.kml_url;
-    this.geojson = this._properties?.geojson_url;
-    this.osm = this._properties?.osm_url;
   }
 }
