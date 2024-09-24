@@ -117,9 +117,7 @@ export class ApiEffects {
       switchMap(_ =>
         from(this._saveSvc.getTracks()).pipe(
           map(ugcTracks => {
-            // CREAO HITS?
             const hits = this._iTracksToHits(ugcTracks);
-            console.log('iTrack trasformate in its', hits);
             const response: IRESPONSE = {
               aggregations: {},
               hits

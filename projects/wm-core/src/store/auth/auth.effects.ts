@@ -116,10 +116,6 @@ export class AuthEffects {
         }),
         switchMap(alert => {
           alert.present();
-          setTimeout(() => {
-            this._saveSvc.syncUgc();
-          }, 2000);
-
           return alert.onWillDismiss();
         }),
       ),
@@ -148,6 +144,18 @@ export class AuthEffects {
       ),
     {dispatch: false},
   );
+  syncUgc$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(AuthActions.loadSignOutsSuccess, AuthActions.loadAuthsSuccess),
+        map(() => {
+          setTimeout(() => {
+            this._saveSvc.syncUgc();
+          }, 2000);
+        })
+      ),
+      {dispatch: false},
+  )
 
   constructor(
     private _actions$: Actions,

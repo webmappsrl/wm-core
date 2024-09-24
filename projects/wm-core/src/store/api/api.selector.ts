@@ -4,6 +4,7 @@ import {confFILTERSTRACKS, confPOISFilter, confPoisIcons} from '../conf/conf.sel
 import {buildStats, filterFeatureCollection, filterFeatureCollectionByInputTyped} from './utils';
 import { IELASTIC, IHIT } from '../../types/elastic';
 import { Api } from './api.reducer';
+import { selectAuthState } from '../auth/auth.selectors';
 
 export const elasticSearchFeature = createFeatureSelector<IELASTIC>('query');
 export const queryApi = createSelector(elasticSearchFeature as any, (state: Api) =>
@@ -69,13 +70,16 @@ export const confFILTERSTRACKSOPTIONS = createSelector(
 );
 
 export const showPoisResult = createSelector(elasticSearchFeature, state => state.where != null);
-export const showResult = createSelector(elasticSearchFeature, state => {
+export const showResult = createSelector(
+  elasticSearchFeature,
+  selectAuthState,
+  (state, authState) => {
   return (
     state.layer != null ||
     state.filterTracks.length > 0 ||
     (state.poisSelectedFilterIdentifiers && state.poisSelectedFilterIdentifiers.length > 0) ||
     (state.inputTyped && state.inputTyped != '') ||
-    state.ugcSelected
+    (state.ugcSelected && authState.isLogged)
   );
 });
 export const lastFilterType = createSelector(elasticSearchFeature, state => {
