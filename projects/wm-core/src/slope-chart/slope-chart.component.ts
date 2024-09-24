@@ -4,9 +4,8 @@ import {
   ElementRef,
   EventEmitter,
   Input,
-  OnChanges,
+  OnInit,
   Output,
-  SimpleChanges,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -22,18 +21,21 @@ import {
 } from '../constants/slope-chart';
 import {EGeojsonGeometryTypes} from '../types/egeojson-geometry-types.enum';
 import {ESlopeChartSurface} from '../types/eslope-chart.enum';
-import {IGeojsonFeature, ILineString} from '../types/model';
+import {ILineString} from '../types/model';
 import {ISlopeChartHoverElements} from '../types/slope-chart';
 import {Location} from '../types/location';
+import {Feature, Geometry} from 'geojson';
+import {BehaviorSubject} from 'rxjs';
+import {filter, take} from 'rxjs/operators';
 
 @Component({
   selector: 'wm-slope-chart',
   templateUrl: './slope-chart.component.html',
   styleUrls: ['./slope-chart.component.scss'],
-  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
-export class WmSlopeChartComponent implements OnChanges {
+export class WmSlopeChartComponent implements OnInit {
   private _chart: Chart;
   private _chartCanvas: any;
   private _chartValues: Array<Location>;
@@ -43,25 +45,33 @@ export class WmSlopeChartComponent implements OnChanges {
       this._chart.destroy();
     }
     this._chartCanvas = content.nativeElement;
+    this.showChart$.next(this._is3dGeometry(this.currentTrack.geometry));
+    this.showChart$
+      .pipe(
+        filter(f => f),
+        take(1),
+      )
+      .subscribe(() => {
+        this._setChart(this.currentTrack);
+      });
   }
 
   @Input()
-  currentTrack: any;
+  currentTrack: Feature;
   @Output('hover') hover: EventEmitter<ISlopeChartHoverElements> =
     new EventEmitter<ISlopeChartHoverElements>();
 
-  public route: IGeojsonFeature;
-  public slope: {
-    available: boolean;
-    selectedValue: number|undefined;
+  route: Feature;
+  showChart$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  slope: {
+    selectedValue: number | undefined;
     selectedPercentage: number;
   } = {
-    available: true,
     selectedValue: undefined,
     selectedPercentage: 0,
   };
-  public slopeValues: Array<[number, number]>;
-  public surfaces: Array<{
+  slopeValues: Array<[number, number]>;
+  surfaces: Array<{
     id: ESlopeChartSurface;
     backgroundColor: string;
   }> = [];
@@ -70,13 +80,7 @@ export class WmSlopeChartComponent implements OnChanges {
     Chart.register(...registerables);
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.currentTrack != null && changes.currentTrack.currentValue != null) {
-      setTimeout(() => {
-        this._setChart(this.currentTrack);
-      }, 400);
-    }
-  }
+  ngOnInit(): void {}
 
   /**
    * Return the distance in meters between two locations
@@ -476,10 +480,14 @@ export class WmSlopeChartComponent implements OnChanges {
     );
   }
 
+  private _is3dGeometry(geometry: Geometry): boolean {
+    return geometry.type === 'LineString' && geometry.coordinates[0].length === 3;
+  }
+
   /**
    * Calculate all the chart values and trigger the chart representation
    */
-  private _setChart(route: any) {
+  private _setChart(route: any): void {
     if (!!this._chartCanvas && !!route) {
       let surfaceValues: Array<{
           surface: string;
