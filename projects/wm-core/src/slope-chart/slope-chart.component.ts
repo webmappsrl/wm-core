@@ -524,7 +524,7 @@ export class WmSlopeChartComponent implements OnInit {
         usedSurfaces: Array<ESlopeChartSurface> = [];
 
       this._chartValues = [];
-      const coordinates = (route.geometry) ? route.geometry.coordinates : route.geojson.coordinates;
+      const coordinates = route.geometry ? route.geometry.coordinates : route.geojson.coordinates;
       labels.push(0);
       currentLocation = {
         longitude: coordinates[0][0],
