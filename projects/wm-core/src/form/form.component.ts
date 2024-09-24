@@ -31,17 +31,17 @@ export class WmFormComponent {
     this.setForm(id, this.forms$.value[id]);
   }
 
-  @Input() set init(values) {
+  @Input() set init(values: any) {
     if (values != null) {
       this.setForm(values.index ?? values.formId, values);
     }
   }
 
-  get formId() {
+  get formId(): number {
     return this._currentFormId;
   }
 
-  @Input() disabled = false;
+  @Input() disabled: boolean = false;
   @Output() formGroupEvt: EventEmitter<UntypedFormGroup> = new EventEmitter<UntypedFormGroup>();
 
   currentForm$: BehaviorSubject<any> = new BehaviorSubject<any>(null);

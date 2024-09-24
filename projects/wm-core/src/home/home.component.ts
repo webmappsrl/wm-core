@@ -32,7 +32,7 @@ export class WmHomeComponent {
   isLogged$: Observable<boolean> = this._store.select(isLogged);
   ugcTracks$: Observable<ITrack[]>  = from(this._saveSvc.getTracks());
 
-  setUgcFilter(){
+  setUgcFilter(): void {
     this._store.dispatch(setUgc({ugcSelected:true}));
   }
 
