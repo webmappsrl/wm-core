@@ -6,6 +6,7 @@ import {
   Input,
   OnInit,
   Output,
+  SimpleChanges,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -26,7 +27,7 @@ import {ISlopeChartHoverElements} from '../types/slope-chart';
 import {Location} from '../types/location';
 import {Feature, Geometry} from 'geojson';
 import {BehaviorSubject} from 'rxjs';
-import {filter, take} from 'rxjs/operators';
+import {filter, switchMap, take} from 'rxjs/operators';
 
 @Component({
   selector: 'wm-slope-chart',
@@ -39,12 +40,16 @@ export class WmSlopeChartComponent implements OnInit {
   private _chart: Chart;
   private _chartCanvas: any;
   private _chartValues: Array<Location>;
+  private _isInit$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   @ViewChild('chartCanvas') set content(content: ElementRef) {
     if (this._chart != null) {
       this._chart.destroy();
     }
     this._chartCanvas = content != null ? content.nativeElement : null;
+    if (this._chartCanvas != null) {
+      this._isInit$.next(true);
+    }
   }
 
   @Input()
@@ -53,7 +58,7 @@ export class WmSlopeChartComponent implements OnInit {
     new EventEmitter<ISlopeChartHoverElements>();
 
   route: Feature;
-  showChart$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  showChart$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   slope: {
     selectedValue: number | undefined;
     selectedPercentage: number;
@@ -71,17 +76,13 @@ export class WmSlopeChartComponent implements OnInit {
     Chart.register(...registerables);
   }
 
-  ngOnInit(): void {
-    this.showChart$.next(this._is3dGeometry(this.currentTrack.geometry));
-    this.showChart$
-      .pipe(
-        filter(f => f),
-        take(1),
-      )
-      .subscribe(() => {
-        this._setChart(this.currentTrack);
-      });
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.currentTrack) {
+      this._init();
+    }
   }
+
+  ngOnInit(): void {}
 
   /**
    * Return the distance in meters between two locations
@@ -479,6 +480,19 @@ export class WmSlopeChartComponent implements OnInit {
       (result[2].length < 2 ? '0' : '') +
       result[2]
     );
+  }
+
+  private _init(): void {
+    this.showChart$.next(this._is3dGeometry(this.currentTrack.geometry));
+    this._isInit$
+      .pipe(
+        filter(f => f),
+        switchMap(() => this.showChart$),
+        take(1),
+      )
+      .subscribe(() => {
+        this._setChart(this.currentTrack);
+      });
   }
 
   private _is3dGeometry(geometry: Geometry): boolean {
