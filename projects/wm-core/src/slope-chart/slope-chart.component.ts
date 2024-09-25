@@ -44,16 +44,7 @@ export class WmSlopeChartComponent implements OnInit {
     if (this._chart != null) {
       this._chart.destroy();
     }
-    this._chartCanvas = content.nativeElement;
-    this.showChart$.next(this._is3dGeometry(this.currentTrack.geometry));
-    this.showChart$
-      .pipe(
-        filter(f => f),
-        take(1),
-      )
-      .subscribe(() => {
-        this._setChart(this.currentTrack);
-      });
+    this._chartCanvas = content != null ? content.nativeElement : null;
   }
 
   @Input()
@@ -80,7 +71,17 @@ export class WmSlopeChartComponent implements OnInit {
     Chart.register(...registerables);
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.showChart$.next(this._is3dGeometry(this.currentTrack.geometry));
+    this.showChart$
+      .pipe(
+        filter(f => f),
+        take(1),
+      )
+      .subscribe(() => {
+        this._setChart(this.currentTrack);
+      });
+  }
 
   /**
    * Return the distance in meters between two locations
@@ -481,7 +482,10 @@ export class WmSlopeChartComponent implements OnInit {
   }
 
   private _is3dGeometry(geometry: Geometry): boolean {
-    return geometry.type === 'LineString' && geometry.coordinates[0].length === 3;
+    if (geometry == null) return false;
+    return (
+      geometry != null && geometry.type === 'LineString' && geometry.coordinates[0].length === 3
+    );
   }
 
   /**
