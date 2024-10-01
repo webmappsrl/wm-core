@@ -130,16 +130,25 @@ export const poisInitCount = createSelector(
   poisInitFeatureCollection,
   featureCollection => featureCollection?.features?.length,
 );
-
+export const isUgcSelected = createSelector(elasticSearchFeature as any, (state: Api) =>
+  state.ugcSelected,
+);
+export const getUgcPoisFeatureCollection = createSelector( elasticSearchFeature as any, (state: Api) =>
+  state.ugcPoisFeatureCollection
+);
 export const poisWhereFeatureCollection = createSelector(
   poisInitFeatureCollection,
   filterTaxonomies,
-  (featureCollection, filter) => filterFeatureCollection(featureCollection, filter),
+  getUgcPoisFeatureCollection,
+  isUgcSelected,
+  (featureCollection, filter, ugcPoisFeatureCollection, ugcSelected) => filterFeatureCollection(featureCollection, filter, ugcPoisFeatureCollection, ugcSelected),
 );
 export const poisFilteredFeatureCollection = createSelector(
   poisWhereFeatureCollection,
   poiFilterIdentifiers,
-  (featureCollection, filter) => filterFeatureCollection(featureCollection, filter),
+  getUgcPoisFeatureCollection,
+  isUgcSelected,
+  (featureCollection, filter, ugcPoisFeatureCollection, ugcSelected) => filterFeatureCollection(featureCollection, filter, ugcPoisFeatureCollection, ugcSelected),
 );
 export const poisFilteredFeatureCollectionByInputType = createSelector(
   poisFilteredFeatureCollection,
@@ -222,8 +231,4 @@ export const hasActiveFilters = createSelector(
   (apiFilterTracks, poiFilters, showPoisResult) => {
     return apiFilterTracks.length > 0 || poiFilters.length > 0 || showPoisResult;
   },
-);
-
-export const isUgcSelected = createSelector(elasticSearchFeature as any, (state: Api) =>
-  state.ugcSelected,
 );

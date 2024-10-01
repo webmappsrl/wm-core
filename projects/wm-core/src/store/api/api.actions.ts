@@ -59,3 +59,9 @@ export const togglePoiFilter = createAction(
   props<{filterIdentifier: string}>(),
 );
 export const resetPoiFilters = createAction('[api] pois: reset all pois filters');
+
+export const loadUgcPoisSuccess = createAction(
+  '[api] ugc pois: Load ugc pois Success',
+  props<{featureCollection: FeatureCollection}>(),
+);
+export const loadUgcPoisFail = createAction('[api] ugc pois: Load ugc pois Fail');

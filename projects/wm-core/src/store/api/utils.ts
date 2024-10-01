@@ -4,7 +4,12 @@ import localforage from 'localforage';
 export const filterFeatureCollection = (
   featureCollection: FeatureCollection,
   filters: string[],
+  ugcFeatureCollection: FeatureCollection,
+  ugcSelected: boolean
 ): FeatureCollection => {
+  if(ugcSelected && ugcFeatureCollection.features != null){
+    return ugcFeatureCollection;
+  }
   if (filters == null || filters.length === 0 || featureCollection?.features == null)
     return featureCollection;
   return {

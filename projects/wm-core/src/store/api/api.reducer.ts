@@ -15,6 +15,7 @@ import {
   goToHome,
   setLastFilterType,
   setUgc,
+  loadUgcPoisSuccess,
 } from './api.actions';
 import { Filter } from '../../types/config';
 import { IHIT } from 'wm-core/types/elastic';
@@ -27,6 +28,7 @@ export interface Api {
   ugcSelected: boolean;
   inputTyped?: string;
   poisInitFeatureCollection?: FeatureCollection;
+  ugcPoisFeatureCollection?: FeatureCollection;
   poisSelectedFilterIdentifiers?: string[];
   filterTaxonomies?: string[];
   goToHome: boolean;
@@ -44,6 +46,7 @@ const initialConfState: Api = {
   loading: true,
   inputTyped: null,
   poisInitFeatureCollection: null,
+  ugcPoisFeatureCollection: null,
   poisSelectedFilterIdentifiers: null,
   filterTaxonomies: [],
   goToHome: false,
@@ -195,4 +198,12 @@ export const elasticQueryReducer = createReducer(
     };
     return newState;
   }),
+  on(loadUgcPoisSuccess, (state, {featureCollection}) => {
+    const newState: Api = {
+      ...state,
+      ugcPoisFeatureCollection: featureCollection,
+    };
+    return newState;
+  }),
 );
+

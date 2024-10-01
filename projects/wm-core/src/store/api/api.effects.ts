@@ -7,6 +7,8 @@ import {
   loadPois,
   loadPoisFail,
   loadPoisSuccess,
+  loadUgcPoisFail,
+  loadUgcPoisSuccess,
   query,
   queryApiFail,
   queryApiSuccess,
@@ -23,6 +25,7 @@ import {Filter} from '../../types/config';
 import {IHIT, IRESPONSE} from 'wm-core/types/elastic';
 import { SaveService } from 'wm-core/services/save.service';
 import { ITrack } from 'wm-core/types/track';
+import { UgcService } from 'wm-core/services/ugc.service';
 
 @Injectable({
   providedIn: 'root',
@@ -59,6 +62,17 @@ export class ApiEffects {
         this._apiSVC.getPois().pipe(
           map(featureCollection => loadPoisSuccess({featureCollection})),
           catchError(() => of(loadPoisFail())),
+        ),
+      ),
+    ),
+  );
+  loadUgcPois$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(loadPois),
+      switchMap(() =>
+        from(this._ugcSvc.getUgcPois()).pipe(
+          map(featureCollection => loadUgcPoisSuccess({featureCollection})),
+          catchError(() => of(loadUgcPoisFail())),
         ),
       ),
     ),
@@ -178,6 +192,7 @@ export class ApiEffects {
   constructor(
     private _apiSVC: ApiService,
     private _saveSvc: SaveService,
+    private _ugcSvc: UgcService,
     private _actions$: Actions,
     private _store: Store<ApiRootState>,
   ) {}
