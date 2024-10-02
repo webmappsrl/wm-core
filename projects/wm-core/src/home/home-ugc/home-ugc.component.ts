@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
 import { LangService } from 'wm-core/localization/lang.service';
-import {isUgcSelected} from '../../store/api/api.selector';
+import {isUgcHome} from '../../store/api/api.selector';
 
 @Component({
   selector: 'wm-home-ugc',
@@ -11,7 +11,7 @@ import {isUgcSelected} from '../../store/api/api.selector';
   encapsulation: ViewEncapsulation.None,
 })
 export class WmHomeUgcComponent {
-  isUgcSelected$ = this._store.select(isUgcSelected);
+  isUgcSelected$ = this._store.select(isUgcHome);
 
   constructor(private _store: Store,private _langSvc:LangService,private _cdr:ChangeDetectorRef) {
     this._langSvc.onLangChange.subscribe(() => {

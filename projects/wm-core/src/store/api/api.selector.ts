@@ -79,7 +79,7 @@ export const showResult = createSelector(
     state.filterTracks.length > 0 ||
     (state.poisSelectedFilterIdentifiers && state.poisSelectedFilterIdentifiers.length > 0) ||
     (state.inputTyped && state.inputTyped != '') ||
-    (state.ugcSelected && authState.isLogged)
+    (state.ugcHome && authState.isLogged)
   );
 });
 export const lastFilterType = createSelector(elasticSearchFeature, state => {
