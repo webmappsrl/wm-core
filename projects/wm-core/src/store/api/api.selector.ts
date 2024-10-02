@@ -133,6 +133,9 @@ export const poisInitCount = createSelector(
 export const isUgcSelected = createSelector(elasticSearchFeature as any, (state: Api) =>
   state.ugcSelected,
 );
+export const isUgcHome = createSelector(elasticSearchFeature as any, (state: Api) =>
+  state.ugcHome,
+);
 export const getUgcPoisFeatureCollection = createSelector( elasticSearchFeature as any, (state: Api) =>
   state.ugcPoisFeatureCollection
 );

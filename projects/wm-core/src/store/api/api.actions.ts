@@ -65,3 +65,4 @@ export const loadUgcPoisSuccess = createAction(
   props<{featureCollection: FeatureCollection}>(),
 );
 export const loadUgcPoisFail = createAction('[api] ugc pois: Load ugc pois Fail');
+export const openUgcInHome =  createAction('[api] ugc: Ugc in home',  props<{ugcHome: boolean}>());

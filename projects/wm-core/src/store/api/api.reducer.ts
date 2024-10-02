@@ -16,9 +16,11 @@ import {
   setLastFilterType,
   setUgc,
   loadUgcPoisSuccess,
+  openUgcInHome,
 } from './api.actions';
 import { Filter } from '../../types/config';
 import { IHIT } from 'wm-core/types/elastic';
+import { isUgcHome } from './api.selector';
 
 export const searchKey = 'search';
 export interface Api {
@@ -26,6 +28,7 @@ export interface Api {
   loading: boolean;
   layer?: any;
   ugcSelected: boolean;
+  ugcHome: boolean;
   inputTyped?: string;
   poisInitFeatureCollection?: FeatureCollection;
   ugcPoisFeatureCollection?: FeatureCollection;
@@ -43,6 +46,7 @@ const initialConfState: Api = {
   filterTracks: [],
   layer: null,
   ugcSelected: false,
+  ugcHome: false,
   loading: true,
   inputTyped: null,
   poisInitFeatureCollection: null,
@@ -110,6 +114,10 @@ export const elasticQueryReducer = createReducer(
   on(setUgc, (state, {ugcSelected}) => ({
     ...state,
     ugcSelected
+  })),
+  on(openUgcInHome, (state, {ugcHome}) => ({
+    ...state,
+    ugcHome
   })),
   on(queryApiSuccess, (state, {response}) => {
     const newState: Api = {...state, hits:response.hits, aggregations:response.aggregations, loading: false};

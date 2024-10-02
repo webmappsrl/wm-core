@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import {Store} from '@ngrx/store';
 import {from, Observable} from 'rxjs';
-import {setUgc, togglePoiFilter, toggleTrackFilterByIdentifier} from '../store/api/api.actions';
+import {openUgcInHome, setUgc, togglePoiFilter, toggleTrackFilterByIdentifier} from '../store/api/api.actions';
 import {confHOME} from '../store/conf/conf.selector';
 import { IHOME,IHORIZONTALSCROLLBOX } from '../types/config';
 import { isLogged } from 'wm-core/store/auth/auth.selectors';
@@ -33,6 +33,7 @@ export class WmHomeComponent {
   ugcTracks$: Observable<ITrack[]>  = from(this._saveSvc.getTracks());
 
   setUgcFilter(): void {
+    this._store.dispatch(openUgcInHome({ugcHome:true}));
     this._store.dispatch(setUgc({ugcSelected:true}));
   }
 

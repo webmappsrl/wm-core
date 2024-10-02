@@ -11,6 +11,7 @@ import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {
   goToHome,
+  openUgcInHome,
   resetPoiFilters,
   resetTrackFilters,
   setLayer,
@@ -59,6 +60,7 @@ export class StatusFilterComponent {
 
   resetFilters(): void {
     this._store.dispatch(setLayer(null));
+    this._store.dispatch(openUgcInHome({ugcHome:false}));
     this._store.dispatch(setUgc({ugcSelected:false}));
     this._store.dispatch(resetPoiFilters());
     this._store.dispatch(resetTrackFilters());
