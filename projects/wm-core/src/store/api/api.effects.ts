@@ -7,6 +7,7 @@ import {
   loadPois,
   loadPoisFail,
   loadPoisSuccess,
+  loadUgcPois,
   loadUgcPoisFail,
   loadUgcPoisSuccess,
   query,
@@ -68,7 +69,7 @@ export class ApiEffects {
   );
   loadUgcPois$ = createEffect(() =>
     this._actions$.pipe(
-      ofType(loadPois),
+      ofType(loadUgcPois),
       switchMap(() =>
         from(this._ugcSvc.getUgcPois()).pipe(
           map(featureCollection => loadUgcPoisSuccess({featureCollection})),

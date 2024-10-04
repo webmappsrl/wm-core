@@ -1,12 +1,14 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import * as AuthActions from './auth.actions';
-import {catchError, filter, map, switchMap, tap} from 'rxjs/operators';
+import * as ApiActions from '../api/api.actions';
+import {catchError, filter, map, switchMap} from 'rxjs/operators';
 import {AuthService} from './auth.service';
-import {of} from 'rxjs';
-import {AlertController, NavController} from '@ionic/angular';
+import {from, of} from 'rxjs';
+import {AlertController} from '@ionic/angular';
 import {LangService} from 'wm-core/localization/lang.service';
 import { SaveService } from 'wm-core/services/save.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable()
 export class AuthEffects {
@@ -147,14 +149,22 @@ export class AuthEffects {
   syncUgc$ = createEffect(
     () =>
       this._actions$.pipe(
-        ofType(AuthActions.loadSignOutsSuccess, AuthActions.loadAuthsSuccess),
-        map(() => {
-          setTimeout(() => {
-            this._saveSvc.syncUgc();
-          }, 2000);
-        })
+        ofType(AuthActions.loadSignInsSuccess, AuthActions.loadAuthsSuccess),
+        switchMap( () =>
+          from(this._saveSvc.syncUgc()).pipe(
+            map( () => AuthActions.syncUgcSuccess()),
+            catchError( error => of(AuthActions.syncUgcFailure(new HttpErrorResponse({error}))))
+          ),
+        )
       ),
-      {dispatch: false},
+      // {dispatch: false},
+  )
+  loadUgcPois$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(AuthActions.loadSignInsSuccess, AuthActions.loadAuthsSuccess),
+        map( () => ApiActions.loadUgcPois())
+      )
   )
 
   constructor(

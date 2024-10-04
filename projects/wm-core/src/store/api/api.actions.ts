@@ -1,6 +1,6 @@
 import {createAction, props} from '@ngrx/store';
 import {FeatureCollection} from 'geojson';
-import { IHIT, IRESPONSE } from 'wm-core/types/elastic';
+import { IRESPONSE } from 'wm-core/types/elastic';
 import { Filter } from '../../types/config';
 
 export const query = createAction(
@@ -60,6 +60,7 @@ export const togglePoiFilter = createAction(
 );
 export const resetPoiFilters = createAction('[api] pois: reset all pois filters');
 
+export const loadUgcPois = createAction('[api] ugc pois: Load ugc pois');
 export const loadUgcPoisSuccess = createAction(
   '[api] ugc pois: Load ugc pois Success',
   props<{featureCollection: FeatureCollection}>(),
