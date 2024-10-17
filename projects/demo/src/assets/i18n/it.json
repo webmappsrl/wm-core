@@ -11,7 +11,8 @@
       "duration_forward": "Durata di andata",
       "duration_backward": "Durata di ritorno",
       "distance": "Lunghezza",
-      "difficulty": "Difficoltà"
+      "difficulty": "Difficoltà",
+      "cai_scale": "Scala di difficoltà CAI"
     },
     "downloadUrls": {
       "gpx": "Scarica il tracciato GPX",
