@@ -3,11 +3,12 @@ import {HttpClient} from '@angular/common/http';
 import {IPhotoItem} from './photo.service';
 import {ITrack} from '../types/track';
 import {Inject, Injectable} from '@angular/core';
-import {WaypointSave} from '../types/waypoint';
+import {Feature} from 'geojson';
 import {catchError} from 'rxjs/operators';
 import {Observable, of} from 'rxjs';
-import { APP_ID, ENVIRONMENT_CONFIG, EnvironmentConfig } from 'wm-core/store/conf/conf.token';
-import { FeatureCollection } from 'geojson';
+import {APP_ID, ENVIRONMENT_CONFIG, EnvironmentConfig} from 'wm-core/store/conf/conf.token';
+import {FeatureCollection} from 'geojson';
+import {WaypointSave} from 'wm-core/types/waypoint';
 
 @Injectable({
   providedIn: 'root',
@@ -20,44 +21,32 @@ export class UgcService {
   ) {}
 
   deletePhoto(id: number): Observable<any> {
-    return this._http.get(
-      `${this.environment.api}/api/ugc/media/delete/${id}`,
-    );
+    return this._http.get(`${this.environment.api}/api/ugc/media/delete/${id}`);
   }
 
   deleteTrack(id: number): Observable<any> {
-    return this._http.get(
-      `${this.environment.api}/api/ugc/track/delete/${id}`,
-    );
+    return this._http.get(`${this.environment.api}/api/ugc/track/delete/${id}`);
   }
 
   deleteWaypoint(id: number): Observable<any> {
-    return this._http.get(
-      `${this.environment.api}/api/ugc/poi/delete/${id}`,
-    );
+    return this._http.get(`${this.environment.api}/api/ugc/poi/delete/${id}`);
   }
 
   async getUgcMedias(): Promise<FeatureCollection> {
     return await this._http
-      .get<FeatureCollection>(
-        `${this.environment.api}/api/ugc/media/index`,
-      )
+      .get<FeatureCollection>(`${this.environment.api}/api/ugc/media/index`)
       .toPromise();
   }
 
   async getUgcPois(): Promise<FeatureCollection> {
     return await this._http
-      .get<FeatureCollection>(
-        `${this.environment.api}/api/ugc/poi/index`,
-      )
+      .get<FeatureCollection>(`${this.environment.api}/api/ugc/poi/index`)
       .toPromise();
   }
 
   async getUgcTracks(): Promise<FeatureCollection> {
     return await this._http
-      .get<FeatureCollection>(
-        `${this.environment.api}/api/ugc/track/index`,
-      )
+      .get<FeatureCollection>(`${this.environment.api}/api/ugc/track/index`)
       .toPromise();
   }
 
@@ -123,7 +112,7 @@ export class UgcService {
 
       const propeties = {...track};
       delete propeties.geojson;
-      const data = {
+      const data: Feature = {
         type: 'Feature',
         geometry: geometry,
         properties: {
@@ -137,14 +126,7 @@ export class UgcService {
           ...propeties,
         },
       };
-      const res = await this._http
-        .post<any>(
-          `${this.environment.api}/api/ugc/track/store`,
-          data
-        )
-        .pipe(catchError(_ => null))
-        .toPromise();
-      return res;
+      return await this.storeUgcTrack(data);
     } else {
       return of(track);
     }
@@ -185,5 +167,11 @@ export class UgcService {
     } else {
       return of(waypoint);
     }
+  }
+
+  async storeUgcTrack(featureCollection: Feature): Promise<any> {
+    return await this._http
+      .post(`${this.environment.api}/api/ugc/track/store`, featureCollection)
+      .toPromise();
   }
 }

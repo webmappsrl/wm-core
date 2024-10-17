@@ -5,11 +5,11 @@ import {ESaveObjType} from '../types/save.enum';
 import {IRegisterItem, ITrack} from '../types/track';
 import {FeatureCollection, Feature} from 'geojson';
 import {EGeojsonGeometryTypes} from '../types/egeojson-geometry-types.enum';
-import { ISaveIndexObj } from 'wm-core/types/save';
-import { IPhotoItem, PhotoService } from './photo.service';
-import { StorageService } from './storage.service';
-import { UgcService } from './ugc.service';
-import { WaypointSave } from 'wm-core/types/waypoint';
+import {ISaveIndexObj} from 'wm-core/types/save';
+import {IPhotoItem, PhotoService} from './photo.service';
+import {StorageService} from './storage.service';
+import {UgcService} from './ugc.service';
+import {WaypointSave} from 'wm-core/types/waypoint';
 @Injectable({
   providedIn: 'root',
 })
@@ -117,10 +117,11 @@ export class SaveService {
       const element = wp.storedPhotoKeys[i];
       const photo = await this._getGenericById(element);
       if (photo != null) {
-        try{
+        try {
           photo.rawData = window.URL.createObjectURL(await this._photoService.getPhotoFile(photo));
+        } catch (err) {
+          console.log(err.message);
         }
-        catch (err) {console.log(err.message)}
         wp.photos.push(photo);
       }
     }
@@ -192,26 +193,26 @@ export class SaveService {
     let _ugcUgcPois: FeatureCollection | null = null;
     let _ugcUgcTracks: FeatureCollection | null = null;
     let _ugcUgcMedias: FeatureCollection | null = null;
-    
+
     try {
       _ugcUgcPois = await this._ugc.getUgcPois();
-      console.log("getUgcPois eseguito correttamente");
+      console.log('getUgcPois eseguito correttamente');
     } catch (error) {
-      console.error("Errore durante getUgcPois:", error);
+      console.error('Errore durante getUgcPois:', error);
     }
-    
+
     try {
       _ugcUgcTracks = await this._ugc.getUgcTracks();
-      console.log("getUgcTracks eseguito correttamente");
+      console.log('getUgcTracks eseguito correttamente');
     } catch (error) {
-      console.error("Errore durante getUgcTracks:", error);
+      console.error('Errore durante getUgcTracks:', error);
     }
-    
+
     try {
       _ugcUgcMedias = await this._ugc.getUgcMedias();
-      console.log("getUgcMedias eseguito correttamente");
+      console.log('getUgcMedias eseguito correttamente');
     } catch (error) {
-      console.error("Errore durante getUgcMedias:", error);
+      console.error('Errore durante getUgcMedias:', error);
     }
     const deviceUgcMedias: any[] = await this.getPhotos();
     const deviceUgcTracks = await this.getTracks();
@@ -282,8 +283,6 @@ export class SaveService {
       const syncId = _ugcUgcPoisMap.get(poi.uuid);
       if (syncId) {
         poi.sync_id = syncId;
-      } else if (poi.id) {
-        console.log(poi.id);
       }
       await this.updateWaypoint(poi);
       await this._updateGeneric(poi.key, poi);
@@ -592,10 +591,11 @@ export class SaveService {
       const element = track.storedPhotoKeys[i];
       const photo = await this._getGenericById(element);
       if (photo != null) {
-        try{
+        try {
           photo.rawData = window.URL.createObjectURL(await this._photoService.getPhotoFile(photo));
+        } catch (err) {
+          console.error(err.message);
         }
-        catch (err) {console.error(err.message)}
         track.photos.push(photo);
       }
     }
