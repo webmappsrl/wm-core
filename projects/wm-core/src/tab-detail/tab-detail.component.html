@@ -15,11 +15,11 @@
   </ion-item>
   <ion-item *ngIf="properties.cai_scale || properties.difficulty">
     <i class="icon-outline-difficulty webmapp-pageroute-tabdetail-icon"> </i>
-    <ion-label start class="webmapp-pageroute-tabdetail-label"
-      >{{ "pages.route.detail.difficulty" | wmtrans }}
+    <ion-label start class="webmapp-pageroute-tabdetail-label">
+      {{ properties?.difficulty ? ("pages.route.detail.difficulty" | wmtrans) : ("pages.route.detail.cai_scale" | wmtrans) }}
     </ion-label>
-    <ion-note slot="end" class="webmapp-pageroute-tabdetail-value"
-      >{{ properties?.cai_scale ? properties?.cai_scale :properties?.difficulty|wmtrans}}
+    <ion-note slot="end" class="webmapp-pageroute-tabdetail-value">
+      {{ properties?.difficulty ? properties?.difficulty : properties?.cai_scale|wmtrans }}
     </ion-note>
   </ion-item>
 
