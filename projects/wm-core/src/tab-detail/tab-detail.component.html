@@ -19,7 +19,7 @@
       {{ properties?.difficulty ? ("pages.route.detail.difficulty" | wmtrans) : ("pages.route.detail.cai_scale" | wmtrans) }}
     </ion-label>
     <ion-note slot="end" class="webmapp-pageroute-tabdetail-value">
-      {{ properties?.difficulty ? properties?.difficulty : properties?.cai_scale|wmtrans }}
+      {{ properties?.difficulty ? properties?.difficulty?.it || (properties?.difficulty | wmtrans) : properties?.cai_scale }}
     </ion-note>
   </ion-item>
 
