@@ -13,16 +13,7 @@
     </ion-label>
     <ion-note slot="end" class="webmapp-pageroute-tabdetail-value">{{to}}</ion-note>
   </ion-item>
-  <ion-item *ngIf="properties.cai_scale as cai_scale">
-    <i class="icon-outline-difficulty webmapp-pageroute-tabdetail-icon"> </i>
-    <ion-label start class="webmapp-pageroute-tabdetail-label">
-      {{ "pages.route.detail.cai_scale" | wmtrans }}
-    </ion-label>
-    <ion-note slot="end" class="webmapp-pageroute-tabdetail-value">
-      {{ cai_scale }}
-    </ion-note>
-  </ion-item>
-  <ion-item *ngIf="properties.difficulty as difficulty">
+  <ion-item *ngIf="properties.difficulty as difficulty; else cai_scale_template">
     <i class="icon-outline-difficulty webmapp-pageroute-tabdetail-icon"> </i>
     <ion-label start class="webmapp-pageroute-tabdetail-label">
       {{ "pages.route.detail.difficulty" | wmtrans }}
@@ -31,6 +22,17 @@
       {{ difficulty | wmtrans }}
     </ion-note>
   </ion-item>
+  <ng-template #cai_scale_template>
+    <ion-item *ngIf="properties.cai_scale as cai_scale">
+      <i class="icon-outline-difficulty webmapp-pageroute-tabdetail-icon"> </i>
+      <ion-label start class="webmapp-pageroute-tabdetail-label">
+        {{ "pages.route.detail.cai_scale" | wmtrans }}
+      </ion-label>
+      <ion-note slot="end" class="webmapp-pageroute-tabdetail-value">
+        {{ cai_scale }}
+      </ion-note>
+    </ion-item>
+  </ng-template>
   <ion-item *ngIf="properties?.distance as distance">
     <i class="icon-outline-distance webmapp-pageroute-tabdetail-icon"> </i>
     <ion-label start class="webmapp-pageroute-tabdetail-label"
