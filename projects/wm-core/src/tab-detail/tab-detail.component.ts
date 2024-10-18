@@ -6,6 +6,7 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
+import {GeoJsonProperties} from 'geojson';
 import {IGeojsonFeature, IGeojsonProperties} from '../types/model';
 import {ISlopeChartHoverElements} from '../types/slope-chart';
 
@@ -18,7 +19,7 @@ import {ISlopeChartHoverElements} from '../types/slope-chart';
 })
 export class WmTabDetailComponent {
   @Input()
-  properties: IGeojsonProperties;
+  properties: GeoJsonProperties;
   @Output('slopeChartHover')
   slopeChartHover: EventEmitter<ISlopeChartHoverElements> =
     new EventEmitter<ISlopeChartHoverElements>();

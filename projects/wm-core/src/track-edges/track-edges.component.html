@@ -1,4 +1,4 @@
-<ion-grid *ngIf="conf!=null&&edges!=null;else noEdges">
+<ion-grid *ngIf="conf!=null&&edges!=null">
   <ion-row>
     <ion-col
       size="3"
@@ -88,16 +88,3 @@
     </ng-template>
   </ion-row>
 </ion-grid>
-
-<ng-template #noEdges>
-  <div *ngIf="(properties.from || properties.to)" class="webmapp-track-details-from-to">
-    <div *ngIf="properties.from as from" class="webmapp-track-details-from-to-box">
-      <div>{{'Punto di partenza'|wmtrans}}</div>
-      <div>{{from}}</div>
-    </div>
-    <div *ngIf="properties.to as to" class="webmapp-track-details-from-to-box">
-      <div>{{'Punto di arrivo'|wmtrans}}</div>
-      <div>{{to}}</div>
-    </div>
-  </div>
-</ng-template>

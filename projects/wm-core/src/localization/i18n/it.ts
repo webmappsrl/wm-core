@@ -23,7 +23,7 @@ export const wmIT = {
   'ele_min': 'Quota minima',
   'ele_to': 'Quota di arrivo',
   'difficulty': 'Difficoltà',
-  'cai_scale': 'Échelle de difficulté CAI',
+  'cai_scale': 'Scala di difficoltà CAI',
   'duration_forward': 'Durata di andata',
   'duration_backward': 'Durata di ritorno',
   'Filtri': 'Filtri',
