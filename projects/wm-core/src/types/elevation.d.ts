@@ -1,6 +1,8 @@
+import {Feature, LineString} from 'geojson';
+
 export interface ITrackElevationChartHoverElements {
   location: any;
-  track?: CGeojsonLineStringFeature;
+  track?: Feature<LineString>;
 }
 
 export enum ETrackElevationChartSurface {

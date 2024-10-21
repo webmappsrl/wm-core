@@ -6,8 +6,8 @@ import {Inject, Injectable} from '@angular/core';
 import {WaypointSave} from '../types/waypoint';
 import {catchError} from 'rxjs/operators';
 import {Observable, of} from 'rxjs';
-import { APP_ID, ENVIRONMENT_CONFIG, EnvironmentConfig } from 'wm-core/store/conf/conf.token';
-import { FeatureCollection } from 'geojson';
+import {APP_ID, ENVIRONMENT_CONFIG, EnvironmentConfig} from 'wm-core/store/conf/conf.token';
+import {FeatureCollection, LineString, Point} from 'geojson';
 
 @Injectable({
   providedIn: 'root',
@@ -20,44 +20,32 @@ export class UgcService {
   ) {}
 
   deletePhoto(id: number): Observable<any> {
-    return this._http.get(
-      `${this.environment.api}/api/ugc/media/delete/${id}`,
-    );
+    return this._http.get(`${this.environment.api}/api/ugc/media/delete/${id}`);
   }
 
   deleteTrack(id: number): Observable<any> {
-    return this._http.get(
-      `${this.environment.api}/api/ugc/track/delete/${id}`,
-    );
+    return this._http.get(`${this.environment.api}/api/ugc/track/delete/${id}`);
   }
 
   deleteWaypoint(id: number): Observable<any> {
-    return this._http.get(
-      `${this.environment.api}/api/ugc/poi/delete/${id}`,
-    );
+    return this._http.get(`${this.environment.api}/api/ugc/poi/delete/${id}`);
   }
 
   async getUgcMedias(): Promise<FeatureCollection> {
     return await this._http
-      .get<FeatureCollection>(
-        `${this.environment.api}/api/ugc/media/index`,
-      )
+      .get<FeatureCollection>(`${this.environment.api}/api/ugc/media/index`)
       .toPromise();
   }
 
-  async getUgcPois(): Promise<FeatureCollection> {
+  async getUgcPois(): Promise<FeatureCollection<Point>> {
     return await this._http
-      .get<FeatureCollection>(
-        `${this.environment.api}/api/ugc/poi/index`,
-      )
+      .get<FeatureCollection<Point>>(`${this.environment.api}/api/ugc/poi/index`)
       .toPromise();
   }
 
-  async getUgcTracks(): Promise<FeatureCollection> {
+  async getUgcTracks(): Promise<FeatureCollection<LineString>> {
     return await this._http
-      .get<FeatureCollection>(
-        `${this.environment.api}/api/ugc/track/index`,
-      )
+      .get<FeatureCollection<LineString>>(`${this.environment.api}/api/ugc/track/index`)
       .toPromise();
   }
 
@@ -141,10 +129,7 @@ export class UgcService {
         },
       };
       const res = await this._http
-        .post<any>(
-          `${this.environment.api}/api/ugc/track/store`,
-          data
-        )
+        .post<any>(`${this.environment.api}/api/ugc/track/store`, data)
         .pipe(catchError(_ => null))
         .toPromise();
       return res;

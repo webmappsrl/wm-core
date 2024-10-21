@@ -11,7 +11,6 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {Chart, ChartDataset, registerables, Tick, TooltipItem, TooltipModel} from 'chart.js';
-import {CGeojsonLineStringFeature} from '../classes/features/cgeojson-line-string-feature';
 import {
   SLOPE_CHART_SLOPE_EASY,
   SLOPE_CHART_SLOPE_HARD,
@@ -25,7 +24,7 @@ import {ESlopeChartSurface} from '../types/eslope-chart.enum';
 import {ILineString} from '../types/model';
 import {ISlopeChartHoverElements} from '../types/slope-chart';
 import {Location} from '../types/location';
-import {Feature, Geometry} from 'geojson';
+import {Feature, Geometry, LineString, Position} from 'geojson';
 import {BehaviorSubject} from 'rxjs';
 import {filter, switchMap, take} from 'rxjs/operators';
 
@@ -317,16 +316,16 @@ export class WmSlopeChartComponent implements OnInit {
                   }
                 }
 
-                let coordinates: ILineString = <ILineString>locations.map(location => {
-                    // return this._mapService.coordsFromLonLat(
-                    return [location.longitude, location.latitude];
-                  }),
-                  surfaceTrack: CGeojsonLineStringFeature = new CGeojsonLineStringFeature({
-                    type: EGeojsonGeometryTypes.LINE_STRING,
-                    coordinates,
-                  });
-
-                surfaceTrack.setProperty('color', surfaceColor);
+                let coordinates: Position[] = <Position[]>(
+                  locations.map(location => [location.longitude, location.latitude])
+                );
+                const surfaceTrack: Feature<LineString> = {
+                  type: 'Feature',
+                  geometry: {type: 'LineString', coordinates},
+                  properties: {
+                    color: surfaceColor,
+                  },
+                };
 
                 this.hover.emit({
                   location: this._chartValues[(tooltip as any)?._tooltipItems?.[0]?.dataIndex],

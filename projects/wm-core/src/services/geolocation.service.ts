@@ -1,12 +1,12 @@
 import {Injectable} from '@angular/core';
 import {Platform} from '@ionic/angular';
 import {BehaviorSubject, ReplaySubject} from 'rxjs';
-import { CStopwatch } from 'wm-core/utils/cstopwatch';
-import {CGeojsonLineStringFeature} from '../classes/features/cgeojson-line-string-feature';
+import {CStopwatch} from 'wm-core/utils/cstopwatch';
 import {IGeolocationServiceState} from '../types/location';
 import {BackgroundGeolocationPlugin, Location} from '@capacitor-community/background-geolocation';
 import {registerPlugin} from '@capacitor/core';
 import {getDistance} from 'ol/sphere';
+import {Feature, LineString} from 'geojson';
 
 const backgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>('BackgroundGeolocation');
 @Injectable({
@@ -15,7 +15,7 @@ const backgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>('Backg
 export class GeolocationService {
   private _currentLocation: Location;
   private _recordStopwatch: CStopwatch;
-  private _recordedFeature: CGeojsonLineStringFeature;
+  private _recordedFeature: Feature<LineString>;
   private _state: IGeolocationServiceState = {
     isLoading: false,
     isActive: false,
@@ -44,7 +44,7 @@ export class GeolocationService {
     return this._recordStopwatch ? this._recordStopwatch.getTime() : 0;
   }
 
-  get recordedFeature(): CGeojsonLineStringFeature {
+  get recordedFeature(): Feature<LineString> {
     return this?._recordedFeature;
   }
 
@@ -112,7 +112,7 @@ export class GeolocationService {
    */
   startRecording(): void {
     this._recordStopwatch = new CStopwatch();
-    this._recordedFeature = new CGeojsonLineStringFeature();
+    this._recordedFeature = null;
     this.onStart$.next(true);
     this.onRecord$.next(true);
     this.onPause$.next(false);
@@ -137,16 +137,18 @@ export class GeolocationService {
   /**
    * Stop the geolocation service
    */
-  stopRecording(): CGeojsonLineStringFeature {
+  stopRecording(): Feature<LineString> {
     this._recordStopwatch.stop();
     return this._stopRecording();
   }
 
   private _addLocationToRecordedFeature(location: Location): void {
-    this._recordedFeature.addCoordinates(location);
-    const locations: Array<Location> = this._recordedFeature?.properties?.locations ?? [];
-    locations.push(location);
-    this._recordedFeature.setProperty('locations', locations);
+    if (this._recordedFeature) {
+      this._recordedFeature.geometry.coordinates.push([location.longitude, location.latitude]);
+      const locations: Array<Location> = this._recordedFeature?.properties?.locations ?? [];
+      locations.push(location);
+      this._recordedFeature.properties.locations = locations;
+    }
   }
 
   private _calculateSpeed(prevLocation: Location, currentLocation: Location): number {
@@ -269,7 +271,7 @@ export class GeolocationService {
   /**
    * Stop the location record
    */
-  private _stopRecording(): CGeojsonLineStringFeature {
+  private _stopRecording(): Feature<LineString> {
     this.onStart$.next(false);
     this.onRecord$.next(false);
     this.onPause$.next(false);

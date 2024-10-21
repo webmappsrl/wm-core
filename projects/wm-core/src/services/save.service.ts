@@ -1,15 +1,14 @@
 import {Injectable} from '@angular/core';
 import {forkJoin, from, Observable} from 'rxjs';
-import {CGeojsonLineStringFeature} from '../classes/features/cgeojson-line-string-feature';
 import {ESaveObjType} from '../types/save.enum';
 import {IRegisterItem, ITrack} from '../types/track';
-import {FeatureCollection, Feature} from 'geojson';
+import {FeatureCollection, Feature, LineString, Point} from 'geojson';
 import {EGeojsonGeometryTypes} from '../types/egeojson-geometry-types.enum';
-import { ISaveIndexObj } from 'wm-core/types/save';
-import { IPhotoItem, PhotoService } from './photo.service';
-import { StorageService } from './storage.service';
-import { UgcService } from './ugc.service';
-import { WaypointSave } from 'wm-core/types/waypoint';
+import {ISaveIndexObj} from 'wm-core/types/save';
+import {IPhotoItem, PhotoService} from './photo.service';
+import {StorageService} from './storage.service';
+import {UgcService} from './ugc.service';
+import {WaypointSave} from 'wm-core/types/waypoint';
 @Injectable({
   providedIn: 'root',
 })
@@ -117,10 +116,11 @@ export class SaveService {
       const element = wp.storedPhotoKeys[i];
       const photo = await this._getGenericById(element);
       if (photo != null) {
-        try{
+        try {
           photo.rawData = window.URL.createObjectURL(await this._photoService.getPhotoFile(photo));
+        } catch (err) {
+          console.log(err.message);
         }
-        catch (err) {console.log(err.message)}
         wp.photos.push(photo);
       }
     }
@@ -189,29 +189,29 @@ export class SaveService {
   }
 
   async syncUgc(): Promise<void> {
-    let _ugcUgcPois: FeatureCollection | null = null;
-    let _ugcUgcTracks: FeatureCollection | null = null;
+    let _ugcUgcPois: FeatureCollection<Point> | null = null;
+    let _ugcUgcTracks: FeatureCollection<LineString> | null = null;
     let _ugcUgcMedias: FeatureCollection | null = null;
-    
+
     try {
       _ugcUgcPois = await this._ugc.getUgcPois();
-      console.log("getUgcPois eseguito correttamente");
+      console.log('getUgcPois eseguito correttamente');
     } catch (error) {
-      console.error("Errore durante getUgcPois:", error);
+      console.error('Errore durante getUgcPois:', error);
     }
-    
+
     try {
       _ugcUgcTracks = await this._ugc.getUgcTracks();
-      console.log("getUgcTracks eseguito correttamente");
+      console.log('getUgcTracks eseguito correttamente');
     } catch (error) {
-      console.error("Errore durante getUgcTracks:", error);
+      console.error('Errore durante getUgcTracks:', error);
     }
-    
+
     try {
       _ugcUgcMedias = await this._ugc.getUgcMedias();
-      console.log("getUgcMedias eseguito correttamente");
+      console.log('getUgcMedias eseguito correttamente');
     } catch (error) {
-      console.error("Errore durante getUgcMedias:", error);
+      console.error('Errore durante getUgcMedias:', error);
     }
     const deviceUgcMedias: any[] = await this.getPhotos();
     const deviceUgcTracks = await this.getTracks();
@@ -490,14 +490,10 @@ export class SaveService {
     this.syncUgc();
   }
 
-  private _convertFeatureToITrack(feature: Feature): ITrack {
-    const prop = feature.properties;
+  private _convertFeatureToITrack(geojson: Feature<LineString>): ITrack {
+    const prop = geojson.properties;
     const rawData = prop.raw_data ? JSON.parse(prop.raw_data) : null;
     const metaData = prop.metadata ? JSON.parse(prop.metadata) : null;
-    let geojson: CGeojsonLineStringFeature =
-      Object.assign(new CGeojsonLineStringFeature(), feature.geometry) ?? null;
-    geojson.addProperties(rawData);
-    geojson.addProperties(metaData);
 
     const ret = {
       activity: rawData.activity ?? null,
@@ -520,7 +516,6 @@ export class SaveService {
   //getPhotoData
   private _convertFeatureToMedia(feature: Feature): IPhotoItem {
     const prop = feature.properties;
-    // const url = `https://_ugc.webmapp.it/storage/${prop.relative_url}`;
     const rawData = prop.raw_data ? JSON.parse(prop.raw_data) : null;
     return {
       photoURL: prop.url,
@@ -532,7 +527,7 @@ export class SaveService {
     } as IPhotoItem;
   }
 
-  private _convertFeatureToWaypointSave(feature: Feature): WaypointSave {
+  private _convertFeatureToWaypointSave(feature: Feature<Point>): WaypointSave {
     const prop = feature.properties;
     const rawData = prop.raw_data ? JSON.parse(prop.raw_data) : null;
     const ret = {
@@ -545,8 +540,8 @@ export class SaveService {
       nominatim: rawData.nominatim ?? null,
       photos: rawData.photos ?? [],
       position: {
-        longitude: (feature.geometry as any).coordinates[0],
-        latitude: (feature.geometry as any).coordinates[1],
+        longitude: feature.geometry.coordinates[0],
+        latitude: feature.geometry.coordinates[1],
       },
       title: prop.name ?? null,
       uuid: rawData.uuid,
@@ -584,25 +579,22 @@ export class SaveService {
   }
 
   private async _initTrack(track: ITrack): Promise<void> {
-    const gj = track.geojson;
-    try {
-      track.geojson = Object.assign(new CGeojsonLineStringFeature(), gj);
-    } catch (_) {}
     for (let i = 0; i < (track.storedPhotoKeys || []).length; i++) {
       const element = track.storedPhotoKeys[i];
       const photo = await this._getGenericById(element);
       if (photo != null) {
-        try{
+        try {
           photo.rawData = window.URL.createObjectURL(await this._photoService.getPhotoFile(photo));
+        } catch (err) {
+          console.error(err.message);
         }
-        catch (err) {console.error(err.message)}
         track.photos.push(photo);
       }
     }
     if (track.metadata && typeof track.metadata === 'string') {
       let metadata = JSON.parse(track.metadata);
       if (metadata && metadata.locations) {
-        track.geojson.setProperty('locations', metadata.locations);
+        track.geojson.properties.locations = metadata.locations;
       }
     }
   }
