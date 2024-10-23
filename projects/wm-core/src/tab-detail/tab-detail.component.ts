@@ -27,7 +27,7 @@ export class WmTabDetailComponent {
   slopeChartHover: EventEmitter<ISlopeChartHoverElements> =
     new EventEmitter<ISlopeChartHoverElements>();
 
-  configOptions$: Observable<any> = this._store.select(confOPTIONS);
+  confOptions$: Observable<any> = this._store.select(confOPTIONS);
   public route: IGeojsonFeature;
 
   constructor(private _store: Store<any>) {}
