@@ -29,7 +29,7 @@
       </ion-note>
     </ion-item>
   </ng-template>
-  <ion-item *ngIf="(confOptions$ | async)?.show_distance && properties?.distance as distance">
+  <ion-item *ngIf="(confOptions$ | async)?.showDistance && properties?.distance as distance">
     <i class="icon-outline-distance webmapp-pageroute-tabdetail-icon"> </i>
     <ion-label start class="webmapp-pageroute-tabdetail-label"
       >{{ "distance" | wmtrans }}
@@ -37,7 +37,7 @@
     <ion-note slot="end" class="webmapp-pageroute-tabdetail-value">{{ distance}}km</ion-note>
   </ion-item>
 
-  <ion-item *ngIf="(confOptions$ | async)?.['show_duration:forward'] && properties?.duration_forward as duration_forward">
+  <ion-item *ngIf="(confOptions$ | async)?.showDurationForward && properties?.duration_forward as duration_forward">
     <i class="icon-outline-duration webmapp-pageroute-tabdetail-icon"> </i>
     <ion-label start class="webmapp-pageroute-tabdetail-label">
       {{ (properties?.roundtrip ? "duration":"duration_forward") | wmtrans }}
@@ -47,7 +47,7 @@
     </ion-note>
   </ion-item>
 
-  <ion-item *ngIf="(confOptions$ | async)?.['show_duration:backward'] && !properties?.roundtrip && properties?.duration_backward as duration_backward">
+  <ion-item *ngIf="(confOptions$ | async)?.showDurationBackward && !properties?.roundtrip && properties?.duration_backward as duration_backward">
     <i class="icon-outline-duration webmapp-pageroute-tabdetail-icon"> </i>
     <ion-label start class="webmapp-pageroute-tabdetail-label"
       >{{ "duration_backward" | wmtrans }}
@@ -57,7 +57,7 @@
     </ion-note>
   </ion-item>
 
-  <ion-item *ngIf="(confOptions$ | async)?.show_ascent && properties?.ascent as ascent">
+  <ion-item *ngIf="(confOptions$ | async)?.showAscent && properties?.ascent as ascent">
     <i class="icon-outline-dislivello-positivo webmapp-pageroute-tabdetail-icon"> </i>
     <ion-label start class="webmapp-pageroute-tabdetail-label">
       {{"ascent" | wmtrans}}
@@ -65,7 +65,7 @@
     <ion-note slot="end" class="webmapp-pageroute-tabdetail-value"> {{ ascent }}m </ion-note>
   </ion-item>
 
-  <ion-item *ngIf="(confOptions$ | async)?.show_descent && !properties?.roundtrip && properties?.descent as descent">
+  <ion-item *ngIf="(confOptions$ | async)?.showDescent && !properties?.roundtrip && properties?.descent as descent">
     <i class="icon-outline-dislivello-negativo webmapp-pageroute-tabdetail-icon"> </i>
     <ion-label start class="webmapp-pageroute-tabdetail-label">
       {{ "descent" | wmtrans }}
@@ -73,7 +73,7 @@
     <ion-note slot="end" class="webmapp-pageroute-tabdetail-value"> {{ descent }}m</ion-note>
   </ion-item>
 
-  <ion-item *ngIf="(confOptions$ | async)?.['show_ele:from'] && properties?.ele_from as ele_from">
+  <ion-item *ngIf="(confOptions$ | async)?.showEleFrom && properties?.ele_from as ele_from">
     <i class="icon-outline-plus webmapp-pageroute-tabdetail-icon"> </i>
     <ion-label start class="webmapp-pageroute-tabdetail-label">
       {{ "ele_from" | wmtrans }}
@@ -81,7 +81,7 @@
     <ion-note slot="end" class="webmapp-pageroute-tabdetail-value">{{ ele_from }}m</ion-note>
   </ion-item>
 
-  <ion-item *ngIf="(confOptions$ | async)?.['show_ele:to'] && !properties?.roundtrip && properties?.ele_to as ele_to">
+  <ion-item *ngIf="(confOptions$ | async)?.showEleTo && !properties?.roundtrip && properties?.ele_to as ele_to">
     <i class="icon-outline-minus webmapp-pageroute-tabdetail-icon"> </i>
     <ion-label start class="webmapp-pageroute-tabdetail-label">
       {{ "ele_to" | wmtrans }}
@@ -89,7 +89,7 @@
     <ion-note slot="end" class="webmapp-pageroute-tabdetail-value">{{ ele_to }}m</ion-note>
   </ion-item>
 
-  <ion-item *ngIf="(confOptions$ | async)?.['show_ele:min'] && properties?.ele_min as ele_min">
+  <ion-item *ngIf="(confOptions$ | async)?.showEleMin && properties?.ele_min as ele_min">
     <i class="icon-outline-minus webmapp-pageroute-tabdetail-icon"> </i>
     <ion-label start class="webmapp-pageroute-tabdetail-label">
       {{ "ele_min" | wmtrans }}
@@ -97,7 +97,7 @@
     <ion-note slot="end" class="webmapp-pageroute-tabdetail-value">{{ ele_min }}m</ion-note>
   </ion-item>
 
-  <ion-item *ngIf="(confOptions$ | async)?.['show_ele:max'] && properties?.ele_max as ele_max">
+  <ion-item *ngIf="(confOptions$ | async)?.showEleMax && properties?.ele_max as ele_max">
     <i class="icon-outline-plus webmapp-pageroute-tabdetail-icon"> </i>
     <ion-label start class="webmapp-pageroute-tabdetail-label">
       {{ "ele_max" | wmtrans }}
