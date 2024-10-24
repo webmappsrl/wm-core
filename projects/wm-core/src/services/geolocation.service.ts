@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {Platform} from '@ionic/angular';
 import {BehaviorSubject, ReplaySubject} from 'rxjs';
 import { CStopwatch } from 'wm-core/utils/cstopwatch';
 import {CGeojsonLineStringFeature} from '../classes/features/cgeojson-line-string-feature';
@@ -7,8 +6,13 @@ import {IGeolocationServiceState} from '../types/location';
 import {BackgroundGeolocationPlugin, Location} from '@capacitor-community/background-geolocation';
 import {registerPlugin} from '@capacitor/core';
 import {getDistance} from 'ol/sphere';
+import { DeviceService } from './device.service';
 
-const backgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>('BackgroundGeolocation');
+export interface Watcher {
+  id: string;
+  type: 'web' | 'background';
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -22,7 +26,7 @@ export class GeolocationService {
     isRecording: false,
     isPaused: false,
   };
-  private _watcher: BehaviorSubject<{type: 'web' | 'background' | null, id: string | null}> = new BehaviorSubject<{type: 'web' | 'background' | null, id: string | null}>({type: null, id: null});
+  private _watcher: BehaviorSubject<Watcher> = new BehaviorSubject<Watcher>(null);
 
   get active(): boolean {
     return !!this?._state?.isActive;
@@ -60,7 +64,7 @@ export class GeolocationService {
   onRecord$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   onStart$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  constructor(private _platform: Platform) {}
+  constructor(private _daviceService: DeviceService) {}
 
   /**
    * Pause the geolocation record if active
@@ -92,7 +96,7 @@ export class GeolocationService {
    */
   start(): void {
     this.onStart$.next(true);
-    if (this._watcher.value.type === null) {
+    if (this._watcher.value == null) {
       this._webWatcher();
     }
   }
@@ -107,7 +111,7 @@ export class GeolocationService {
     this.onStart$.next(true);
     this.onRecord$.next(true);
     this.onPause$.next(false);
-    if (this._platform.is('ios') || this._platform.is('android') || this._platform.is('capacitor')) {
+    if (!this._daviceService.isBrowser) {
       this._clearCurrentWatcher();
       this._backgroundGeolocationWatcher();
     }
@@ -207,12 +211,15 @@ export class GeolocationService {
   }
 
   private _clearCurrentWatcher(): void {
-    if (this._watcher.value.type === 'web' && this._watcher.value.id !== null) {
-      navigator.geolocation.clearWatch(parseInt(this._watcher.value.id));
-    } else if (this._watcher.value.type === 'background' && this._watcher.value.id !== null) {
-      backgroundGeolocation.removeWatcher({ id: this._watcher.value.id });
+    const watcher = this._watcher.value;
+    if(watcher && watcher.id != null){
+      if (this._watcher.value.type === 'web') {
+        navigator.geolocation.clearWatch(+this._watcher.value.id);
+      } else {
+        backgroundGeolocation.removeWatcher({id: this._watcher.value.id});
+      }
+      this._watcher.next(null);
     }
-    this._watcher.next({type: null, id: null});
   }
 
   //TODO: da tipizzare la funzione
@@ -288,6 +295,8 @@ export class GeolocationService {
       },
       {maximumAge: 60000, timeout: 100, enableHighAccuracy: true},
     );
-    this._watcher.next({type: 'web', id: watcherId.toString()});
+    this._watcher.next({type: 'web', id: `${watcherId}`});
   }
 }
+
+const backgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>('BackgroundGeolocation');
