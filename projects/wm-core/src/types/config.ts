@@ -341,15 +341,15 @@ export interface IOPTIONS {
   voucherUrl?: string;
   showGpxDownload?: boolean;
   showKmlDownload?: boolean;
-  'show_duration:forward'?: boolean;
-  'show_duration:backward'?: boolean;
-  show_distance?: boolean;
-  show_ascent?: boolean;
-  show_descent?: boolean;
-  'show_ele:max'?: boolean;
-  'show_ele:min'?: boolean;
-  'show_ele:from'?: boolean;
-  'show_ele:to'?: boolean;
+  showDurationForward?: boolean;
+  showDurationBackward?: boolean;
+  showDistance?: boolean;
+  showAscent?: boolean;
+  showDescent?: boolean;
+  showEleMax?: boolean;
+  showEleMin?: boolean;
+  showEleFrom?: boolean;
+  showEleTo?: boolean;
   showGeojsonDownload?: boolean;
   showShapefileDownload?: boolean;
 }
