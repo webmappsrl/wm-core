@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {APP_ID, Inject, Injectable} from '@angular/core';
 import {Capacitor} from '@capacitor/core';
 import {
   Camera,
@@ -15,6 +15,9 @@ import {ActionSheetController} from '@ionic/angular';
 import {LangService} from 'wm-core/localization/lang.service';
 import {Location} from 'wm-core/types/location';
 import {DeviceService} from './device.service';
+import {Feature, Point} from 'geojson';
+import {generateUUID} from 'wm-core/utils/localForage';
+import {APP_VERSION} from 'wm-core/store/conf/conf.token';
 
 export interface IPhotoItem extends IRegisterItem {
   blob?: Blob;
@@ -37,10 +40,12 @@ export class PhotoService {
     private _geoLocationSvc: GeolocationService,
     private _lanSvc: LangService,
     private _actionSheetCtrl: ActionSheetController,
+    @Inject(APP_ID) public appId: string,
+    @Inject(APP_VERSION) public appVersion: string,
   ) {}
 
-  async addPhotos(): Promise<IPhotoItem[]> {
-    let retProm = new Promise<IPhotoItem[]>((resolve, reject) => {
+  async addPhotos(): Promise<Feature<Point>[]> {
+    let retProm = new Promise<Feature<Point>[]>((resolve, reject) => {
       this._actionSheetCtrl
         .create({
           header: this._lanSvc.instant("Origine dell'immagine"),
@@ -48,7 +53,7 @@ export class PhotoService {
             {
               text: this._lanSvc.instant('Scatta una foto'),
               handler: () => {
-                this.shotPhoto(false).then(photo => resolve([photo]));
+                this.shotPhoto().then(photo => resolve([photo]));
               },
             },
             {
@@ -116,14 +121,14 @@ export class PhotoService {
       try {
         blob = await this._http.get(photo.photoURL, {responseType: 'blob'}).toPromise();
       } catch (err) {
-        throw(err);
+        throw err;
       }
     }
     return blob;
   }
 
-  async getPhotos(dateLimit: Date = null): Promise<IPhotoItem[]> {
-    const res: IPhotoItem[] = [];
+  async getPhotos(dateLimit: Date = null): Promise<Feature<Point>[]> {
+    const res: Feature<Point>[] = [];
     let filePath = null;
     if (!this._deviceSvc.isBrowser) {
       if (!(await Camera.checkPermissions())) {
@@ -140,31 +145,46 @@ export class PhotoService {
       };
       const gallery = await Camera.pickImages(options);
       for (let i = 0; i < gallery.photos.length; i++) {
-        let data = Capacitor.convertFileSrc(gallery.photos[i].webPath); //TODO check source of file
-        filePath = gallery.photos[i].path;
-
-        res.push({
-          id: i + '',
-          photoURL: filePath,
-          datasrc: data,
-          description: '',
-          date: new Date(),
-          position: this._geoLocationSvc.location,
-          exif: gallery.photos[i].exif,
-        });
+        const location = this._geoLocationSvc.location;
+        const feature: Feature<Point> = {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [location.longitude, location.latitude],
+          },
+          properties: {
+            ...gallery.photos[i],
+            date: new Date(),
+            uuid: generateUUID(),
+            appId: this.appId,
+            appVersion: this.appVersion,
+          },
+        };
+        res.push(feature);
       }
       return res;
     } else {
       const max = 1 + Math.random() * 8;
       for (let i = 0; i < max; i++) {
-        res.push({
-          id: '' + i + 1,
-          photoURL: `https://picsum.photos/50${i}/75${i}`,
-          datasrc: `https://picsum.photos/50${i}/75${i}`,
-          description: '',
-          date: new Date(),
-          position: this._geoLocationSvc.location,
-        });
+        const fakeFeature: Feature<Point> = {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [
+              this._geoLocationSvc.location.longitude,
+              this._geoLocationSvc.location.latitude,
+            ],
+          },
+          properties: {
+            photoURL: `https://picsum.photos/50${i}/75${i}`,
+            datasrc: `https://picsum.photos/50${i}/75${i}`,
+            date: new Date(),
+            uuid: generateUUID(),
+            appId: this.appId,
+            appVersion: this.appVersion,
+          },
+        };
+        res.push(fakeFeature);
       }
       return res;
     }
@@ -233,7 +253,7 @@ export class PhotoService {
     }
   }
 
-  async shotPhoto(allowlibrary): Promise<IPhotoItem> {
+  async shotPhoto(): Promise<Feature<Point>> {
     if (!this._geoLocationSvc.active) await this._geoLocationSvc.start();
     const photo = await Camera.getPhoto({
       quality: 90,
@@ -253,16 +273,23 @@ export class PhotoService {
       promptLabelPhoto: this._lanSvc.instant('Dalla libreria'), //string
       promptLabelPicture: this._lanSvc.instant('Scatta una foto'), //string
     });
-    const res: IPhotoItem = {
-      id: '1',
-      photoURL: photo.path,
-      datasrc: Capacitor.convertFileSrc(photo.webPath),
-      description: '',
-      date: new Date(),
-      position: this._geoLocationSvc.location,
-      exif: photo.exif,
+
+    const location = this._geoLocationSvc.location;
+    const feature: Feature<Point> = {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [location.longitude, location.latitude],
+      },
+      properties: {
+        ...photo,
+        date: new Date(),
+        uuid: generateUUID(),
+        appId: this.appId,
+        appVersion: this.appVersion,
+      },
     };
-    return res;
+    return feature;
   }
 }
 

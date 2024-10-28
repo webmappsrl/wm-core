@@ -6,6 +6,7 @@ import tokml from 'geojson-to-kml';
 import {DeviceService} from 'wm-core/services/device.service';
 import {WmLoadingService} from 'wm-core/services/loading.service';
 import {Share} from '@capacitor/share';
+import {Feature, LineString, Point} from 'geojson';
 @Component({
   selector: 'wm-export-to-btn',
   templateUrl: './export-to.component.html',
@@ -14,6 +15,7 @@ import {Share} from '@capacitor/share';
   encapsulation: ViewEncapsulation.None,
 })
 export class ExportToBtnComponent {
+  @Input() feature: Feature<LineString | Point>;
   @Input() input: any;
   @Input() to: 'gpx' | 'kml' | 'geojson' | 'json' = 'gpx';
 
@@ -27,40 +29,81 @@ export class ExportToBtnComponent {
     this._loadingSvc.show(`build ${this.to} file`);
     let output;
     let g;
-    try {
-      if (this.input == null && this.input.geojson == null) {
-        throw new Error('no data to export');
+    if (this.feature != null) {
+      try {
+        g = this.feature;
+        const title = this.feature.properties.title;
+        g.properties = {
+          ...g.properties,
+          ...this.feature.properties.rawData,
+          ...{title},
+        };
+        switch (this.to) {
+          case 'gpx':
+            const options = {
+              metadata: {
+                name: title,
+                ...g.properties,
+              },
+            };
+            output = GeoJsonToGpx(g, options);
+            output = new XMLSerializer().serializeToString(output);
+            break;
+          case 'kml':
+            g.properties = {...g.properties, ...{title: this.feature.properties.name}};
+            output = tokml(g);
+            break;
+          case 'geojson':
+            output = JSON.stringify(g);
+            break;
+          case 'json':
+            output = JSON.stringify(this.feature);
+            break;
+          default:
+            throw new Error('Unsupported format');
+        }
+      } catch (e) {
+        console.error(e);
+        console.log('---------');
+        this._loadingSvc.close(`build ${this.to} file`);
       }
-      g = this._toGeoJSON(this.input.geojson);
-      g.properties = {...g.properties, ...this.input.rawData, ...{title: this.input.title}};
-      switch (this.to) {
-        case 'gpx':
-          const options = {
-            metadata: {
-              name: this.input.title,
-              ...g.properties,
-            },
-          };
-          output = GeoJsonToGpx(g, options);
-          output = new XMLSerializer().serializeToString(output);
-          break;
-        case 'kml':
-          output = tokml(g);
-          break;
-        case 'geojson':
-          output = JSON.stringify(g);
-          break;
-        case 'json':
-          output = JSON.stringify(this.input);
-          break;
-        default:
-          throw new Error('Unsupported format');
+    } else {
+      try {
+        if (this.input == null && this.input.geojson == null) {
+          throw new Error('no data to export');
+        }
+        g = this._toGeoJSON(this.input.geojson);
+        g.properties = {...g.properties, ...this.input.rawData, ...{title: this.input.title}};
+        switch (this.to) {
+          case 'gpx':
+            const options = {
+              metadata: {
+                name: this.input.title,
+                ...g.properties,
+              },
+            };
+            output = GeoJsonToGpx(g, options);
+            output = new XMLSerializer().serializeToString(output);
+            break;
+          case 'kml':
+            output = tokml(g);
+            break;
+          case 'geojson':
+            output = JSON.stringify(g);
+            break;
+          case 'json':
+            output = JSON.stringify(this.input);
+            break;
+          default:
+            throw new Error('Unsupported format');
+        }
+      } catch (e) {
+        console.error(e);
+        console.log('---------');
+        this._loadingSvc.close(`build ${this.to} file`);
       }
-    } catch (e) {
-      console.error(e);
-      console.log('---------');
-      this._loadingSvc.close(`build ${this.to} file`);
     }
+
     this._loadingSvc.close(`build ${this.to} file`);
     this.save(output, this.to, g.properties);
   }

@@ -30,9 +30,9 @@ export const buildStats = (
   if (features == null) return {};
   const stats: {[identifier: string]: any} = {};
   features.forEach(feature => {
-      // @ts-ignore
+    // @ts-ignore
     const taxonomyIdentifiers = feature?.properties?.taxonomyIdentifiers || [];
-    taxonomyIdentifiers.forEach((taxonomyIdentifier:any) => {
+    taxonomyIdentifiers.forEach((taxonomyIdentifier: any) => {
       // @ts-ignore
       stats[taxonomyIdentifier] =
         stats[taxonomyIdentifier] != null ? stats[taxonomyIdentifier] + 1 : 1;
@@ -56,8 +56,3 @@ export const filterFeatureCollectionByInputTyped = (
     }),
   } as FeatureCollection;
 };
-
-export  const apiLocalForage= localforage.createInstance({
-  name: 'wm-core',
-  storeName: 'wm-api',
-});

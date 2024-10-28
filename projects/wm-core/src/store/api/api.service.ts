@@ -6,22 +6,24 @@ import {FeatureCollection} from 'geojson';
 import {from, Observable, of} from 'rxjs';
 // @ts-ignore
 import {catchError, switchMap, tap} from 'rxjs/operators';
-import { IRESPONSE } from 'wm-core/types/elastic';
+import {IRESPONSE} from 'wm-core/types/elastic';
 import {WmLoadingService} from '../../services/loading.service';
 import {Filter, SliderFilter} from '../../types/config';
 import {EnvironmentConfig, ENVIRONMENT_CONFIG} from '../conf/conf.token';
-import {apiLocalForage} from './utils';
+import {synchronizedApi} from 'wm-core/utils/localForage';
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  private _elasticApi:string = this.environment.elasticApi;
+  private _elasticApi: string = this.environment.elasticApi;
   private _geohubAppId: number = this.environment.geohubId;
   private _queryDic: {[query: string]: any} = {};
-  private _shard = 'geohub_app'
+  private _shard = 'geohub_app';
 
   private get _baseUrl(): string {
-    return this._geohubAppId ? `${this._elasticApi}/?app=${this._shard}_${this._geohubAppId}` : this._elasticApi;
+    return this._geohubAppId
+      ? `${this._elasticApi}/?app=${this._shard}_${this._geohubAppId}`
+      : this._elasticApi;
   }
 
   /**
@@ -37,9 +39,7 @@ export class ApiService {
     this._elasticApi = this.environment.elasticApi;
     const hostname: string = window.location.hostname;
     if (hostname.indexOf('localhost') < 0) {
-      const matchedHost = Object.keys(hostToGeohubAppId).find((host) =>
-        hostname.includes(host)
-      );
+      const matchedHost = Object.keys(hostToGeohubAppId).find(host => hostname.includes(host));
 
       if (matchedHost) {
         this._geohubAppId = hostToGeohubAppId[matchedHost];
@@ -62,7 +62,7 @@ export class ApiService {
 
   public getPois(): Observable<FeatureCollection> {
     const poisUrl = `${this.environment.awsApi}/pois/${this._geohubAppId}.geojson`;
-    return from(apiLocalForage.getItem(poisUrl)).pipe(
+    return from(synchronizedApi.getItem(poisUrl)).pipe(
       switchMap((cachedData: string | null) => {
         if (cachedData != null) {
           const parsedData = JSON.parse(cachedData as string);
@@ -71,17 +71,16 @@ export class ApiService {
           this._loadingSvc.show('Loading pois...');
           return this._http.get<FeatureCollection>(poisUrl).pipe(
             tap(pois => {
-              apiLocalForage.setItem(poisUrl, JSON.stringify(pois));
+              synchronizedApi.setItem(poisUrl, JSON.stringify(pois));
               this._loadingSvc.close('Loading pois...');
             }),
-            catchError((_) => { 
+            catchError(_ => {
               this._loadingSvc.close('Loading pois...');
-              return([]);
-             }),
+              return [];
+            }),
           );
         }
-
-}),
+      }),
     );
   }
 
@@ -140,7 +139,7 @@ export class ApiService {
   }
 }
 
-export const hostToGeohubAppId: { [key: string]: number } = {
+export const hostToGeohubAppId: {[key: string]: number} = {
   'sentieri.caiparma.it': 33,
   'motomappa.motoabbigliamento.it': 53,
   'maps.parcoforestecasentinesi.it': 49,
@@ -149,5 +148,5 @@ export const hostToGeohubAppId: { [key: string]: number } = {
   'maps.caipontedera.it': 59,
   'maps.parcapuane.it': 62,
   'fiemaps.it': 29,
-  'fiemaps.eu': 29
+  'fiemaps.eu': 29,
 };

@@ -2,11 +2,12 @@ import {Injectable} from '@angular/core';
 import {Platform} from '@ionic/angular';
 import {BehaviorSubject, ReplaySubject} from 'rxjs';
 import {CStopwatch} from 'wm-core/utils/cstopwatch';
-import {IGeolocationServiceState} from '../types/location';
 import {BackgroundGeolocationPlugin, Location} from '@capacitor-community/background-geolocation';
 import {registerPlugin} from '@capacitor/core';
 import {getDistance} from 'ol/sphere';
-import {Feature, LineString} from 'geojson';
+import {LineString} from 'geojson';
+import {WmFeature} from '@wm-types/feature';
+import {IGeolocationServiceState} from 'wm-core/types/location';
 
 const backgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>('BackgroundGeolocation');
 @Injectable({
@@ -15,7 +16,7 @@ const backgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>('Backg
 export class GeolocationService {
   private _currentLocation: Location;
   private _recordStopwatch: CStopwatch;
-  private _recordedFeature: Feature<LineString>;
+  private _recordedFeature: WmFeature<LineString>;
   private _state: IGeolocationServiceState = {
     isLoading: false,
     isActive: false,
@@ -44,7 +45,7 @@ export class GeolocationService {
     return this._recordStopwatch ? this._recordStopwatch.getTime() : 0;
   }
 
-  get recordedFeature(): Feature<LineString> {
+  get recordedFeature(): WmFeature<LineString> {
     return this?._recordedFeature;
   }
 
@@ -137,7 +138,7 @@ export class GeolocationService {
   /**
    * Stop the geolocation service
    */
-  stopRecording(): Feature<LineString> {
+  stopRecording(): WmFeature<LineString> {
     this._recordStopwatch.stop();
     return this._stopRecording();
   }
@@ -271,7 +272,7 @@ export class GeolocationService {
   /**
    * Stop the location record
    */
-  private _stopRecording(): Feature<LineString> {
+  private _stopRecording(): WmFeature<LineString> {
     this.onStart$.next(false);
     this.onRecord$.next(false);
     this.onPause$.next(false);

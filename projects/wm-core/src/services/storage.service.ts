@@ -9,11 +9,19 @@ import {Storage} from '@ionic/storage-angular';
 import {ReplaySubject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 import {Md5} from 'ts-md5/dist/md5';
-import {Filesystem, Directory, Encoding} from '@capacitor/filesystem';
 import {IConfig} from 'wm-core/types/config';
-import { CONFIG_JSON_STORAGE_KEY, IMAGE_STORAGE_PREFIX, INITIALIZED_FLAG_STORAGE_KEY, LANGUAGE_STORAGE_KEY, MBTILES_STORAGE_PREFIX, POI_STORAGE_PREFIX, TRACK_STORAGE_PREFIX, USER_STORAGE_KEY } from 'wm-core/constants/storage';
-import { IGeojsonFeature, IGeojsonFeatureDownloaded, IGeojsonPoiDetailed } from 'wm-core/types/model';
-import { IUser } from 'wm-core/store/auth/auth.model';
+import {
+  CONFIG_JSON_STORAGE_KEY,
+  IMAGE_STORAGE_PREFIX,
+  INITIALIZED_FLAG_STORAGE_KEY,
+  LANGUAGE_STORAGE_KEY,
+  MBTILES_STORAGE_PREFIX,
+  POI_STORAGE_PREFIX,
+  TRACK_STORAGE_PREFIX,
+  USER_STORAGE_KEY,
+} from 'wm-core/constants/storage';
+import {IGeojsonFeature, IGeojsonFeatureDownloaded, IGeojsonPoiDetailed} from 'wm-core/types/model';
+import {IUser} from 'wm-core/store/auth/auth.model';
 
 @Injectable({
   providedIn: 'root',
@@ -91,7 +99,7 @@ export class StorageService {
     return this._get(`${POI_STORAGE_PREFIX}-${id}`);
   }
 
-  async getTrack(id: string | number): Promise<IGeojsonFeatureDownloaded> {
+  async getEcTrack(id: string | number): Promise<IGeojsonFeatureDownloaded> {
     return this._get(`${TRACK_STORAGE_PREFIX}-${id}`);
   }
 

@@ -3,8 +3,8 @@ import {Inject, Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {ICONF} from '../../types/config';
 import {ENVIRONMENT_CONFIG, EnvironmentConfig} from './conf.token';
-import {apiLocalForage} from '../api/utils';
-import { hostToGeohubAppId } from '../api/api.service';
+import {hostToGeohubAppId} from '../api/api.service';
+import {synchronizedApi} from 'wm-core/utils/localForage';
 @Injectable({
   providedIn: 'root',
 })
@@ -37,9 +37,7 @@ export class ConfService {
   ) {
     const hostname: string = window.location.hostname;
     if (hostname.indexOf('localhost') < 0) {
-      const matchedHost = Object.keys(hostToGeohubAppId).find((host) =>
-        hostname.includes(host)
-      );
+      const matchedHost = Object.keys(hostToGeohubAppId).find(host => hostname.includes(host));
 
       if (matchedHost) {
         this._geohubAppId = hostToGeohubAppId[matchedHost];
@@ -55,7 +53,7 @@ export class ConfService {
   public getConf(): Observable<ICONF> {
     return new Observable<ICONF>(observer => {
       const url = `${this.config.awsApi}/conf/${this._geohubAppId}.json`;
-      apiLocalForage.getItem(url).then((cachedData: unknown) => {
+      synchronizedApi.getItem(url).then((cachedData: unknown) => {
         if (cachedData) {
           const parsedData = JSON.parse(cachedData as string);
           observer.next(parsedData);
@@ -63,7 +61,7 @@ export class ConfService {
         }
         this._http.get<ICONF>(url).subscribe(
           conf => {
-            apiLocalForage.setItem(url, JSON.stringify(conf));
+            synchronizedApi.setItem(url, JSON.stringify(conf));
             observer.next(conf);
             observer.complete();
           },
@@ -75,7 +73,7 @@ export class ConfService {
     });
   }
 
-  public getHost(): string | undefined{
+  public getHost(): string | undefined {
     const host = Object.entries(hostToGeohubAppId).find(([key, val]) => val === this._geohubAppId);
     return host ? host[0] : undefined;
   }

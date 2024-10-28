@@ -4,9 +4,9 @@ import * as AuthActions from './auth.actions';
 import {catchError, filter, map, switchMap, tap} from 'rxjs/operators';
 import {AuthService} from './auth.service';
 import {of} from 'rxjs';
-import {AlertController, NavController} from '@ionic/angular';
+import {AlertController} from '@ionic/angular';
 import {LangService} from 'wm-core/localization/lang.service';
-import { SaveService } from 'wm-core/services/save.service';
+import {UgcService} from 'wm-core/services/ugc.service';
 
 @Injectable()
 export class AuthEffects {
@@ -94,7 +94,6 @@ export class AuthEffects {
           AuthActions.loadAuthsFailure,
         ),
         filter(r => r != null && r.error.error.error != 'Unauthorized'),
-
       ),
     {dispatch: false},
   );
@@ -117,7 +116,7 @@ export class AuthEffects {
         switchMap(alert => {
           alert.present();
           setTimeout(() => {
-            this._saveSvc.syncUgc();
+            this._ugcSvc.syncUgcFromCloud();
           }, 2000);
 
           return alert.onWillDismiss();
@@ -154,6 +153,6 @@ export class AuthEffects {
     private _authSvc: AuthService,
     private _alertCtrl: AlertController,
     private _langSvc: LangService,
-    private _saveSvc: SaveService,
+    private _ugcSvc: UgcService,
   ) {}
 }

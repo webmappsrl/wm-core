@@ -1,11 +1,11 @@
 export class OfflineCallbackManager {
-    static offlineCallback: (src: string) => Promise<ArrayBuffer>;
+  static offlineCallback: (src: string) => Promise<ArrayBuffer | string>;
 
-    static getOfflineCallback(): (src: string) => Promise<ArrayBuffer> {
-      return this.offlineCallback;
-    }
+  static getOfflineCallback(): (src: string) => Promise<ArrayBuffer | string> {
+    return this.offlineCallback;
+  }
 
-    static setOfflineCallback(callback: (src: string) => Promise<ArrayBuffer>): void {
-      this.offlineCallback = callback;
-    }
+  static setOfflineCallback(callback: (src: string) => Promise<ArrayBuffer | string>): void {
+    this.offlineCallback = callback;
+  }
 }

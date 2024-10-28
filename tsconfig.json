@@ -16,12 +16,13 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "wm-core/*": ["projects/wm-core/src/*"]
+      "wm-core/*": ["projects/wm-core/src/*"],
+      "@wm-types/*": ["../wm-types/src/*"]
     }
   },
   "angularCompilerOptions": {
     "strictTemplates": true
   },
-  "esModuleInterop": true, // <--------------------- ADD THIS LINE
-  "allowSyntheticDefaultImports": true // <--------------------- ADD THIS LINE
+  "esModuleInterop": true,
+  "allowSyntheticDefaultImports": true
 }
