@@ -1,3 +1,0 @@
-[submodule "projects/wm-core/src/shared/wm-types"]
-	path = projects/wm-core/src/shared/wm-types
-	url = https://github.com/webmappsrl/wm-types.git
