@@ -1,3 +1,4 @@
+<ng-container *ngIf="confOptions$ | async as confOptions">
 <ion-list *ngIf="properties">
   <ion-item *ngIf="properties?.from as from">
     <i class="icon-outline-pin webmapp-pageroute-tabdetail-icon"> </i>
@@ -29,7 +30,7 @@
       </ion-note>
     </ion-item>
   </ng-template>
-  <ng-container *ngIf="(confOptions$ | async)?.showDistance">
+  <ng-container *ngIf="confOptions.showDistance">
     <ion-item *ngIf="properties?.distance as distance">
       <i class="icon-outline-distance webmapp-pageroute-tabdetail-icon"> </i>
       <ion-label start class="webmapp-pageroute-tabdetail-label">
@@ -39,7 +40,7 @@
     </ion-item>
   </ng-container>
 
-  <ng-container *ngIf="(confOptions$ | async)?.showDurationForward">
+  <ng-container *ngIf="confOptions.showDurationForward">
     <ion-item *ngIf="properties?.duration_forward as duration_forward">
       <i class="icon-outline-duration webmapp-pageroute-tabdetail-icon"> </i>
       <ion-label start class="webmapp-pageroute-tabdetail-label">
@@ -51,7 +52,7 @@
     </ion-item>
   </ng-container>
   
-  <ng-container *ngIf="(confOptions$ | async)?.showDurationBackward">
+  <ng-container *ngIf="confOptions.showDurationBackward">
     <ion-item *ngIf="!properties?.roundtrip && properties?.duration_backward as duration_backward">
       <i class="icon-outline-duration webmapp-pageroute-tabdetail-icon"> </i>
       <ion-label start class="webmapp-pageroute-tabdetail-label">
@@ -63,7 +64,7 @@
     </ion-item>
   </ng-container>
   
-  <ng-container *ngIf="(confOptions$ | async)?.showAscent">
+  <ng-container *ngIf="confOptions.showAscent">
     <ion-item *ngIf="properties?.ascent as ascent">
       <i class="icon-outline-dislivello-positivo webmapp-pageroute-tabdetail-icon"> </i>
       <ion-label start class="webmapp-pageroute-tabdetail-label">
@@ -75,7 +76,7 @@
     </ion-item>
   </ng-container>
   
-  <ng-container *ngIf="(confOptions$ | async)?.showDescent">
+  <ng-container *ngIf="confOptions.showDescent">
     <ion-item *ngIf="!properties?.roundtrip && properties?.descent as descent">
       <i class="icon-outline-dislivello-negativo webmapp-pageroute-tabdetail-icon"> </i>
       <ion-label start class="webmapp-pageroute-tabdetail-label">
@@ -87,7 +88,7 @@
     </ion-item>
   </ng-container>
   
-  <ng-container *ngIf="(confOptions$ | async)?.showEleFrom">
+  <ng-container *ngIf="confOptions.showEleFrom">
     <ion-item *ngIf="properties?.ele_from as ele_from">
       <i class="icon-outline-plus webmapp-pageroute-tabdetail-icon"> </i>
       <ion-label start class="webmapp-pageroute-tabdetail-label">
@@ -99,7 +100,7 @@
     </ion-item>
   </ng-container>
   
-  <ng-container *ngIf="(confOptions$ | async)?.showEleTo">
+  <ng-container *ngIf="confOptions.showEleTo">
     <ion-item *ngIf="!properties?.roundtrip && properties?.ele_to as ele_to">
       <i class="icon-outline-minus webmapp-pageroute-tabdetail-icon"> </i>
       <ion-label start class="webmapp-pageroute-tabdetail-label">
@@ -111,7 +112,7 @@
     </ion-item>
   </ng-container>
   
-  <ng-container *ngIf="(confOptions$ | async)?.showEleMin">
+  <ng-container *ngIf="confOptions.showEleMin">
     <ion-item *ngIf="properties?.ele_min as ele_min">
       <i class="icon-outline-minus webmapp-pageroute-tabdetail-icon"> </i>
       <ion-label start class="webmapp-pageroute-tabdetail-label">
@@ -123,7 +124,7 @@
     </ion-item>
   </ng-container>
   
-  <ng-container *ngIf="(confOptions$ | async)?.showEleMax">
+  <ng-container *ngIf="confOptions.showEleMax">
     <ion-item *ngIf="properties?.ele_max as ele_max">
       <i class="icon-outline-plus webmapp-pageroute-tabdetail-icon"> </i>
       <ion-label start class="webmapp-pageroute-tabdetail-label">
@@ -135,3 +136,4 @@
     </ion-item>
   </ng-container>  
 </ion-list>
+</ng-container>
