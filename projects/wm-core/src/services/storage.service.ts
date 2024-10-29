@@ -149,7 +149,7 @@ export class StorageService {
     return this._remove(`${POI_STORAGE_PREFIX}-${id}`);
   }
 
-  async removeTrack(id: string | number): Promise<void> {
+  async removeEcTrack(id: string | number): Promise<void> {
     return this._remove(`${TRACK_STORAGE_PREFIX}-${id}`);
   }
 

@@ -116,7 +116,7 @@ export class AuthEffects {
         switchMap(alert => {
           alert.present();
           setTimeout(() => {
-            this._ugcSvc.syncUgcFromCloud();
+            this._ugcSvc.syncUgc();
           }, 2000);
 
           return alert.onWillDismiss();

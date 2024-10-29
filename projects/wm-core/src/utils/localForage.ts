@@ -3,25 +3,7 @@ import {GeoJsonProperties, LineString, Point} from 'geojson';
 import * as localforage from 'localforage';
 import {downloadTiles, getTilesByGeometry, removeTiles} from '../../../../../map-core/src/utils';
 
-export async function downloadFile(url: string): Promise<ArrayBuffer | null> {
-  if (!isValidUrl(url)) {
-    console.warn(`Invalid URL: ${url}`);
-    return null;
-  }
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      console.warn(`Failed to fetch ${url}`);
-      return null;
-    }
-    return response.arrayBuffer();
-  } catch (e) {
-    console.warn(`Failed to fetch ${url}`);
-    return null;
-  }
-}
-
-export async function downloadTrack(
+export async function downloadEcTrack(
   trackid: string,
   track: WmFeature<LineString>,
   callBackStatusFn = updateStatus,
@@ -30,10 +12,28 @@ export async function downloadTrack(
   const status = {finish: false, map: 0, media: 0, data: 0};
   const tiles = getTilesByGeometry(track.geometry);
   totalSize += await downloadTiles(tiles, trackid, callBackStatusFn);
-  totalSize += await saveTrack(trackid, track, callBackStatusFn);
+  totalSize += await saveEcTrack(trackid, track, callBackStatusFn);
   track.properties.size = totalSize;
-  await saveTrack(trackid, track, callBackStatusFn);
+  await saveEcTrack(trackid, track, callBackStatusFn);
   return Promise.resolve(totalSize);
+}
+
+export async function downloadFile(url: string): Promise<ArrayBuffer | null> {
+  if (!isValidUrl(url)) {
+    console.warn(`downloadFile: Invalid URL ${url}`);
+    return null;
+  }
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.warn(`downloadFile: Failed to fetch ${url}`);
+      return null;
+    }
+    return response.arrayBuffer();
+  } catch (e) {
+    console.warn(`downloadFile: Failed to fetch ${url}`);
+    return null;
+  }
 }
 
 export function findImgInsideProperties(
@@ -84,8 +84,8 @@ export function generateUUID(): string {
 
 export async function getDeviceUgcMedia(uuid: string): Promise<WmFeature<Media> | null> {
   return handleAsync(
-    deviceUgcMedia.getItem<WmFeature<Media>>(uuid),
-    'Failed to get device UGC media',
+    deviceUgcMedia.getItem<WmFeature<Media>>(`${uuid}`),
+    'getDeviceUgcMedia: Failed',
   );
 }
 
@@ -95,30 +95,30 @@ export async function getDeviceUgcMedias(): Promise<WmFeature<Media>[]> {
 }
 
 export async function getDeviceUgcPoi(uuid: string): Promise<WmFeature<Point> | null> {
-  return handleAsync(deviceUgcPoi.getItem<WmFeature<Point>>(uuid), 'Failed to get device UGC POI');
+  return handleAsync(deviceUgcPoi.getItem<WmFeature<Point>>(`${uuid}`), 'getDeviceUgcPoi: Failed');
 }
 
 export async function getDeviceUgcPois(): Promise<WmFeature<Point>[]> {
-  const keys = await handleAsync(deviceUgcPoi.keys(), 'Failed to get device UGC POI keys');
+  const keys = await handleAsync(deviceUgcPoi.keys(), 'getDeviceUgcPois: Failed');
   return keys ? await Promise.all(keys.map(key => getDeviceUgcPoi(key))) : [];
 }
 
 export async function getDeviceUgcTrack(uuid: string): Promise<WmFeature<LineString> | null> {
   return handleAsync(
-    deviceUgcTrack.getItem<WmFeature<LineString>>(uuid),
-    'Failed to get device UGC track',
+    deviceUgcTrack.getItem<WmFeature<LineString>>(`${uuid}`),
+    'getDeviceUgcTrack: Failed',
   );
 }
 
 export async function getDeviceUgcTracks(): Promise<WmFeature<LineString>[]> {
-  const keys = await handleAsync(deviceUgcTrack.keys(), 'Failed to get device UGC track keys');
+  const keys = await handleAsync(deviceUgcTrack.keys(), 'getDeviceUgcTracks: Failed');
   return keys ? await Promise.all(keys.map(key => getDeviceUgcTrack(key))) : [];
 }
 
 export async function getEcTrack(trackId: string): Promise<WmFeature<LineString> | null> {
   return handleAsync(
-    synchronizedEctrack.getItem<WmFeature<LineString>>(trackId),
-    'Failed to get track',
+    synchronizedEctrack.getItem<WmFeature<LineString>>(`${trackId}`),
+    'getEcTrack: Failed',
   );
 }
 
@@ -128,52 +128,55 @@ export async function getEcTracks(): Promise<WmFeature<LineString>[]> {
 }
 
 export async function getImg(url: string): Promise<ArrayBuffer | string> {
-  const res = await handleAsync(
-    synchronizedImg.getItem<ArrayBuffer>(url),
-    'Failed to get img track',
-  );
+  const res = await handleAsync(synchronizedImg.getItem<ArrayBuffer>(`${url}`), 'getImg: Failed');
   return res ?? url;
 }
 
 export async function getSynchronizedUgcMedia(id: string): Promise<WmFeature<Media> | null> {
-  return handleAsync(synchronizedUgcMedia.getItem<WmFeature<Media>>(id), 'Failed to get UGC media');
+  return handleAsync(
+    synchronizedUgcMedia.getItem<WmFeature<Media>>(`${id}`),
+    'getSynchronizedUgcMedia: Failed',
+  );
 }
 
 export async function getSynchronizedUgcMedias(): Promise<WmFeature<Media>[]> {
-  const keys = await handleAsync(synchronizedUgcMedia.keys(), 'Failed to get UGC media keys');
+  const keys = await handleAsync(synchronizedUgcMedia.keys(), 'getSynchronizedUgcMedias: Failed');
   return keys ? await Promise.all(keys.map(key => getSynchronizedUgcMedia(key))) : [];
 }
 
 export async function getSynchronizedUgcPoi(id: string): Promise<WmFeature<Point> | null> {
-  return handleAsync(synchronizedUgcPoi.getItem<WmFeature<Point>>(id), 'Failed to get UGC POI');
+  return handleAsync(
+    synchronizedUgcPoi.getItem<WmFeature<Point>>(`${id}`),
+    'getSynchronizedUgcPoi: Failed',
+  );
 }
 
 export async function getSynchronizedUgcPois(): Promise<WmFeature<Point>[]> {
-  const keys = await handleAsync(synchronizedUgcPoi.keys(), 'Failed to get UGC POI keys');
+  const keys = await handleAsync(synchronizedUgcPoi.keys(), 'getSynchronizedUgcPois: Failed');
   return keys ? await Promise.all(keys.map(key => getSynchronizedUgcPoi(key))) : [];
 }
 
 export async function getSynchronizedUgcTrack(id: string): Promise<WmFeature<LineString> | null> {
   return handleAsync(
-    synchronizedUgcTrack.getItem<WmFeature<LineString>>(id),
-    'Failed to get UGC track',
+    synchronizedUgcTrack.getItem<WmFeature<LineString>>(`${id}`),
+    'getSynchronizedUgcTrack: Failed',
   );
 }
 
 export async function getSynchronizedUgcTracks(): Promise<WmFeature<LineString>[]> {
-  const keys = await handleAsync(synchronizedUgcTrack.keys(), 'Failed to get UGC track keys');
+  const keys = await handleAsync(synchronizedUgcTrack.keys(), 'getSynchronizedUgcTracks: Failed');
   return keys ? await Promise.all(keys.map(key => getSynchronizedUgcTrack(key))) : [];
 }
 
 export async function getUgcMedia(mediaId: string): Promise<WmFeature<Media> | null> {
   return handleAsync(
-    synchronizedUgcMedia.getItem<WmFeature<Media>>(mediaId),
-    'Failed to get media',
+    synchronizedUgcMedia.getItem<WmFeature<Media>>(`${mediaId}`),
+    'getUgcMedia: Failed',
   );
 }
 
 export async function getUgcMedias(): Promise<WmFeature<Media>[]> {
-  const keys = await handleAsync(synchronizedUgcMedia.keys(), 'Failed to get UGC media keys');
+  const keys = await handleAsync(synchronizedUgcMedia.keys(), 'getUgcMedias: Failed');
   return keys ? await Promise.all(keys.map(key => getUgcMedia(key))) : [];
 }
 
@@ -182,7 +185,7 @@ export async function getUgcPoi(poiId: string): Promise<WmFeature<Point> | null>
 }
 
 export async function getUgcPois(): Promise<WmFeature<Point>[]> {
-  const keys = await handleAsync(synchronizedUgcPoi.keys(), 'Failed to get UGC POI keys');
+  const keys = await handleAsync(synchronizedUgcPoi.keys(), 'getUgcPois: Failed');
   return keys ? await Promise.all(keys.map(key => getUgcPoi(key))) : [];
 }
 
@@ -191,7 +194,7 @@ export async function getUgcTrack(trackId: string): Promise<WmFeature<LineString
 }
 
 export async function getUgcTracks(): Promise<WmFeature<LineString>[]> {
-  const keys = await handleAsync(synchronizedUgcTrack.keys(), 'Failed to get UGC track keys');
+  const keys = await handleAsync(synchronizedUgcTrack.keys(), 'getUgcTracks: Failed');
   return keys ? await Promise.all(keys.map(key => getUgcTrack(key))) : [];
 }
 
@@ -221,28 +224,42 @@ export function isValidUrl(url: string): boolean {
   }
 }
 
-export async function removeCloudUgcMedia(id: number): Promise<void> {
-  await handleAsync(synchronizedUgcMedia.removeItem(`${id}`), 'Failed to remove media');
-}
-
-export async function removeCloudUgcTrack(id: number): Promise<void> {
-  await handleAsync(synchronizedUgcTrack.removeItem(`${id}`), 'Failed to remove track');
-}
-
 export async function removeDeviceUgcMedia(uuid: string): Promise<void> {
-  await handleAsync(deviceUgcMedia.removeItem(uuid), 'Failed to remove device UGC media');
+  await handleAsync(
+    deviceUgcMedia.removeItem(uuid),
+    'removeDeviceUgcMedia: Failed to remove device UGC media',
+  );
 }
 
 export async function removeDeviceUgcPoi(uuid: string): Promise<void> {
-  await handleAsync(deviceUgcPoi.removeItem(uuid), 'Failed to remove device UGC POI');
+  await handleAsync(
+    deviceUgcPoi.removeItem(uuid),
+    'removeDeviceUgcPoi: Failed to remove device UGC POI',
+  );
 }
 
 export async function removeDeviceUgcTrack(uuid: string): Promise<void> {
-  await handleAsync(deviceUgcTrack.removeItem(uuid), 'Failed to remove device UGC track');
+  await handleAsync(
+    deviceUgcTrack.removeItem(uuid),
+    'removeDeviceUgcTrack: Failed to remove device UGC track',
+  );
+}
+
+export async function removeEcTrack(trackId: string): Promise<void> {
+  const track = await getEcTrack(trackId);
+  if (track) {
+    await removeImgInsideTrack(track);
+    const tiles = getTilesByGeometry(track.geometry);
+    await removeTiles(tiles, trackId);
+  }
+  await handleAsync(
+    synchronizedEctrack.removeItem(trackId),
+    'removeEcTrack: Failed to remove track',
+  );
 }
 
 export async function removeImg(url: string): Promise<void> {
-  await handleAsync(synchronizedImg.removeItem(url), 'Failed to remove img');
+  await handleAsync(synchronizedImg.removeItem(url), 'removeImg: Failed to remove img');
 }
 
 export async function removeImgInsideTrack(track: WmFeature<LineString>): Promise<void> {
@@ -253,21 +270,23 @@ export async function removeImgInsideTrack(track: WmFeature<LineString>): Promis
   await Promise.all(urls.map(url => removeImg(url)));
 }
 
-export async function removeTrack(trackId: string): Promise<void> {
-  const track = await getEcTrack(trackId);
-  if (track) {
-    await removeImgInsideTrack(track);
-    const tiles = getTilesByGeometry(track.geometry);
-    await removeTiles(tiles, trackId);
-  }
-  await handleAsync(synchronizedEctrack.removeItem(trackId), 'Failed to remove track');
+export async function removeSynchronizedUgcMedia(id: number): Promise<void> {
+  await handleAsync(synchronizedUgcMedia.removeItem(`${id}`), 'removeSynchronizedUgcMedia: Failed');
+}
+
+export async function removeSynchronizedUgcPoi(id: number): Promise<void> {
+  await handleAsync(synchronizedUgcPoi.removeItem(`${id}`), 'removeSynchronizedUgcPoi: Failed');
+}
+
+export async function removeSynchronizedUgcTrack(id: number): Promise<void> {
+  await handleAsync(synchronizedUgcTrack.removeItem(`${id}`), 'removeSynchronizedUgcTrack: Failed');
 }
 
 export async function removeUgcTrack(trackId: string): Promise<void> {
   try {
-    await synchronizedUgcTrack.removeItem(trackId);
+    await synchronizedUgcTrack.removeItem(`${trackId}`);
   } catch (error) {
-    console.error('Failed to remove track:', error);
+    console.error('removeUgcTrack: ', error);
   }
 }
 
@@ -276,6 +295,19 @@ export function saveDeviceUgcTrack(feature: WmFeature<LineString>): void {
   const featureId = properties.id ?? properties.rawData?.uuid;
 
   deviceUgcTrack.setItem(`${featureId}`, feature);
+}
+
+export async function saveEcTrack(
+  trackId: string,
+  track: WmFeature<LineString>,
+  callBackStatusFn = updateStatus,
+): Promise<number> {
+  let totalSize = await saveImgInsideTrack(track, callBackStatusFn);
+  await handleAsync(
+    synchronizedEctrack.setItem(trackId, track),
+    'saveEcTrack: Failed to save track',
+  );
+  return totalSize;
 }
 
 export function saveImg(url: string, value: ArrayBuffer | null): void {
@@ -311,16 +343,6 @@ export async function saveImgInsideTrack(
   return Promise.resolve(totalSize);
 }
 
-export async function saveTrack(
-  trackId: string,
-  track: WmFeature<LineString>,
-  callBackStatusFn = updateStatus,
-): Promise<number> {
-  let totalSize = await saveImgInsideTrack(track, callBackStatusFn);
-  await handleAsync(synchronizedEctrack.setItem(trackId, track), 'Failed to save track');
-  return totalSize;
-}
-
 export async function saveUgcMedia(feature: WmFeature<Media>): Promise<void> {
   if (!feature) return;
   const properties = feature.properties;
@@ -330,10 +352,7 @@ export async function saveUgcMedia(feature: WmFeature<Media>): Promise<void> {
     await saveImg(url, d);
   }
   const featureId = properties.id ?? properties.rawData?.uuid;
-  await handleAsync(
-    synchronizedUgcMedia.setItem(`${featureId}`, feature),
-    'Failed to save UGC media',
-  );
+  await handleAsync(synchronizedUgcMedia.setItem(`${featureId}`, feature), 'saveUgcMedia: Failed');
 }
 
 export async function saveUgcPoi(feature: WmFeature<Point>): Promise<void> {
@@ -345,14 +364,14 @@ export async function saveUgcPoi(feature: WmFeature<Point>): Promise<void> {
     await saveImg(url, d);
   }
   const featureId = properties.id ?? properties.rawData?.uuid;
-  await handleAsync(synchronizedUgcPoi.setItem(`${featureId}`, feature), 'Failed to save UGC POI');
+  await handleAsync(synchronizedUgcPoi.setItem(`${featureId}`, feature), 'saveUgcPoi: Failed');
 }
 
 export async function saveUgcTrack(feature: WmFeature<LineString>): Promise<void> {
   const properties = feature.properties;
   const featureId = properties.id ?? properties.rawData?.uuid;
   const storage = properties.id ? synchronizedUgcTrack : deviceUgcTrack;
-  await handleAsync(storage.setItem(`${featureId}`, feature), 'Failed to save UGC track');
+  await handleAsync(storage.setItem(`${featureId}`, feature), 'saveUgcTrack: Failed');
 }
 
 export function updateStatus(status: {

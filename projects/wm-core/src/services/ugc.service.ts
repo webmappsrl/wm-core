@@ -13,7 +13,7 @@ import {
   getDeviceUgcPoi,
   getDeviceUgcPois,
   getDeviceUgcTracks,
-  removeCloudUgcMedia,
+  removeSynchronizedUgcMedia,
   removeDeviceUgcMedia,
   removeDeviceUgcTrack,
   saveUgcMedia,
@@ -51,8 +51,8 @@ export class UgcService {
       tap((res: responseDeleteMedia) => {
         console.log(res);
         if (res.success != null) {
-          removeCloudUgcMedia(media.properties.id);
-          this.syncUgcFromCloud();
+          removeSynchronizedUgcMedia(media.properties.id);
+          this.syncUgc();
         }
       }),
     );
@@ -62,7 +62,7 @@ export class UgcService {
     const id = poi.properties.id;
     return this.deleteApiPoi(id).pipe(
       take(1),
-      tap(() => this.syncUgcFromCloud()),
+      tap(() => this.syncUgc()),
     );
   }
 
@@ -70,10 +70,67 @@ export class UgcService {
     if (track.properties.id) {
       return this.deleteApiTrack(track.properties.id).pipe(
         take(1),
-        tap(() => this.syncUgcFromCloud()),
+        tap(() => this.syncUgc()),
       );
     }
     return of({error: 'Track id not found'});
+  }
+
+  async fetchUgcMedias(): Promise<void> {
+    try {
+      const apiUgcMedias = await this.getApiMedias();
+      const cloudUgcMedias = await getSynchronizedUgcMedias();
+
+      for (let apiUgcMedia of apiUgcMedias.features) {
+        const cloudMedia = cloudUgcMedias.find(
+          media => media.properties.uuid === media.properties.uuid,
+        );
+        if (!cloudMedia || this._isFeatureModified(apiUgcMedia, cloudMedia)) {
+          console.log(`fetchUgcMedias sync: ${apiUgcMedia.properties.id}`);
+        }
+      }
+      console.log('fetchUgcMedias: Sincronizzazione eseguita correttamente');
+    } catch (error) {
+      console.error('fetchUgcMedias: Errore durante la sincronizzazione:', error);
+    }
+  }
+
+  async fetchUgcPois(): Promise<void> {
+    try {
+      const apiUgcPois = await this.getApiPois();
+      const cloudUgcPois = await getSynchronizedUgcPois();
+
+      for (let apiUgcPoi of apiUgcPois.features) {
+        const cloudPoi = cloudUgcPois.find(poi => poi.properties.uuid === poi.properties.uuid);
+        if (!cloudPoi || this._isFeatureModified(apiUgcPoi, cloudPoi)) {
+          await saveUgcPoi(apiUgcPoi);
+          console.log(`fetchUgcPois sync: ${apiUgcPoi.properties.id}`);
+        }
+      }
+      console.log('fetchUgcPois: Sincronizzazione eseguita correttamente');
+    } catch (error) {
+      console.error('fetchUgcPois: Errore durante la sincronizzazione:', error);
+    }
+  }
+
+  async fetchUgcTracks(): Promise<void> {
+    try {
+      const apiUgcTracks = await this.getApiTracks();
+      const synchronizedUgcTracks = await getSynchronizedUgcTracks();
+
+      for (let apiTrack of apiUgcTracks.features) {
+        const synchronizedUgcTrack = synchronizedUgcTracks.find(
+          track => track.properties.uuid === apiTrack.properties.uuid,
+        );
+        if (!synchronizedUgcTrack || this._isFeatureModified(apiTrack, synchronizedUgcTrack)) {
+          await saveUgcTrack(apiTrack);
+          console.log(`fetchUgcTracks sync: ${apiTrack.properties.id}`);
+        }
+      }
+      console.log('fetchUgcTracks: Sincronizzazione eseguita correttamente');
+    } catch (error) {
+      console.error('fetchUgcTracks: Errore durante la sincronizzazione:', error);
+    }
   }
 
   async getApiMedias(): Promise<WmFeatureCollection<Media>> {
@@ -117,11 +174,87 @@ export class UgcService {
           observer.complete();
         })
         .catch(error => {
-          console.error('Errore durante il recupero del POI:', error);
+          console.error('getPoi:', error);
           observer.next(null);
           observer.complete();
         });
     });
+  }
+
+  async pushUgcMedias(): Promise<void> {
+    try {
+      let deviceUgcMedias = await getDeviceUgcMedias();
+      for (let deviceUgcMedia of deviceUgcMedias) {
+        try {
+          const res = await this.saveApiMedia(deviceUgcMedia);
+          if (res) {
+            await removeDeviceUgcMedia(deviceUgcMedia.properties.uuid);
+            console.log(
+              `pushUgcMedias: Media con uuid ${deviceUgcMedia.properties.uuid} sincronizzata e rimossa.`,
+            );
+          }
+        } catch (trackError) {
+          console.error(
+            `Errore durante la sincronizzazione del media ${deviceUgcMedia.properties.uuid}:`,
+            trackError,
+          );
+        }
+      }
+
+      console.log('Sincronizzazione dei pois eseguita correttamente');
+    } catch (error) {
+      console.error('Errore durante la sincronizzazione dei poi:', error);
+    }
+  }
+
+  async pushUgcPois(): Promise<void> {
+    try {
+      let deviceUgcPois = await getDeviceUgcPois();
+      for (let deviceUgcPoi of deviceUgcPois) {
+        try {
+          const res = await this.saveApiPoi(deviceUgcPoi);
+          if (res) {
+            await removeDeviceUgcTrack(deviceUgcPoi.properties.uuid);
+            console.log(`Poi con uuid ${deviceUgcPoi.properties.uuid} sincronizzata e rimossa.`);
+          }
+        } catch (trackError) {
+          console.error(
+            `Errore durante la sincronizzazione del pou ${deviceUgcPoi.properties.uuid}:`,
+            trackError,
+          );
+        }
+      }
+
+      console.log('Sincronizzazione dei pois eseguita correttamente');
+    } catch (error) {
+      console.error('Errore durante la sincronizzazione dei poi:', error);
+    }
+  }
+
+  async pushUgcTracks(): Promise<void> {
+    try {
+      let deviceUgcTracks = await getDeviceUgcTracks();
+      for (let deviceUgcTrack of deviceUgcTracks) {
+        try {
+          const res = await this.saveTrack(deviceUgcTrack);
+          if (res) {
+            await removeDeviceUgcTrack(deviceUgcTrack.properties.uuid);
+            console.log(
+              `Traccia con uuid ${deviceUgcTrack.properties.uuid} sincronizzata e rimossa.`,
+            );
+          }
+        } catch (trackError) {
+          console.error(
+            `Errore durante la sincronizzazione della traccia ${deviceUgcTrack.properties.uuid}:`,
+            trackError,
+          );
+        }
+      }
+
+      console.log('Sincronizzazione delle tracce eseguita correttamente');
+    } catch (error) {
+      console.error('Errore durante la sincronizzazione delle tracce:', error);
+    }
   }
 
   /**
@@ -188,167 +321,42 @@ export class UgcService {
     if (track.properties.uuid) {
       return this.saveTrack(track).pipe(
         take(1),
-        tap(() => this.syncUgcFromCloud()),
+        tap(() => this.syncUgc()),
       );
     }
     return of({error: 'Track id not found'});
   }
 
-  async syncUgcFromCloud(): Promise<void> {
-    this.syncUgcTracksFromCloud();
-    this.syncUgcPoisFromCloud();
-    this.syncUgcMediasFromCloud();
+  async syncUgc(): Promise<void> {
+    this.syncUgcMedias();
+    this.syncUgcPois();
+    this.syncUgcTracks();
   }
 
-  async syncUgcMediasFromCloud(): Promise<void> {
+  async syncUgcMedias(): Promise<void> {
     try {
-      const apiUgcMedias = await this.getApiMedias();
-      const cloudUgcMedias = await getSynchronizedUgcMedias();
-
-      // Sincronizza le tracce API con quelle salvate localmente in cloudUgcTrack
-      for (let apiUgcMedia of apiUgcMedias.features) {
-        const cloudMedia = cloudUgcMedias.find(
-          media => media.properties.uuid === media.properties.uuid,
-        );
-
-        // Se la traccia API non esiste in cloudUgcTrack o è stata modificata, aggiorniamo cloudUgcTrack
-        if (!cloudMedia || this._isFeatureModified(apiUgcMedia, cloudMedia)) {
-          await saveUgcMedia(apiUgcMedia); // Salva la traccia aggiornata in cloudUgcTrack
-          console.log(`Media sincronizzata dal cloud con uuid: ${apiUgcMedia.properties.uuid}`);
-        }
-      }
-
-      console.log('Sincronizzazione dei medias dal cloud eseguita correttamente');
+      await this.pushUgcMedias();
+      await this.fetchUgcMedias();
     } catch (error) {
-      console.error('Errore durante la sincronizzazione dei medias dal cloud:', error);
+      console.error('syncUgcMedias: Errore durante la sincronizzazione:', error);
     }
   }
 
-  async syncUgcMediasToCloud(): Promise<void> {
+  async syncUgcPois(): Promise<void> {
     try {
-      let deviceUgcMedias = await getDeviceUgcMedias();
-      for (let deviceUgcMedia of deviceUgcMedias) {
-        try {
-          const res = await this.saveApiMedia(deviceUgcMedia);
-          if (res) {
-            await removeDeviceUgcMedia(deviceUgcMedia.properties.uuid);
-            console.log(
-              `Media con uuid ${deviceUgcMedia.properties.uuid} sincronizzata e rimossa.`,
-            );
-          }
-        } catch (trackError) {
-          console.error(
-            `Errore durante la sincronizzazione del media ${deviceUgcMedia.properties.uuid}:`,
-            trackError,
-          );
-        }
-      }
-
-      console.log('Sincronizzazione dei pois eseguita correttamente');
+      await this.pushUgcPois();
+      await this.fetchUgcPois();
     } catch (error) {
-      console.error('Errore durante la sincronizzazione dei poi:', error);
+      console.error('syncUgcPois: Errore durante la sincronizzazione:', error);
     }
   }
 
-  async syncUgcPoisFromCloud(): Promise<void> {
+  async syncUgcTracks(): Promise<void> {
     try {
-      const apiUgcPois = await this.getApiPois();
-      const cloudUgcPois = await getSynchronizedUgcPois();
-
-      // Sincronizza le tracce API con quelle salvate localmente in cloudUgcTrack
-      for (let apiUgcPoi of apiUgcPois.features) {
-        const cloudPoi = cloudUgcPois.find(poi => poi.properties.uuid === poi.properties.uuid);
-
-        // Se la traccia API non esiste in cloudUgcTrack o è stata modificata, aggiorniamo cloudUgcTrack
-        if (!cloudPoi || this._isFeatureModified(apiUgcPoi, cloudPoi)) {
-          await saveUgcPoi(apiUgcPoi); // Salva la traccia aggiornata in cloudUgcTrack
-          console.log(`Traccia sincronizzata dal cloud con uuid: ${apiUgcPoi.properties.uuid}`);
-        }
-      }
-
-      console.log('Sincronizzazione delle tracce dal cloud eseguita correttamente');
+      await this.pushUgcTracks();
+      await this.fetchUgcTracks();
     } catch (error) {
-      console.error('Errore durante la sincronizzazione delle tracce dal cloud:', error);
-    }
-  }
-
-  async syncUgcPoisToCloud(): Promise<void> {
-    try {
-      let deviceUgcPois = await getDeviceUgcPois();
-      for (let deviceUgcPoi of deviceUgcPois) {
-        try {
-          const res = await this.saveApiPoi(deviceUgcPoi);
-          if (res) {
-            await removeDeviceUgcTrack(deviceUgcPoi.properties.uuid);
-            console.log(`Poi con uuid ${deviceUgcPoi.properties.uuid} sincronizzata e rimossa.`);
-          }
-        } catch (trackError) {
-          console.error(
-            `Errore durante la sincronizzazione del pou ${deviceUgcPoi.properties.uuid}:`,
-            trackError,
-          );
-        }
-      }
-
-      console.log('Sincronizzazione dei pois eseguita correttamente');
-    } catch (error) {
-      console.error('Errore durante la sincronizzazione dei poi:', error);
-    }
-  }
-
-  async syncUgcToCloud(): Promise<void> {
-    this.syncUgcMediasToCloud();
-    this.syncUgcTracksToCloud();
-    this.syncUgcPoisToCloud();
-  }
-
-  async syncUgcTracksFromCloud(): Promise<void> {
-    try {
-      const apiUgcTracks = await this.getApiTracks();
-      const cloudUgcTracks = await getSynchronizedUgcTracks();
-
-      // Sincronizza le tracce API con quelle salvate localmente in cloudUgcTrack
-      for (let apiTrack of apiUgcTracks.features) {
-        const cloudTrack = cloudUgcTracks.find(
-          track => track.properties.uuid === apiTrack.properties.uuid,
-        );
-
-        // Se la traccia API non esiste in cloudUgcTrack o è stata modificata, aggiorniamo cloudUgcTrack
-        if (!cloudTrack || this._isFeatureModified(apiTrack, cloudTrack)) {
-          await saveUgcTrack(apiTrack); // Salva la traccia aggiornata in cloudUgcTrack
-          console.log(`Traccia sincronizzata dal cloud con uuid: ${apiTrack.properties.uuid}`);
-        }
-      }
-
-      console.log('Sincronizzazione delle tracce dal cloud eseguita correttamente');
-    } catch (error) {
-      console.error('Errore durante la sincronizzazione delle tracce dal cloud:', error);
-    }
-  }
-
-  async syncUgcTracksToCloud(): Promise<void> {
-    try {
-      let deviceUgcTracks = await getDeviceUgcTracks();
-      for (let deviceUgcTrack of deviceUgcTracks) {
-        try {
-          const res = await this.saveTrack(deviceUgcTrack);
-          if (res) {
-            await removeDeviceUgcTrack(deviceUgcTrack.properties.uuid);
-            console.log(
-              `Traccia con uuid ${deviceUgcTrack.properties.uuid} sincronizzata e rimossa.`,
-            );
-          }
-        } catch (trackError) {
-          console.error(
-            `Errore durante la sincronizzazione della traccia ${deviceUgcTrack.properties.uuid}:`,
-            trackError,
-          );
-        }
-      }
-
-      console.log('Sincronizzazione delle tracce eseguita correttamente');
-    } catch (error) {
-      console.error('Errore durante la sincronizzazione delle tracce:', error);
+      console.error('syncUgcTracks: Errore durante la sincronizzazione:', error);
     }
   }
 
