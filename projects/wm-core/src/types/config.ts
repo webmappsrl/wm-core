@@ -339,6 +339,19 @@ export interface IOPTIONS {
   useCaiScaleStyle: boolean;
   useFeatureClassicSelectionStyle: boolean;
   voucherUrl?: string;
+  showGpxDownload: boolean;
+  showKmlDownload: boolean;
+  showDurationForward: boolean;
+  showDurationBackward: boolean;
+  showDistance: boolean;
+  showAscent: boolean;
+  showDescent: boolean;
+  showEleMax: boolean;
+  showEleMin: boolean;
+  showEleFrom: boolean;
+  showEleTo: boolean;
+  showGeojsonDownload: boolean;
+  showShapefileDownload: boolean;
 }
 
 export interface IOVERLAYERS {

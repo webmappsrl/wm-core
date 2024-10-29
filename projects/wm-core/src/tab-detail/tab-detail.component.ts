@@ -9,6 +9,9 @@ import {
 import {GeoJsonProperties} from 'geojson';
 import {IGeojsonFeature, IGeojsonProperties} from '../types/model';
 import {ISlopeChartHoverElements} from '../types/slope-chart';
+import {Store} from '@ngrx/store';
+import {Observable} from 'rxjs';
+import {confOPTIONS} from 'wm-core/store/conf/conf.selector';
 
 @Component({
   selector: 'wm-tab-detail',
@@ -24,9 +27,10 @@ export class WmTabDetailComponent {
   slopeChartHover: EventEmitter<ISlopeChartHoverElements> =
     new EventEmitter<ISlopeChartHoverElements>();
 
+  confOptions$: Observable<any> = this._store.select(confOPTIONS);
   public route: IGeojsonFeature;
 
-  constructor() {}
+  constructor(private _store: Store<any>) {}
 
   onLocationHover(event: ISlopeChartHoverElements) {
     this.slopeChartHover.emit(event);
