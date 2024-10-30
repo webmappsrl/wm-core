@@ -164,10 +164,6 @@ export class GeolocationService {
    */
   stopRecording(): WmFeature<LineString> {
     this._recordStopwatch.stop();
-    if (this._watcher.value.type === 'background') {
-      this._clearCurrentWatcher();
-      this._webWatcher();
-    }
     return this._stopRecording();
   }
 
