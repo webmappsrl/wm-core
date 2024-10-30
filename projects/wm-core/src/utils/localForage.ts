@@ -351,8 +351,9 @@ export async function saveUgcMedia(feature: WmFeature<Media>): Promise<void> {
     const d = await downloadFile(url);
     await saveImg(url, d);
   }
-  const featureId = properties.id ?? properties.rawData?.uuid;
-  await handleAsync(synchronizedUgcMedia.setItem(`${featureId}`, feature), 'saveUgcMedia: Failed');
+  const featureId = properties.id ?? properties?.uuid;
+  const storage = properties.id ? synchronizedUgcMedia : deviceUgcMedia;
+  await handleAsync(storage.setItem(`${featureId}`, feature), 'saveUgcMedia: Failed');
 }
 
 export async function saveUgcPoi(feature: WmFeature<Point>): Promise<void> {
@@ -363,13 +364,14 @@ export async function saveUgcPoi(feature: WmFeature<Point>): Promise<void> {
     const d = await downloadFile(url);
     await saveImg(url, d);
   }
-  const featureId = properties.id ?? properties.rawData?.uuid;
-  await handleAsync(synchronizedUgcPoi.setItem(`${featureId}`, feature), 'saveUgcPoi: Failed');
+  const featureId = properties.id ?? properties?.uuid;
+  const storage = properties.id ? synchronizedUgcPoi : deviceUgcPoi;
+  await handleAsync(storage.setItem(`${featureId}`, feature), 'saveUgcPoi: Failed');
 }
 
 export async function saveUgcTrack(feature: WmFeature<LineString>): Promise<void> {
   const properties = feature.properties;
-  const featureId = properties.id ?? properties.rawData?.uuid;
+  const featureId = properties.id ?? properties.uuid;
   const storage = properties.id ? synchronizedUgcTrack : deviceUgcTrack;
   await handleAsync(storage.setItem(`${featureId}`, feature), 'saveUgcTrack: Failed');
 }

@@ -311,20 +311,31 @@ export class UgcService {
     return Promise.resolve(null);
   }
 
-  async savePhotos(photos: WmFeature<Point>[], skipUpload = false): Promise<void> {
+  async saveMedias(photos: WmFeature<Media>[]): Promise<void> {
     for (let photo of photos) {
-      saveUgcMedia(photo as any);
+      await saveUgcMedia(photo);
     }
+    this.syncUgc();
   }
 
-  saveTrack(track: WmFeature<LineString>): Observable<any> {
-    if (track.properties.uuid) {
-      return this.saveTrack(track).pipe(
+  savePoi(poi: WmFeature<Point>): Observable<any> {
+    if (poi.properties.uuid) {
+      return of(saveUgcPoi(poi)).pipe(
         take(1),
         tap(() => this.syncUgc()),
       );
     }
-    return of({error: 'Track id not found'});
+    return of({error: 'savePoi: id not found'});
+  }
+
+  saveTrack(track: WmFeature<LineString>): Observable<any> {
+    if (track.properties.uuid) {
+      return of(saveUgcTrack(track)).pipe(
+        take(1),
+        tap(() => this.syncUgc()),
+      );
+    }
+    return of({error: 'saveTrack: id not found'});
   }
 
   async syncUgc(): Promise<void> {
