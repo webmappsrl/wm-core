@@ -1,5 +1,5 @@
 import {Nominatim} from '../services/nominatim.service';
-import {IPhotoItem} from '../services/photo.service';
+import {IPhotoItem} from '../services/camera.service';
 import {IRegisterItem} from './track';
 import {Location} from 'src/app/types/location';
 
@@ -8,7 +8,7 @@ export interface WaypointSave extends IRegisterItem {
   date: Date;
   description: string;
   displayPosition: Location;
-  formId?:string
+  formId?: string;
   id?: string;
   nominatim?: Nominatim;
   photoKeys?: Array<string>;

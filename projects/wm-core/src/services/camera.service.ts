@@ -1,4 +1,4 @@
-import {APP_ID, Inject, Injectable} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {Capacitor} from '@capacitor/core';
 import {
   Camera,
@@ -6,6 +6,8 @@ import {
   CameraDirection,
   CameraSource,
   GalleryImageOptions,
+  Photo,
+  GalleryPhotos,
 } from '@capacitor/camera';
 import {HttpClient} from '@angular/common/http';
 import {IRegisterItem} from '../types/track';
@@ -16,8 +18,9 @@ import {LangService} from 'wm-core/localization/lang.service';
 import {Location} from 'wm-core/types/location';
 import {DeviceService} from './device.service';
 import {Feature, Point} from 'geojson';
-import {generateUUID} from 'wm-core/utils/localForage';
-import {APP_VERSION} from 'wm-core/store/conf/conf.token';
+import {generateUUID, saveImg} from 'wm-core/utils/localForage';
+import {APP_VERSION, APP_ID} from 'wm-core/store/conf/conf.token';
+import {Media, MediaProperties} from '@wm-types/feature';
 
 export interface IPhotoItem extends IRegisterItem {
   blob?: Blob;
@@ -33,7 +36,7 @@ export interface IPhotoItem extends IRegisterItem {
 @Injectable({
   providedIn: 'root',
 })
-export class PhotoService {
+export class CameraService {
   constructor(
     private _deviceSvc: DeviceService,
     private _http: HttpClient, // private file: File, // private filePath: FilePath,
@@ -44,8 +47,8 @@ export class PhotoService {
     @Inject(APP_VERSION) public appVersion: string,
   ) {}
 
-  async addPhotos(): Promise<Feature<Point>[]> {
-    let retProm = new Promise<Feature<Point>[]>((resolve, reject) => {
+  async addPhotos(): Promise<Feature<Media, MediaProperties>[]> {
+    let retProm = new Promise<Feature<Media, MediaProperties>[]>((resolve, reject) => {
       this._actionSheetCtrl
         .create({
           header: this._lanSvc.instant("Origine dell'immagine"),
@@ -79,7 +82,22 @@ export class PhotoService {
     return retProm;
   }
 
-  public async getPhotoData(photoUrl: string): Promise<any> {
+  public async getBlob(url: string) {
+    let blob: Blob, arrayBuffer: ArrayBuffer, blobType: string;
+    const rawData = JSON.parse(await this.getPhotoData(url)) ?? null;
+    if (rawData) {
+      if (rawData.arrayBuffer) arrayBuffer = new Uint8Array(rawData.arrayBuffer).buffer;
+      if (rawData.blobType) blobType = rawData.blobType;
+    }
+
+    if (!!arrayBuffer) {
+      blob = new Blob([arrayBuffer]);
+      blob = blob.slice(0, blob.size, blobType);
+    }
+    return blob;
+  }
+
+  public async getPhotoData(photoUrl: string): Promise<string> {
     const blob = await this._http
       .get(Capacitor.convertFileSrc(photoUrl), {responseType: 'blob'})
       .toPromise();
@@ -127,8 +145,8 @@ export class PhotoService {
     return blob;
   }
 
-  async getPhotos(dateLimit: Date = null): Promise<Feature<Point>[]> {
-    const res: Feature<Point>[] = [];
+  async getPhotos(dateLimit: Date = null): Promise<Feature<Point, MediaProperties>[]> {
+    const res: Feature<Media, MediaProperties>[] = [];
     let filePath = null;
     if (!this._deviceSvc.isBrowser) {
       if (!(await Camera.checkPermissions())) {
@@ -143,10 +161,10 @@ export class PhotoService {
         // presentationStyle:	'fullscreen' | 'popover'	// iOS only: The presentation style of the Camera.	: 'fullscreen'	1.2.0
         // limit : 100 //	number	iOS only: Maximum number of pictures the user will be able to choose.	0 (unlimited)	1.2.0
       };
-      const gallery = await Camera.pickImages(options);
+      const gallery: GalleryPhotos = await Camera.pickImages(options);
       for (let i = 0; i < gallery.photos.length; i++) {
         const location = this._geoLocationSvc.location;
-        const feature: Feature<Point> = {
+        const feature: Feature<Media, MediaProperties> = {
           type: 'Feature',
           geometry: {
             type: 'Point',
@@ -156,8 +174,9 @@ export class PhotoService {
             ...gallery.photos[i],
             date: new Date(),
             uuid: generateUUID(),
-            appId: this.appId,
+            app_id: this.appId,
             appVersion: this.appVersion,
+            photo: gallery.photos[i],
           },
         };
         res.push(feature);
@@ -166,7 +185,12 @@ export class PhotoService {
     } else {
       const max = 1 + Math.random() * 8;
       for (let i = 0; i < max; i++) {
-        const fakeFeature: Feature<Point> = {
+        const fakePhoto: Photo = {
+          webPath: `https://picsum.photos/50${i}/75${i}`,
+          saved: false,
+          format: 'image/jpeg',
+        };
+        const fakeFeature: Feature<Media, MediaProperties> = {
           type: 'Feature',
           geometry: {
             type: 'Point',
@@ -176,12 +200,11 @@ export class PhotoService {
             ],
           },
           properties: {
-            photoURL: `https://picsum.photos/50${i}/75${i}`,
-            datasrc: `https://picsum.photos/50${i}/75${i}`,
             date: new Date(),
             uuid: generateUUID(),
-            appId: this.appId,
+            app_id: this.appId,
             appVersion: this.appVersion,
+            photo: fakePhoto,
           },
         };
         res.push(fakeFeature);
@@ -253,9 +276,9 @@ export class PhotoService {
     }
   }
 
-  async shotPhoto(): Promise<Feature<Point>> {
+  async shotPhoto(): Promise<Feature<Media, MediaProperties>> {
     if (!this._geoLocationSvc.active) await this._geoLocationSvc.start();
-    const photo = await Camera.getPhoto({
+    const photo: Photo = await Camera.getPhoto({
       quality: 90,
       // allowEditing: true,
       resultType: CameraResultType.Uri,
@@ -273,20 +296,22 @@ export class PhotoService {
       promptLabelPhoto: this._lanSvc.instant('Dalla libreria'), //string
       promptLabelPicture: this._lanSvc.instant('Scatta una foto'), //string
     });
-
+    if (photo.webPath) {
+      await saveImg(photo.webPath);
+    }
     const location = this._geoLocationSvc.location;
-    const feature: Feature<Point> = {
+    const feature: Feature<Media, MediaProperties> = {
       type: 'Feature',
       geometry: {
         type: 'Point',
         coordinates: [location.longitude, location.latitude],
       },
       properties: {
-        ...photo,
         date: new Date(),
         uuid: generateUUID(),
-        appId: this.appId,
+        app_id: this.appId,
         appVersion: this.appVersion,
+        photo,
       },
     };
     return feature;

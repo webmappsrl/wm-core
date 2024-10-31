@@ -90,7 +90,7 @@ export async function getDeviceUgcMedia(uuid: string): Promise<WmFeature<Media> 
 }
 
 export async function getDeviceUgcMedias(): Promise<WmFeature<Media>[]> {
-  const keys = await handleAsync(deviceUgcTrack.keys(), 'Failed to get device UGC track keys');
+  const keys = await handleAsync(deviceUgcMedia.keys(), 'Failed to get device UGC track keys');
   return keys ? await Promise.all(keys.map(key => getDeviceUgcMedia(key))) : [];
 }
 
@@ -169,15 +169,13 @@ export async function getSynchronizedUgcTracks(): Promise<WmFeature<LineString>[
 }
 
 export async function getUgcMedia(mediaId: string): Promise<WmFeature<Media> | null> {
-  return handleAsync(
-    synchronizedUgcMedia.getItem<WmFeature<Media>>(`${mediaId}`),
-    'getUgcMedia: Failed',
-  );
+  return (await getSynchronizedUgcMedia(mediaId)) ?? (await getDeviceUgcMedia(mediaId));
 }
 
 export async function getUgcMedias(): Promise<WmFeature<Media>[]> {
-  const keys = await handleAsync(synchronizedUgcMedia.keys(), 'getUgcMedias: Failed');
-  return keys ? await Promise.all(keys.map(key => getUgcMedia(key))) : [];
+  const deviceUgcMedias = await getDeviceUgcMedias();
+  const synchronizedUgcMedias = await getSynchronizedUgcMedias();
+  return [...deviceUgcMedias, ...synchronizedUgcMedias];
 }
 
 export async function getUgcPoi(poiId: string): Promise<WmFeature<Point> | null> {
@@ -185,8 +183,9 @@ export async function getUgcPoi(poiId: string): Promise<WmFeature<Point> | null>
 }
 
 export async function getUgcPois(): Promise<WmFeature<Point>[]> {
-  const keys = await handleAsync(synchronizedUgcPoi.keys(), 'getUgcPois: Failed');
-  return keys ? await Promise.all(keys.map(key => getUgcPoi(key))) : [];
+  const deviceUgcPois = await getDeviceUgcPois();
+  const synchronizedUgcPois = await getSynchronizedUgcPois();
+  return [...deviceUgcPois, ...synchronizedUgcPois];
 }
 
 export async function getUgcTrack(trackId: string): Promise<WmFeature<LineString> | null> {
@@ -194,8 +193,9 @@ export async function getUgcTrack(trackId: string): Promise<WmFeature<LineString
 }
 
 export async function getUgcTracks(): Promise<WmFeature<LineString>[]> {
-  const keys = await handleAsync(synchronizedUgcTrack.keys(), 'getUgcTracks: Failed');
-  return keys ? await Promise.all(keys.map(key => getUgcTrack(key))) : [];
+  const deviceUgcTracks = await getDeviceUgcTracks();
+  const synchronizedUgcTracks = await getSynchronizedUgcTracks();
+  return [...deviceUgcTracks, ...synchronizedUgcTracks];
 }
 
 async function handleAsync<T>(promise: Promise<T>, errorMsg: string): Promise<T | null> {
@@ -310,9 +310,11 @@ export async function saveEcTrack(
   return totalSize;
 }
 
-export function saveImg(url: string, value: ArrayBuffer | null): void {
-  if (value == null) return;
+export async function saveImg(url: string, value: ArrayBuffer | null = null): Promise<void> {
   if (isValidUrl(url) === false) return;
+  if (value == null) {
+    value = await downloadFile(url);
+  }
   synchronizedImg.setItem(url, value);
 }
 
@@ -348,8 +350,7 @@ export async function saveUgcMedia(feature: WmFeature<Media>): Promise<void> {
   const properties = feature.properties;
   const url = properties.url;
   if (url) {
-    const d = await downloadFile(url);
-    await saveImg(url, d);
+    await saveImg(url);
   }
   const featureId = properties.id ?? properties?.uuid;
   const storage = properties.id ? synchronizedUgcMedia : deviceUgcMedia;
@@ -361,8 +362,7 @@ export async function saveUgcPoi(feature: WmFeature<Point>): Promise<void> {
   const properties = feature.properties;
   const url = properties.url;
   if (url) {
-    const d = await downloadFile(url);
-    await saveImg(url, d);
+    await saveImg(url);
   }
   const featureId = properties.id ?? properties?.uuid;
   const storage = properties.id ? synchronizedUgcPoi : deviceUgcPoi;

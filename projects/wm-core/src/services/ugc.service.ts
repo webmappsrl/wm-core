@@ -19,8 +19,15 @@ import {
   saveUgcMedia,
   saveUgcPoi,
   saveUgcTrack,
+  getImg,
 } from 'wm-core/utils/localForage';
-import {Media, responseDeleteMedia, WmFeature, WmFeatureCollection} from '@wm-types/feature';
+import {
+  Media,
+  MediaProperties,
+  responseDeleteMedia,
+  WmFeature,
+  WmFeatureCollection,
+} from '@wm-types/feature';
 
 @Injectable({
   providedIn: 'root',
@@ -86,6 +93,9 @@ export class UgcService {
           media => media.properties.uuid === media.properties.uuid,
         );
         if (!cloudMedia || this._isFeatureModified(apiUgcMedia, cloudMedia)) {
+          console.log(`fetchUgcMedias sync: ${apiUgcMedia.properties.id} syncronized`);
+          await saveUgcMedia(apiUgcMedia);
+        } else {
           console.log(`fetchUgcMedias sync: ${apiUgcMedia.properties.id}`);
         }
       }
@@ -135,7 +145,7 @@ export class UgcService {
 
   async getApiMedias(): Promise<WmFeatureCollection<Media>> {
     return await this._http
-      .get<WmFeatureCollection<Media>>(`${this.environment.api}/api/ugc/media/index`)
+      .get<WmFeatureCollection<Media>>(`${this.environment.api}/api/ugc/media/index/v2`)
       .pipe(catchError(_ => of(null)))
       .toPromise();
   }
@@ -264,12 +274,19 @@ export class UgcService {
    *
    * @returns
    */
-  async saveApiMedia(media: WmFeature<Media>): Promise<WmFeature<Media>> {
+  async saveApiMedia(media: WmFeature<Media>): Promise<WmFeature<Media, MediaProperties>> {
     if (media != null) {
       const {properties} = media;
-      if (properties.blob) properties.append('image', properties.blob, 'image.jpg');
+      const photo = properties.photo;
+      const data = new FormData();
+      data.append('feature', JSON.stringify(media));
+
+      if (photo.webPath) {
+        const blob: ArrayBuffer = (await getImg(photo.webPath)) as ArrayBuffer;
+        data.append('image', new Blob([blob]) as Blob, 'image.jpg');
+      }
       return await this._http
-        .post(`${this.environment.api}/api/ugc/media/store`, media)
+        .post(`${this.environment.api}/api/ugc/media/store/v2`, data)
         .pipe(catchError(_ => of(null)))
         .toPromise();
     }
@@ -373,6 +390,9 @@ export class UgcService {
 
   // Funzione per verificare se una traccia è stata modificata
   private _isFeatureModified(apiFeature: WmFeature<any>, cloudFeature: WmFeature<any>): boolean {
+    if (cloudFeature == null) {
+      return true;
+    }
     // Confronta proprietà rilevanti per verificare se la traccia è stata modificata
     return (
       JSON.stringify(apiFeature.geometry) !== JSON.stringify(cloudFeature.geometry) ||
