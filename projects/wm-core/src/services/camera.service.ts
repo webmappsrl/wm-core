@@ -148,6 +148,7 @@ export class CameraService {
   async getPhotos(dateLimit: Date = null): Promise<Feature<Point, MediaProperties>[]> {
     const res: Feature<Media, MediaProperties>[] = [];
     let filePath = null;
+    const location = this._geoLocationSvc.location;
     if (!this._deviceSvc.isBrowser) {
       if (!(await Camera.checkPermissions())) {
         await Camera.requestPermissions();
@@ -163,7 +164,6 @@ export class CameraService {
       };
       const gallery: GalleryPhotos = await Camera.pickImages(options);
       for (let i = 0; i < gallery.photos.length; i++) {
-        const location = this._geoLocationSvc.location;
         const feature: Feature<Media, MediaProperties> = {
           type: 'Feature',
           geometry: {
@@ -194,10 +194,7 @@ export class CameraService {
           type: 'Feature',
           geometry: {
             type: 'Point',
-            coordinates: [
-              this._geoLocationSvc.location.longitude,
-              this._geoLocationSvc.location.latitude,
-            ],
+            coordinates: [location.longitude, location.latitude],
           },
           properties: {
             date: new Date(),

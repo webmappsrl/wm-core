@@ -1,4 +1,4 @@
-import {WmFeature, Media} from '@wm-types/feature';
+import {WmFeature, Media, MediaProperties} from '@wm-types/feature';
 import {GeoJsonProperties, LineString, Point} from 'geojson';
 import * as localforage from 'localforage';
 import {downloadTiles, getTilesByGeometry, removeTiles} from '../../../../../map-core/src/utils';
@@ -82,14 +82,16 @@ export function generateUUID(): string {
   });
 }
 
-export async function getDeviceUgcMedia(uuid: string): Promise<WmFeature<Media> | null> {
+export async function getDeviceUgcMedia(
+  uuid: string,
+): Promise<WmFeature<Media, MediaProperties> | null> {
   return handleAsync(
-    deviceUgcMedia.getItem<WmFeature<Media>>(`${uuid}`),
+    deviceUgcMedia.getItem<WmFeature<Media, MediaProperties>>(`${uuid}`),
     'getDeviceUgcMedia: Failed',
   );
 }
 
-export async function getDeviceUgcMedias(): Promise<WmFeature<Media>[]> {
+export async function getDeviceUgcMedias(): Promise<WmFeature<Media, MediaProperties>[]> {
   const keys = await handleAsync(deviceUgcMedia.keys(), 'Failed to get device UGC track keys');
   return keys ? await Promise.all(keys.map(key => getDeviceUgcMedia(key))) : [];
 }
@@ -132,14 +134,16 @@ export async function getImg(url: string): Promise<ArrayBuffer | string> {
   return res ?? url;
 }
 
-export async function getSynchronizedUgcMedia(id: string): Promise<WmFeature<Media> | null> {
+export async function getSynchronizedUgcMedia(
+  id: string,
+): Promise<WmFeature<Media, MediaProperties> | null> {
   return handleAsync(
-    synchronizedUgcMedia.getItem<WmFeature<Media>>(`${id}`),
+    synchronizedUgcMedia.getItem<WmFeature<Media, MediaProperties>>(`${id}`),
     'getSynchronizedUgcMedia: Failed',
   );
 }
 
-export async function getSynchronizedUgcMedias(): Promise<WmFeature<Media>[]> {
+export async function getSynchronizedUgcMedias(): Promise<WmFeature<Media, MediaProperties>[]> {
   const keys = await handleAsync(synchronizedUgcMedia.keys(), 'getSynchronizedUgcMedias: Failed');
   return keys ? await Promise.all(keys.map(key => getSynchronizedUgcMedia(key))) : [];
 }
@@ -168,14 +172,23 @@ export async function getSynchronizedUgcTracks(): Promise<WmFeature<LineString>[
   return keys ? await Promise.all(keys.map(key => getSynchronizedUgcTrack(key))) : [];
 }
 
-export async function getUgcMedia(mediaId: string): Promise<WmFeature<Media> | null> {
+export async function getUgcMedia(
+  mediaId: string,
+): Promise<WmFeature<Media, MediaProperties> | null> {
   return (await getSynchronizedUgcMedia(mediaId)) ?? (await getDeviceUgcMedia(mediaId));
 }
 
-export async function getUgcMedias(): Promise<WmFeature<Media>[]> {
+export async function getUgcMedias(): Promise<WmFeature<Media, MediaProperties>[]> {
   const deviceUgcMedias = await getDeviceUgcMedias();
   const synchronizedUgcMedias = await getSynchronizedUgcMedias();
   return [...deviceUgcMedias, ...synchronizedUgcMedias];
+}
+
+export async function getUgcMediasByIds(
+  ids: string[],
+): Promise<WmFeature<Media, MediaProperties>[]> {
+  const ugcMedias = await getUgcMedias();
+  return ugcMedias.filter(media => ids.includes(media.properties.id || media.properties.uuid));
 }
 
 export async function getUgcPoi(poiId: string): Promise<WmFeature<Point> | null> {
@@ -345,12 +358,13 @@ export async function saveImgInsideTrack(
   return Promise.resolve(totalSize);
 }
 
-export async function saveUgcMedia(feature: WmFeature<Media>): Promise<void> {
+export async function saveUgcMedia(feature: WmFeature<Media, MediaProperties>): Promise<void> {
   if (!feature) return;
   const properties = feature.properties;
-  const url = properties.url;
-  if (url) {
-    await saveImg(url);
+  const photo = properties.photo;
+
+  if (photo && photo.webPath) {
+    await saveImg(photo.webPath);
   }
   const featureId = properties.id ?? properties?.uuid;
   const storage = properties.id ? synchronizedUgcMedia : deviceUgcMedia;

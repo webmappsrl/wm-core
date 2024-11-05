@@ -56,7 +56,7 @@ export class UgcService {
     return this.deleteApiMedia(id).pipe(
       take(1),
       tap((res: responseDeleteMedia) => {
-        console.log(res);
+        // console.log(res);
         if (res.success != null) {
           removeSynchronizedUgcMedia(media.properties.id);
           this.syncUgc();
@@ -93,13 +93,13 @@ export class UgcService {
           media => media.properties.uuid === media.properties.uuid,
         );
         if (!cloudMedia || this._isFeatureModified(apiUgcMedia, cloudMedia)) {
-          console.log(`fetchUgcMedias sync: ${apiUgcMedia.properties.id} syncronized`);
+          // console.log(`fetchUgcMedias sync: ${apiUgcMedia.properties.id} syncronized`);
           await saveUgcMedia(apiUgcMedia);
         } else {
-          console.log(`fetchUgcMedias sync: ${apiUgcMedia.properties.id}`);
+          // console.log(`fetchUgcMedias sync: ${apiUgcMedia.properties.id}`);
         }
       }
-      console.log('fetchUgcMedias: Sincronizzazione eseguita correttamente');
+      // console.log('fetchUgcMedias: Sincronizzazione eseguita correttamente');
     } catch (error) {
       console.error('fetchUgcMedias: Errore durante la sincronizzazione:', error);
     }
@@ -114,10 +114,10 @@ export class UgcService {
         const cloudPoi = cloudUgcPois.find(poi => poi.properties.uuid === poi.properties.uuid);
         if (!cloudPoi || this._isFeatureModified(apiUgcPoi, cloudPoi)) {
           await saveUgcPoi(apiUgcPoi);
-          console.log(`fetchUgcPois sync: ${apiUgcPoi.properties.id}`);
+          // console.log(`fetchUgcPois sync: ${apiUgcPoi.properties.id}`);
         }
       }
-      console.log('fetchUgcPois: Sincronizzazione eseguita correttamente');
+      // console.log('fetchUgcPois: Sincronizzazione eseguita correttamente');
     } catch (error) {
       console.error('fetchUgcPois: Errore durante la sincronizzazione:', error);
     }
@@ -134,18 +134,20 @@ export class UgcService {
         );
         if (!synchronizedUgcTrack || this._isFeatureModified(apiTrack, synchronizedUgcTrack)) {
           await saveUgcTrack(apiTrack);
-          console.log(`fetchUgcTracks sync: ${apiTrack.properties.id}`);
+          // console.log(`fetchUgcTracks sync: ${apiTrack.properties.id}`);
         }
       }
-      console.log('fetchUgcTracks: Sincronizzazione eseguita correttamente');
+      // console.log('fetchUgcTracks: Sincronizzazione eseguita correttamente');
     } catch (error) {
       console.error('fetchUgcTracks: Errore durante la sincronizzazione:', error);
     }
   }
 
-  async getApiMedias(): Promise<WmFeatureCollection<Media>> {
+  async getApiMedias(): Promise<WmFeatureCollection<Media, MediaProperties>> {
     return await this._http
-      .get<WmFeatureCollection<Media>>(`${this.environment.api}/api/ugc/media/index/v2`)
+      .get<WmFeatureCollection<Media, MediaProperties>>(
+        `${this.environment.api}/api/ugc/media/index/v2`,
+      )
       .pipe(catchError(_ => of(null)))
       .toPromise();
   }
@@ -199,9 +201,7 @@ export class UgcService {
           const res = await this.saveApiMedia(deviceUgcMedia);
           if (res) {
             await removeDeviceUgcMedia(deviceUgcMedia.properties.uuid);
-            console.log(
-              `pushUgcMedias: Media con uuid ${deviceUgcMedia.properties.uuid} sincronizzata e rimossa.`,
-            );
+            // console.log(`pushUgcMedias: Media con uuid ${deviceUgcMedia.properties.uuid} sincronizzata e rimossa.` );
           }
         } catch (trackError) {
           console.error(
@@ -211,7 +211,7 @@ export class UgcService {
         }
       }
 
-      console.log('Sincronizzazione dei pois eseguita correttamente');
+      // console.log('Sincronizzazione dei pois eseguita correttamente');
     } catch (error) {
       console.error('Errore durante la sincronizzazione dei poi:', error);
     }
@@ -225,7 +225,7 @@ export class UgcService {
           const res = await this.saveApiPoi(deviceUgcPoi);
           if (res) {
             await removeDeviceUgcTrack(deviceUgcPoi.properties.uuid);
-            console.log(`Poi con uuid ${deviceUgcPoi.properties.uuid} sincronizzata e rimossa.`);
+            // console.log(`Poi con uuid ${deviceUgcPoi.properties.uuid} sincronizzata e rimossa.`);
           }
         } catch (trackError) {
           console.error(
@@ -235,7 +235,7 @@ export class UgcService {
         }
       }
 
-      console.log('Sincronizzazione dei pois eseguita correttamente');
+      // console.log('Sincronizzazione dei pois eseguita correttamente');
     } catch (error) {
       console.error('Errore durante la sincronizzazione dei poi:', error);
     }
@@ -249,9 +249,7 @@ export class UgcService {
           const res = await this.saveTrack(deviceUgcTrack);
           if (res) {
             await removeDeviceUgcTrack(deviceUgcTrack.properties.uuid);
-            console.log(
-              `Traccia con uuid ${deviceUgcTrack.properties.uuid} sincronizzata e rimossa.`,
-            );
+            // console.log( `Traccia con uuid ${deviceUgcTrack.properties.uuid} sincronizzata e rimossa.`);
           }
         } catch (trackError) {
           console.error(
@@ -261,7 +259,7 @@ export class UgcService {
         }
       }
 
-      console.log('Sincronizzazione delle tracce eseguita correttamente');
+      // console.log('Sincronizzazione delle tracce eseguita correttamente');
     } catch (error) {
       console.error('Errore durante la sincronizzazione delle tracce:', error);
     }
@@ -328,7 +326,7 @@ export class UgcService {
     return Promise.resolve(null);
   }
 
-  async saveMedias(photos: WmFeature<Media>[]): Promise<void> {
+  async saveMedias(photos: WmFeature<Media, MediaProperties>[]): Promise<void> {
     for (let photo of photos) {
       await saveUgcMedia(photo);
     }
