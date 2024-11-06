@@ -246,7 +246,7 @@ export class UgcService {
       let deviceUgcTracks = await getDeviceUgcTracks();
       for (let deviceUgcTrack of deviceUgcTracks) {
         try {
-          const res = await this.saveTrack(deviceUgcTrack);
+          const res = await this.saveApiTrack(deviceUgcTrack);
           if (res) {
             await removeDeviceUgcTrack(deviceUgcTrack.properties.uuid);
             // console.log( `Traccia con uuid ${deviceUgcTrack.properties.uuid} sincronizzata e rimossa.`);
@@ -318,8 +318,8 @@ export class UgcService {
   async saveApiTrack(track: WmFeature<LineString>): Promise<WmFeature<LineString> | null> {
     if (track != null) {
       return this._http
-        .post<any>(`${this.environment.api}/api/ugc/track/store`, track)
-        .pipe(catchError(_ => null))
+        .post<WmFeature<LineString>>(`${this.environment.api}/api/ugc/track/store`, track)
+        .pipe(catchError(_ => of(null)))
         .toPromise();
     }
 
