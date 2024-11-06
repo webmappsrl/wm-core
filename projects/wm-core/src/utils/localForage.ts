@@ -328,6 +328,10 @@ export async function saveImg(url: string, value: ArrayBuffer | null = null): Pr
   if (value == null) {
     value = await downloadFile(url);
   }
+  if (value == null) {
+    console.warn(`saveImg: Failed to download ${url}`);
+    return;
+  }
   synchronizedImg.setItem(url, value);
 }
 
