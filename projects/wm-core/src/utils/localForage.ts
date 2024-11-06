@@ -185,7 +185,7 @@ export async function getUgcMedias(): Promise<WmFeature<Media, MediaProperties>[
 }
 
 export async function getUgcMediasByIds(
-  ids: string[],
+  ids: string[] = [],
 ): Promise<WmFeature<Media, MediaProperties>[]> {
   const ugcMedias = await getUgcMedias();
   return ugcMedias.filter(media => ids.includes(media.properties.id || media.properties.uuid));
@@ -378,10 +378,12 @@ export async function saveUgcMedia(feature: WmFeature<Media, MediaProperties>): 
 export async function saveUgcPoi(feature: WmFeature<Point>): Promise<void> {
   if (!feature) return;
   const properties = feature.properties;
-  const url = properties.url;
-  if (url) {
-    await saveImg(url);
-  }
+  const photos = properties.photos ?? [];
+
+  photos.forEach(photo => {
+    saveUgcMedia(photo);
+  });
+
   const featureId = properties.id ?? properties?.uuid;
   const storage = properties.id ? synchronizedUgcPoi : deviceUgcPoi;
   await handleAsync(storage.setItem(`${featureId}`, feature), 'saveUgcPoi: Failed');
