@@ -188,7 +188,7 @@ export async function getUgcMediasByIds(
   ids: string[] = [],
 ): Promise<WmFeature<Media, MediaProperties>[]> {
   const ugcMedias = await getUgcMedias();
-  return ugcMedias.filter(media => ids.includes(media.properties.id || media.properties.uuid));
+  return ugcMedias.filter(media => ids.includes(media.properties.id?.toString() || media.properties.uuid));
 }
 
 export async function getUgcPoi(poiId: string): Promise<WmFeature<Point> | null> {
