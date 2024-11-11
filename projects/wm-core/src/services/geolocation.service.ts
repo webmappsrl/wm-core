@@ -113,7 +113,7 @@ export class GeolocationService {
    */
   startRecording(): void {
     this._recordStopwatch = new CStopwatch();
-    this._recordedFeature = null;
+    this._recordedFeature = this._getEmptyWmFeature();
     this.onStart$.next(true);
     this.onRecord$.next(true);
     this.onPause$.next(false);
@@ -177,6 +177,14 @@ export class GeolocationService {
       }
     }
     return temp as T;
+  }
+
+  private _getEmptyWmFeature(): WmFeature<LineString> {
+    return {
+      type: 'Feature',
+      geometry: {type: 'LineString', coordinates: []},
+      properties: {},
+    };
   }
 
   /**

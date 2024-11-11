@@ -20,6 +20,7 @@ import {
   saveUgcPoi,
   saveUgcTrack,
   getImg,
+  removeDeviceUgcPoi,
 } from 'wm-core/utils/localForage';
 import {
   Media,
@@ -224,7 +225,7 @@ export class UgcService {
         try {
           const res = await this.saveApiPoi(deviceUgcPoi);
           if (res) {
-            await removeDeviceUgcTrack(deviceUgcPoi.properties.uuid);
+            await removeDeviceUgcPoi(deviceUgcPoi.properties.uuid);
             // console.log(`Poi con uuid ${deviceUgcPoi.properties.uuid} sincronizzata e rimossa.`);
           }
         } catch (trackError) {
@@ -300,7 +301,7 @@ export class UgcService {
   async saveApiPoi(poi: WmFeature<Point>): Promise<WmFeature<Point> | null> {
     if (poi != null) {
       return this._http
-        .post<WmFeature<Point>>(`${this.environment.api}/api/ugc/poi/store`, poi)
+        .post<WmFeature<Point>>(`${this.environment.api}/api/ugc/poi/store/v2`, poi)
         .pipe(catchError(_ => of(null)))
         .toPromise();
     }
@@ -318,7 +319,7 @@ export class UgcService {
   async saveApiTrack(track: WmFeature<LineString>): Promise<WmFeature<LineString> | null> {
     if (track != null) {
       return this._http
-        .post<WmFeature<LineString>>(`${this.environment.api}/api/ugc/track/store`, track)
+        .post<WmFeature<LineString>>(`${this.environment.api}/api/ugc/track/store/v2`, track)
         .pipe(catchError(_ => of(null)))
         .toPromise();
     }
