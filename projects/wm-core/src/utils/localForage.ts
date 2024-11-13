@@ -391,6 +391,12 @@ export async function saveUgcPoi(feature: WmFeature<Point>): Promise<void> {
 
 export async function saveUgcTrack(feature: WmFeature<LineString>): Promise<void> {
   const properties = feature.properties;
+  const photos = properties.photos ?? [];
+
+  photos.forEach(photo => {
+    saveUgcMedia(photo);
+  });
+
   const featureId = properties.id ?? properties.uuid;
   const storage = properties.id ? synchronizedUgcTrack : deviceUgcTrack;
   await handleAsync(storage.setItem(`${featureId}`, feature), 'saveUgcTrack: Failed');
