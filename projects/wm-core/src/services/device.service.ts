@@ -6,9 +6,12 @@
  *
  * */
 
-import {Injectable} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {Platform} from '@ionic/angular';
 import {Observable, ReplaySubject} from 'rxjs';
+import {Device} from '@capacitor/device';
+import {APP_VERSION} from 'wm-core/store/conf/conf.token';
+import {WmDeviceInfo} from '@wm-types/feature';
 
 @Injectable({
   providedIn: 'root',
@@ -56,7 +59,7 @@ export class DeviceService {
     return this._isLocalServer;
   }
 
-  get isMobile(): boolean { 
+  get isMobile(): boolean {
     return this.isAndroid || this.isIos;
   }
 
@@ -71,7 +74,7 @@ export class DeviceService {
     height: number;
   }>;
 
-  constructor(private _platform: Platform) {
+  constructor(private _platform: Platform, @Inject(APP_VERSION) public appVersion: string,) {
     this._onResize = new ReplaySubject(1);
     this._onBackground = new ReplaySubject(1);
     this._onForeground = new ReplaySubject(1);
@@ -118,5 +121,14 @@ export class DeviceService {
       },
       false,
     );
+  }
+
+  async getInfo(): Promise<WmDeviceInfo> {
+    const info = await Device.getInfo();
+    return {
+      ...info,
+      appVersion: this.appVersion,
+      os: info.platform,
+    };
   }
 }

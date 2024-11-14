@@ -20,7 +20,7 @@ import {DeviceService} from './device.service';
 import {Feature, Point} from 'geojson';
 import {generateUUID, saveImg} from 'wm-core/utils/localForage';
 import {APP_VERSION, APP_ID} from 'wm-core/store/conf/conf.token';
-import {Media, MediaProperties} from '@wm-types/feature';
+import {Media, MediaProperties, WmDeviceInfo} from '@wm-types/feature';
 
 export interface IPhotoItem extends IRegisterItem {
   blob?: Blob;
@@ -149,6 +149,7 @@ export class CameraService {
     const res: Feature<Media, MediaProperties>[] = [];
     let filePath = null;
     const location = this._geoLocationSvc.location;
+    const device = await this._deviceSvc.getInfo();
     if (!this._deviceSvc.isBrowser) {
       if (!(await Camera.checkPermissions())) {
         await Camera.requestPermissions();
@@ -175,7 +176,7 @@ export class CameraService {
             date: new Date(),
             uuid: generateUUID(),
             app_id: this.appId,
-            appVersion: this.appVersion,
+            device,
             photo: gallery.photos[i],
           },
         };
@@ -200,7 +201,7 @@ export class CameraService {
             date: new Date(),
             uuid: generateUUID(),
             app_id: this.appId,
-            appVersion: this.appVersion,
+            device,
             photo: fakePhoto,
           },
         };
@@ -297,6 +298,12 @@ export class CameraService {
       await saveImg(photo.webPath);
     }
     const location = this._geoLocationSvc.location;
+    const infoDevice = await this._deviceSvc.getInfo();
+    const device: WmDeviceInfo = {
+      ...infoDevice,
+      os: infoDevice.platform,
+      appVersion: this.appVersion,
+    };
     const feature: Feature<Media, MediaProperties> = {
       type: 'Feature',
       geometry: {
@@ -307,7 +314,7 @@ export class CameraService {
         date: new Date(),
         uuid: generateUUID(),
         app_id: this.appId,
-        appVersion: this.appVersion,
+        device,
         photo,
       },
     };
