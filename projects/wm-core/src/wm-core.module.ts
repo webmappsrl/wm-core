@@ -43,6 +43,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { WmProfileModule } from './profile/profile.module';
 import { RegisterComponent } from './register/register.component';
 import { GenericPopoverComponent } from './generic-popover/generic-popover.component';
+import { WmPoiExcerpt } from './poi-excerpt/poi-excerpt.component';
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -69,6 +70,7 @@ const declarations = [
   RegisterComponent,
   GenericPopoverComponent,
   ModalHeaderComponent,
+  WmPoiExcerpt,
 ];
 const modules = [
   WmSharedModule,
