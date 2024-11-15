@@ -6,6 +6,6 @@ import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
   styleUrls: ['./excerpt.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WmExcerpt {
+export class WmExcerptComponent {
   @Input() excerpt: string;
 }
