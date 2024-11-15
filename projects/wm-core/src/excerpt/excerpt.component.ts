@@ -1,11 +1,11 @@
 import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
 
 @Component({
-  selector: 'wm-poi-excerpt',
-  templateUrl: './poi-excerpt.component.html',
-  styleUrls: ['./poi-excerpt.component.scss'],
+  selector: 'wm-excerpt',
+  templateUrl: './excerpt.component.html',
+  styleUrls: ['./excerpt.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WmPoiExcerpt {
+export class WmExcerpt {
   @Input() excerpt: string;
 }

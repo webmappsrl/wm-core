@@ -33,17 +33,17 @@ import {WmTrackAudioComponent} from './track-audio/track-audio.component';
 import {WmTrackEdgesComponent} from './track-edges/track-edges.component';
 import {WmInnerHtmlComponent} from './inner-html/inner-html.component';
 import {ButtonsModule} from './buttons/export-to/buttons.module';
-import { WmTrackDownloadUrlsComponent } from './track-download-urls/track-download-urls.component';
-import { AuthInterceptor } from './store/auth/auth.interceptor';
-import { AuthEffects } from './store/auth/auth.effects';
-import { authReducer } from './store/auth/auth.reducer';
-import { ModalHeaderComponent } from './modal-header/modal-header.component';
-import { LoginComponent } from './login/login.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import { WmProfileModule } from './profile/profile.module';
-import { RegisterComponent } from './register/register.component';
-import { GenericPopoverComponent } from './generic-popover/generic-popover.component';
-import { WmPoiExcerpt } from './poi-excerpt/poi-excerpt.component';
+import {WmTrackDownloadUrlsComponent} from './track-download-urls/track-download-urls.component';
+import {AuthInterceptor} from './store/auth/auth.interceptor';
+import {AuthEffects} from './store/auth/auth.effects';
+import {authReducer} from './store/auth/auth.reducer';
+import {ModalHeaderComponent} from './modal-header/modal-header.component';
+import {LoginComponent} from './login/login.component';
+import {ReactiveFormsModule} from '@angular/forms';
+import {WmProfileModule} from './profile/profile.module';
+import {RegisterComponent} from './register/register.component';
+import {GenericPopoverComponent} from './generic-popover/generic-popover.component';
+import {WmExcerpt} from './excerpt/excerpt.component';
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -70,7 +70,7 @@ const declarations = [
   RegisterComponent,
   GenericPopoverComponent,
   ModalHeaderComponent,
-  WmPoiExcerpt,
+  WmExcerpt,
 ];
 const modules = [
   WmSharedModule,
@@ -103,10 +103,7 @@ const modules = [
     ],
     ...modules,
   ],
-  providers: [
-    LangService,
-    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}
-  ],
+  providers: [LangService, {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
   exports: [...declarations, ...modules, TranslateModule],
 })
 export class WmCoreModule {}
