@@ -8,16 +8,26 @@ export const authFeatureKey = 'auth';
 export interface AuthState {
   error?: HttpErrorResponse;
   isLogged: boolean;
+  loading: boolean;
+  syncing: boolean;
   user?: IUser;
 }
 
 export const initialState: AuthState = {
   isLogged: false,
+  loading: false,
+  syncing: false,
 };
 
 
 export const authReducer = createReducer(
   initialState,
+  on(AuthActions.loadAuths, AuthActions.loadSignIns, (state) => {
+    return {
+      ...state,
+      loading: true
+    }
+  }),
   on(AuthActions.loadSignUpsSuccess, (state, {user}) => {
     localStorage.setItem('access_token', user.access_token);
     return {
@@ -43,6 +53,8 @@ export const authReducer = createReducer(
       isLogged: true,
       user,
       error: undefined,
+      loading: false,
+      syncing: true,
     };
   }),
   on(AuthActions.loadSignInsFailure, (state, {error}) => {
@@ -52,6 +64,7 @@ export const authReducer = createReducer(
       user: undefined,
       isLogged: false,
       error,
+      loading: false
     };
   }),
   on(AuthActions.loadAuthsSuccess, (state, {user}) => {
@@ -60,6 +73,8 @@ export const authReducer = createReducer(
       isLogged: true,
       user,
       error: undefined,
+      loading: false,
+      syncing: true,
     };
   }),
   on(AuthActions.loadAuthsFailure, (state, {error}) => {
@@ -69,6 +84,7 @@ export const authReducer = createReducer(
       user: undefined,
       isLogged: false,
       error,
+      loading: false
     };
   }),
   on(AuthActions.loadSignOutsSuccess, (state) => {
@@ -103,4 +119,7 @@ export const authReducer = createReducer(
       error
     };
   }),
+  on(AuthActions.syncUgc, (state) => ({...state, syncing: true})),
+  on(AuthActions.syncUgcSuccess, (state) => ({...state, syncing: false})),
+  on(AuthActions.syncUgcFailure, (state , {error}) => ({...state, error, syncing: false})),
 );

@@ -1,0 +1,12 @@
+wm-home-ugc {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  align-content: stretch;
+  overflow-y: auto;
+  height: fit-content;
+  position: relative;
+  padding: 16px;
+}

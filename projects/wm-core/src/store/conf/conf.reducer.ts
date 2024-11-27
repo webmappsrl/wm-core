@@ -10,6 +10,43 @@ const initialConfState: ICONF = {
   APP: {
     name: 'Webmapp',
     geohubId: undefined,
+    track_acquisition_form: [
+      {
+          "id": "track",
+          "label": {
+              "it": "Traccia",
+              "en": "Track"
+          },
+          "fields": [
+              {
+                  "name": "title",
+                  "type": "text",
+                  "placeholder": {
+                      "it": "Inserisci un titolo",
+                      "en": "Add a title"
+                  },
+                  "required": true,
+                  "label": {
+                      "it": "Titolo traccia",
+                      "en": "Track title"
+                  }
+              },
+              {
+                  "name": "description",
+                  "type": "textarea",
+                  "placeholder": {
+                      "it": "Se vuoi puoi aggiungere una descrizione",
+                      "en": "You can add a description if you want"
+                  },
+                  "required": false,
+                  "label": {
+                      "it": "Descrizione",
+                      "en": "Description"
+                  }
+              }
+          ]
+      }
+  ],
   },
   WEBAPP: {
     draw_track_show: false,
@@ -68,7 +105,20 @@ const initialConfState: ICONF = {
       poi: false,
       route: false,
       all: false,
-    }
+    },
+    showGpxDownload: false,
+    showKmlDownload: false,
+    showDurationForward: true,
+    showDurationBackward: true,
+    showDistance: true,
+    showAscent: true,
+    showDescent: true,
+    showEleMax: true,
+    showEleMin: true,
+    showEleFrom: true,
+    showEleTo: true,
+    showGeojsonDownload: false,
+    showShapefileDownload: false,
   },
   THEME: {
     primary: '#3880ff',

@@ -1,10 +1,19 @@
-import {Feature, FeatureCollection, Geometry} from 'geojson';
+import { WmFeature } from '@wm-types/feature';
+import {Feature, FeatureCollection, Geometry, Point} from 'geojson';
 import localforage from 'localforage';
 
 export const filterFeatureCollection = (
   featureCollection: FeatureCollection,
   filters: string[],
+  ugcFeatureCollection: WmFeature<Point>[],
+  ugcSelected: boolean
 ): FeatureCollection => {
+  if(ugcSelected && ugcFeatureCollection != null){
+    return {
+      type: 'FeatureCollection',
+      features: ugcFeatureCollection
+    };
+  }
   if (filters == null || filters.length === 0 || featureCollection?.features == null)
     return featureCollection;
   return {

@@ -4,7 +4,7 @@ import {LangService} from 'wm-core/localization/lang.service';
 @Directive({selector: 'basebox'})
 export class BaseBoxComponent<T> {
   @Input() data: T;
-  @Output() public clickEVT: EventEmitter<void | number> = new EventEmitter<void | number>();
+  @Output() public clickEVT: EventEmitter<void | number | string> = new EventEmitter<void | number | string>();
 
   public defaultPhotoPath = '/assets/icon/no-photo.svg';
 

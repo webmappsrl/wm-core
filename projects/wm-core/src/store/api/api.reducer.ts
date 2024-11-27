@@ -1,4 +1,4 @@
-import {FeatureCollection} from 'geojson';
+import {FeatureCollection, Point} from 'geojson';
 import {createReducer, on} from '@ngrx/store';
 import {
   applyWhere,
@@ -14,17 +14,24 @@ import {
   updateTrackFilter,
   goToHome,
   setLastFilterType,
+  setUgc,
+  loadUgcPoisSuccess,
+  openUgcInHome,
 } from './api.actions';
 import { Filter } from '../../types/config';
 import { IHIT } from 'wm-core/types/elastic';
+import { WmFeature } from '@wm-types/feature';
 
 export const searchKey = 'search';
 export interface Api {
   filterTracks: Filter[];
   loading: boolean;
   layer?: any;
+  ugcSelected: boolean;
+  ugcHome: boolean;
   inputTyped?: string;
   poisInitFeatureCollection?: FeatureCollection;
+  ugcPoisFeatureCollection?: WmFeature<Point>[];
   poisSelectedFilterIdentifiers?: string[];
   filterTaxonomies?: string[];
   goToHome: boolean;
@@ -38,9 +45,12 @@ export interface ApiRootState {
 const initialConfState: Api = {
   filterTracks: [],
   layer: null,
+  ugcSelected: false,
+  ugcHome: false,
   loading: true,
   inputTyped: null,
   poisInitFeatureCollection: null,
+  ugcPoisFeatureCollection: null,
   poisSelectedFilterIdentifiers: null,
   filterTaxonomies: [],
   goToHome: false,
@@ -101,6 +111,14 @@ export const elasticQueryReducer = createReducer(
     };
     return newState;
   }),
+  on(setUgc, (state, {ugcSelected}) => ({
+    ...state,
+    ugcSelected
+  })),
+  on(openUgcInHome, (state, {ugcHome}) => ({
+    ...state,
+    ugcHome
+  })),
   on(queryApiSuccess, (state, {response}) => {
     const newState: Api = {...state, hits:response.hits, aggregations:response.aggregations, loading: false};
     return newState;
@@ -188,4 +206,12 @@ export const elasticQueryReducer = createReducer(
     };
     return newState;
   }),
+  on(loadUgcPoisSuccess, (state, {featureCollection}) => {
+    const newState: Api = {
+      ...state,
+      ugcPoisFeatureCollection: featureCollection,
+    };
+    return newState;
+  }),
 );
+

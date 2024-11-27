@@ -1,12 +1,14 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import * as AuthActions from './auth.actions';
-import {catchError, filter, map, switchMap, tap} from 'rxjs/operators';
+import * as ApiActions from '../api/api.actions';
+import {catchError, filter, map, switchMap} from 'rxjs/operators';
 import {AuthService} from './auth.service';
-import {of} from 'rxjs';
+import {from, of} from 'rxjs';
 import {AlertController} from '@ionic/angular';
 import {LangService} from 'wm-core/localization/lang.service';
 import {UgcService} from 'wm-core/services/ugc.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable()
 export class AuthEffects {
@@ -70,6 +72,13 @@ export class AuthEffects {
       ),
     );
   });
+  loadUgcPois$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(AuthActions.loadSignInsSuccess, AuthActions.loadAuthsSuccess),
+        map( () => ApiActions.loadUgcPois())
+      )
+  )
   logout$ = createEffect(() => {
     return this._actions$.pipe(
       ofType(AuthActions.loadSignOuts),
@@ -102,23 +111,10 @@ export class AuthEffects {
       this._actions$.pipe(
         ofType(AuthActions.loadSignInsSuccess),
         switchMap(() => {
-          return this._alertCtrl.create({
-            mode: 'ios',
-            header: this._langSvc.instant('Login effettuato con successo'),
-            message: '',
-            buttons: [
-              {
-                text: 'ok',
-              },
-            ],
-          });
+          return this._createMessageAlert(this._langSvc.instant('Login effettuato con successo'));
         }),
         switchMap(alert => {
           alert.present();
-          setTimeout(() => {
-            this._ugcSvc.syncUgc();
-          }, 2000);
-
           return alert.onWillDismiss();
         }),
       ),
@@ -129,16 +125,7 @@ export class AuthEffects {
       this._actions$.pipe(
         ofType(AuthActions.loadSignOutsSuccess),
         switchMap(() =>
-          this._alertCtrl.create({
-            mode: 'ios',
-            header: this._langSvc.instant('Logout effettuato con successo'),
-            message: '',
-            buttons: [
-              {
-                text: 'ok',
-              },
-            ],
-          }),
+          this._createMessageAlert(this._langSvc.instant('Logout effettuato con successo'))
         ),
         switchMap(alert => {
           alert.present();
@@ -147,6 +134,18 @@ export class AuthEffects {
       ),
     {dispatch: false},
   );
+  syncUgc$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(AuthActions.loadSignInsSuccess, AuthActions.loadAuthsSuccess, AuthActions.syncUgc),
+        switchMap( () =>
+          from(this._ugcSvc.syncUgc()).pipe(
+            map( () => AuthActions.syncUgcSuccess()),
+            catchError( error => of(AuthActions.syncUgcFailure(new HttpErrorResponse({error}))))
+          ),
+        )
+      ),
+  )
 
   constructor(
     private _actions$: Actions,
@@ -155,4 +154,29 @@ export class AuthEffects {
     private _langSvc: LangService,
     private _ugcSvc: UgcService,
   ) {}
+
+  private _createErrorAlert(error: string): Promise<HTMLIonAlertElement> {
+    return this._alertCtrl.create({
+      mode: 'ios',
+      header: this._langSvc.instant('Ops!'),
+      message: error,
+      buttons: [
+        {
+          text: 'ok',
+        },
+      ],
+    });
+  }
+
+  private _createMessageAlert(message: string): Promise<HTMLIonAlertElement> {
+    return this._alertCtrl.create({
+      mode: 'ios',
+      message,
+      buttons: [
+        {
+          text: 'ok',
+        },
+      ],
+    });
+  }
 }

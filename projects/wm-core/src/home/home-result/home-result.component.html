@@ -64,7 +64,7 @@
           <wm-search-box
             *ngFor="let card of tracks|slice:0:200"
             [data]="card"
-            (clickEVT)="trackEVT.emit(+card.id)"
+            (clickEVT)="trackEVT.emit(card.id)"
           >
           </wm-search-box>
         </ng-container>

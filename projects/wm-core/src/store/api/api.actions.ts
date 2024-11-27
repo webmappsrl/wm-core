@@ -1,7 +1,8 @@
 import {createAction, props} from '@ngrx/store';
-import {FeatureCollection} from 'geojson';
-import { IHIT, IRESPONSE } from 'wm-core/types/elastic';
+import {FeatureCollection, Point} from 'geojson';
+import { IRESPONSE } from 'wm-core/types/elastic';
 import { Filter } from '../../types/config';
+import { WmFeature } from '@wm-types/feature';
 
 export const query = createAction(
   '[api] Query',
@@ -28,6 +29,7 @@ export const removeTrackFilters = createAction(
 );
 export const resetTrackFilters = createAction('[api] reset track filters');
 export const setLayer = createAction('[api] set Layer', props<{layer: any | null}>());
+export const setUgc = createAction('[api] set Ugc', props<{ugcSelected: boolean}>());
 export const setLastFilterType = createAction(
   '[api] set last filter type',
   props<{filter: 'tracks' | 'pois' | null}>(),
@@ -58,3 +60,11 @@ export const togglePoiFilter = createAction(
   props<{filterIdentifier: string}>(),
 );
 export const resetPoiFilters = createAction('[api] pois: reset all pois filters');
+
+export const loadUgcPois = createAction('[api] ugc pois: Load ugc pois');
+export const loadUgcPoisSuccess = createAction(
+  '[api] ugc pois: Load ugc pois Success',
+  props<{featureCollection: WmFeature<Point>[]}>(),
+);
+export const loadUgcPoisFail = createAction('[api] ugc pois: Load ugc pois Fail');
+export const openUgcInHome =  createAction('[api] ugc: Ugc in home',  props<{ugcHome: boolean}>());

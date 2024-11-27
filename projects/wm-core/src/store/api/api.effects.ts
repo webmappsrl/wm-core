@@ -7,11 +7,15 @@ import {
   loadPois,
   loadPoisFail,
   loadPoisSuccess,
+  loadUgcPois,
+  loadUgcPoisFail,
+  loadUgcPoisSuccess,
   query,
   queryApiFail,
   queryApiSuccess,
   removeTrackFilters,
   setLayer,
+  setUgc,
   toggleTrackFilterByIdentifier,
 } from './api.actions';
 import {ApiService} from './api.service';
@@ -20,6 +24,10 @@ import {Store} from '@ngrx/store';
 import {apiTrackFilterIdentifier} from './api.selector';
 import {Filter} from '../../types/config';
 import {IHIT, IRESPONSE} from 'wm-core/types/elastic';
+import { getUgcPois, getUgcTracks } from 'wm-core/utils/localForage';
+import { WmFeature } from '@wm-types/feature';
+import { LineString } from 'geojson';
+import { syncUgcSuccess } from '../auth/auth.actions';
 
 @Injectable({
   providedIn: 'root',
@@ -56,6 +64,17 @@ export class ApiEffects {
         this._apiSVC.getPois().pipe(
           map(featureCollection => loadPoisSuccess({featureCollection})),
           catchError(() => of(loadPoisFail())),
+        ),
+      ),
+    ),
+  );
+  loadUgcPois$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(syncUgcSuccess),
+      switchMap(() =>
+        from(getUgcPois()).pipe(
+          map(featureCollection => loadUgcPoisSuccess({featureCollection})),
+          catchError(() => of(loadUgcPoisFail())),
         ),
       ),
     ),
@@ -108,6 +127,26 @@ export class ApiEffects {
       }),
     ),
   );
+  setUgc$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(setUgc),
+      switchMap(_ =>
+        from(getUgcTracks()).pipe(
+          map(ugcTracks => {
+            const hits = this._WmFeatureToHits(ugcTracks);
+            const response: IRESPONSE = {
+              aggregations: {},
+              hits
+            }
+            return queryApiSuccess({response});
+          }),
+          catchError(_ => {
+            return of(queryApiFail());
+          }),
+        )
+      ),
+    ),
+  );
   toggleTrackFilterByIdentifier$ = createEffect(() =>
     this._actions$.pipe(
       ofType(toggleTrackFilterByIdentifier),
@@ -134,4 +173,28 @@ export class ApiEffects {
     private _actions$: Actions,
     private _store: Store<ApiRootState>,
   ) {}
+
+  private _WmFeatureToHits(tracks: WmFeature<LineString>[]): IHIT[]{
+    const hits: IHIT[] = [];
+
+    tracks.forEach(track => {
+      const activity = track.properties?.form?.activity;
+      const hit:IHIT = {
+        id: `ugc_${track.properties.id??track.properties.uuid}`,
+        taxonomyActivities: activity ? [activity] : [],
+        taxonomyWheres: [],
+        cai_scale: '',
+        distance: '',
+        feature_image: null,
+        layers: [],
+        name: track.properties.name,
+        properties: {},
+        ref: ''
+      }
+
+      hits.push(hit);
+    });
+
+    return hits;
+  }
 }

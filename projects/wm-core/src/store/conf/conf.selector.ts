@@ -88,7 +88,7 @@ export const confPOIS = createSelector(confMAP, map => {
 });
 export const confHOME = createSelector(confFeature, confFILTERS, (state, filters) => {
   if (state.HOME != null && state.MAP != null) {
-    const home: IHOME[] = [];
+    const home: IHOME[] = [{box_type: "ugc", title: "I miei percorsi"}];
     state.HOME.forEach((el: IHOME) => {
       if (el.box_type === 'layer') {
         if (state.MAP.layers != null) {

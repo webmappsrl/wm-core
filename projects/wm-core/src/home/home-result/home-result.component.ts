@@ -21,6 +21,7 @@ import {
   lastFilterType,
 } from '../../store/api/api.selector';
 import {IHIT} from '../../types/elastic';
+import { syncing } from 'wm-core/store/auth/auth.selectors';
 
 @Component({
   selector: 'wm-home-result',
@@ -33,7 +34,7 @@ export class WmHomeResultComponent implements OnDestroy {
   private _resultTypeSub$: Subscription = Subscription.EMPTY;
 
   @Output() poiEVT: EventEmitter<any> = new EventEmitter();
-  @Output() trackEVT: EventEmitter<number> = new EventEmitter();
+  @Output() trackEVT: EventEmitter<number | string> = new EventEmitter();
 
   countAll$ = this._store.select(countAll);
   countInitPois$ = this._store.select(poisInitCount);
@@ -47,7 +48,12 @@ export class WmHomeResultComponent implements OnDestroy {
   );
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
   tracks$: Observable<IHIT[]> = this._store.select(queryApi);
-  tracksLoading$: Observable<boolean> = this._store.select(apiElasticStateLoading);
+  tracksLoading$: Observable<boolean> = combineLatest([
+    this._store.select(apiElasticStateLoading),
+    this._store.select(syncing)
+  ]).pipe(
+    map(([apiLoading, ugcSyncign]) => apiLoading || ugcSyncign)
+  );
 
   constructor(private _store: Store) {
     this._resultTypeSub$ = combineLatest([

@@ -1,0 +1,109 @@
+@import '../theme/mixins.scss';
+wm-form {
+  ion-card {
+    margin: 0;
+  }
+
+  .wm-form-field-disabled {
+    color: var(--wm-color-dark);
+    background-color: red;
+    .wm-waypointdetail-icon {
+      margin-right: 10px;
+      &.primary {
+        color: var(--wm-color-primary);
+      }
+
+      &.secondary {
+        color: var(--wm-color-secondary);
+      }
+
+      &.tertiary {
+        color: var(--wm-color-tertiary);
+      }
+    }
+
+    .wm-waypointdetail-item-title {
+      font-weight: var(--wm-font-weight-bold);
+    }
+
+    .wm-waypointdetail-item-city {
+      display: block;
+    }
+
+    .wm-waypointdetail-item-position {
+      display: block;
+    }
+  }
+
+  .wm-form-field {
+    padding: 22px 15px 10px 22px;
+    overflow: visible;
+    &.wm-form-item-noicon {
+      padding: 0px;
+    }
+
+    &.compiled {
+      --border-color: var(--wm-color-primary);
+    }
+
+    &.error {
+      --border-color: var(--wm-color-red);
+    }
+
+    &:focus-within {
+      --border-color: var(--wm-color-dark);
+    }
+
+    // border: 1px solid var(--ion-color-danger);
+
+    .wm-form-field-label {
+      font-weight: var(--wm-font-weight-bold);
+      .wm-form-field-label-secondary {
+        font-weight: var(--wm-font-weight-light);
+      }
+      .wm-form-field-label-required {
+        color: var(--ion-color-danger);
+      }
+      &.wm-form-field-labelphoto {
+        height: 30px;
+        top: 0px;
+        position: absolute;
+      }
+    }
+
+    .wm-form-field-icon {
+      position: absolute;
+      left: -28px;
+      top: 10px;
+      color: var(--wm-color-grey);
+    }
+    container-element {
+      width: 100%;
+      .wm-form-field-select {
+        width: 100%;
+        min-width: 100%;
+        margin-left: -20px;
+      }
+    }
+  }
+  .wm-form-field-error {
+    padding: 0px 25px 8px 41px;
+    color: var(--ion-color-danger);
+    display: inline-block;
+  }
+  .wm-form-field-helper {
+    padding: 0px 25px 8px 41px;
+    display: inline-block;
+  }
+}
+ion-alert{
+  --min-width: 275px!important;
+  .alert-radio-label{
+    text-wrap: unset!important;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    line-height: 1;
+  }
+}

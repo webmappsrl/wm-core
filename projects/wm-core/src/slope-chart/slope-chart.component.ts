@@ -523,12 +523,12 @@ export class WmSlopeChartComponent implements OnInit {
         usedSurfaces: Array<ESlopeChartSurface> = [];
 
       this._chartValues = [];
-
+      const coordinates = route.geometry ? route.geometry.coordinates : route.geojson.coordinates;
       labels.push(0);
       currentLocation = {
-        longitude: route.geometry.coordinates[0][0],
-        latitude: route.geometry.coordinates[0][1],
-        altitude: route.geometry.coordinates[0][2],
+        longitude: coordinates[0][0],
+        latitude: coordinates[0][1],
+        altitude: coordinates[0][2] ?? 0,
       };
       this._chartValues.push(currentLocation);
       maxAlt = currentLocation.altitude;
@@ -537,20 +537,20 @@ export class WmSlopeChartComponent implements OnInit {
       let surface = Object.values(ESlopeChartSurface)[0];
       surfaceValues = this._setSurfaceValue(
         surface,
-        route.geometry.coordinates[0][2],
+        coordinates[0][2] ?? 0,
         [currentLocation],
         surfaceValues,
       );
       if (!usedSurfaces.includes(surface)) usedSurfaces.push(surface);
-      slopeValues.push([route.geometry.coordinates[0][2], 0]);
+      slopeValues.push([coordinates[0][2] ?? 0, 0]);
 
       // Calculate track length and max/min altitude
-      for (let i = 1; i < route.geometry.coordinates.length; i++) {
+      for (let i = 1; i < coordinates.length; i++) {
         previousLocation = currentLocation;
         currentLocation = {
-          longitude: route.geometry.coordinates[i][0],
-          latitude: route.geometry.coordinates[i][1],
-          altitude: route.geometry.coordinates[i][2],
+          longitude: coordinates[i][0],
+          latitude: coordinates[i][1],
+          altitude: coordinates[i][2] ?? 0,
         };
         trackLength += this.getDistanceBetweenPoints(previousLocation, currentLocation);
 
@@ -565,19 +565,19 @@ export class WmSlopeChartComponent implements OnInit {
       let step: number = 1,
         locations: Array<Location> = [];
       currentLocation = {
-        longitude: route.geometry.coordinates[0][0],
-        latitude: route.geometry.coordinates[0][1],
-        altitude: route.geometry.coordinates[0][2],
+        longitude: coordinates[0][0],
+        latitude: coordinates[0][1],
+        altitude: coordinates[0][2] ?? 0,
       };
 
       // Create the chart datasets
-      for (let i = 1; i < route.geometry.coordinates.length && step <= steps; i++) {
+      for (let i = 1; i < coordinates.length && step <= steps; i++) {
         locations.push(currentLocation);
         previousLocation = currentLocation;
         currentLocation = {
-          longitude: route.geometry.coordinates[i][0],
-          latitude: route.geometry.coordinates[i][1],
-          altitude: route.geometry.coordinates[i][2],
+          longitude: coordinates[i][0],
+          latitude: coordinates[i][1],
+          altitude: coordinates[i][2] ?? 0,
         };
         let localDistance: number = this.getDistanceBetweenPoints(
           previousLocation,

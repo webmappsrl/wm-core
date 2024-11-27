@@ -48,3 +48,6 @@ export const loadSignOutsFailure = createAction(
   '[Auth] Load SignOut Failure',
   props<{error: HttpErrorResponse}>(),
 );
+export const syncUgc= createAction('[Auth] Sync Ugc Track');
+export const syncUgcSuccess = createAction('[Auth] Sync Ugc Success');
+export const syncUgcFailure = createAction('[Auth] Sync Ugc Failure',  props<{error: HttpErrorResponse}>());
