@@ -1,7 +1,7 @@
-import { createReducer, on } from "@ngrx/store";
+import {createReducer, on} from '@ngrx/store';
 import * as AuthActions from './auth.actions';
-import { HttpErrorResponse } from "@angular/common/http";
-import { IUser } from "./auth.model";
+import {HttpErrorResponse} from '@angular/common/http';
+import {IUser} from './auth.model';
 
 export const authFeatureKey = 'auth';
 
@@ -9,24 +9,21 @@ export interface AuthState {
   error?: HttpErrorResponse;
   isLogged: boolean;
   loading: boolean;
-  syncing: boolean;
   user?: IUser;
 }
 
 export const initialState: AuthState = {
   isLogged: false,
   loading: false,
-  syncing: false,
 };
-
 
 export const authReducer = createReducer(
   initialState,
-  on(AuthActions.loadAuths, AuthActions.loadSignIns, (state) => {
+  on(AuthActions.loadAuths, AuthActions.loadSignIns, state => {
     return {
       ...state,
-      loading: true
-    }
+      loading: true,
+    };
   }),
   on(AuthActions.loadSignUpsSuccess, (state, {user}) => {
     localStorage.setItem('access_token', user.access_token);
@@ -64,7 +61,7 @@ export const authReducer = createReducer(
       user: undefined,
       isLogged: false,
       error,
-      loading: false
+      loading: false,
     };
   }),
   on(AuthActions.loadAuthsSuccess, (state, {user}) => {
@@ -84,10 +81,10 @@ export const authReducer = createReducer(
       user: undefined,
       isLogged: false,
       error,
-      loading: false
+      loading: false,
     };
   }),
-  on(AuthActions.loadSignOutsSuccess, (state) => {
+  on(AuthActions.loadSignOutsSuccess, state => {
     localStorage.removeItem('access_token');
     return {
       ...state,
@@ -100,10 +97,10 @@ export const authReducer = createReducer(
     localStorage.removeItem('access_token');
     return {
       ...state,
-      error
+      error,
     };
   }),
-  on(AuthActions.deleteUserSuccess, (state) => {
+  on(AuthActions.deleteUserSuccess, state => {
     localStorage.removeItem('access_token');
     return {
       ...state,
@@ -116,10 +113,7 @@ export const authReducer = createReducer(
     localStorage.removeItem('access_token');
     return {
       ...state,
-      error
+      error,
     };
   }),
-  on(AuthActions.syncUgc, (state) => ({...state, syncing: true})),
-  on(AuthActions.syncUgcSuccess, (state) => ({...state, syncing: false})),
-  on(AuthActions.syncUgcFailure, (state , {error}) => ({...state, error, syncing: false})),
 );

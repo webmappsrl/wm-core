@@ -19,9 +19,9 @@ import {
   apiElasticStateLayer,
   poisInitCount,
   lastFilterType,
-} from '../../store/api/api.selector';
-import {IHIT} from '../../types/elastic';
-import {syncing} from '@wm-core/store/auth/auth.selectors';
+  syncing,
+} from '@wm-core/store/api/api.selector';
+import {IHIT} from '@wm-core/types/elastic';
 
 @Component({
   selector: 'wm-home-result',

@@ -17,6 +17,9 @@ import {
   setUgc,
   loadUgcPoisSuccess,
   openUgcInHome,
+  syncUgc,
+  syncUgcSuccess,
+  syncUgcFailure,
 } from './api.actions';
 import {Filter} from '../../types/config';
 import {IHIT} from '@wm-core/types/elastic';
@@ -37,6 +40,7 @@ export interface Api {
   goToHome: boolean;
   hits?: IHIT[];
   aggregations?: any;
+  syncing: boolean;
 }
 export interface ApiRootState {
   [searchKey]: Api;
@@ -55,6 +59,7 @@ const initialConfState: Api = {
   filterTaxonomies: [],
   goToHome: false,
   hits: [],
+  syncing: false,
 };
 
 export const elasticQueryReducer = createReducer(
@@ -218,4 +223,7 @@ export const elasticQueryReducer = createReducer(
     };
     return newState;
   }),
+  on(syncUgc, state => ({...state, syncing: true})),
+  on(syncUgcSuccess, state => ({...state, syncing: false})),
+  on(syncUgcFailure, (state, {error}) => ({...state, error, syncing: false})),
 );

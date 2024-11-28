@@ -2,40 +2,45 @@ import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {SearchResponse} from 'elasticsearch';
 import {confFILTERSTRACKS, confPOISFilter, confPoisIcons} from '../conf/conf.selector';
 import {buildStats, filterFeatureCollection, filterFeatureCollectionByInputTyped} from './utils';
-import { IELASTIC, IHIT } from '../../types/elastic';
-import { Api } from './api.reducer';
-import { selectAuthState } from '../auth/auth.selectors';
+import {IELASTIC, IHIT} from '../../types/elastic';
+import {Api} from './api.reducer';
+import {selectAuthState} from '../auth/auth.selectors';
 
 export const elasticSearchFeature = createFeatureSelector<IELASTIC>('query');
-export const queryApi = createSelector(elasticSearchFeature as any, (state: Api) =>
-  state.hits??[],
+export const queryApi = createSelector(
+  elasticSearchFeature as any,
+  (state: Api) => state.hits ?? [],
 );
-export const countTracks = createSelector(elasticSearchFeature as any, (state: Api) =>
-  state.hits.length ?? undefined
+export const countTracks = createSelector(
+  elasticSearchFeature as any,
+  (state: Api) => state.hits.length ?? undefined,
 );
 // @ts-ignore
-export const statsApi = createSelector(elasticSearchFeature as any, (state: SearchResponse<IHIT>) => {
-  if (state != null && state.aggregations) {
-    let res = [];
-    const countKeys = Object.keys(state.aggregations).filter(k => k.indexOf('_count') < 0);
-    countKeys.forEach(countKey => {
-      res = [
-        // @ts-ignore
-        ...res,
-                // @ts-ignore
-        ...state.aggregations[countKey].count.buckets,
-                // @ts-ignore
-        ...[
-          {
-            key: countKey,
-            doc_count: state.aggregations.themes.doc_count,
-          },
-        ],
-      ];
-    });
-    return res;
-  }
-});
+export const statsApi = createSelector(
+  elasticSearchFeature as any,
+  (state: SearchResponse<IHIT>) => {
+    if (state != null && state.aggregations) {
+      let res = [];
+      const countKeys = Object.keys(state.aggregations).filter(k => k.indexOf('_count') < 0);
+      countKeys.forEach(countKey => {
+        res = [
+          // @ts-ignore
+          ...res,
+          // @ts-ignore
+          ...state.aggregations[countKey].count.buckets,
+          // @ts-ignore
+          ...[
+            {
+              key: countKey,
+              doc_count: state.aggregations.themes.doc_count,
+            },
+          ],
+        ];
+      });
+      return res;
+    }
+  },
+);
 
 export const apiElasticState = createSelector(elasticSearchFeature, state => {
   return {
@@ -51,10 +56,10 @@ export const apiFilterTracks = createSelector(apiElasticState, state => {
   return state.filterTracks;
 });
 export const apiTrackFilterIdentifier = createSelector(apiFilterTracks, filterTracks => {
-  return filterTracks.map((f:any) => f.identifier);
+  return filterTracks.map((f: any) => f.identifier);
 });
 export const apiSearchInputTyped = createSelector(apiElasticState, state => state.inputTyped);
-
+export const syncing = createSelector(elasticSearchFeature, state => state.syncing);
 export const apiElasticStateLayer = createSelector(apiElasticState, state => {
   return state.layer;
 });
@@ -74,14 +79,15 @@ export const showResult = createSelector(
   elasticSearchFeature,
   selectAuthState,
   (state, authState) => {
-  return (
-    state.layer != null ||
-    state.filterTracks.length > 0 ||
-    (state.poisSelectedFilterIdentifiers && state.poisSelectedFilterIdentifiers.length > 0) ||
-    (state.inputTyped && state.inputTyped != '') ||
-    (state.ugcHome && authState.isLogged)
-  );
-});
+    return (
+      state.layer != null ||
+      state.filterTracks.length > 0 ||
+      (state.poisSelectedFilterIdentifiers && state.poisSelectedFilterIdentifiers.length > 0) ||
+      (state.inputTyped && state.inputTyped != '') ||
+      (state.ugcHome && authState.isLogged)
+    );
+  },
+);
 export const lastFilterType = createSelector(elasticSearchFeature, state => {
   return state.lastFilterType;
 });
@@ -93,21 +99,21 @@ export const poiFilters = createSelector(
   elasticSearchFeature,
   confPOISFilter,
   (state, poisFilters) => {
-    let filters:any = [];
+    let filters: any = [];
 
     if (state.poisSelectedFilterIdentifiers != null && poisFilters.poi_type != null) {
       // @ts-ignore
       filters = [
-              // @ts-ignore
+        // @ts-ignore
         ...filters,
-              // @ts-ignore
+        // @ts-ignore
         ...poisFilters.poi_type.filter(
-                // @ts-ignore
+          // @ts-ignore
           poiFilter => state.poisSelectedFilterIdentifiers.indexOf(poiFilter.identifier) >= 0,
         ),
       ];
     }
-          // @ts-ignore
+    // @ts-ignore
     return filters;
   },
 );
@@ -130,28 +136,30 @@ export const poisInitCount = createSelector(
   poisInitFeatureCollection,
   featureCollection => featureCollection?.features?.length,
 );
-export const isUgcSelected = createSelector(elasticSearchFeature as any, (state: Api) =>
-  state.ugcSelected,
+export const isUgcSelected = createSelector(
+  elasticSearchFeature as any,
+  (state: Api) => state.ugcSelected,
 );
-export const isUgcHome = createSelector(elasticSearchFeature as any, (state: Api) =>
-  state.ugcHome,
-);
-export const getUgcPoisFeatureCollection = createSelector( elasticSearchFeature as any, (state: Api) =>
-  state.ugcPoisFeatureCollection
+export const isUgcHome = createSelector(elasticSearchFeature as any, (state: Api) => state.ugcHome);
+export const getUgcPoisFeatureCollection = createSelector(
+  elasticSearchFeature as any,
+  (state: Api) => state.ugcPoisFeatureCollection,
 );
 export const poisWhereFeatureCollection = createSelector(
   poisInitFeatureCollection,
   filterTaxonomies,
   getUgcPoisFeatureCollection,
   isUgcHome,
-  (featureCollection, filter, ugcPoisFeatureCollection, ugcHome) => filterFeatureCollection(featureCollection, filter, ugcPoisFeatureCollection, ugcHome),
+  (featureCollection, filter, ugcPoisFeatureCollection, ugcHome) =>
+    filterFeatureCollection(featureCollection, filter, ugcPoisFeatureCollection, ugcHome),
 );
 export const poisFilteredFeatureCollection = createSelector(
   poisWhereFeatureCollection,
   poiFilterIdentifiers,
   getUgcPoisFeatureCollection,
   isUgcHome,
-  (featureCollection, filter, ugcPoisFeatureCollection, ugcHome) => filterFeatureCollection(featureCollection, filter, ugcPoisFeatureCollection, ugcHome),
+  (featureCollection, filter, ugcPoisFeatureCollection, ugcHome) =>
+    filterFeatureCollection(featureCollection, filter, ugcPoisFeatureCollection, ugcHome),
 );
 export const poisFilteredFeatureCollectionByInputType = createSelector(
   poisFilteredFeatureCollection,
@@ -170,9 +178,9 @@ export const pois = createSelector(
     let s = featureCollection;
     if (s != null && s.features != null && icons != null) {
       const iconKeys = Object.keys(icons);
-      const features = s.features.map((f:any) => {
+      const features = s.features.map((f: any) => {
         if (f != null && f.properties != null && f.properties.taxonomyIdentifiers != null) {
-          const filteredArray = f.properties.taxonomyIdentifiers.filter((value:any) =>
+          const filteredArray = f.properties.taxonomyIdentifiers.filter((value: any) =>
             iconKeys.includes(value),
           );
           if (filteredArray.length > 0) {

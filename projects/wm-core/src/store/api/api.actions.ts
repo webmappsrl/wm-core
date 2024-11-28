@@ -3,6 +3,7 @@ import {FeatureCollection, Point} from 'geojson';
 import {IRESPONSE} from '@wm-core/types/elastic';
 import {Filter} from '../../types/config';
 import {WmFeature} from '@wm-types/feature';
+import {HttpErrorResponse} from '@angular/common/http';
 
 export const query = createAction(
   '[api] Query',
@@ -68,3 +69,9 @@ export const loadUgcPoisSuccess = createAction(
 );
 export const loadUgcPoisFail = createAction('[api] ugc pois: Load ugc pois Fail');
 export const openUgcInHome = createAction('[api] ugc: Ugc in home', props<{ugcHome: boolean}>());
+export const syncUgc = createAction('[Auth] Sync Ugc Track');
+export const syncUgcSuccess = createAction('[Auth] Sync Ugc Success');
+export const syncUgcFailure = createAction(
+  '[Auth] Sync Ugc Failure',
+  props<{error: HttpErrorResponse}>(),
+);

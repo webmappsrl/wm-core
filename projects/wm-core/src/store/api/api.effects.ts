@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {from, of} from 'rxjs';
 import {catchError, map, switchMap, withLatestFrom} from 'rxjs/operators';
+import * as AuthActions from '../auth/auth.actions';
 import {
   inputTyped,
   loadPois,
@@ -16,6 +17,9 @@ import {
   removeTrackFilters,
   setLayer,
   setUgc,
+  syncUgc,
+  syncUgcFailure,
+  syncUgcSuccess,
   toggleTrackFilterByIdentifier,
 } from './api.actions';
 import {ApiService} from './api.service';
@@ -27,7 +31,8 @@ import {IHIT, IRESPONSE} from '@wm-core/types/elastic';
 import {getUgcPois, getUgcTracks} from '@wm-core/utils/localForage';
 import {WmFeature} from '@wm-types/feature';
 import {LineString} from 'geojson';
-import {syncUgcSuccess} from '../auth/auth.actions';
+import {UgcService} from '@wm-core/services/ugc.service';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -147,6 +152,17 @@ export class ApiEffects {
       ),
     ),
   );
+  syncUgc$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(AuthActions.loadSignInsSuccess, AuthActions.loadAuthsSuccess, syncUgc),
+      switchMap(() =>
+        from(this._ugcSvc.syncUgc()).pipe(
+          map(() => syncUgcSuccess()),
+          catchError(error => of(syncUgcFailure(new HttpErrorResponse({error})))),
+        ),
+      ),
+    ),
+  );
   toggleTrackFilterByIdentifier$ = createEffect(() =>
     this._actions$.pipe(
       ofType(toggleTrackFilterByIdentifier),
@@ -170,6 +186,7 @@ export class ApiEffects {
 
   constructor(
     private _apiSVC: ApiService,
+    private _ugcSvc: UgcService,
     private _actions$: Actions,
     private _store: Store<ApiRootState>,
   ) {}
