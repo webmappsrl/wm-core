@@ -103,6 +103,13 @@ export class AuthEffects {
           AuthActions.loadAuthsFailure,
         ),
         filter(r => r != null && r.error.error.error != 'Unauthorized'),
+        switchMap((e) => {
+          return this._createErrorAlert(this._langSvc.instant(e.error.error))
+        }),
+        switchMap(alert => {
+          alert.present();
+          return alert.onWillDismiss();
+        }),
       ),
     {dispatch: false},
   );
