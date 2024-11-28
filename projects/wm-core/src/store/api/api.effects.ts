@@ -24,10 +24,10 @@ import {Store} from '@ngrx/store';
 import {apiTrackFilterIdentifier} from './api.selector';
 import {Filter} from '../../types/config';
 import {IHIT, IRESPONSE} from 'wm-core/types/elastic';
-import { getUgcPois, getUgcTracks } from 'wm-core/utils/localForage';
-import { WmFeature } from '@wm-types/feature';
-import { LineString } from 'geojson';
-import { syncUgcSuccess } from '../auth/auth.actions';
+import {getUgcPois, getUgcTracks} from 'wm-core/utils/localForage';
+import {WmFeature} from '@wm-types/feature';
+import {LineString} from 'geojson';
+import {syncUgcSuccess} from '../auth/auth.actions';
 
 @Injectable({
   providedIn: 'root',
@@ -136,14 +136,14 @@ export class ApiEffects {
             const hits = this._WmFeatureToHits(ugcTracks);
             const response: IRESPONSE = {
               aggregations: {},
-              hits
-            }
+              hits,
+            };
             return queryApiSuccess({response});
           }),
           catchError(_ => {
             return of(queryApiFail());
           }),
-        )
+        ),
       ),
     ),
   );
@@ -174,13 +174,13 @@ export class ApiEffects {
     private _store: Store<ApiRootState>,
   ) {}
 
-  private _WmFeatureToHits(tracks: WmFeature<LineString>[]): IHIT[]{
+  private _WmFeatureToHits(tracks: WmFeature<LineString>[]): IHIT[] {
     const hits: IHIT[] = [];
 
     tracks.forEach(track => {
       const activity = track.properties?.form?.activity;
-      const hit:IHIT = {
-        id: `ugc_${track.properties.id??track.properties.uuid}`,
+      const hit: IHIT = {
+        id: `ugc_${track.properties.id ?? track.properties.uuid}`,
         taxonomyActivities: activity ? [activity] : [],
         taxonomyWheres: [],
         cai_scale: '',
@@ -189,8 +189,8 @@ export class ApiEffects {
         layers: [],
         name: track.properties.name,
         properties: {},
-        ref: ''
-      }
+        ref: '',
+      };
 
       hits.push(hit);
     });

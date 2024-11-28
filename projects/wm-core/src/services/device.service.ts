@@ -74,7 +74,7 @@ export class DeviceService {
     height: number;
   }>;
 
-  constructor(private _platform: Platform, @Inject(APP_VERSION) public appVersion: string,) {
+  constructor(private _platform: Platform, @Inject(APP_VERSION) public appVersion: string) {
     this._onResize = new ReplaySubject(1);
     this._onBackground = new ReplaySubject(1);
     this._onForeground = new ReplaySubject(1);

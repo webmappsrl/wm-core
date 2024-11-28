@@ -18,9 +18,9 @@ import {
   loadUgcPoisSuccess,
   openUgcInHome,
 } from './api.actions';
-import { Filter } from '../../types/config';
-import { IHIT } from 'wm-core/types/elastic';
-import { WmFeature } from '@wm-types/feature';
+import {Filter} from '../../types/config';
+import {IHIT} from 'wm-core/types/elastic';
+import {WmFeature} from '@wm-types/feature';
 
 export const searchKey = 'search';
 export interface Api {
@@ -113,14 +113,19 @@ export const elasticQueryReducer = createReducer(
   }),
   on(setUgc, (state, {ugcSelected}) => ({
     ...state,
-    ugcSelected
+    ugcSelected,
   })),
   on(openUgcInHome, (state, {ugcHome}) => ({
     ...state,
-    ugcHome
+    ugcHome,
   })),
   on(queryApiSuccess, (state, {response}) => {
-    const newState: Api = {...state, hits:response.hits, aggregations:response.aggregations, loading: false};
+    const newState: Api = {
+      ...state,
+      hits: response.hits,
+      aggregations: response.aggregations,
+      loading: false,
+    };
     return newState;
   }),
   on(queryApiFail, state => {
@@ -214,4 +219,3 @@ export const elasticQueryReducer = createReducer(
     return newState;
   }),
 );
-

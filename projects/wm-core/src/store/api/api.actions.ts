@@ -1,8 +1,8 @@
 import {createAction, props} from '@ngrx/store';
 import {FeatureCollection, Point} from 'geojson';
-import { IRESPONSE } from 'wm-core/types/elastic';
-import { Filter } from '../../types/config';
-import { WmFeature } from '@wm-types/feature';
+import {IRESPONSE} from 'wm-core/types/elastic';
+import {Filter} from '../../types/config';
+import {WmFeature} from '@wm-types/feature';
 
 export const query = createAction(
   '[api] Query',
@@ -67,4 +67,4 @@ export const loadUgcPoisSuccess = createAction(
   props<{featureCollection: WmFeature<Point>[]}>(),
 );
 export const loadUgcPoisFail = createAction('[api] ugc pois: Load ugc pois Fail');
-export const openUgcInHome =  createAction('[api] ugc: Ugc in home',  props<{ugcHome: boolean}>());
+export const openUgcInHome = createAction('[api] ugc: Ugc in home', props<{ugcHome: boolean}>());

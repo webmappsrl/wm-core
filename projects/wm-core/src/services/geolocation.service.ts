@@ -1,11 +1,15 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, ReplaySubject} from 'rxjs';
 import {CStopwatch} from 'wm-core/utils/cstopwatch';
-import {BackgroundGeolocationPlugin, Location, WatcherOptions} from '@capacitor-community/background-geolocation';
+import {
+  BackgroundGeolocationPlugin,
+  Location,
+  WatcherOptions,
+} from '@capacitor-community/background-geolocation';
 import {registerPlugin} from '@capacitor/core';
 import {getDistance} from 'ol/sphere';
-import { DeviceService } from './device.service';
-import { App } from '@capacitor/app';
+import {DeviceService} from './device.service';
+import {App} from '@capacitor/app';
 import {LineString} from 'geojson';
 import {WmFeature} from '@wm-types/feature';
 import {IGeolocationServiceState} from 'wm-core/types/location';
@@ -34,7 +38,7 @@ export class GeolocationService {
     backgroundTitle: 'Tracking You.',
     requestPermissions: true,
     stale: false,
-  }
+  };
 
   get active(): boolean {
     return !!this?._state?.isActive;
@@ -73,14 +77,13 @@ export class GeolocationService {
   onStart$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(private _daviceService: DeviceService) {
-    if(!this._daviceService.isBrowser){
+    if (!this._daviceService.isBrowser) {
       App.addListener('appStateChange', ({isActive}) => {
         if (!isActive) {
-          if(!this.onRecord$.value){
+          if (!this.onRecord$.value) {
             this.stop();
           }
-        }
-        else{
+        } else {
           this.start();
         }
       });
@@ -125,11 +128,10 @@ export class GeolocationService {
    */
   start(): void {
     this.onStart$.next(true);
-    if(this._watcher.value == null){
+    if (this._watcher.value == null) {
       if (this._daviceService.isBrowser) {
         this._webWatcher();
-      }
-      else{
+      } else {
         this._backgroundGeolocationWatcher();
       }
     }
@@ -179,22 +181,19 @@ export class GeolocationService {
   private _backgroundGeolocationWatcher(accuracy: 'high' | 'low' = 'low'): void {
     const options: WatcherOptions = this.getWatcherOptions(accuracy);
     backgroundGeolocation
-      .addWatcher(
-        options,
-        (location, error) => {
-          if (error) {
-            return console.error(error);
-          }
-          console.log(
-            'backgroundGeolocation->GeolocationService location:',
-            JSON.stringify(location),
-          );
-          if (this.onStart$.value) {
-            this._locationUpdate(location);
-          }
-          return console.log(location);
-        },
-      )
+      .addWatcher(options, (location, error) => {
+        if (error) {
+          return console.error(error);
+        }
+        console.log(
+          'backgroundGeolocation->GeolocationService location:',
+          JSON.stringify(location),
+        );
+        if (this.onStart$.value) {
+          this._locationUpdate(location);
+        }
+        return console.log(location);
+      })
       .then(watcher_id => {
         this._watcher.next({type: 'background', id: watcher_id});
       });
@@ -214,7 +213,7 @@ export class GeolocationService {
 
   private _clearCurrentWatcher(): void {
     const watcher = this._watcher.value;
-    if(watcher && watcher.id != null){
+    if (watcher && watcher.id != null) {
       if (this._watcher.value.type === 'web') {
         navigator.geolocation.clearWatch(+this._watcher.value.id);
       } else {
