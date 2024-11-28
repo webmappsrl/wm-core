@@ -5,7 +5,7 @@ import {map, switchMap} from 'rxjs/operators';
 import {defaultImageB64} from './defaultImageB64';
 import {IWmImage} from '../../types/model';
 import {OfflineCallbackManager} from './offlineCallBackManager';
-import {getImg} from 'wm-core/utils/localForage';
+import {getImg} from '@wm-core/utils/localForage';
 @Component({
   selector: 'wm-img',
   templateUrl: './img.component.html',

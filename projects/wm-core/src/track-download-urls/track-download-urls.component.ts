@@ -4,7 +4,7 @@ import {Share} from '@capacitor/share';
 import GeoJsonToGpx from '@dwayneparton/geojson-to-gpx';
 import {Feature} from 'geojson';
 import tokml from 'geojson-to-kml';
-import {DeviceService} from 'wm-core/services/device.service';
+import {DeviceService} from '@wm-core/services/device.service';
 @Component({
   selector: 'wm-track-download-urls',
   templateUrl: './track-download-urls.component.html',

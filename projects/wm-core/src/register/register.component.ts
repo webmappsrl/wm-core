@@ -11,12 +11,12 @@ import {LoadingController, ModalController, NavController, PopoverController} fr
 import {select, Store} from '@ngrx/store';
 import {BehaviorSubject, from, Observable, of} from 'rxjs';
 import {filter, map, switchMap, take} from 'rxjs/operators';
-import {GenericPopoverComponent} from 'wm-core/generic-popover/generic-popover.component';
-import {WmInnerHtmlComponent} from 'wm-core/inner-html/inner-html.component';
-import {LangService} from 'wm-core/localization/lang.service';
-import {loadSignUps} from 'wm-core/store/auth/auth.actions';
-import {isLogged, selectAuthState} from 'wm-core/store/auth/auth.selectors';
-import {confPAGES, confPRIVACY} from 'wm-core/store/conf/conf.selector';
+import {GenericPopoverComponent} from '@wm-core/generic-popover/generic-popover.component';
+import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
+import {LangService} from '@wm-core/localization/lang.service';
+import {loadSignUps} from '@wm-core/store/auth/auth.actions';
+import {isLogged, selectAuthState} from '@wm-core/store/auth/auth.selectors';
+import {confPAGES, confPRIVACY} from '@wm-core/store/conf/conf.selector';
 
 @Component({
   selector: 'wm-register-component',
@@ -105,7 +105,7 @@ export class RegisterComponent {
   register(): void {
     const loader$ = from(
       this._loadingCtrl.create({
-        message: this._langSvc.instant("Registrazione in corso"),
+        message: this._langSvc.instant('Registrazione in corso'),
       }),
     );
     const present$ = loader$.pipe(switchMap(l => from(l.present())));
@@ -134,8 +134,10 @@ export class RegisterComponent {
       event: ev,
       translucent: true,
       componentProps: {
-        title: this._langSvc.instant("Perchè ti chiediamo il Codice Fiscale?"),
-        message: this._langSvc.instant("Se sei Socia/o CAI inserisci il tuo CF al momento della registrazione. Per te il download delle tappe del Sentiero Italia CAI sarà automaticamente gratuito!"),
+        title: this._langSvc.instant('Perchè ti chiediamo il Codice Fiscale?'),
+        message: this._langSvc.instant(
+          'Se sei Socia/o CAI inserisci il tuo CF al momento della registrazione. Per te il download delle tappe del Sentiero Italia CAI sarà automaticamente gratuito!',
+        ),
       },
     });
     return popover.present();

@@ -19,7 +19,7 @@ import {
   openUgcInHome,
 } from './api.actions';
 import {Filter} from '../../types/config';
-import {IHIT} from 'wm-core/types/elastic';
+import {IHIT} from '@wm-core/types/elastic';
 import {WmFeature} from '@wm-types/feature';
 
 export const searchKey = 'search';

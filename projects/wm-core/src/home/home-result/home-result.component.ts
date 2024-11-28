@@ -21,7 +21,7 @@ import {
   lastFilterType,
 } from '../../store/api/api.selector';
 import {IHIT} from '../../types/elastic';
-import { syncing } from 'wm-core/store/auth/auth.selectors';
+import {syncing} from '@wm-core/store/auth/auth.selectors';
 
 @Component({
   selector: 'wm-home-result',
@@ -50,10 +50,8 @@ export class WmHomeResultComponent implements OnDestroy {
   tracks$: Observable<IHIT[]> = this._store.select(queryApi);
   tracksLoading$: Observable<boolean> = combineLatest([
     this._store.select(apiElasticStateLoading),
-    this._store.select(syncing)
-  ]).pipe(
-    map(([apiLoading, ugcSyncign]) => apiLoading || ugcSyncign)
-  );
+    this._store.select(syncing),
+  ]).pipe(map(([apiLoading, ugcSyncign]) => apiLoading || ugcSyncign));
 
   constructor(private _store: Store) {
     this._resultTypeSub$ = combineLatest([

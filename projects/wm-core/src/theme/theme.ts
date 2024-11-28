@@ -1,5 +1,5 @@
 import * as _color from 'color';
-import {ITHEME} from 'wm-core/types/config';
+import {ITHEME} from '@wm-core/types/config';
 
 /**
  * Return a contrast color based on the color param

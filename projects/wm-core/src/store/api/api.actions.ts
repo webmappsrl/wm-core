@@ -1,6 +1,6 @@
 import {createAction, props} from '@ngrx/store';
 import {FeatureCollection, Point} from 'geojson';
-import {IRESPONSE} from 'wm-core/types/elastic';
+import {IRESPONSE} from '@wm-core/types/elastic';
 import {Filter} from '../../types/config';
 import {WmFeature} from '@wm-types/feature';
 

@@ -9,7 +9,7 @@ import {Storage} from '@ionic/storage-angular';
 import {ReplaySubject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 import {Md5} from 'ts-md5/dist/md5';
-import {IConfig} from 'wm-core/types/config';
+import {IConfig} from '@wm-core/types/config';
 import {
   CONFIG_JSON_STORAGE_KEY,
   IMAGE_STORAGE_PREFIX,
@@ -19,9 +19,13 @@ import {
   POI_STORAGE_PREFIX,
   TRACK_STORAGE_PREFIX,
   USER_STORAGE_KEY,
-} from 'wm-core/constants/storage';
-import {IGeojsonFeature, IGeojsonFeatureDownloaded, IGeojsonPoiDetailed} from 'wm-core/types/model';
-import {IUser} from 'wm-core/store/auth/auth.model';
+} from '@wm-core/constants/storage';
+import {
+  IGeojsonFeature,
+  IGeojsonFeatureDownloaded,
+  IGeojsonPoiDetailed,
+} from '@wm-core/types/model';
+import {IUser} from '@wm-core/store/auth/auth.model';
 
 @Injectable({
   providedIn: 'root',

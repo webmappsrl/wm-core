@@ -4,7 +4,7 @@ import {Observable} from 'rxjs';
 import {ICONF} from '../../types/config';
 import {ENVIRONMENT_CONFIG, EnvironmentConfig} from './conf.token';
 import {hostToGeohubAppId} from '../api/api.service';
-import {synchronizedApi} from 'wm-core/utils/localForage';
+import {synchronizedApi} from '@wm-core/utils/localForage';
 @Injectable({
   providedIn: 'root',
 })

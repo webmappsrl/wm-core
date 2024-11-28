@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, ReplaySubject} from 'rxjs';
-import {CStopwatch} from 'wm-core/utils/cstopwatch';
+import {CStopwatch} from '@wm-core/utils/cstopwatch';
 import {
   BackgroundGeolocationPlugin,
   Location,
@@ -12,7 +12,7 @@ import {DeviceService} from './device.service';
 import {App} from '@capacitor/app';
 import {LineString} from 'geojson';
 import {WmFeature} from '@wm-types/feature';
-import {IGeolocationServiceState} from 'wm-core/types/location';
+import {IGeolocationServiceState} from '@wm-core/types/location';
 
 export interface Watcher {
   id: string;

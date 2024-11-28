@@ -15,10 +15,10 @@ import {
 } from '../store/api/api.actions';
 import {confHOME, confShowDrawTrack} from '../store/conf/conf.selector';
 import {IHOME, IHORIZONTALSCROLLBOX} from '../types/config';
-import {isLogged} from 'wm-core/store/auth/auth.selectors';
+import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {WmFeature} from '@wm-types/feature';
 import {LineString} from 'geojson';
-import {getUgcTracks} from 'wm-core/utils/localForage';
+import {getUgcTracks} from '@wm-core/utils/localForage';
 
 @Component({
   selector: 'wm-home-page',

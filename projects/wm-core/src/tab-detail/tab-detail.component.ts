@@ -11,7 +11,7 @@ import {IGeojsonFeature, IGeojsonProperties} from '../types/model';
 import {ISlopeChartHoverElements} from '../types/slope-chart';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
-import {confOPTIONS} from 'wm-core/store/conf/conf.selector';
+import {confOPTIONS} from '@wm-core/store/conf/conf.selector';
 
 @Component({
   selector: 'wm-tab-detail',

@@ -3,8 +3,8 @@ import GeoJsonToGpx from '@dwayneparton/geojson-to-gpx';
 import {Filesystem, Directory, Encoding, WriteFileOptions} from '@capacitor/filesystem';
 import {AlertController} from '@ionic/angular';
 import tokml from 'geojson-to-kml';
-import {DeviceService} from 'wm-core/services/device.service';
-import {WmLoadingService} from 'wm-core/services/loading.service';
+import {DeviceService} from '@wm-core/services/device.service';
+import {WmLoadingService} from '@wm-core/services/loading.service';
 import {Share} from '@capacitor/share';
 import {Feature, LineString, Point} from 'geojson';
 @Component({

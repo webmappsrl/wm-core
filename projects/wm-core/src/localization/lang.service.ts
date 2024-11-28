@@ -26,7 +26,7 @@ import {wmFR} from './i18n/fr';
 import {wmPR} from './i18n/pr';
 import {wmES} from './i18n/es';
 import {Store} from '@ngrx/store';
-import {confTRANSLATIONS} from 'wm-core/store/conf/conf.selector';
+import {confTRANSLATIONS} from '@wm-core/store/conf/conf.selector';
 import {filter, take} from 'rxjs/operators';
 
 @Injectable()

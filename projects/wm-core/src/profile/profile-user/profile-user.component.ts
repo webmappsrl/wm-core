@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
-import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { IUser } from 'wm-core/store/auth/auth.model';
-import { isLogged, user } from 'wm-core/store/auth/auth.selectors';
-import { confAUTHEnable } from 'wm-core/store/conf/conf.selector';
+import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
+import {select, Store} from '@ngrx/store';
+import {Observable} from 'rxjs';
+import {IUser} from '@wm-core/store/auth/auth.model';
+import {isLogged, user} from '@wm-core/store/auth/auth.selectors';
+import {confAUTHEnable} from '@wm-core/store/conf/conf.selector';
 
 @Component({
   selector: 'wm-profile-user',
@@ -18,7 +18,5 @@ export class ProfileUserComponent {
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
   user$: Observable<IUser> = this._store.pipe(select(user));
 
-  constructor(
-    private _store: Store,
-  ) {}
+  constructor(private _store: Store) {}
 }

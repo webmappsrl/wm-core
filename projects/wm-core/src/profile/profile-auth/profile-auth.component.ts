@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import {ModalController} from '@ionic/angular';
 import {select, Store} from '@ngrx/store';
 import {from, Observable, of} from 'rxjs';
-import { concatMap, switchMap } from 'rxjs/operators';
-import { LoginComponent } from 'wm-core/login/login.component';
-import { RegisterComponent } from 'wm-core/register/register.component';
-import {isLogged} from 'wm-core/store/auth/auth.selectors';
+import {concatMap, switchMap} from 'rxjs/operators';
+import {LoginComponent} from '@wm-core/login/login.component';
+import {RegisterComponent} from '@wm-core/register/register.component';
+import {isLogged} from '@wm-core/store/auth/auth.selectors';
 
 @Component({
   selector: 'wm-profile-auth',
@@ -21,10 +21,7 @@ export class ProfileAuthComponent {
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
   loggedOutSliderOptions: any;
 
-  constructor(
-    private _store: Store,
-    private _modalCtrl: ModalController,
-  ) {
+  constructor(private _store: Store, private _modalCtrl: ModalController) {
     this.loggedOutSliderOptions = {
       initialSlide: 0,
       speed: 400,
@@ -36,36 +33,40 @@ export class ProfileAuthComponent {
   }
 
   login(): void {
-    from(this._modalCtrl.getTop()).pipe(
-      concatMap((modal) =>
-        modal ? from(this._modalCtrl.dismiss()) : of(null)
-      ),
-      switchMap(() =>
-        from(this._modalCtrl.create({
-          component: LoginComponent,
-          swipeToClose: true,
-          mode: 'ios',
-          id: 'webmapp-login-modal',
-        }))
-      ),
-      concatMap((modal) => from(modal.present()))
-    ).subscribe();
+    from(this._modalCtrl.getTop())
+      .pipe(
+        concatMap(modal => (modal ? from(this._modalCtrl.dismiss()) : of(null))),
+        switchMap(() =>
+          from(
+            this._modalCtrl.create({
+              component: LoginComponent,
+              swipeToClose: true,
+              mode: 'ios',
+              id: 'webmapp-login-modal',
+            }),
+          ),
+        ),
+        concatMap(modal => from(modal.present())),
+      )
+      .subscribe();
   }
 
   signup(): void {
-    from(this._modalCtrl.getTop()).pipe(
-      concatMap((modal) =>
-        modal ? from(this._modalCtrl.dismiss()) : of(null)
-      ),
-      switchMap(() =>
-        from(this._modalCtrl.create({
-          component: RegisterComponent,
-          swipeToClose: true,
-          mode: 'ios',
-          id: 'webmapp-login-modal',
-        }))
-      ),
-      concatMap((modal) => from(modal.present()))
-    ).subscribe();
+    from(this._modalCtrl.getTop())
+      .pipe(
+        concatMap(modal => (modal ? from(this._modalCtrl.dismiss()) : of(null))),
+        switchMap(() =>
+          from(
+            this._modalCtrl.create({
+              component: RegisterComponent,
+              swipeToClose: true,
+              mode: 'ios',
+              id: 'webmapp-login-modal',
+            }),
+          ),
+        ),
+        concatMap(modal => from(modal.present())),
+      )
+      .subscribe();
   }
 }

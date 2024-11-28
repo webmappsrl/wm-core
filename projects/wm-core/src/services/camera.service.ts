@@ -14,12 +14,12 @@ import {IRegisterItem} from '../types/track';
 import {Filesystem, Directory, GetUriResult} from '@capacitor/filesystem';
 import {GeolocationService} from './geolocation.service';
 import {ActionSheetController} from '@ionic/angular';
-import {LangService} from 'wm-core/localization/lang.service';
-import {Location} from 'wm-core/types/location';
+import {LangService} from '@wm-core/localization/lang.service';
+import {Location} from '@wm-core/types/location';
 import {DeviceService} from './device.service';
 import {Feature, Point} from 'geojson';
-import {generateUUID, saveImg} from 'wm-core/utils/localForage';
-import {APP_VERSION, APP_ID} from 'wm-core/store/conf/conf.token';
+import {generateUUID, saveImg} from '@wm-core/utils/localForage';
+import {APP_VERSION, APP_ID} from '@wm-core/store/conf/conf.token';
 import {Media, MediaProperties, WmDeviceInfo} from '@wm-types/feature';
 
 export interface IPhotoItem extends IRegisterItem {

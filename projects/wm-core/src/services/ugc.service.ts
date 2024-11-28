@@ -2,7 +2,7 @@ import {HttpClient} from '@angular/common/http';
 import {Inject, Injectable} from '@angular/core';
 import {catchError, take, tap} from 'rxjs/operators';
 import {Observable, of} from 'rxjs';
-import {APP_ID, ENVIRONMENT_CONFIG, EnvironmentConfig} from 'wm-core/store/conf/conf.token';
+import {APP_ID, ENVIRONMENT_CONFIG, EnvironmentConfig} from '@wm-core/store/conf/conf.token';
 import {LineString, Point} from 'geojson';
 import {
   getSynchronizedUgcMedias,
@@ -21,7 +21,7 @@ import {
   saveUgcTrack,
   getImg,
   removeDeviceUgcPoi,
-} from 'wm-core/utils/localForage';
+} from '@wm-core/utils/localForage';
 import {
   Media,
   MediaProperties,

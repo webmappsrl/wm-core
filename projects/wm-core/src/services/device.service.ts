@@ -10,7 +10,7 @@ import {Inject, Injectable} from '@angular/core';
 import {Platform} from '@ionic/angular';
 import {Observable, ReplaySubject} from 'rxjs';
 import {Device} from '@capacitor/device';
-import {APP_VERSION} from 'wm-core/store/conf/conf.token';
+import {APP_VERSION} from '@wm-core/store/conf/conf.token';
 import {WmDeviceInfo} from '@wm-types/feature';
 
 @Injectable({

@@ -1,12 +1,18 @@
-import {ChangeDetectionStrategy, Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {IonInput, ModalController} from '@ionic/angular';
 import {select, Store} from '@ngrx/store';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
-import {LangService} from 'wm-core/localization/lang.service';
-import {loadSignIns} from 'wm-core/store/auth/auth.actions';
-import {isLogged} from 'wm-core/store/auth/auth.selectors';
+import {LangService} from '@wm-core/localization/lang.service';
+import {loadSignIns} from '@wm-core/store/auth/auth.actions';
+import {isLogged} from '@wm-core/store/auth/auth.selectors';
 
 @Component({
   selector: 'wm-login-component',
@@ -33,7 +39,6 @@ export class LoginComponent implements OnInit {
     private _formBuilder: UntypedFormBuilder,
     private _modalCtrl: ModalController,
     private _store: Store,
-
   ) {
     this.loginForm = this._formBuilder.group({
       email: ['', [Validators.required, Validators.email]],

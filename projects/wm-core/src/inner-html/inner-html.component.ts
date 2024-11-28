@@ -3,7 +3,7 @@ import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@ang
 
 import {DomSanitizer} from '@angular/platform-browser';
 import {ModalController} from '@ionic/angular';
-import {iLocalString} from 'wm-core/types/config';
+import {iLocalString} from '@wm-core/types/config';
 
 @Component({
   selector: 'wm-inner-component-html',

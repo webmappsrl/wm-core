@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
-import {IGeojsonProperties} from 'wm-core/types/model';
+import {IGeojsonProperties} from '@wm-core/types/model';
 
 @Component({
   selector: 'wm-tab-howto',

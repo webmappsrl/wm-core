@@ -1,10 +1,12 @@
 import {ChangeDetectorRef, Directive, EventEmitter, Input, Output} from '@angular/core';
-import {LangService} from 'wm-core/localization/lang.service';
+import {LangService} from '@wm-core/localization/lang.service';
 
 @Directive({selector: 'basebox'})
 export class BaseBoxComponent<T> {
   @Input() data: T;
-  @Output() public clickEVT: EventEmitter<void | number | string> = new EventEmitter<void | number | string>();
+  @Output() public clickEVT: EventEmitter<void | number | string> = new EventEmitter<
+    void | number | string
+  >();
 
   public defaultPhotoPath = '/assets/icon/no-photo.svg';
 

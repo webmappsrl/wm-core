@@ -1,5 +1,5 @@
 import {createReducer, on} from '@ngrx/store';
-import { ICONF, ICONTROLS, ILAYER } from 'wm-core/types/config';
+import {ICONF, ICONTROLS, ILAYER} from '@wm-core/types/config';
 import {loadConfSuccess} from './conf.actions';
 export const confFeatureKey = 'conf';
 export interface IConfRootState {
@@ -12,41 +12,41 @@ const initialConfState: ICONF = {
     geohubId: undefined,
     track_acquisition_form: [
       {
-          "id": "track",
-          "label": {
-              "it": "Traccia",
-              "en": "Track"
+        'id': 'track',
+        'label': {
+          'it': 'Traccia',
+          'en': 'Track',
+        },
+        'fields': [
+          {
+            'name': 'title',
+            'type': 'text',
+            'placeholder': {
+              'it': 'Inserisci un titolo',
+              'en': 'Add a title',
+            },
+            'required': true,
+            'label': {
+              'it': 'Titolo traccia',
+              'en': 'Track title',
+            },
           },
-          "fields": [
-              {
-                  "name": "title",
-                  "type": "text",
-                  "placeholder": {
-                      "it": "Inserisci un titolo",
-                      "en": "Add a title"
-                  },
-                  "required": true,
-                  "label": {
-                      "it": "Titolo traccia",
-                      "en": "Track title"
-                  }
-              },
-              {
-                  "name": "description",
-                  "type": "textarea",
-                  "placeholder": {
-                      "it": "Se vuoi puoi aggiungere una descrizione",
-                      "en": "You can add a description if you want"
-                  },
-                  "required": false,
-                  "label": {
-                      "it": "Descrizione",
-                      "en": "Description"
-                  }
-              }
-          ]
-      }
-  ],
+          {
+            'name': 'description',
+            'type': 'textarea',
+            'placeholder': {
+              'it': 'Se vuoi puoi aggiungere una descrizione',
+              'en': 'You can add a description if you want',
+            },
+            'required': false,
+            'label': {
+              'it': 'Descrizione',
+              'en': 'Description',
+            },
+          },
+        ],
+      },
+    ],
   },
   WEBAPP: {
     draw_track_show: false,
