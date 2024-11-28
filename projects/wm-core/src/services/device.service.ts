@@ -128,7 +128,6 @@ export class DeviceService {
     return {
       ...info,
       appVersion: this.appVersion,
-      os: info.platform,
     };
   }
 }

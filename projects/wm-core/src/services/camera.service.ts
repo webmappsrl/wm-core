@@ -298,11 +298,7 @@ export class CameraService {
       await saveImg(photo.webPath);
     }
     const location = this._geoLocationSvc.location;
-    const infoDevice = await this._deviceSvc.getInfo();
-    const device: WmDeviceInfo = {
-      ...infoDevice,
-      appVersion: this.appVersion,
-    };
+    const device = await this._deviceSvc.getInfo();
     const feature: Feature<Media, MediaProperties> = {
       type: 'Feature',
       geometry: {
