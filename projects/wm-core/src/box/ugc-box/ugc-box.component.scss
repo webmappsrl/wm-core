@@ -6,7 +6,7 @@ wm-ugc-box {
     box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.1);
     transition: all 500ms;
     height: 100%;
-    max-height: 100px;
+    max-height: 176px;
     cursor: pointer;
 
     display: flex;
@@ -18,12 +18,12 @@ wm-ugc-box {
     .color {
       position: absolute;
       border-radius: 15px;
-      clip-path: polygon(100% 0, 86% 0, 100% 45%);
+      clip-path: polygon(100% 0, 85% 0, 100% 25%);
       box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.1);
       height: 100%;
       width: 100%;
       z-index: 1;
-      background-color: #CA1551;
+      background-color: #ca1551;
     }
     .wm-box-icon {
       position: absolute;

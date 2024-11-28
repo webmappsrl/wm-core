@@ -9,4 +9,6 @@ import {IUGCBOX} from '../../types/config';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class UgcBoxComponent extends BaseBoxComponent<IUGCBOX> {}
+export class UgcBoxComponent extends BaseBoxComponent<IUGCBOX> {
+  public defaultPhotoPath = 'assets/images/profile/my-path.webp';
+}

@@ -16,6 +16,7 @@ import {isUgcHome} from '../../store/api/api.selector';
   encapsulation: ViewEncapsulation.None,
 })
 export class WmHomeUgcComponent {
+  img = 'assets/images/profile/my-path.webp';
   isUgcSelected$ = this._store.select(isUgcHome);
 
   constructor(
