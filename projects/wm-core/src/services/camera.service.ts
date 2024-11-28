@@ -176,8 +176,8 @@ export class CameraService {
             date: new Date(),
             uuid: generateUUID(),
             app_id: this.appId,
-            device,
             photo: gallery.photos[i],
+            device,
           },
         };
         res.push(feature);
@@ -201,8 +201,8 @@ export class CameraService {
             date: new Date(),
             uuid: generateUUID(),
             app_id: this.appId,
-            device,
             photo: fakePhoto,
+            device,
           },
         };
         res.push(fakeFeature);
@@ -301,7 +301,6 @@ export class CameraService {
     const infoDevice = await this._deviceSvc.getInfo();
     const device: WmDeviceInfo = {
       ...infoDevice,
-      os: infoDevice.platform,
       appVersion: this.appVersion,
     };
     const feature: Feature<Media, MediaProperties> = {
