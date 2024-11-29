@@ -2,37 +2,25 @@ import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {from, of} from 'rxjs';
 import {catchError, map, switchMap, withLatestFrom} from 'rxjs/operators';
-import * as AuthActions from '../auth/auth.actions';
+
+import {ApiService} from './api.service';
+import {ApiRootState} from './api.reducer';
+import {Store} from '@ngrx/store';
+import {IRESPONSE} from '@wm-core/types/elastic';
+import {apiTrackFilterIdentifier} from '@wm-core/store/api/api.selector';
 import {
   inputTyped,
   loadPois,
   loadPoisFail,
   loadPoisSuccess,
-  loadUgcPois,
-  loadUgcPoisFail,
-  loadUgcPoisSuccess,
   query,
   queryApiFail,
   queryApiSuccess,
   removeTrackFilters,
   setLayer,
-  setUgc,
-  syncUgc,
-  syncUgcFailure,
-  syncUgcSuccess,
   toggleTrackFilterByIdentifier,
-} from './api.actions';
-import {ApiService} from './api.service';
-import {ApiRootState} from './api.reducer';
-import {Store} from '@ngrx/store';
-import {apiTrackFilterIdentifier} from './api.selector';
-import {Filter} from '../../types/config';
-import {IHIT, IRESPONSE} from '@wm-core/types/elastic';
-import {getUgcPois, getUgcTracks} from '@wm-core/utils/localForage';
-import {WmFeature} from '@wm-types/feature';
-import {LineString} from 'geojson';
-import {UgcService} from '@wm-core/services/ugc.service';
-import {HttpErrorResponse} from '@angular/common/http';
+} from '@wm-core/store/api/api.actions';
+import {Filter} from '@wm-core/types/config';
 
 @Injectable({
   providedIn: 'root',
@@ -69,17 +57,6 @@ export class ApiEffects {
         this._apiSVC.getPois().pipe(
           map(featureCollection => loadPoisSuccess({featureCollection})),
           catchError(() => of(loadPoisFail())),
-        ),
-      ),
-    ),
-  );
-  loadUgcPois$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(syncUgcSuccess),
-      switchMap(() =>
-        from(getUgcPois()).pipe(
-          map(featureCollection => loadUgcPoisSuccess({featureCollection})),
-          catchError(() => of(loadUgcPoisFail())),
         ),
       ),
     ),
@@ -132,37 +109,6 @@ export class ApiEffects {
       }),
     ),
   );
-  setUgc$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(setUgc),
-      switchMap(_ =>
-        from(getUgcTracks()).pipe(
-          map(ugcTracks => {
-            const hits = this._WmFeatureToHits(ugcTracks);
-            const response: IRESPONSE = {
-              aggregations: {},
-              hits,
-            };
-            return queryApiSuccess({response});
-          }),
-          catchError(_ => {
-            return of(queryApiFail());
-          }),
-        ),
-      ),
-    ),
-  );
-  syncUgc$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(AuthActions.loadSignInsSuccess, AuthActions.loadAuthsSuccess, syncUgc),
-      switchMap(() =>
-        from(this._ugcSvc.syncUgc()).pipe(
-          map(() => syncUgcSuccess()),
-          catchError(error => of(syncUgcFailure(new HttpErrorResponse({error})))),
-        ),
-      ),
-    ),
-  );
   toggleTrackFilterByIdentifier$ = createEffect(() =>
     this._actions$.pipe(
       ofType(toggleTrackFilterByIdentifier),
@@ -186,32 +132,7 @@ export class ApiEffects {
 
   constructor(
     private _apiSVC: ApiService,
-    private _ugcSvc: UgcService,
     private _actions$: Actions,
     private _store: Store<ApiRootState>,
   ) {}
-
-  private _WmFeatureToHits(tracks: WmFeature<LineString>[]): IHIT[] {
-    const hits: IHIT[] = [];
-
-    tracks.forEach(track => {
-      const activity = track.properties?.form?.activity;
-      const hit: IHIT = {
-        id: `ugc_${track.properties.id ?? track.properties.uuid}`,
-        taxonomyActivities: activity ? [activity] : [],
-        taxonomyWheres: [],
-        cai_scale: '',
-        distance: '',
-        feature_image: null,
-        layers: [],
-        name: track.properties.name,
-        properties: {},
-        ref: '',
-      };
-
-      hits.push(hit);
-    });
-
-    return hits;
-  }
 }

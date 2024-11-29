@@ -14,14 +14,8 @@ import {
   updateTrackFilter,
   goToHome,
   setLastFilterType,
-  setUgc,
-  loadUgcPoisSuccess,
-  openUgcInHome,
-  syncUgc,
-  syncUgcSuccess,
-  syncUgcFailure,
-} from './api.actions';
-import {Filter} from '../../types/config';
+} from '@wm-core/store/api/api.actions';
+import {Filter} from '@wm-core/types/config';
 import {IHIT} from '@wm-core/types/elastic';
 import {WmFeature} from '@wm-types/feature';
 
@@ -30,11 +24,8 @@ export interface Api {
   filterTracks: Filter[];
   loading: boolean;
   layer?: any;
-  ugcSelected: boolean;
-  ugcHome: boolean;
   inputTyped?: string;
   poisInitFeatureCollection?: FeatureCollection;
-  ugcPoisFeatureCollection?: WmFeature<Point>[];
   poisSelectedFilterIdentifiers?: string[];
   filterTaxonomies?: string[];
   goToHome: boolean;
@@ -49,12 +40,9 @@ export interface ApiRootState {
 const initialConfState: Api = {
   filterTracks: [],
   layer: null,
-  ugcSelected: false,
-  ugcHome: false,
   loading: true,
   inputTyped: null,
   poisInitFeatureCollection: null,
-  ugcPoisFeatureCollection: null,
   poisSelectedFilterIdentifiers: null,
   filterTaxonomies: [],
   goToHome: false,
@@ -116,14 +104,6 @@ export const elasticQueryReducer = createReducer(
     };
     return newState;
   }),
-  on(setUgc, (state, {ugcSelected}) => ({
-    ...state,
-    ugcSelected,
-  })),
-  on(openUgcInHome, (state, {ugcHome}) => ({
-    ...state,
-    ugcHome,
-  })),
   on(queryApiSuccess, (state, {response}) => {
     const newState: Api = {
       ...state,
@@ -216,14 +196,4 @@ export const elasticQueryReducer = createReducer(
     };
     return newState;
   }),
-  on(loadUgcPoisSuccess, (state, {featureCollection}) => {
-    const newState: Api = {
-      ...state,
-      ugcPoisFeatureCollection: featureCollection,
-    };
-    return newState;
-  }),
-  on(syncUgc, state => ({...state, syncing: true})),
-  on(syncUgcSuccess, state => ({...state, syncing: false})),
-  on(syncUgcFailure, (state, {error}) => ({...state, error, syncing: false})),
 );

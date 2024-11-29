@@ -1,27 +1,17 @@
-import {Feature, FeatureCollection, Geometry, Point} from 'geojson';
-import {WmFeature} from '@wm-types/feature';
+import {Feature, FeatureCollection, Geometry} from 'geojson';
 
 export const filterFeatureCollection = (
   featureCollection: FeatureCollection,
   filters: string[],
-  ugcFeatureCollection: WmFeature<Point>[],
-  ugcSelected: boolean,
 ): FeatureCollection => {
-  if (ugcSelected && ugcFeatureCollection != null) {
-    return {
-      type: 'FeatureCollection',
-      features: ugcFeatureCollection,
-    };
-  }
-  if (filters == null || filters.length === 0 || featureCollection?.features == null)
+  if (filters == null || filters.length === 0 || featureCollection?.features == null) {
     return featureCollection;
-  return {
-    type: 'FeatureCollection',
-    features: featureCollection.features.filter(feature => {
-      const taxonomyIdentifiers = feature?.properties?.taxonomyIdentifiers || [];
-      return isArrayContained(filters, taxonomyIdentifiers);
-    }),
-  } as FeatureCollection;
+  }
+  featureCollection.features = featureCollection.features.filter(feature => {
+    const taxonomyIdentifiers = feature?.properties?.taxonomyIdentifiers || [];
+    return isArrayContained(filters, taxonomyIdentifiers);
+  });
+  return featureCollection;
 };
 export const isArrayContained = (needle: any[], haystack: any[]): boolean => {
   if (needle.length > haystack.length) return false;

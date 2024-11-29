@@ -4,7 +4,7 @@ import {confFILTERSTRACKS, confPOISFilter, confPoisIcons} from '../conf/conf.sel
 import {buildStats, filterFeatureCollection, filterFeatureCollectionByInputTyped} from './utils';
 import {IELASTIC, IHIT} from '../../types/elastic';
 import {Api} from './api.reducer';
-import {selectAuthState} from '../auth/auth.selectors';
+import {opened} from '../ugc/ugc.selector';
 
 export const elasticSearchFeature = createFeatureSelector<IELASTIC>('query');
 export const queryApi = createSelector(
@@ -59,7 +59,6 @@ export const apiTrackFilterIdentifier = createSelector(apiFilterTracks, filterTr
   return filterTracks.map((f: any) => f.identifier);
 });
 export const apiSearchInputTyped = createSelector(apiElasticState, state => state.inputTyped);
-export const syncing = createSelector(elasticSearchFeature, state => state.syncing);
 export const apiElasticStateLayer = createSelector(apiElasticState, state => {
   return state.layer;
 });
@@ -75,19 +74,15 @@ export const confFILTERSTRACKSOPTIONS = createSelector(
 );
 
 export const showPoisResult = createSelector(elasticSearchFeature, state => state.where != null);
-export const showResult = createSelector(
-  elasticSearchFeature,
-  selectAuthState,
-  (state, authState) => {
-    return (
-      state.layer != null ||
-      state.filterTracks.length > 0 ||
-      (state.poisSelectedFilterIdentifiers && state.poisSelectedFilterIdentifiers.length > 0) ||
-      (state.inputTyped && state.inputTyped != '') ||
-      (state.ugcHome && authState.isLogged)
-    );
-  },
-);
+export const showResult = createSelector(elasticSearchFeature, opened, (state, ugcOpened) => {
+  return (
+    state.layer != null ||
+    state.filterTracks.length > 0 ||
+    (state.poisSelectedFilterIdentifiers && state.poisSelectedFilterIdentifiers.length > 0) ||
+    (state.inputTyped && state.inputTyped != '') ||
+    ugcOpened
+  );
+});
 export const lastFilterType = createSelector(elasticSearchFeature, state => {
   return state.lastFilterType;
 });
@@ -136,30 +131,16 @@ export const poisInitCount = createSelector(
   poisInitFeatureCollection,
   featureCollection => featureCollection?.features?.length,
 );
-export const isUgcSelected = createSelector(
-  elasticSearchFeature as any,
-  (state: Api) => state.ugcSelected,
-);
-export const isUgcHome = createSelector(elasticSearchFeature as any, (state: Api) => state.ugcHome);
-export const getUgcPoisFeatureCollection = createSelector(
-  elasticSearchFeature as any,
-  (state: Api) => state.ugcPoisFeatureCollection,
-);
+
 export const poisWhereFeatureCollection = createSelector(
   poisInitFeatureCollection,
   filterTaxonomies,
-  getUgcPoisFeatureCollection,
-  isUgcHome,
-  (featureCollection, filter, ugcPoisFeatureCollection, ugcHome) =>
-    filterFeatureCollection(featureCollection, filter, ugcPoisFeatureCollection, ugcHome),
+  (featureCollection, filter) => filterFeatureCollection(featureCollection, filter),
 );
 export const poisFilteredFeatureCollection = createSelector(
   poisWhereFeatureCollection,
   poiFilterIdentifiers,
-  getUgcPoisFeatureCollection,
-  isUgcHome,
-  (featureCollection, filter, ugcPoisFeatureCollection, ugcHome) =>
-    filterFeatureCollection(featureCollection, filter, ugcPoisFeatureCollection, ugcHome),
+  (featureCollection, filter) => filterFeatureCollection(featureCollection, filter),
 );
 export const poisFilteredFeatureCollectionByInputType = createSelector(
   poisFilteredFeatureCollection,

@@ -1,27 +1,29 @@
-import { countAll } from './../../store/api/api.selector';
 import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Input,
   Output,
   ViewEncapsulation,
 } from '@angular/core';
 import {Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
 import {
   goToHome,
-  openUgcInHome,
   resetPoiFilters,
   resetTrackFilters,
   setLayer,
-  setUgc,
   togglePoiFilter,
   toggleTrackFilter,
-} from '../../store/api/api.actions';
-import {apiElasticStateLayer, apiFilterTracks, poiFilters} from '../../store/api/api.selector';
-import { Filter } from '../../types/config';
-
+} from '@wm-core/store/api/api.actions';
+import {
+  apiElasticStateLayer,
+  apiFilterTracks,
+  countAll,
+  poiFilters,
+} from '@wm-core/store/api/api.selector';
+import {closeUgc} from '@wm-core/store/ugc/ugc.actions';
+import {Filter} from '@wm-core/types/config';
+import {Observable} from 'rxjs';
+import {Location} from '@angular/common';
 @Component({
   selector: 'wm-status-filter',
   templateUrl: './status-filter.component.html',
@@ -40,7 +42,12 @@ export class StatusFilterComponent {
   poiFilters$: Observable<any> = this._store.select(poiFilters);
   trackFilters$: Observable<any[]> = this._store.select(apiFilterTracks);
 
-  constructor(private _store: Store) {}
+  constructor(private _store: Store, private _location: Location) {}
+
+  cleanUrl(): void {
+    const baseUrl = this._location.path().split('?')[0].split('#')[0]; // Ottiene solo '/map'
+    this._location.replaceState(baseUrl); // Aggiorna l'URL senza ricaricare la pagina
+  }
 
   removeLayer(layer: any): void {
     this._store.dispatch(setLayer(null));
@@ -60,11 +67,11 @@ export class StatusFilterComponent {
 
   resetFilters(): void {
     this._store.dispatch(setLayer(null));
-    this._store.dispatch(openUgcInHome({ugcHome:false}));
-    this._store.dispatch(setUgc({ugcSelected:false}));
     this._store.dispatch(resetPoiFilters());
     this._store.dispatch(resetTrackFilters());
+    this._store.dispatch(closeUgc());
     this._store.dispatch(goToHome());
+    this.cleanUrl();
     this.resetFiltersEVT.emit();
   }
 }

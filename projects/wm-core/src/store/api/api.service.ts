@@ -2,7 +2,7 @@ import {HttpClient} from '@angular/common/http';
 
 /* eslint-disable quote-props */
 import {Inject, Injectable} from '@angular/core';
-import {FeatureCollection} from 'geojson';
+import {FeatureCollection, LineString} from 'geojson';
 import {from, Observable, of} from 'rxjs';
 // @ts-ignore
 import {catchError, switchMap, tap} from 'rxjs/operators';
@@ -11,6 +11,7 @@ import {WmLoadingService} from '../../services/loading.service';
 import {Filter, SliderFilter} from '../../types/config';
 import {EnvironmentConfig, ENVIRONMENT_CONFIG} from '../conf/conf.token';
 import {synchronizedApi} from '@wm-core/utils/localForage';
+import {WmFeature} from '@wm-types/feature';
 @Injectable({
   providedIn: 'root',
 })
@@ -52,11 +53,11 @@ export class ApiService {
     }
   }
 
-  public getEcTrack(id: string | number): Observable<FeatureCollection> {
+  public getEcTrack(id: string | number): Observable<WmFeature<LineString>> {
     if (id == null) return of(null);
     if (+id > -1) {
       const url = `${this.environment.awsApi}/tracks/${id}.json`;
-      return this._http.get<FeatureCollection>(url);
+      return this._http.get<WmFeature<LineString>>(url);
     }
   }
 

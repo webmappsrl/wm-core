@@ -6,7 +6,6 @@ import {
 } from '@angular/core';
 import {Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
-import {isUgcHome} from '../../store/api/api.selector';
 
 @Component({
   selector: 'wm-home-ugc',
@@ -17,7 +16,6 @@ import {isUgcHome} from '../../store/api/api.selector';
 })
 export class WmHomeUgcComponent {
   img = 'assets/images/profile/my-path.webp';
-  isUgcSelected$ = this._store.select(isUgcHome);
 
   constructor(
     private _store: Store,
