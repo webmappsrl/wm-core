@@ -27,6 +27,7 @@ import {Location} from '../types/location';
 import {Feature, Geometry, LineString, Position} from 'geojson';
 import {BehaviorSubject} from 'rxjs';
 import {filter, switchMap, take} from 'rxjs/operators';
+import {WmFeature} from '@wm-types/feature';
 
 @Component({
   selector: 'wm-slope-chart',
@@ -52,7 +53,7 @@ export class WmSlopeChartComponent implements OnInit {
   }
 
   @Input()
-  currentTrack: Feature;
+  currentTrack: WmFeature<LineString>;
   @Output('hover') hover: EventEmitter<ISlopeChartHoverElements> =
     new EventEmitter<ISlopeChartHoverElements>();
 
