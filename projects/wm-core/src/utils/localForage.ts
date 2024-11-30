@@ -203,7 +203,8 @@ export async function getUgcPois(): Promise<WmFeature<Point>[]> {
   return [...deviceUgcPois, ...synchronizedUgcPois];
 }
 
-export async function getUgcTrack(trackId: string): Promise<WmFeature<LineString> | null> {
+export async function getUgcTrack(trackId: string | null): Promise<WmFeature<LineString> | null> {
+  if (!trackId) return null;
   return (await getSynchronizedUgcTrack(trackId)) ?? (await getDeviceUgcTrack(trackId));
 }
 
