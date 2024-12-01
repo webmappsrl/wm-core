@@ -1,6 +1,6 @@
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {createFeatureSelector, createSelector} from '@ngrx/store';
-import {UgcState} from '@wm-core/store/ugc/ugc.reducer';
+import {UgcState} from '@wm-core/store/features/ugc/ugc.reducer';
 import {confAUTHEnable} from '@wm-core/store/conf/conf.selector';
 
 export const ugc = createFeatureSelector<UgcState>('ugc');

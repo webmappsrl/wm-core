@@ -6,7 +6,7 @@ import {AuthService} from './auth.service';
 import {from, of} from 'rxjs';
 import {AlertController} from '@ionic/angular';
 import {LangService} from '@wm-core/localization/lang.service';
-import {UgcService} from '@wm-core/store/ugc/ugc.service';
+import {UgcService} from '@wm-core/store/features/ugc/ugc.service';
 
 @Injectable()
 export class AuthEffects {

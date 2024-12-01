@@ -7,9 +7,9 @@ import {from, Observable, of} from 'rxjs';
 // @ts-ignore
 import {catchError, switchMap, tap} from 'rxjs/operators';
 import {IRESPONSE} from '@wm-core/types/elastic';
-import {WmLoadingService} from '../../services/loading.service';
-import {Filter, SliderFilter} from '../../types/config';
-import {EnvironmentConfig, ENVIRONMENT_CONFIG} from '../conf/conf.token';
+import {WmLoadingService} from '../../../services/loading.service';
+import {Filter, SliderFilter} from '../../../types/config';
+import {EnvironmentConfig, ENVIRONMENT_CONFIG} from '../../conf/conf.token';
 import {synchronizedApi} from '@wm-core/utils/localForage';
 import {WmFeature} from '@wm-types/feature';
 @Injectable({

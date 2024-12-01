@@ -10,7 +10,10 @@ import {Observable} from 'rxjs';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {confHOME, confShowDrawTrack} from '@wm-core/store/conf/conf.selector';
 import {IHOME, IHORIZONTALSCROLLBOX} from '@wm-core/types/config';
-import {togglePoiFilter, toggleTrackFilterByIdentifier} from '@wm-core/store/api/api.actions';
+import {
+  togglePoiFilter,
+  toggleTrackFilterByIdentifier,
+} from '@wm-core/store/features/ec/ec.actions';
 
 @Component({
   selector: 'wm-home-page',

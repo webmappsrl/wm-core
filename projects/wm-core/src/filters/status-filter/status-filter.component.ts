@@ -14,14 +14,14 @@ import {
   setLayer,
   togglePoiFilter,
   toggleTrackFilter,
-} from '@wm-core/store/api/api.actions';
+} from '@wm-core/store/features/ec/ec.actions';
 import {
   apiElasticStateLayer,
   apiFilterTracks,
   countAll,
   poiFilters,
-} from '@wm-core/store/api/api.selector';
-import {closeUgc} from '@wm-core/store/ugc/ugc.actions';
+} from '@wm-core/store/features/ec/ec.selector';
+import {closeUgc} from '@wm-core/store/features/ugc/ugc.actions';
 import {Filter} from '@wm-core/types/config';
 import {Observable} from 'rxjs';
 import {Location} from '@angular/common';

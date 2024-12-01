@@ -21,8 +21,8 @@ import {WmPipeModule} from './pipes/pipe.module';
 import {WmRelatedUrlsComponent} from './related-urls/related-urls.component';
 import {WmSharedModule} from './shared/shared.module';
 import {WmSlopeChartComponent} from './slope-chart/slope-chart.component';
-import {ApiEffects} from './store/api/api.effects';
-import {elasticQueryReducer} from './store/api/api.reducer';
+import {EcEffects} from './store/features/ec/ec.effects';
+import {elasticQueryReducer} from './store/features/ec/ec.reducer';
 import {ConfEffects} from './store/conf/conf.effects';
 import {confReducer} from './store/conf/conf.reducer';
 import {WmTabDescriptionComponent} from './tab-description/tab-description.component';
@@ -46,8 +46,8 @@ import {RegisterComponent} from './register/register.component';
 import {GenericPopoverComponent} from './generic-popover/generic-popover.component';
 import {WmHomeUgcComponent} from './home/home-ugc/home-ugc.component';
 import {WmFormComponent} from './form/form.component';
-import {UgcEffects} from './store/ugc/ugc.effects';
-import {UgcReducer} from './store/ugc/ugc.reducer';
+import {UgcEffects} from './store/features/ugc/ugc.effects';
+import {UgcReducer} from './store/features/ugc/ugc.reducer';
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -99,7 +99,7 @@ const modules = [
       StoreModule.forFeature('conf', confReducer),
       StoreModule.forFeature('auth', authReducer),
       StoreModule.forFeature('ugc', UgcReducer),
-      EffectsModule.forFeature([ApiEffects, ConfEffects, AuthEffects, UgcEffects]),
+      EffectsModule.forFeature([EcEffects, ConfEffects, AuthEffects, UgcEffects]),
       TranslateModule.forRoot({
         loader: {
           provide: TranslateLoader,

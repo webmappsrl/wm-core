@@ -9,7 +9,7 @@ import {
   closeUgc,
   updateUgcTracks,
   updateUgcPois,
-} from '@wm-core/store/ugc/ugc.actions';
+} from '@wm-core/store/features/ugc/ugc.actions';
 import {WmFeature} from '@wm-types/feature';
 import {IHIT} from '@wm-core/types/elastic';
 export const searchKey = 'search';

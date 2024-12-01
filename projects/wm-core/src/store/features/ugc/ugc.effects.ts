@@ -10,8 +10,8 @@ import {
   syncUgcTracks,
   updateUgcPois,
   updateUgcTracks,
-} from '@wm-core/store/ugc/ugc.actions';
-import {UgcService} from '@wm-core/store/ugc/ugc.service';
+} from '@wm-core/store/features/ugc/ugc.actions';
+import {UgcService} from '@wm-core/store/features/ugc/ugc.service';
 import {select, Store} from '@ngrx/store';
 import {activableUgc} from './ugc.selector';
 import {getUgcPois, getUgcTracks} from '@wm-core/utils/localForage';

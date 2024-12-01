@@ -1,19 +1,16 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {SearchResponse} from 'elasticsearch';
-import {confFILTERSTRACKS, confPOISFilter, confPoisIcons} from '../conf/conf.selector';
+import {confFILTERSTRACKS, confPOISFilter, confPoisIcons} from '../../conf/conf.selector';
 import {buildStats, filterFeatureCollection, filterFeatureCollectionByInputTyped} from './utils';
-import {IELASTIC, IHIT} from '../../types/elastic';
-import {Api} from './api.reducer';
+import {IELASTIC, IHIT} from '../../../types/elastic';
+import {Ec} from './ec.reducer';
 import {opened} from '../ugc/ugc.selector';
 
 export const elasticSearchFeature = createFeatureSelector<IELASTIC>('query');
-export const queryApi = createSelector(
-  elasticSearchFeature as any,
-  (state: Api) => state.hits ?? [],
-);
+export const queryEc = createSelector(elasticSearchFeature as any, (state: Ec) => state.hits ?? []);
 export const countTracks = createSelector(
   elasticSearchFeature as any,
-  (state: Api) => state.hits.length ?? undefined,
+  (state: Ec) => state.hits.length ?? undefined,
 );
 // @ts-ignore
 export const statsApi = createSelector(
@@ -62,7 +59,7 @@ export const apiSearchInputTyped = createSelector(apiElasticState, state => stat
 export const apiElasticStateLayer = createSelector(apiElasticState, state => {
   return state.layer;
 });
-export const apiElasticStateLoading = createSelector(elasticSearchFeature, state => {
+export const ecElasticStateLoading = createSelector(elasticSearchFeature, state => {
   return state.loading;
 });
 export const apiGoToHome = createSelector(elasticSearchFeature, state => {
@@ -152,7 +149,7 @@ export const featureCollection = createSelector(
   poisFilteredFeatureCollectionByInputType,
   poisFilteredFeatureCollectionByInputType => poisFilteredFeatureCollectionByInputType,
 );
-export const pois = createSelector(
+export const ecPois = createSelector(
   poisInitFeatureCollection,
   confPoisIcons,
   (featureCollection, icons) => {
@@ -178,11 +175,11 @@ export const pois = createSelector(
     return s;
   },
 );
-export const countPois = createSelector(
+export const countEcPois = createSelector(
   featureCollection,
   featureCollection => featureCollection?.features?.length,
 );
-export const countAll = createSelector(countTracks, countPois, (cTracks, cPois) => {
+export const countAll = createSelector(countTracks, countEcPois, (cTracks, cPois) => {
   const c1 = typeof cTracks === 'number' ? cTracks : 0;
   const c2 = typeof cPois === 'number' ? cPois : 0;
   return c1 + c2;

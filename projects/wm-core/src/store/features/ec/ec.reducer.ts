@@ -3,9 +3,9 @@ import {createReducer, on} from '@ngrx/store';
 import {
   applyWhere,
   inputTyped,
-  loadPoisSuccess,
-  queryApiFail,
-  queryApiSuccess,
+  loadEcPoisSuccess,
+  queryEcFail,
+  queryEcSuccess,
   resetTrackFilters,
   resetPoiFilters,
   setLayer,
@@ -14,13 +14,12 @@ import {
   updateTrackFilter,
   goToHome,
   setLastFilterType,
-} from '@wm-core/store/api/api.actions';
+} from '@wm-core/store/features/ec/ec.actions';
 import {Filter} from '@wm-core/types/config';
 import {IHIT} from '@wm-core/types/elastic';
-import {WmFeature} from '@wm-types/feature';
 
 export const searchKey = 'search';
-export interface Api {
+export interface Ec {
   filterTracks: Filter[];
   loading: boolean;
   layer?: any;
@@ -34,10 +33,10 @@ export interface Api {
   syncing: boolean;
 }
 export interface ApiRootState {
-  [searchKey]: Api;
+  [searchKey]: Ec;
 }
 
-const initialConfState: Api = {
+const initialConfState: Ec = {
   filterTracks: [],
   layer: null,
   loading: true,
@@ -53,7 +52,7 @@ const initialConfState: Api = {
 export const elasticQueryReducer = createReducer(
   initialConfState,
   on(inputTyped, (state, {inputTyped}) => {
-    const newState: Api = {
+    const newState: Ec = {
       ...state,
       inputTyped,
       loading: true,
@@ -61,7 +60,7 @@ export const elasticQueryReducer = createReducer(
     return newState;
   }),
   on(resetTrackFilters, (state, {}) => {
-    const newState: Api = {
+    const newState: Ec = {
       ...state,
       filterTracks: [],
       loading: true,
@@ -95,7 +94,7 @@ export const elasticQueryReducer = createReducer(
         ...(filterTaxonomies ?? []),
       ];
     }
-    const newState: Api = {
+    const newState: Ec = {
       ...state,
       layer,
       loading: true,
@@ -104,8 +103,8 @@ export const elasticQueryReducer = createReducer(
     };
     return newState;
   }),
-  on(queryApiSuccess, (state, {response}) => {
-    const newState: Api = {
+  on(queryEcSuccess, (state, {response}) => {
+    const newState: Ec = {
       ...state,
       hits: response.hits,
       aggregations: response.aggregations,
@@ -113,8 +112,8 @@ export const elasticQueryReducer = createReducer(
     };
     return newState;
   }),
-  on(queryApiFail, state => {
-    const newState: Api = {...state, loading: false};
+  on(queryEcFail, state => {
+    const newState: Ec = {...state, loading: false};
     return newState;
   }),
   on(toggleTrackFilter, (state, {filter}) => {
@@ -124,7 +123,7 @@ export const elasticQueryReducer = createReducer(
     } else {
       newSelectedFilters.push(filter);
     }
-    const newState: Api = {
+    const newState: Ec = {
       ...state,
       filterTracks: newSelectedFilters,
       loading: true,
@@ -139,15 +138,15 @@ export const elasticQueryReducer = createReducer(
     } else {
       newSelectedFilters.push(filter);
     }
-    const newState: Api = {
+    const newState: Ec = {
       ...state,
       filterTracks: newSelectedFilters,
       loading: true,
     };
     return newState;
   }),
-  on(loadPoisSuccess, (state, {featureCollection}) => {
-    const newState: Api = {
+  on(loadEcPoisSuccess, (state, {featureCollection}) => {
+    const newState: Ec = {
       ...state,
       poisInitFeatureCollection: featureCollection,
     };
@@ -159,7 +158,7 @@ export const elasticQueryReducer = createReducer(
     );
     poisSelectedFilterIdentifiers = [...poisSelectedFilterIdentifiers, ...(where ?? [])];
 
-    const newState: Api = {
+    const newState: Ec = {
       ...state,
       filterTaxonomies: where,
       poisSelectedFilterIdentifiers,
@@ -176,21 +175,21 @@ export const elasticQueryReducer = createReducer(
       newSelectedFilterIdentifiers.push(filterIdentifier);
     }
 
-    const newState: Api = {
+    const newState: Ec = {
       ...state,
       poisSelectedFilterIdentifiers: newSelectedFilterIdentifiers,
     };
     return newState;
   }),
   on(resetPoiFilters, (state, {}) => {
-    const newState: Api = {
+    const newState: Ec = {
       ...state,
       poisSelectedFilterIdentifiers: [],
     };
     return newState;
   }),
   on(goToHome, (state, {}) => {
-    const newState: Api = {
+    const newState: Ec = {
       ...state,
       goToHome: !state.goToHome,
     };

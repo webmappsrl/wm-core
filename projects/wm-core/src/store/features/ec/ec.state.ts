@@ -1,3 +1,3 @@
-import {ApiRootState} from './api.reducer';
+import {ApiRootState} from './ec.reducer';
 
 export type AppState = ApiRootState; /* & OtherRootState  & ... */

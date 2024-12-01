@@ -10,16 +10,16 @@ import {Store} from '@ngrx/store';
 import {BehaviorSubject, Observable, Subscription, combineLatest} from 'rxjs';
 import {filter, map, startWith} from 'rxjs/operators';
 import {
-  apiElasticStateLoading,
-  countPois,
+  ecElasticStateLoading,
+  countEcPois,
   countTracks,
   countAll,
   featureCollection,
-  queryApi,
+  queryEc,
   apiElasticStateLayer,
   poisInitCount,
   lastFilterType,
-} from '@wm-core/store/api/api.selector';
+} from '@wm-core/store/features/ec/ec.selector';
 import {IHIT} from '@wm-core/types/elastic';
 import {
   countUgcPois,
@@ -27,7 +27,7 @@ import {
   opened,
   ugcPois,
   ugcTracks,
-} from '@wm-core/store/ugc/ugc.selector';
+} from '@wm-core/store/features/ugc/ugc.selector';
 
 @Component({
   selector: 'wm-home-result',
@@ -43,7 +43,7 @@ export class WmHomeResultComponent implements OnDestroy {
   @Output() trackEVT: EventEmitter<number | string> = new EventEmitter();
 
   countAll$ = this._store.select(countAll);
-  countEcPois$ = this._store.select(countPois);
+  countEcPois$ = this._store.select(countEcPois);
   countEcTracks$ = this._store.select(countTracks);
   countInitPois$ = this._store.select(poisInitCount);
   countPois$: Observable<number>;
@@ -56,13 +56,13 @@ export class WmHomeResultComponent implements OnDestroy {
     map(p => ((p as any).features || []).map(p => (p as any).properties || [])),
     startWith([]),
   );
-  ecTracks$: Observable<IHIT[]> = this._store.select(queryApi);
+  ecTracks$: Observable<IHIT[]> = this._store.select(queryEc);
   lastFilterType$ = this._store.select(lastFilterType);
   pois$: Observable<IHIT[]>;
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
   tracks$: Observable<IHIT[]>;
   tracksLoading$: Observable<boolean> = combineLatest([
-    this._store.select(apiElasticStateLoading),
+    this._store.select(ecElasticStateLoading),
   ]).pipe(map(([apiLoading]) => apiLoading));
   ugcOpened$: Observable<boolean> = this._store.select(opened);
   ugcPois$: Observable<IHIT[]> = this._store.select(ugcPois);

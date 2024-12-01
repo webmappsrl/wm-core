@@ -3,36 +3,36 @@ import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {from, of} from 'rxjs';
 import {catchError, map, switchMap, withLatestFrom} from 'rxjs/operators';
 
-import {ApiService} from './api.service';
-import {ApiRootState} from './api.reducer';
+import {ApiService} from './ec.service';
+import {ApiRootState} from './ec.reducer';
 import {Store} from '@ngrx/store';
 import {IRESPONSE} from '@wm-core/types/elastic';
-import {apiTrackFilterIdentifier} from '@wm-core/store/api/api.selector';
+import {apiTrackFilterIdentifier} from '@wm-core/store/features/ec/ec.selector';
 import {
   inputTyped,
-  loadPois,
-  loadPoisFail,
-  loadPoisSuccess,
-  query,
-  queryApiFail,
-  queryApiSuccess,
+  loadEcPois,
+  loadEcPoisFail,
+  loadEcPoisSuccess,
+  queryEc,
+  queryEcFail,
+  queryEcSuccess,
   removeTrackFilters,
   setLayer,
   toggleTrackFilterByIdentifier,
-} from '@wm-core/store/api/api.actions';
+} from '@wm-core/store/features/ec/ec.actions';
 import {Filter} from '@wm-core/types/config';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ApiEffects {
+export class EcEffects {
   addFilterTrackApi$ = createEffect(() =>
     this._store.select(apiTrackFilterIdentifier).pipe(
       withLatestFrom(this._store),
       switchMap(([trackFilterIdentifier, state]) => {
         const api = state['query'];
         return of({
-          type: '[api] Query',
+          type: '[ec] Query',
           ...{filterTracks: trackFilterIdentifier},
           ...{layer: api.layer},
           ...{inputTyped: api.inputTyped},
@@ -45,36 +45,36 @@ export class ApiEffects {
       ofType(inputTyped),
       switchMap(_ => {
         return of({
-          type: '[api] Query',
+          type: '[ec] Query',
         });
       }),
     ),
   );
-  loadPois$ = createEffect(() =>
+  loadEcPois$ = createEffect(() =>
     this._actions$.pipe(
-      ofType(loadPois),
+      ofType(loadEcPois),
       switchMap(() =>
         this._apiSVC.getPois().pipe(
-          map(featureCollection => loadPoisSuccess({featureCollection})),
-          catchError(() => of(loadPoisFail())),
+          map(featureCollection => loadEcPoisSuccess({featureCollection})),
+          catchError(() => of(loadEcPoisFail())),
         ),
       ),
     ),
   );
   queryApi$ = createEffect(() =>
     this._actions$.pipe(
-      ofType(query),
+      ofType(queryEc),
       withLatestFrom(this._store),
       switchMap(([action, state]) => {
         const api = state['query'];
         if (action.init) {
           return from(this._apiSVC.getQuery({})).pipe(
-            map((response: IRESPONSE) => queryApiSuccess({response})),
-            catchError(e => of(queryApiFail())),
+            map((response: IRESPONSE) => queryEcSuccess({response})),
+            catchError(e => of(queryEcFail())),
           );
         }
         if (api.filterTracks.length === 0 && api.layer == null && api.inputTyped == null) {
-          return of(queryApiFail());
+          return of(queryEcFail());
         }
         const newAction = {
           ...action,
@@ -83,8 +83,8 @@ export class ApiEffects {
           ...{inputTyped: api.inputTyped},
         };
         return from(this._apiSVC.getQuery(newAction)).pipe(
-          map((response: IRESPONSE) => queryApiSuccess({response})),
-          catchError(e => of(queryApiFail())),
+          map((response: IRESPONSE) => queryEcSuccess({response})),
+          catchError(e => of(queryEcFail())),
         );
       }),
     ),
@@ -94,7 +94,7 @@ export class ApiEffects {
       ofType(removeTrackFilters),
       switchMap(_ => {
         return of({
-          type: '[api] Query',
+          type: '[ec] Query',
         });
       }),
     ),
@@ -104,7 +104,7 @@ export class ApiEffects {
       ofType(setLayer),
       switchMap(_ => {
         return of({
-          type: '[api] Query',
+          type: '[ec] Query',
         });
       }),
     ),
@@ -122,7 +122,7 @@ export class ApiEffects {
         let filter = filters.filter(f => f.identifier === action.identifier);
         if (filter.length > 0) {
           return of({
-            type: '[api] toggle track filter',
+            type: '[ec] toggle track filter',
             filter: {...filter[0], taxonomy: action.taxonomy},
           });
         }

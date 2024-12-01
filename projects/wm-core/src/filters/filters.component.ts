@@ -13,15 +13,15 @@ import {Store} from '@ngrx/store';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {
   apiFilterTracks,
-  countPois,
+  countEcPois,
   countSelectedFilters,
   countTracks,
   poiFilters,
   poisStats,
   trackStats,
-} from '../store/api/api.selector';
+} from '../store/features/ec/ec.selector';
 import {confFILTERS} from '../store/conf/conf.selector';
-import { SelectFilterOption,SliderFilter,Filter } from '../types/config';
+import {SelectFilterOption, SliderFilter, Filter} from '../types/config';
 
 @Component({
   selector: 'wm-filters',
@@ -36,44 +36,32 @@ export class FiltersComponent implements OnChanges {
       this.toggle$.next(false);
     }
   }
-  @Output() lastFilterTypeEvt: EventEmitter<'tracks' | 'pois'> = new EventEmitter();
+
   @Output() filterPoisEvt: EventEmitter<SelectFilterOption | SliderFilter | Filter> =
     new EventEmitter<SelectFilterOption | SliderFilter | Filter>();
   @Output() filterTracksEvt: EventEmitter<SelectFilterOption | SliderFilter | Filter> =
     new EventEmitter<SelectFilterOption | SliderFilter | Filter>();
+  @Output() lastFilterTypeEvt: EventEmitter<'tracks' | 'pois'> = new EventEmitter();
   @Output() removefilterPoiEvt: EventEmitter<SelectFilterOption | SliderFilter | Filter> =
     new EventEmitter<SelectFilterOption | SliderFilter | Filter>();
   @Output() removefilterTracksEvt: EventEmitter<Filter> = new EventEmitter<Filter>();
   @Output() resetFiltersEvt: EventEmitter<void> = new EventEmitter<void>();
 
-  confFILTERS$: Observable<{[key: string]: any}|undefined> = this._store.select(confFILTERS);
+  confFILTERS$: Observable<{[key: string]: any} | undefined> = this._store.select(confFILTERS);
+  countPois$: Observable<number> = this._store.select(countEcPois);
   countSelectedFilters$: Observable<number> = this._store.select(countSelectedFilters);
-  countPois$: Observable<number> = this._store.select(countPois);
   countTracks$: Observable<number> = this._store.select(countTracks);
-  toggle$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  poiFilters$: Observable<any> = this._store.select(poiFilters);
   poisStats$: Observable<{
     [name: string]: {[identifier: string]: any};
   }> = this._store.select(poisStats);
+  toggle$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  trackFilters$: Observable<any> = this._store.select(apiFilterTracks);
   trackStats$: Observable<{
     [name: string]: {[identifier: string]: any};
   }> = this._store.select(trackStats);
-  poiFilters$: Observable<any> = this._store.select(poiFilters);
-  trackFilters$: Observable<any> = this._store.select(apiFilterTracks);
+
   constructor(private _store: Store) {}
-
-  addPoisFilter(filter: any): void {
-    this.lastFilterTypeEvt.emit('pois');
-    this.filterPoisEvt.emit(filter);
-  }
-
-  addTrackFilter(filter: SelectFilterOption, taxonomy?: string): void {
-    this.lastFilterTypeEvt.emit('tracks');
-    this.filterTracksEvt.emit({...filter, taxonomy});
-  }
-
-  filterBtnClick(): void {
-    this.toggle$.next(!this.toggle$.value);
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     //TODO: workaround per eliminare un filtro slider dalla home,
@@ -90,6 +78,20 @@ export class FiltersComponent implements OnChanges {
           });
       }
     });
+  }
+
+  addPoisFilter(filter: any): void {
+    this.lastFilterTypeEvt.emit('pois');
+    this.filterPoisEvt.emit(filter);
+  }
+
+  addTrackFilter(filter: SelectFilterOption, taxonomy?: string): void {
+    this.lastFilterTypeEvt.emit('tracks');
+    this.filterTracksEvt.emit({...filter, taxonomy});
+  }
+
+  filterBtnClick(): void {
+    this.toggle$.next(!this.toggle$.value);
   }
 
   removePoiFilter(filter: SelectFilterOption): void {

@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import {Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
-import {apiElasticStateLayer} from '../../store/api/api.selector';
+import {apiElasticStateLayer} from '../../store/features/ec/ec.selector';
 
 @Component({
   selector: 'wm-home-layer',
