@@ -54,6 +54,7 @@ export const wmFR = {
   'Filtri attivi': 'Filtres actifs',
   'Reset filtri': 'Réinitialiser les filtres',
   'Torna alla home': "Retour à l'accueil",
+  'Risultati': 'Résultats',
   'Caricamento in corso.': 'Chargement.',
   'Spiacenti non ci sono risultati con questi criteri di ricerca.':
     "Désolé, il n'y a aucun résultat avec ces critères de recherche",

@@ -60,6 +60,7 @@ export const wmIT = {
   'Filtri attivi': 'Filtri attivi',
   'Reset filtri': 'Reset filtri',
   'Torna alla home': 'Torna alla home',
+  'Risultati': 'Risultati',
   'Caricamento in corso.': 'Caricamento in corso.',
   'Spiacenti non ci sono risultati con questi criteri di ricerca.':
     'Spiacenti non ci sono risultati con questi criteri di ricerca.',

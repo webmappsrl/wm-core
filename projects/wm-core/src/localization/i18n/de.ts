@@ -54,6 +54,7 @@ export const wmDE = {
   'Filtri attivi': 'Aktive Filter',
   'Reset filtri': 'Filter zurücksetzen',
   'Torna alla home': 'Zurück zur Startseite',
+  'Risultati': 'Ergebnisse',
   'Caricamento in corso.': 'Wird geladen.',
   'Spiacenti non ci sono risultati con questi criteri di ricerca.':
     'Leider gibt es keine Ergebnisse mit diesen Suchkriterien',

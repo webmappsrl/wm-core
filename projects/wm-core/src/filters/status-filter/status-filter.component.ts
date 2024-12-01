@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  Input,
   Output,
   ViewEncapsulation,
 } from '@angular/core';
@@ -32,12 +33,12 @@ import {Location} from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatusFilterComponent {
+  @Input() countAll: number;
   @Output() removeLayerEVT: EventEmitter<any> = new EventEmitter();
   @Output() removePoiFilterEVT: EventEmitter<string> = new EventEmitter();
   @Output() removeTrackFilterEVT: EventEmitter<Filter> = new EventEmitter();
   @Output() resetFiltersEVT: EventEmitter<void> = new EventEmitter();
 
-  countAll$: Observable<number> = this._store.select(countAll);
   layer$ = this._store.select(apiElasticStateLayer);
   poiFilters$: Observable<any> = this._store.select(poiFilters);
   trackFilters$: Observable<any[]> = this._store.select(apiFilterTracks);

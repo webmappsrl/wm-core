@@ -53,6 +53,7 @@ export const wmES = {
   'Filtri attivi': 'Filtros activos',
   'Reset filtri': 'Restablecer filtros',
   'Torna alla home': 'Volver a la página principal',
+  'Risultati': 'Resultados',
   'Caricamento in corso.': 'Cargando.',
   'Spiacenti non ci sono risultati con questi criteri di ricerca.':
     'Lo sentimos, no hay resultados con estos criterios de búsqueda',

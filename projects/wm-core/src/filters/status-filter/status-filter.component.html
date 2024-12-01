@@ -1,10 +1,7 @@
 <ion-grid>
   <ion-row>
-    <ion-col
-      >{{'Filtri attivi'|wmtrans}}
-      <ng-container *ngIf="(countAll$|async) as countAll">
-        <span *ngIf="countAll != null">{{countAll}}</span>
-      </ng-container>
+    <ion-col>
+      <span *ngIf="countAll != null"> {{'Risultati'|wmtrans}} {{countAll}}</span>
     </ion-col>
     <ion-col size="auto">
       <ion-chip

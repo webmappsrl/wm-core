@@ -22,3 +22,8 @@ export const countUgcPois = createSelector(
   ugc,
   (state: UgcState) => state.ugcPoiFeatures.length ?? 0,
 );
+export const countUgcAll = createSelector(
+  countUgcTracks,
+  countUgcPois,
+  (tracks, pois) => tracks + pois,
+);
