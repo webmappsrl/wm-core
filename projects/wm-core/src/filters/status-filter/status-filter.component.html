@@ -1,7 +1,7 @@
 <ion-grid>
   <ion-row>
     <ion-col>
-      <span *ngIf="countAll != null"> {{'Risultati'|wmtrans}} {{countAll}}</span>
+      <span *ngIf="(countAll$|async)  as countAll"> {{'Risultati'|wmtrans}} {{countAll}}</span>
     </ion-col>
     <ion-col size="auto">
       <ion-chip

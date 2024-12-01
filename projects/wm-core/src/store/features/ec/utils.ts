@@ -1,4 +1,5 @@
-import {Feature, FeatureCollection, Geometry} from 'geojson';
+import {WmFeature} from '@wm-types/feature';
+import {Feature, FeatureCollection, Geometry, LineString, Point} from 'geojson';
 
 export const filterFeatureCollection = (
   featureCollection: FeatureCollection,
@@ -7,11 +8,18 @@ export const filterFeatureCollection = (
   if (filters == null || filters.length === 0 || featureCollection?.features == null) {
     return featureCollection;
   }
-  featureCollection.features = featureCollection.features.filter(feature => {
-    const taxonomyIdentifiers = feature?.properties?.taxonomyIdentifiers || [];
-    return isArrayContained(filters, taxonomyIdentifiers);
-  });
-  return featureCollection;
+  try {
+    const features: any[] = featureCollection.features.filter(feature => {
+      const taxonomyIdentifiers = feature?.properties?.taxonomyIdentifiers || [];
+      return isArrayContained(filters, taxonomyIdentifiers);
+    });
+    return {
+      type: 'FeatureCollection',
+      features,
+    } as FeatureCollection;
+  } catch (e) {
+    return featureCollection;
+  }
 };
 export const isArrayContained = (needle: any[], haystack: any[]): boolean => {
   if (needle.length > haystack.length) return false;

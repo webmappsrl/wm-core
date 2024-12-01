@@ -18,13 +18,13 @@ import {
 import {
   apiElasticStateLayer,
   apiFilterTracks,
-  countAll,
   poiFilters,
 } from '@wm-core/store/features/ec/ec.selector';
 import {Filter} from '@wm-core/types/config';
 import {Observable} from 'rxjs';
 import {Location} from '@angular/common';
 import {closeUgc} from '@wm-core/store/user-activity/user-activity.action';
+import {countAll} from '@wm-core/store/features/features.selector';
 @Component({
   selector: 'wm-status-filter',
   templateUrl: './status-filter.component.html',
@@ -33,12 +33,12 @@ import {closeUgc} from '@wm-core/store/user-activity/user-activity.action';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatusFilterComponent {
-  @Input() countAll: number;
   @Output() removeLayerEVT: EventEmitter<any> = new EventEmitter();
   @Output() removePoiFilterEVT: EventEmitter<string> = new EventEmitter();
   @Output() removeTrackFilterEVT: EventEmitter<Filter> = new EventEmitter();
   @Output() resetFiltersEVT: EventEmitter<void> = new EventEmitter();
 
+  countAll$: Observable<number> = this._store.select(countAll);
   layer$ = this._store.select(apiElasticStateLayer);
   poiFilters$: Observable<any> = this._store.select(poiFilters);
   trackFilters$: Observable<any[]> = this._store.select(apiFilterTracks);

@@ -13,15 +13,14 @@ import {Store} from '@ngrx/store';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {
   apiFilterTracks,
-  countEcPois,
   countSelectedFilters,
-  countTracks,
   poiFilters,
   poisStats,
   trackStats,
 } from '../store/features/ec/ec.selector';
 import {confFILTERS} from '../store/conf/conf.selector';
 import {SelectFilterOption, SliderFilter, Filter} from '../types/config';
+import {countPois, countTracks} from '@wm-core/store/features/features.selector';
 
 @Component({
   selector: 'wm-filters',
@@ -48,7 +47,7 @@ export class FiltersComponent implements OnChanges {
   @Output() resetFiltersEvt: EventEmitter<void> = new EventEmitter<void>();
 
   confFILTERS$: Observable<{[key: string]: any} | undefined> = this._store.select(confFILTERS);
-  countPois$: Observable<number> = this._store.select(countEcPois);
+  countPois$: Observable<number> = this._store.select(countPois);
   countSelectedFilters$: Observable<number> = this._store.select(countSelectedFilters);
   countTracks$: Observable<number> = this._store.select(countTracks);
   poiFilters$: Observable<any> = this._store.select(poiFilters);

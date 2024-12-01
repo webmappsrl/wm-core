@@ -9,7 +9,7 @@ import {ugcOpened, inputTyped} from '@wm-core/store/user-activity/user-activity.
 export const elasticSearchFeature = createFeatureSelector<IELASTIC>('ec');
 
 export const queryEc = createSelector(elasticSearchFeature as any, (state: Ec) => state.hits ?? []);
-export const countTracks = createSelector(
+export const countEcTracks = createSelector(
   elasticSearchFeature as any,
   (state: Ec) => state.hits.length ?? undefined,
 );
@@ -182,7 +182,7 @@ export const countEcPois = createSelector(
   featureCollection,
   featureCollection => featureCollection?.features?.length,
 );
-export const countAll = createSelector(countTracks, countEcPois, (cTracks, cPois) => {
+export const countEcAll = createSelector(countEcTracks, countEcPois, (cTracks, cPois) => {
   const c1 = typeof cTracks === 'number' ? cTracks : 0;
   const c2 = typeof cPois === 'number' ? cPois : 0;
   return c1 + c2;

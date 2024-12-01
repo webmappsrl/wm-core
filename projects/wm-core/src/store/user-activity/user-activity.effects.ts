@@ -11,7 +11,7 @@ import {
   updateTrackFilter,
   queryEc,
 } from '@wm-core/store/features/ec/ec.actions';
-import {inputTyped, setLoading} from '@wm-core/store/user-activity/user-activity.action';
+import {closeUgc, setLoading} from '@wm-core/store/user-activity/user-activity.action';
 import {inputTyped as inputTypedSelector} from '@wm-core/store/user-activity/user-activity.selector';
 import {debounceTime, map, switchMap} from 'rxjs/operators';
 
@@ -51,6 +51,7 @@ export class UserActivityEffects {
             init: false,
             inputTyped: inputTyped as string,
           }),
+          closeUgc(),
         ];
       }),
     ),
