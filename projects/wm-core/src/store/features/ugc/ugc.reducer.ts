@@ -5,8 +5,6 @@ import {
   syncUgcFailure,
   syncUgcTracks,
   syncUgcPois,
-  openUgc,
-  closeUgc,
   updateUgcTracks,
   updateUgcPois,
 } from '@wm-core/store/features/ugc/ugc.actions';
@@ -14,7 +12,6 @@ import {WmFeature} from '@wm-types/feature';
 import {IHIT} from '@wm-core/types/elastic';
 export const searchKey = 'search';
 export interface UgcState {
-  opened: boolean;
   syncing: boolean;
   syncable: boolean;
   ugcPoiFeatures?: WmFeature<Point>[];
@@ -31,7 +28,6 @@ const initialState: UgcState = {
   ugcTrackFeatures: null,
   syncing: false,
   syncable: false,
-  opened: false,
 };
 
 export const UgcReducer = createReducer(
@@ -60,8 +56,6 @@ export const UgcReducer = createReducer(
     ...state,
     syncing: false,
   })),
-  on(openUgc, state => ({...state, opened: true})),
-  on(closeUgc, state => ({...state, opened: false})),
 );
 export function wmFeatureToHits(features: WmFeature<LineString | Point>[]): IHIT[] {
   const hits: IHIT[] = [];

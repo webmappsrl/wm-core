@@ -24,10 +24,10 @@ import {IHIT} from '@wm-core/types/elastic';
 import {
   countUgcPois,
   countUgcTracks,
-  opened,
   ugcPois,
   ugcTracks,
 } from '@wm-core/store/features/ugc/ugc.selector';
+import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
 
 @Component({
   selector: 'wm-home-result',
@@ -64,7 +64,7 @@ export class WmHomeResultComponent implements OnDestroy {
   tracksLoading$: Observable<boolean> = combineLatest([
     this._store.select(ecElasticStateLoading),
   ]).pipe(map(([apiLoading]) => apiLoading));
-  ugcOpened$: Observable<boolean> = this._store.select(opened);
+  ugcOpened$: Observable<boolean> = this._store.select(ugcOpened);
   ugcPois$: Observable<IHIT[]> = this._store.select(ugcPois);
   ugcTracks$: Observable<IHIT[]> = this._store.select(ugcTracks);
 

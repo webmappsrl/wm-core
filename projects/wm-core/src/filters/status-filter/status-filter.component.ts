@@ -21,10 +21,10 @@ import {
   countAll,
   poiFilters,
 } from '@wm-core/store/features/ec/ec.selector';
-import {closeUgc} from '@wm-core/store/features/ugc/ugc.actions';
 import {Filter} from '@wm-core/types/config';
 import {Observable} from 'rxjs';
 import {Location} from '@angular/common';
+import {closeUgc} from '@wm-core/store/user-activity/user-activity.action';
 @Component({
   selector: 'wm-status-filter',
   templateUrl: './status-filter.component.html',

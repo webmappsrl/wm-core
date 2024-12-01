@@ -22,7 +22,7 @@ import {WmRelatedUrlsComponent} from './related-urls/related-urls.component';
 import {WmSharedModule} from './shared/shared.module';
 import {WmSlopeChartComponent} from './slope-chart/slope-chart.component';
 import {EcEffects} from './store/features/ec/ec.effects';
-import {elasticQueryReducer} from './store/features/ec/ec.reducer';
+import {ecReducer} from './store/features/ec/ec.reducer';
 import {ConfEffects} from './store/conf/conf.effects';
 import {confReducer} from './store/conf/conf.reducer';
 import {WmTabDescriptionComponent} from './tab-description/tab-description.component';
@@ -48,6 +48,8 @@ import {WmHomeUgcComponent} from './home/home-ugc/home-ugc.component';
 import {WmFormComponent} from './form/form.component';
 import {UgcEffects} from './store/features/ugc/ugc.effects';
 import {UgcReducer} from './store/features/ugc/ugc.reducer';
+import {userActivityReducer} from './store/user-activity/user-activity.reducer';
+import {UserActivityEffects} from './store/user-activity/user-activity.effects';
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -95,11 +97,18 @@ const modules = [
     ...[
       CommonModule,
       IonicModule,
-      StoreModule.forFeature('query', elasticQueryReducer),
+      StoreModule.forFeature('ec', ecReducer),
       StoreModule.forFeature('conf', confReducer),
       StoreModule.forFeature('auth', authReducer),
       StoreModule.forFeature('ugc', UgcReducer),
-      EffectsModule.forFeature([EcEffects, ConfEffects, AuthEffects, UgcEffects]),
+      StoreModule.forFeature('user-activity', userActivityReducer),
+      EffectsModule.forFeature([
+        EcEffects,
+        ConfEffects,
+        AuthEffects,
+        UgcEffects,
+        UserActivityEffects,
+      ]),
       TranslateModule.forRoot({
         loader: {
           provide: TranslateLoader,

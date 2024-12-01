@@ -1,8 +1,6 @@
 import {createAction, props} from '@ngrx/store';
 import {WmFeature} from '@wm-types/feature';
 import {LineString, Point} from 'geojson';
-export const openUgc = createAction('[Ugc] Open Ugc');
-export const closeUgc = createAction('[Ugc] Close Ugc');
 export const syncUgc = createAction('[Ugc] Sync');
 
 export const syncUgcTracks = createAction('[Ugc] Sync Tracks');

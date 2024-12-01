@@ -7,9 +7,7 @@ import {ApiService} from './ec.service';
 import {ApiRootState} from './ec.reducer';
 import {Store} from '@ngrx/store';
 import {IRESPONSE} from '@wm-core/types/elastic';
-import {apiTrackFilterIdentifier} from '@wm-core/store/features/ec/ec.selector';
 import {
-  inputTyped,
   loadEcPois,
   loadEcPoisFail,
   loadEcPoisSuccess,
@@ -21,35 +19,13 @@ import {
   toggleTrackFilterByIdentifier,
 } from '@wm-core/store/features/ec/ec.actions';
 import {Filter} from '@wm-core/types/config';
+import {userActivity} from '@wm-core/store/user-activity/user-activity.selector';
+import {elasticSearchFeature} from './ec.selector';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EcEffects {
-  addFilterTrackApi$ = createEffect(() =>
-    this._store.select(apiTrackFilterIdentifier).pipe(
-      withLatestFrom(this._store),
-      switchMap(([trackFilterIdentifier, state]) => {
-        const api = state['query'];
-        return of({
-          type: '[ec] Query',
-          ...{filterTracks: trackFilterIdentifier},
-          ...{layer: api.layer},
-          ...{inputTyped: api.inputTyped},
-        });
-      }),
-    ),
-  );
-  inputTypedApi$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(inputTyped),
-      switchMap(_ => {
-        return of({
-          type: '[ec] Query',
-        });
-      }),
-    ),
-  );
   loadEcPois$ = createEffect(() =>
     this._actions$.pipe(
       ofType(loadEcPois),
@@ -64,23 +40,25 @@ export class EcEffects {
   queryApi$ = createEffect(() =>
     this._actions$.pipe(
       ofType(queryEc),
-      withLatestFrom(this._store),
-      switchMap(([action, state]) => {
-        const api = state['query'];
+      withLatestFrom(
+        this._store.select(elasticSearchFeature), // Selettore per ec
+        this._store.select(userActivity), // Selettore per userActivity
+      ),
+      switchMap(([action, ec, userActivity]) => {
         if (action.init) {
           return from(this._apiSVC.getQuery({})).pipe(
             map((response: IRESPONSE) => queryEcSuccess({response})),
             catchError(e => of(queryEcFail())),
           );
         }
-        if (api.filterTracks.length === 0 && api.layer == null && api.inputTyped == null) {
+        if (ec.filterTracks.length === 0 && ec.layer == null && userActivity.inputTyped == null) {
           return of(queryEcFail());
         }
         const newAction = {
           ...action,
-          ...{filterTracks: api.filterTracks},
-          ...{layer: api.layer},
-          ...{inputTyped: api.inputTyped},
+          ...{filterTracks: ec.filterTracks},
+          ...{layer: ec.layer},
+          ...{inputTyped: userActivity.inputTyped},
         };
         return from(this._apiSVC.getQuery(newAction)).pipe(
           map((response: IRESPONSE) => queryEcSuccess({response})),

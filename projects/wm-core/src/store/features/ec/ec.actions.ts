@@ -18,10 +18,7 @@ export const addTrackFilters = createAction(
   '[ec] add track filters',
   props<{trackFilters: {identifier: string}[]}>(),
 );
-export const inputTyped = createAction(
-  '[ec] set input typed',
-  props<{inputTyped: string | null}>(),
-);
+
 export const removeTrackFilters = createAction(
   '[ec] remove track filters',
   props<{trackFilters: {identifier: string}[]}>(),

@@ -2,7 +2,6 @@ import {FeatureCollection, Point} from 'geojson';
 import {createReducer, on} from '@ngrx/store';
 import {
   applyWhere,
-  inputTyped,
   loadEcPoisSuccess,
   queryEcFail,
   queryEcSuccess,
@@ -21,9 +20,7 @@ import {IHIT} from '@wm-core/types/elastic';
 export const searchKey = 'search';
 export interface Ec {
   filterTracks: Filter[];
-  loading: boolean;
   layer?: any;
-  inputTyped?: string;
   poisInitFeatureCollection?: FeatureCollection;
   poisSelectedFilterIdentifiers?: string[];
   filterTaxonomies?: string[];
@@ -39,8 +36,6 @@ export interface ApiRootState {
 const initialConfState: Ec = {
   filterTracks: [],
   layer: null,
-  loading: true,
-  inputTyped: null,
   poisInitFeatureCollection: null,
   poisSelectedFilterIdentifiers: null,
   filterTaxonomies: [],
@@ -49,21 +44,13 @@ const initialConfState: Ec = {
   syncing: false,
 };
 
-export const elasticQueryReducer = createReducer(
+export const ecReducer = createReducer(
   initialConfState,
-  on(inputTyped, (state, {inputTyped}) => {
-    const newState: Ec = {
-      ...state,
-      inputTyped,
-      loading: true,
-    };
-    return newState;
-  }),
+
   on(resetTrackFilters, (state, {}) => {
     const newState: Ec = {
       ...state,
       filterTracks: [],
-      loading: true,
     };
     return newState;
   }),
@@ -97,7 +84,6 @@ export const elasticQueryReducer = createReducer(
     const newState: Ec = {
       ...state,
       layer,
-      loading: true,
       poisSelectedFilterIdentifiers,
       filterTaxonomies,
     };
@@ -108,14 +94,10 @@ export const elasticQueryReducer = createReducer(
       ...state,
       hits: response.hits,
       aggregations: response.aggregations,
-      loading: false,
     };
     return newState;
   }),
-  on(queryEcFail, state => {
-    const newState: Ec = {...state, loading: false};
-    return newState;
-  }),
+  on(queryEcFail, state => state),
   on(toggleTrackFilter, (state, {filter}) => {
     let newSelectedFilters = [...(state.filterTracks ?? [])];
     if (newSelectedFilters.map(f => f.identifier).indexOf(filter.identifier) >= 0) {
@@ -126,7 +108,6 @@ export const elasticQueryReducer = createReducer(
     const newState: Ec = {
       ...state,
       filterTracks: newSelectedFilters,
-      loading: true,
     };
     return newState;
   }),
@@ -141,7 +122,6 @@ export const elasticQueryReducer = createReducer(
     const newState: Ec = {
       ...state,
       filterTracks: newSelectedFilters,
-      loading: true,
     };
     return newState;
   }),

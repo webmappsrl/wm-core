@@ -4,9 +4,10 @@ import {confFILTERSTRACKS, confPOISFilter, confPoisIcons} from '../../conf/conf.
 import {buildStats, filterFeatureCollection, filterFeatureCollectionByInputTyped} from './utils';
 import {IELASTIC, IHIT} from '../../../types/elastic';
 import {Ec} from './ec.reducer';
-import {opened} from '../ugc/ugc.selector';
+import {ugcOpened, inputTyped} from '@wm-core/store/user-activity/user-activity.selector';
 
-export const elasticSearchFeature = createFeatureSelector<IELASTIC>('query');
+export const elasticSearchFeature = createFeatureSelector<IELASTIC>('ec');
+
 export const queryEc = createSelector(elasticSearchFeature as any, (state: Ec) => state.hits ?? []);
 export const countTracks = createSelector(
   elasticSearchFeature as any,
@@ -43,8 +44,6 @@ export const apiElasticState = createSelector(elasticSearchFeature, state => {
   return {
     layer: state.layer,
     filterTracks: state.filterTracks,
-    inputTyped: state.inputTyped,
-    loading: true,
     lastFilterType: 'tracks',
   };
 });
@@ -55,7 +54,6 @@ export const apiFilterTracks = createSelector(apiElasticState, state => {
 export const apiTrackFilterIdentifier = createSelector(apiFilterTracks, filterTracks => {
   return filterTracks.map((f: any) => f.identifier);
 });
-export const apiSearchInputTyped = createSelector(apiElasticState, state => state.inputTyped);
 export const apiElasticStateLayer = createSelector(apiElasticState, state => {
   return state.layer;
 });
@@ -71,15 +69,20 @@ export const confFILTERSTRACKSOPTIONS = createSelector(
 );
 
 export const showPoisResult = createSelector(elasticSearchFeature, state => state.where != null);
-export const showResult = createSelector(elasticSearchFeature, opened, (state, ugcOpened) => {
-  return (
-    state.layer != null ||
-    state.filterTracks.length > 0 ||
-    (state.poisSelectedFilterIdentifiers && state.poisSelectedFilterIdentifiers.length > 0) ||
-    (state.inputTyped && state.inputTyped != '') ||
-    ugcOpened
-  );
-});
+export const showResult = createSelector(
+  elasticSearchFeature,
+  ugcOpened,
+  inputTyped,
+  (state, ugcOpened, inputTyped) => {
+    return (
+      state.layer != null ||
+      state.filterTracks.length > 0 ||
+      (state.poisSelectedFilterIdentifiers && state.poisSelectedFilterIdentifiers.length > 0) ||
+      (inputTyped != null && inputTyped != '') ||
+      ugcOpened
+    );
+  },
+);
 export const lastFilterType = createSelector(elasticSearchFeature, state => {
   return state.lastFilterType;
 });
@@ -141,7 +144,7 @@ export const poisFilteredFeatureCollection = createSelector(
 );
 export const poisFilteredFeatureCollectionByInputType = createSelector(
   poisFilteredFeatureCollection,
-  apiSearchInputTyped,
+  inputTyped,
   (featureCollection, inputTyped) =>
     filterFeatureCollectionByInputTyped(featureCollection, inputTyped),
 );

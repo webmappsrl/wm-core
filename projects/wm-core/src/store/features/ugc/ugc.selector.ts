@@ -1,7 +1,7 @@
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {createFeatureSelector, createSelector} from '@ngrx/store';
-import {UgcState} from '@wm-core/store/features/ugc/ugc.reducer';
 import {confAUTHEnable} from '@wm-core/store/conf/conf.selector';
+import {UgcState} from './ugc.reducer';
 
 export const ugc = createFeatureSelector<UgcState>('ugc');
 
@@ -12,7 +12,6 @@ export const activableUgc = createSelector(
   isLogged,
   (authEnable, isLogged) => authEnable && isLogged,
 );
-export const opened = createSelector(ugc, (state: UgcState) => state.opened);
 export const ugcTracks = createSelector(ugc, (state: UgcState) => state.ugcTracks);
 export const ugcPois = createSelector(ugc, (state: UgcState) => state.ugcPois);
 export const ugcPoisFeatures = createSelector(ugc, (state: UgcState) => state.ugcPoiFeatures);
