@@ -6,11 +6,8 @@ import {
   EventEmitter,
 } from '@angular/core';
 import {Store} from '@ngrx/store';
-import {from, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
-import {WmFeature} from '@wm-types/feature';
-import {LineString} from 'geojson';
-import {getUgcTracks} from '@wm-core/utils/localForage';
 import {confHOME, confShowDrawTrack} from '@wm-core/store/conf/conf.selector';
 import {IHOME, IHORIZONTALSCROLLBOX} from '@wm-core/types/config';
 import {togglePoiFilter, toggleTrackFilterByIdentifier} from '@wm-core/store/api/api.actions';
@@ -34,7 +31,6 @@ export class WmHomeComponent {
   confHOME$: Observable<IHOME[] | undefined> = this._store.select(confHOME);
   enableDrawTrack$: Observable<boolean> = this._store.select(confShowDrawTrack);
   isLogged$: Observable<boolean> = this._store.select(isLogged);
-  ugcTracks$: Observable<WmFeature<LineString>[]> = from(getUgcTracks());
 
   constructor(private _store: Store) {}
 
@@ -49,8 +45,6 @@ export class WmHomeComponent {
     this._setFilter(filter);
     this.poiTypeFilterBoxEVT.emit([filter, idx]);
   }
-
-  setUgcFilter(): void {}
 
   private _setFilter(filter: {identifier: string; taxonomy: string}): void {
     if (filter == null) return;

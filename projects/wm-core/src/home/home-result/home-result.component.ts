@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, Observable, Subscription, combineLatest} from 'rxjs';
-import {filter, map} from 'rxjs/operators';
+import {filter, map, startWith} from 'rxjs/operators';
 import {
   apiElasticStateLoading,
   countPois,
@@ -21,7 +21,13 @@ import {
   lastFilterType,
 } from '@wm-core/store/api/api.selector';
 import {IHIT} from '@wm-core/types/elastic';
-import {countUgcTracks, opened, syncing, ugcTracks} from '@wm-core/store/ugc/ugc.selector';
+import {
+  countUgcPois,
+  countUgcTracks,
+  opened,
+  ugcPois,
+  ugcTracks,
+} from '@wm-core/store/ugc/ugc.selector';
 
 @Component({
   selector: 'wm-home-result',
@@ -37,24 +43,29 @@ export class WmHomeResultComponent implements OnDestroy {
   @Output() trackEVT: EventEmitter<number | string> = new EventEmitter();
 
   countAll$ = this._store.select(countAll);
+  countEcPois$ = this._store.select(countPois);
   countEcTracks$ = this._store.select(countTracks);
   countInitPois$ = this._store.select(poisInitCount);
-  countPois$ = this._store.select(countPois);
+  countPois$: Observable<number>;
   countTracks$: Observable<number>;
+  countUgcPois$ = this._store.select(countUgcPois);
   countUgcTracks$ = this._store.select(countUgcTracks);
   currentLayer$ = this._store.select(apiElasticStateLayer);
-  ecTracks$: Observable<IHIT[]> = this._store.select(queryApi);
-  lastFilterType$ = this._store.select(lastFilterType);
-  pois$: Observable<any[]> = this._store.select(featureCollection).pipe(
+  ecPois$: Observable<IHIT[]> = this._store.select(featureCollection).pipe(
     filter(p => p != null),
     map(p => ((p as any).features || []).map(p => (p as any).properties || [])),
+    startWith([]),
   );
+  ecTracks$: Observable<IHIT[]> = this._store.select(queryApi);
+  lastFilterType$ = this._store.select(lastFilterType);
+  pois$: Observable<IHIT[]>;
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
   tracks$: Observable<IHIT[]>;
   tracksLoading$: Observable<boolean> = combineLatest([
     this._store.select(apiElasticStateLoading),
   ]).pipe(map(([apiLoading]) => apiLoading));
   ugcOpened$: Observable<boolean> = this._store.select(opened);
+  ugcPois$: Observable<IHIT[]> = this._store.select(ugcPois);
   ugcTracks$: Observable<IHIT[]> = this._store.select(ugcTracks);
 
   constructor(private _store: Store) {
@@ -63,9 +74,19 @@ export class WmHomeResultComponent implements OnDestroy {
       this.countUgcTracks$,
       this.ugcOpened$,
     ]).pipe(map(([ecTracks, ugcTracks, ugcOpened]) => (ugcOpened ? ugcTracks : ecTracks)));
+
     this.tracks$ = combineLatest([this.ecTracks$, this.ugcTracks$, this.ugcOpened$]).pipe(
       map(([ecTracks, ugcTracks, ugcOpened]) => (ugcOpened ? ugcTracks : ecTracks)),
     );
+
+    this.countPois$ = combineLatest([this.countEcPois$, this.countUgcPois$, this.ugcOpened$]).pipe(
+      map(([ecPois, ugcPois, ugcOpened]) => (ugcOpened ? ugcPois : ecPois)),
+    );
+
+    this.pois$ = combineLatest([this.ecPois$, this.ugcPois$, this.ugcOpened$]).pipe(
+      map(([ecPois, ugcPois, ugcOpened]) => (ugcOpened ? ugcPois : ecPois)),
+    );
+
     this._resultTypeSub$ = combineLatest([
       this.countTracks$,
       this.countPois$,

@@ -40,7 +40,6 @@ export const UgcReducer = createReducer(
     ...state,
     syncing: true,
   })),
-  // Sincronizzazione completata
   on(updateUgcTracks, (state, {ugcTrackFeatures}) => {
     const ugcTracks = wmFeatureToHits(ugcTrackFeatures);
     return {
@@ -57,7 +56,6 @@ export const UgcReducer = createReducer(
       ugcPois,
     };
   }),
-  // Sincronizzazione fallita
   on(syncUgcFailure, (state, {responseType, error}) => ({
     ...state,
     syncing: false,
@@ -65,20 +63,20 @@ export const UgcReducer = createReducer(
   on(openUgc, state => ({...state, opened: true})),
   on(closeUgc, state => ({...state, opened: false})),
 );
-export function wmFeatureToHits(tracks: WmFeature<LineString | Point>[]): IHIT[] {
+export function wmFeatureToHits(features: WmFeature<LineString | Point>[]): IHIT[] {
   const hits: IHIT[] = [];
 
-  tracks.forEach(track => {
-    const activity = track.properties?.form?.activity;
+  features.forEach(feature => {
+    const activity = feature.properties?.form?.activity;
     const hit: IHIT = {
-      id: `${track.properties.id ?? track.properties.uuid}`,
+      id: `${feature.properties.id ?? feature.properties.uuid}`,
       taxonomyActivities: activity ? [activity] : [],
       taxonomyWheres: [],
       cai_scale: '',
       distance: '',
       feature_image: null,
       layers: [],
-      name: track.properties.name,
+      name: feature.properties.name,
       properties: {},
       ref: '',
     };
