@@ -25,7 +25,7 @@ import {
   tracks,
 } from '@wm-core/store/features/features.selector';
 import {WmFeature} from '@wm-types/feature';
-import {Point} from 'geojson';
+import {LineString, MultiLineString, Point} from 'geojson';
 
 @Component({
   selector: 'wm-home-result',
@@ -46,7 +46,7 @@ export class WmHomeResultComponent implements OnDestroy {
   countTracks$: Observable<number> = this._store.select(countTracks);
   currentLayer$ = this._store.select(ecLayer);
   lastFilterType$ = this._store.select(lastFilterType);
-  pois$: Observable<IHIT[]> = this._store.select(pois);
+  pois$: Observable<WmFeature<Point>[]> = this._store.select(pois);
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
   tracks$ = this._store.select(tracks);
   tracksLoading$: Observable<boolean> = combineLatest([
