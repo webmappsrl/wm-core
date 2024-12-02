@@ -14,7 +14,7 @@ export const activableUgc = createSelector(
 );
 export const ugcTracks = createSelector(ugc, (state: UgcState) => state.ugcTracks);
 export const ugcPois = createSelector(ugc, (state: UgcState) => state.ugcPois);
-export const ugcPoisFeatures = createSelector(ugc, (state: UgcState) => state.ugcPoiFeatures);
+export const ugcPoiFeatures = createSelector(ugc, (state: UgcState) => state.ugcPoiFeatures);
 export const ugcTracksFeatures = createSelector(ugc, (state: UgcState) => state.ugcTrackFeatures);
 export const countUgcTracks = createSelector(
   ugc,

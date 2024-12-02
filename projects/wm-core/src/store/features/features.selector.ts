@@ -5,7 +5,7 @@ import {
   countUgcAll,
   countUgcPois,
   countUgcTracks,
-  ugcPoisFeatures,
+  ugcPoiFeatures,
   ugcTracks,
 } from './ugc/ugc.selector';
 
@@ -29,6 +29,6 @@ export const tracks = createSelector(queryEc, ugcTracks, ugcOpened, (ec, ugc, ug
   ugcOpened ? ugc : ec,
 );
 
-export const pois = createSelector(ecPois, ugcPoisFeatures, ugcOpened, (ec, ugc, ugcOpened) => {
+export const pois = createSelector(ecPois, ugcPoiFeatures, ugcOpened, (ec, ugc, ugcOpened) => {
   return ugcOpened ? ugc : ec;
 });
