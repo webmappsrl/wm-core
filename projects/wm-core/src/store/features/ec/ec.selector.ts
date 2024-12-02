@@ -1,46 +1,40 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {SearchResponse} from 'elasticsearch';
 import {confFILTERSTRACKS, confPOISFilter, confPoisIcons} from '../../conf/conf.selector';
-import {buildStats, filterFeatureCollection, filterFeatureCollectionByInputTyped} from './utils';
+import {buildStats, filterFeatures, filterFeaturesByInputTyped} from './utils';
 import {IELASTIC, IHIT} from '../../../types/elastic';
 import {Ec} from './ec.reducer';
 import {ugcOpened, inputTyped} from '@wm-core/store/user-activity/user-activity.selector';
 
-export const elasticSearchFeature = createFeatureSelector<IELASTIC>('ec');
+export const ec = createFeatureSelector<IELASTIC>('ec');
 
-export const queryEc = createSelector(elasticSearchFeature as any, (state: Ec) => state.hits ?? []);
-export const countEcTracks = createSelector(
-  elasticSearchFeature as any,
-  (state: Ec) => state.hits.length ?? undefined,
-);
+export const queryEc = createSelector(ec, (state: Ec) => state.hits ?? []);
+export const countEcTracks = createSelector(ec, (state: Ec) => state.hits.length ?? undefined);
 // @ts-ignore
-export const statsApi = createSelector(
-  elasticSearchFeature as any,
-  (state: SearchResponse<IHIT>) => {
-    if (state != null && state.aggregations) {
-      let res = [];
-      const countKeys = Object.keys(state.aggregations).filter(k => k.indexOf('_count') < 0);
-      countKeys.forEach(countKey => {
-        res = [
-          // @ts-ignore
-          ...res,
-          // @ts-ignore
-          ...state.aggregations[countKey].count.buckets,
-          // @ts-ignore
-          ...[
-            {
-              key: countKey,
-              doc_count: state.aggregations.themes.doc_count,
-            },
-          ],
-        ];
-      });
-      return res;
-    }
-  },
-);
+export const statsApi = createSelector(ec, (state: SearchResponse<IHIT>) => {
+  if (state != null && state.aggregations) {
+    let res = [];
+    const countKeys = Object.keys(state.aggregations).filter(k => k.indexOf('_count') < 0);
+    countKeys.forEach(countKey => {
+      res = [
+        // @ts-ignore
+        ...res,
+        // @ts-ignore
+        ...state.aggregations[countKey].count.buckets,
+        // @ts-ignore
+        ...[
+          {
+            key: countKey,
+            doc_count: state.aggregations.themes.doc_count,
+          },
+        ],
+      ];
+    });
+    return res;
+  }
+});
 
-export const apiElasticState = createSelector(elasticSearchFeature, state => {
+export const apiElasticState = createSelector(ec, state => {
   return {
     layer: state.layer,
     filterTracks: state.filterTracks,
@@ -54,13 +48,13 @@ export const apiFilterTracks = createSelector(apiElasticState, state => {
 export const apiTrackFilterIdentifier = createSelector(apiFilterTracks, filterTracks => {
   return filterTracks.map((f: any) => f.identifier);
 });
-export const apiElasticStateLayer = createSelector(apiElasticState, state => {
+export const ecLayer = createSelector(apiElasticState, state => {
   return state.layer;
 });
-export const ecElasticStateLoading = createSelector(elasticSearchFeature, state => {
+export const ecElasticStateLoading = createSelector(ec, state => {
   return state.loading;
 });
-export const apiGoToHome = createSelector(elasticSearchFeature, state => {
+export const apiGoToHome = createSelector(ec, state => {
   return state.goToHome;
 });
 export const confFILTERSTRACKSOPTIONS = createSelector(
@@ -68,9 +62,9 @@ export const confFILTERSTRACKSOPTIONS = createSelector(
   filterTrack => filterTrack.options ?? [],
 );
 
-export const showPoisResult = createSelector(elasticSearchFeature, state => state.where != null);
+export const showPoisResult = createSelector(ec, state => state.where != null);
 export const showResult = createSelector(
-  elasticSearchFeature,
+  ec,
   ugcOpened,
   inputTyped,
   (state, ugcOpened, inputTyped) => {
@@ -83,83 +77,67 @@ export const showResult = createSelector(
     );
   },
 );
-export const lastFilterType = createSelector(elasticSearchFeature, state => {
+export const lastFilterType = createSelector(ec, state => {
   return state.lastFilterType;
 });
 export const poiFilterIdentifiers = createSelector(
-  elasticSearchFeature,
+  ec,
   state => state.poisSelectedFilterIdentifiers ?? [],
 );
-export const poiFilters = createSelector(
-  elasticSearchFeature,
-  confPOISFilter,
-  (state, poisFilters) => {
-    let filters: any = [];
+export const poiFilters = createSelector(ec, confPOISFilter, (state, poisFilters) => {
+  let filters: any = [];
 
-    if (state.poisSelectedFilterIdentifiers != null && poisFilters.poi_type != null) {
-      // @ts-ignore
-      filters = [
-        // @ts-ignore
-        ...filters,
-        // @ts-ignore
-        ...poisFilters.poi_type.filter(
-          // @ts-ignore
-          poiFilter => state.poisSelectedFilterIdentifiers.indexOf(poiFilter.identifier) >= 0,
-        ),
-      ];
-    }
+  if (state.poisSelectedFilterIdentifiers != null && poisFilters.poi_type != null) {
     // @ts-ignore
-    return filters;
-  },
-);
+    filters = [
+      // @ts-ignore
+      ...filters,
+      // @ts-ignore
+      ...poisFilters.poi_type.filter(
+        // @ts-ignore
+        poiFilter => state.poisSelectedFilterIdentifiers.indexOf(poiFilter.identifier) >= 0,
+      ),
+    ];
+  }
+  // @ts-ignore
+  return filters;
+});
 export const countSelectedFilters = createSelector(
   poiFilters,
   apiFilterTracks,
   (pFilters, tFilters) => pFilters.length + tFilters.length ?? 0,
 );
 
-export const filterTaxonomies = createSelector(
-  elasticSearchFeature,
-  state => state.filterTaxonomies,
-);
+export const filterTaxonomies = createSelector(ec, state => state.filterTaxonomies);
 
-export const poisInitFeatureCollection = createSelector(
-  elasticSearchFeature,
-  state => state.poisInitFeatureCollection,
-);
-export const poisInitCount = createSelector(
-  poisInitFeatureCollection,
-  featureCollection => featureCollection?.features?.length,
-);
+export const allEcPois = createSelector(ec, state => state.ecPois);
+export const allEcpoiFeatures = createSelector(ec, state => state.ecPoiFeatures);
+export const poisInitCount = createSelector(allEcpoiFeatures, allEcPois => allEcPois?.length ?? 0);
 
-export const poisWhereFeatureCollection = createSelector(
-  poisInitFeatureCollection,
+export const poisWhereFeatures = createSelector(
+  allEcpoiFeatures,
   filterTaxonomies,
-  (featureCollection, filter) => filterFeatureCollection(featureCollection, filter),
+  (allEcPois, filter) => filterFeatures(allEcPois, filter),
 );
-export const poisFilteredFeatureCollection = createSelector(
-  poisWhereFeatureCollection,
+export const poisFilteredFeatures = createSelector(
+  poisWhereFeatures,
   poiFilterIdentifiers,
-  (featureCollection, filter) => filterFeatureCollection(featureCollection, filter),
+  (poisWhereFeatures, filter) => filterFeatures(poisWhereFeatures, filter),
 );
-export const poisFilteredFeatureCollectionByInputType = createSelector(
-  poisFilteredFeatureCollection,
+export const poisFilteredFeaturesByInputType = createSelector(
+  poisFilteredFeatures,
   inputTyped,
-  (featureCollection, inputTyped) =>
-    filterFeatureCollectionByInputTyped(featureCollection, inputTyped),
-);
-export const featureCollection = createSelector(
-  poisFilteredFeatureCollectionByInputType,
-  poisFilteredFeatureCollectionByInputType => poisFilteredFeatureCollectionByInputType,
+  (poisFilteredFeatures, inputTyped) =>
+    filterFeaturesByInputTyped(poisFilteredFeatures, inputTyped),
 );
 export const ecPois = createSelector(
-  poisInitFeatureCollection,
+  poisFilteredFeaturesByInputType,
   confPoisIcons,
-  (featureCollection, icons) => {
-    let s = featureCollection;
-    if (s != null && s.features != null && icons != null) {
+  (allEcPois, icons) => {
+    let allEcPoisfeatures = allEcPois;
+    if (allEcPoisfeatures != null && icons != null) {
       const iconKeys = Object.keys(icons);
-      const features = s.features.map((f: any) => {
+      const features = allEcPoisfeatures.map((f: any) => {
         if (f != null && f.properties != null && f.properties.taxonomyIdentifiers != null) {
           const filteredArray = f.properties.taxonomyIdentifiers.filter((value: any) =>
             iconKeys.includes(value),
@@ -173,23 +151,18 @@ export const ecPois = createSelector(
         }
         return f;
       });
-      return {...s, ...{features: features}};
+      return features;
     }
-    return s;
+    return allEcPoisfeatures;
   },
 );
-export const countEcPois = createSelector(
-  featureCollection,
-  featureCollection => featureCollection?.features?.length,
-);
+export const countEcPois = createSelector(ecPois, ecPois => ecPois?.length);
 export const countEcAll = createSelector(countEcTracks, countEcPois, (cTracks, cPois) => {
   const c1 = typeof cTracks === 'number' ? cTracks : 0;
   const c2 = typeof cPois === 'number' ? cPois : 0;
   return c1 + c2;
 });
-export const poisInitStats = createSelector(poisInitFeatureCollection, poisInitFeatureCollection =>
-  buildStats(poisInitFeatureCollection.features),
-);
+export const poisInitStats = createSelector(allEcPois, allEcPois => buildStats(allEcPois));
 export const trackStats = createSelector(statsApi, _statsApi => {
   const stats: {[identifier: string]: any} = {};
   if (_statsApi) {
@@ -199,22 +172,19 @@ export const trackStats = createSelector(statsApi, _statsApi => {
   }
   return stats;
 });
-export const poisWhereStats = createSelector(
-  poisWhereFeatureCollection,
-  poisWhereFeatureCollection => buildStats(poisWhereFeatureCollection.features),
+export const poisWhereStats = createSelector(poisWhereFeatures, poisWhereFeatures =>
+  buildStats(poisWhereFeatures),
 );
-export const poisFiltersStats = createSelector(
-  poisFilteredFeatureCollection,
-  poisFilteredFeatureCollection => buildStats(poisFilteredFeatureCollection.features),
+export const poisFiltersStats = createSelector(poisFilteredFeatures, poisFilteredFeatures =>
+  buildStats(poisFilteredFeatures),
 );
-export const poisFilteredFeatureCollectionByInputTypeStats = createSelector(
-  poisFilteredFeatureCollectionByInputType,
-  poisFilteredFeatureCollectionByInputType =>
-    buildStats(poisFilteredFeatureCollectionByInputType?.features),
+export const poisFilteredFeaturesByInputTypeStats = createSelector(
+  poisFilteredFeaturesByInputType,
+  poisFilteredFeaturesByInputType => buildStats(poisFilteredFeaturesByInputType),
 );
 export const poisStats = createSelector(
-  poisFilteredFeatureCollectionByInputTypeStats,
-  poisFilteredFeatureCollectionByInputTypeStats => poisFilteredFeatureCollectionByInputTypeStats,
+  poisFilteredFeaturesByInputTypeStats,
+  poisFilteredFeaturesByInputTypeStats => poisFilteredFeaturesByInputTypeStats,
 );
 export const hasActiveFilters = createSelector(
   apiFilterTracks,

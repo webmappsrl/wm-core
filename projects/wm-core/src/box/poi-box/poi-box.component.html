@@ -1,21 +1,23 @@
-<ion-card class="wm-box" (click)="clickEVT.emit()">
-  <div *ngIf="data.feature_image as img">
-    <wm-img [src]="img.thumbnail" size="225x100"></wm-img>
-  </div>
-  <div class="wm-box-name">{{data.name|wmtrans}}</div>
-</ion-card>
-
-<ng-template #taxonomies>
-  <div class="wm-box-taxonomies" *ngIf="data.taxonomyActivities">
-    <div class="wm-box-taxonomy" *ngFor="let item of data.taxonomyActivities">
-      <i [class]="item|getIcn"></i>
-      <div>{{item|lowercase|wmtrans}}</div>
+<ng-container *ngIf="data.properties as properties">
+  <ion-card class="wm-box" (click)="clickEVT.emit()">
+    <div *ngIf="properties.feature_image as img">
+      <wm-img [src]="img.thumbnail" size="225x100"></wm-img>
     </div>
-  </div>
-</ng-template>
+    <div class="wm-box-name">{{properties.name|wmtrans}}</div>
+  </ion-card>
 
-<ng-template #taxonomiesDiv>
-  <div class="wm-box-header-no-photo">
-    <ng-container *ngTemplateOutlet="taxonomies"></ng-container>
-  </div>
-</ng-template>
+  <ng-template #taxonomies>
+    <div class="wm-box-taxonomies" *ngIf="properties.taxonomyActivities as taxonomyActivities">
+      <div class="wm-box-taxonomy" *ngFor="let item taxonomyActivities">
+        <i [class]="item|getIcn"></i>
+        <div>{{item|lowercase|wmtrans}}</div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #taxonomiesDiv>
+    <div class="wm-box-header-no-photo">
+      <ng-container *ngTemplateOutlet="taxonomies"></ng-container>
+    </div>
+  </ng-template>
+</ng-container>

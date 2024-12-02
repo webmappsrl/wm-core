@@ -1,7 +1,9 @@
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 
 import {BaseBoxComponent} from '../box';
-import { IHIT } from '../../types/elastic';
+import {IHIT} from '../../types/elastic';
+import {WmFeature} from '@wm-types/feature';
+import {Point} from 'geojson';
 
 @Component({
   selector: 'wm-poi-box',
@@ -10,4 +12,4 @@ import { IHIT } from '../../types/elastic';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class PoiBoxComponent extends BaseBoxComponent<IHIT> {}
+export class PoiBoxComponent extends BaseBoxComponent<WmFeature<Point>> {}

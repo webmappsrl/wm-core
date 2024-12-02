@@ -19,7 +19,7 @@ import {
 } from '@wm-core/store/features/ec/ec.actions';
 import {Filter} from '@wm-core/types/config';
 import {userActivity} from '@wm-core/store/user-activity/user-activity.selector';
-import {elasticSearchFeature} from './ec.selector';
+import {ec} from './ec.selector';
 
 @Injectable({
   providedIn: 'root',
@@ -40,7 +40,7 @@ export class EcEffects {
     this._actions$.pipe(
       ofType(queryEc),
       withLatestFrom(
-        this._store.select(elasticSearchFeature), // Selettore per ec
+        this._store.select(ec), // Selettore per ec
         this._store.select(userActivity), // Selettore per userActivity
       ),
       switchMap(([action, ec, userActivity]) => {

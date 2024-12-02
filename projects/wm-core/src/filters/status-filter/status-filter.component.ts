@@ -14,11 +14,7 @@ import {
   togglePoiFilter,
   toggleTrackFilter,
 } from '@wm-core/store/features/ec/ec.actions';
-import {
-  apiElasticStateLayer,
-  apiFilterTracks,
-  poiFilters,
-} from '@wm-core/store/features/ec/ec.selector';
+import {ecLayer, apiFilterTracks, poiFilters} from '@wm-core/store/features/ec/ec.selector';
 import {Filter} from '@wm-core/types/config';
 import {Observable} from 'rxjs';
 import {Location} from '@angular/common';
@@ -38,7 +34,7 @@ export class StatusFilterComponent {
   @Output() resetFiltersEVT: EventEmitter<void> = new EventEmitter();
 
   countAll$: Observable<number> = this._store.select(countAll);
-  layer$ = this._store.select(apiElasticStateLayer);
+  layer$ = this._store.select(ecLayer);
   poiFilters$: Observable<any> = this._store.select(poiFilters);
   trackFilters$: Observable<any[]> = this._store.select(apiFilterTracks);
 

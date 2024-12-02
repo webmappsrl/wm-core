@@ -16,18 +16,20 @@ export interface UgcState {
   syncable: boolean;
   ugcPoiFeatures?: WmFeature<Point>[];
   ugcTrackFeatures?: WmFeature<LineString>[];
-  ugcTracks?: IHIT[];
-  ugcPois?: IHIT[];
+  ugcTracks: IHIT[];
+  ugcPois: IHIT[];
 }
 export interface ApiRootState {
   [searchKey]: UgcState;
 }
 
 const initialState: UgcState = {
-  ugcPoiFeatures: null,
-  ugcTrackFeatures: null,
+  ugcPoiFeatures: [],
+  ugcTrackFeatures: [],
   syncing: false,
   syncable: false,
+  ugcTracks: [],
+  ugcPois: [],
 };
 
 export const UgcReducer = createReducer(

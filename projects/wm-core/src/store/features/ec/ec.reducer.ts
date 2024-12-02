@@ -1,4 +1,5 @@
-import {FeatureCollection, Point} from 'geojson';
+import {WmFeature} from '@wm-types/feature';
+import {Point} from 'geojson';
 import {createReducer, on} from '@ngrx/store';
 import {
   applyWhere,
@@ -20,7 +21,7 @@ export const searchKey = 'search';
 export interface Ec {
   filterTracks: Filter[];
   layer?: any;
-  poisInitFeatureCollection?: FeatureCollection;
+  ecPoiFeatures?: WmFeature<Point>[];
   poisSelectedFilterIdentifiers?: string[];
   filterTaxonomies?: string[];
   goToHome: boolean;
@@ -35,7 +36,7 @@ export interface ApiRootState {
 const initialConfState: Ec = {
   filterTracks: [],
   layer: null,
-  poisInitFeatureCollection: null,
+  ecPoiFeatures: null,
   poisSelectedFilterIdentifiers: null,
   filterTaxonomies: [],
   goToHome: false,
@@ -118,9 +119,10 @@ export const ecReducer = createReducer(
     return newState;
   }),
   on(loadEcPoisSuccess, (state, {featureCollection}) => {
+    const ecPoiFeatures = featureCollection.features as WmFeature<Point>[];
     const newState: Ec = {
       ...state,
-      poisInitFeatureCollection: featureCollection,
+      ecPoiFeatures,
     };
     return newState;
   }),

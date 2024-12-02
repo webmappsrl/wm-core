@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import {Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
-import {apiElasticStateLayer} from '../../store/features/ec/ec.selector';
+import {ecLayer} from '../../store/features/ec/ec.selector';
 
 @Component({
   selector: 'wm-home-layer',
@@ -16,7 +16,7 @@ import {apiElasticStateLayer} from '../../store/features/ec/ec.selector';
   encapsulation: ViewEncapsulation.None,
 })
 export class WmHomeLayerComponent {
-  layer$ = this._store.select(apiElasticStateLayer);
+  layer$ = this._store.select(ecLayer);
 
   constructor(
     private _store: Store,

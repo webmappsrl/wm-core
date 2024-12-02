@@ -1,24 +1,21 @@
 import {WmFeature} from '@wm-types/feature';
-import {Feature, FeatureCollection, Geometry, LineString, Point} from 'geojson';
+import {Feature, Geometry, LineString, Point} from 'geojson';
 
-export const filterFeatureCollection = (
-  featureCollection: FeatureCollection,
+export const filterFeatures = (
+  features: WmFeature<Point | LineString>[],
   filters: string[],
-): FeatureCollection => {
-  if (filters == null || filters.length === 0 || featureCollection?.features == null) {
-    return featureCollection;
+): WmFeature<Point | LineString>[] => {
+  if (filters == null || filters.length === 0 || features == null) {
+    return features;
   }
   try {
-    const features: any[] = featureCollection.features.filter(feature => {
+    const filteredFeatures = features.filter(feature => {
       const taxonomyIdentifiers = feature?.properties?.taxonomyIdentifiers || [];
       return isArrayContained(filters, taxonomyIdentifiers);
     });
-    return {
-      type: 'FeatureCollection',
-      features,
-    } as FeatureCollection;
+    return filteredFeatures;
   } catch (e) {
-    return featureCollection;
+    return features;
   }
 };
 export const isArrayContained = (needle: any[], haystack: any[]): boolean => {
@@ -46,19 +43,17 @@ export const buildStats = (
   });
   return stats;
 };
-export const filterFeatureCollectionByInputTyped = (
-  featureCollection: FeatureCollection,
+export const filterFeaturesByInputTyped = (
+  features: WmFeature<Point | LineString>[],
   inputTyped: string,
-): FeatureCollection => {
-  if (inputTyped == null || inputTyped == '' || featureCollection == null) {
-    return featureCollection;
+): WmFeature<Point | LineString>[] => {
+  if (inputTyped == null || inputTyped == '' || features == null) {
+    return features;
   }
-  return {
-    type: 'FeatureCollection',
-    features: featureCollection.features.filter(feature => {
-      const p = feature?.properties;
-      const searchable = `${JSON.stringify(p?.name ?? '')}${p?.searchable ?? ''}`;
-      return searchable.toLowerCase().indexOf(inputTyped.toLocaleLowerCase()) >= 0;
-    }),
-  } as FeatureCollection;
+  const filteredFeaturesByInputTyped = features.filter(feature => {
+    const p = feature?.properties;
+    const searchable = `${JSON.stringify(p?.name ?? '')}${p?.searchable ?? ''}`;
+    return searchable.toLowerCase().indexOf(inputTyped.toLocaleLowerCase()) >= 0;
+  });
+  return filteredFeaturesByInputTyped;
 };

@@ -8,11 +8,10 @@ import {
 } from '@angular/core';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, Observable, Subscription, combineLatest} from 'rxjs';
-import {filter, map, startWith} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {
   ecElasticStateLoading,
-  featureCollection,
-  apiElasticStateLayer,
+  ecLayer,
   poisInitCount,
   lastFilterType,
 } from '@wm-core/store/features/ec/ec.selector';
@@ -25,6 +24,8 @@ import {
   pois,
   tracks,
 } from '@wm-core/store/features/features.selector';
+import {WmFeature} from '@wm-types/feature';
+import {Point} from 'geojson';
 
 @Component({
   selector: 'wm-home-result',
@@ -36,14 +37,14 @@ import {
 export class WmHomeResultComponent implements OnDestroy {
   private _resultTypeSub$: Subscription = Subscription.EMPTY;
 
-  @Output() poiEVT: EventEmitter<any> = new EventEmitter();
+  @Output() poiEVT: EventEmitter<WmFeature<Point>> = new EventEmitter();
   @Output() trackEVT: EventEmitter<number | string> = new EventEmitter();
 
   countAll$ = this._store.select(countAll);
   countInitPois$ = this._store.select(poisInitCount);
   countPois$: Observable<number> = this._store.select(countPois);
   countTracks$: Observable<number> = this._store.select(countTracks);
-  currentLayer$ = this._store.select(apiElasticStateLayer);
+  currentLayer$ = this._store.select(ecLayer);
   lastFilterType$ = this._store.select(lastFilterType);
   pois$: Observable<IHIT[]> = this._store.select(pois);
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
