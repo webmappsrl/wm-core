@@ -10,7 +10,6 @@ import {Store} from '@ngrx/store';
 import {
   goToHome,
   resetPoiFilters,
-  resetTrackFilters,
   setLayer,
   togglePoiFilter,
   toggleTrackFilter,
@@ -23,7 +22,7 @@ import {
 import {Filter} from '@wm-core/types/config';
 import {Observable} from 'rxjs';
 import {Location} from '@angular/common';
-import {closeUgc} from '@wm-core/store/user-activity/user-activity.action';
+import {closeUgc, resetTrackFilters} from '@wm-core/store/user-activity/user-activity.action';
 import {countAll} from '@wm-core/store/features/features.selector';
 @Component({
   selector: 'wm-status-filter',

@@ -5,7 +5,6 @@ import {
   loadEcPoisSuccess,
   queryEcFail,
   queryEcSuccess,
-  resetTrackFilters,
   resetPoiFilters,
   setLayer,
   togglePoiFilter,
@@ -47,13 +46,6 @@ const initialConfState: Ec = {
 export const ecReducer = createReducer(
   initialConfState,
 
-  on(resetTrackFilters, (state, {}) => {
-    const newState: Ec = {
-      ...state,
-      filterTracks: [],
-    };
-    return newState;
-  }),
   on(setLastFilterType, (state, lastFilterType) => {
     return {...state, ...{lastFilterType: lastFilterType.filter}};
   }),

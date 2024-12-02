@@ -14,7 +14,6 @@ import {
   queryEc,
   queryEcFail,
   queryEcSuccess,
-  removeTrackFilters,
   setLayer,
   toggleTrackFilterByIdentifier,
 } from '@wm-core/store/features/ec/ec.actions';
@@ -64,16 +63,6 @@ export class EcEffects {
           map((response: IRESPONSE) => queryEcSuccess({response})),
           catchError(e => of(queryEcFail())),
         );
-      }),
-    ),
-  );
-  removeTrackFiltersApi$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(removeTrackFilters),
-      switchMap(_ => {
-        return of({
-          type: '[ec] Query',
-        });
       }),
     ),
   );

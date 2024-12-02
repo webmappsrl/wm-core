@@ -1,11 +1,12 @@
 import {createReducer, on} from '@ngrx/store';
-import {closeUgc, inputTyped, openUgc} from './user-activity.action';
+import {closeUgc, inputTyped, openUgc, resetTrackFilters} from './user-activity.action';
 
 export const key = 'userActivity';
 export interface UserActivityState {
   ugcOpened: boolean;
   inputTyped?: string;
   loading: boolean;
+  filterTracks: [];
 }
 
 export interface UserAcitivityRootState {
@@ -16,6 +17,7 @@ const initialState: UserActivityState = {
   ugcOpened: false,
   loading: true,
   inputTyped: null,
+  filterTracks: [],
 };
 
 export const userActivityReducer = createReducer(
@@ -27,6 +29,13 @@ export const userActivityReducer = createReducer(
       ...state,
       inputTyped,
       loading: true,
+    };
+    return newState;
+  }),
+  on(resetTrackFilters, (state, {}) => {
+    const newState: UserActivityState = {
+      ...state,
+      filterTracks: [],
     };
     return newState;
   }),

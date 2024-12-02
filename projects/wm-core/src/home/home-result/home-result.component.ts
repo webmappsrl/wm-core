@@ -44,11 +44,6 @@ export class WmHomeResultComponent implements OnDestroy {
   countPois$: Observable<number> = this._store.select(countPois);
   countTracks$: Observable<number> = this._store.select(countTracks);
   currentLayer$ = this._store.select(apiElasticStateLayer);
-  ecPois$: Observable<IHIT[]> = this._store.select(featureCollection).pipe(
-    filter(p => p != null),
-    map(p => ((p as any).features || []).map(p => (p as any).properties || [])),
-    startWith([]),
-  );
   lastFilterType$ = this._store.select(lastFilterType);
   pois$: Observable<IHIT[]> = this._store.select(pois);
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');

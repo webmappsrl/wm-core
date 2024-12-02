@@ -28,7 +28,9 @@ export const pois = createSelector(
   ugcPois,
   ugcOpened,
   (ec, ugcFeatureCollection, ugcOpened) => {
-    const ugc = ((ugcFeatureCollection as any).features || []).map(p => p.properties || []);
+    const ugcFeaures = (ugcFeatureCollection as any).features ?? null;
+    const ugc = ugcFeaures ? ugcFeaures.map(p => p.properties) : ugcFeatureCollection;
+
     return ugcOpened ? ugc : ec;
   },
 );

@@ -14,16 +14,7 @@ export const queryEc = createAction(
 );
 export const queryEcSuccess = createAction('[ec] Search Success', props<{response: IRESPONSE}>());
 export const queryEcFail = createAction('[ec] Search Fail');
-export const addTrackFilters = createAction(
-  '[ec] add track filters',
-  props<{trackFilters: {identifier: string}[]}>(),
-);
 
-export const removeTrackFilters = createAction(
-  '[ec] remove track filters',
-  props<{trackFilters: {identifier: string}[]}>(),
-);
-export const resetTrackFilters = createAction('[ec] reset track filters');
 export const setLayer = createAction('[ec] set Layer', props<{layer: any | null}>());
 export const setLastFilterType = createAction(
   '[ec] set last filter type',

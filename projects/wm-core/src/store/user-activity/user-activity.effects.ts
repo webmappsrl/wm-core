@@ -5,46 +5,53 @@ import {
   applyWhere,
   queryEcSuccess,
   queryEcFail,
-  resetTrackFilters,
   setLayer,
   toggleTrackFilter,
   updateTrackFilter,
   queryEc,
 } from '@wm-core/store/features/ec/ec.actions';
-import {closeUgc, setLoading} from '@wm-core/store/user-activity/user-activity.action';
+import {
+  closeUgc,
+  removeTrackFilters,
+  resetTrackFilters,
+  setLoading,
+} from '@wm-core/store/user-activity/user-activity.action';
 import {inputTyped as inputTypedSelector} from '@wm-core/store/user-activity/user-activity.selector';
 import {debounceTime, map, switchMap} from 'rxjs/operators';
 
 @Injectable()
 export class UserActivityEffects {
-  // Effetto per abilitare il loading quando inizia un'azione
+  removeTrackFilters$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(removeTrackFilters),
+      map(() => queryEc({})),
+    ),
+  );
   setLoadingStart$ = createEffect(() =>
-    this.actions$.pipe(
+    this._actions$.pipe(
       ofType(resetTrackFilters, setLayer, toggleTrackFilter, updateTrackFilter, applyWhere),
-      map(() => setLoading({loading: true})), // Attiva il caricamento
+      map(() => setLoading({loading: true})),
     ),
   );
-  // Effetto per disabilitare il loading al completamento con errore
   setLoadingStopFail$ = createEffect(() =>
-    this.actions$.pipe(
+    this._actions$.pipe(
       ofType(queryEcFail),
-      map(() => setLoading({loading: false})), // Disattiva il caricamento
+      map(() => setLoading({loading: false})),
     ),
   );
-  // Effetto per disabilitare il loading al completamento con successo
   setLoadingStopSuccess$ = createEffect(() =>
-    this.actions$.pipe(
+    this._actions$.pipe(
       ofType(queryEcSuccess),
-      map(() => setLoading({loading: false})), // Disattiva il caricamento
+      map(() => setLoading({loading: false})),
     ),
   );
   triggerQueryOnInput$ = createEffect(() =>
     this._store.select(inputTypedSelector).pipe(
-      debounceTime(300), // Evita chiamate troppo frequenti (300ms)
-      map(inputTyped => inputTyped?.trim()), // Rimuove spazi inutili
+      debounceTime(300),
+      map(inputTyped => inputTyped?.trim()),
       switchMap(inputTyped => {
         if (inputTyped == null || inputTyped === '') {
-          return []; // Non fa nulla se l'input è vuoto
+          return [];
         }
         return [
           queryEc({
@@ -57,5 +64,5 @@ export class UserActivityEffects {
     ),
   );
 
-  constructor(private actions$: Actions, private _store: Store) {}
+  constructor(private _actions$: Actions, private _store: Store) {}
 }
