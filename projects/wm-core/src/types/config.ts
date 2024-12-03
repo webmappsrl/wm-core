@@ -79,10 +79,8 @@ export type ITRACKBOX = IBOX & {
   track_id: number;
   image_url: string;
 };
-
 export type IUGCBOX = IBOX & {
   box_type: 'ugc';
-
 }
 
 export interface Filter {
@@ -148,6 +146,7 @@ export interface ICONF {
   THEME?: ITHEME;
   TRANSLATIONS?: {[lang: string]: {[key: string]: string}};
   WEBAPP?: IWEBAPP;
+  loaded: boolean;
 }
 
 export interface ICONTROL {
@@ -329,11 +328,24 @@ export interface IOPTIONS {
   privacyUrl: string;
   resetFiltersAtStartup: boolean;
   showAppDownloadButtons: IAPPDOWNLOADBUTTONS;
+  showAscent: boolean;
+  showDescent: boolean;
   showDifficultyLegend: boolean;
+  showDistance: boolean;
+  showDurationBackward: boolean;
+  showDurationForward: boolean;
   showEditLink: boolean;
+  showEleFrom: boolean;
+  showEleMax: boolean;
+  showEleMin: boolean;
+  showEleTo: boolean;
+  showGeojsonDownload: boolean;
+  showGpxDownload: boolean;
   showHelp: boolean;
+  showKmlDownload: boolean;
   showMapViewfinder: boolean;
   showPoiListOffline: boolean;
+  showShapefileDownload: boolean;
   showTrackRefLabel: boolean;
   show_searchbar?: boolean;
   skipRouteIndexDownload: boolean;
@@ -346,19 +358,6 @@ export interface IOPTIONS {
   useCaiScaleStyle: boolean;
   useFeatureClassicSelectionStyle: boolean;
   voucherUrl?: string;
-  showGpxDownload: boolean;
-  showKmlDownload: boolean;
-  showDurationForward: boolean;
-  showDurationBackward: boolean;
-  showDistance: boolean;
-  showAscent: boolean;
-  showDescent: boolean;
-  showEleMax: boolean;
-  showEleMin: boolean;
-  showEleFrom: boolean;
-  showEleTo: boolean;
-  showGeojsonDownload: boolean;
-  showShapefileDownload: boolean;
 }
 
 export interface IOVERLAYERS {

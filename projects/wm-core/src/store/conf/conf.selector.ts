@@ -7,6 +7,7 @@ import {ICONF, IHOME, ILAYER, ITHEME} from '../../types/config';
 
 const confFeature = createFeatureSelector<ICONF>(confFeatureKey);
 export const MAX_TRACKS = 200;
+export const isConfLoaded = createSelector(confFeature, state => !!state && state.loaded);
 export const confAPP = createSelector(confFeature, state => state.APP);
 export const confGeohubId = createSelector(confAPP, state => state.geohubId);
 export const confWEBAPP = createSelector(confFeature, state => state.WEBAPP);

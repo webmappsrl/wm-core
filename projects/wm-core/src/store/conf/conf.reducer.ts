@@ -1,6 +1,6 @@
 import {createReducer, on} from '@ngrx/store';
-import {ICONF, ICONTROLS, ILAYER} from '@wm-core/types/config';
-import {loadConfSuccess} from './conf.actions';
+import {ICONF, ICONTROLS, ICONTROLSBUTTON, ILAYER} from '@wm-core/types/config';
+import {loadConfSuccess, updateMapWithUgc} from './conf.actions';
 export const confFeatureKey = 'conf';
 export interface IConfRootState {
   [confFeatureKey]: ICONF;
@@ -143,6 +143,7 @@ const initialConfState: ICONF = {
     defaultFeatureColor: '#000000',
     theme: 'webmapp',
   },
+  loaded: false,
 };
 
 export const confReducer = createReducer(
@@ -185,7 +186,40 @@ export const confReducer = createReducer(
         THEME: {...state.THEME, ...conf.THEME},
         OPTIONS: {...state.OPTIONS, ...conf.OPTIONS},
         MAP,
+        loaded: true,
       },
+    };
+  }),
+  on(updateMapWithUgc, (state, {activableUgc}) => {
+    const lastControl = state.MAP.controls.data[state.MAP.controls.data.length - 1];
+    const lastId = (lastControl as ICONTROLSBUTTON).id ?? null;
+    const ugc: ICONTROLSBUTTON = {
+      label: {'it': 'I miei percorsi', 'en': 'my paths'},
+      type: 'button',
+      url: 'ugc',
+      default: true,
+      icon: layersSVG,
+      id: lastId + 1,
+    };
+
+    // Crea una copia immutabile di MAP.controls.data
+    const updatedControlsData = activableUgc
+      ? [...state.MAP.controls.data, ugc] // Aggiungi il pulsante UGC
+      : state.MAP.controls.data.filter(d => (d as ICONTROLSBUTTON).url !== 'ugc'); // Rimuovi il pulsante UGC
+
+    // Crea una copia immutabile di MAP
+    const updatedMAP = {
+      ...state.MAP,
+      controls: {
+        ...state.MAP.controls,
+        data: updatedControlsData, // Aggiorna solo la proprietà `data`
+      },
+    };
+
+    // Restituisci il nuovo stato
+    return {
+      ...state,
+      MAP: updatedMAP,
     };
   }),
 );
