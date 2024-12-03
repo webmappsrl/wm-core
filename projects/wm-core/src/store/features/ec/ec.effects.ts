@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {from, interval, Observable, of} from 'rxjs';
+import {from, interval, of} from 'rxjs';
 import {catchError, map, startWith, switchMap, withLatestFrom} from 'rxjs/operators';
 
 import {ApiService} from './ec.service';
