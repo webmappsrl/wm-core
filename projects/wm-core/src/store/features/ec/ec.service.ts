@@ -63,26 +63,35 @@ export class ApiService {
 
   public getPois(): Observable<FeatureCollection> {
     const poisUrl = `${this.environment.awsApi}/pois/${this._geohubAppId}.geojson`;
-    return from(synchronizedApi.getItem(poisUrl)).pipe(
-      switchMap((cachedData: string | null) => {
+
+    return new Observable<FeatureCollection>(observer => {
+      // Recupera i dati dalla cache
+      synchronizedApi.getItem(poisUrl).then((cachedData: string | null) => {
         if (cachedData != null) {
-          const parsedData = JSON.parse(cachedData as string);
-          return of(parsedData as FeatureCollection);
-        } else {
-          this._loadingSvc.show('Loading pois...');
-          return this._http.get<FeatureCollection>(poisUrl).pipe(
-            tap(pois => {
-              synchronizedApi.setItem(poisUrl, JSON.stringify(pois));
-              this._loadingSvc.close('Loading pois...');
-            }),
-            catchError(_ => {
-              this._loadingSvc.close('Loading pois...');
-              return [];
-            }),
-          );
+          const parsedData = JSON.parse(cachedData);
+          observer.next(parsedData as FeatureCollection); // Emissione dati dalla cache
         }
-      }),
-    );
+
+        // Scarica i dati aggiornati
+        this._loadingSvc.show('Loading pois...');
+        this._http.get<FeatureCollection>(poisUrl).subscribe(
+          pois => {
+            synchronizedApi.setItem(poisUrl, JSON.stringify(pois)); // Aggiorna la cache
+            observer.next(pois); // Emissione dati aggiornati
+            observer.complete();
+            this._loadingSvc.close('Loading pois...');
+          },
+          error => {
+            this._loadingSvc.close('Loading pois...');
+            if (cachedData == null) {
+              observer.error(error); // Solo se non ci sono dati in cache
+            } else {
+              observer.complete();
+            }
+          },
+        );
+      });
+    });
   }
 
   /**

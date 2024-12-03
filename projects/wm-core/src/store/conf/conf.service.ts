@@ -51,22 +51,28 @@ export class ConfService {
   }
 
   public getConf(): Observable<ICONF> {
+    const url = `${this.config.awsApi}/conf/${this._geohubAppId}.json`;
+
     return new Observable<ICONF>(observer => {
-      const url = `${this.config.awsApi}/conf/${this._geohubAppId}.json`;
+      // Ottieni dati dalla cache
       synchronizedApi.getItem(url).then((cachedData: unknown) => {
         if (cachedData) {
           const parsedData = JSON.parse(cachedData as string);
-          observer.next(parsedData);
-          observer.complete();
+          observer.next(parsedData); // Invia i dati dalla cache
         }
+
+        // Scarica i dati aggiornati
         this._http.get<ICONF>(url).subscribe(
           conf => {
-            synchronizedApi.setItem(url, JSON.stringify(conf));
-            observer.next(conf);
+            synchronizedApi.setItem(url, JSON.stringify(conf)); // Aggiorna la cache
+            observer.next(conf); // Invia i dati aggiornati
             observer.complete();
           },
           error => {
-            observer.error(error);
+            if (!cachedData) {
+              observer.error(error); // Errore solo se non ci sono dati cache
+            }
+            observer.complete();
           },
         );
       });
