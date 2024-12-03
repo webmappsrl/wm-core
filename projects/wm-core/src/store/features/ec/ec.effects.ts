@@ -75,9 +75,7 @@ export class EcEffects {
     this._actions$.pipe(
       ofType(setLayer),
       switchMap(_ => {
-        return of({
-          type: '[ec] Query',
-        });
+        return of(queryEc({}));
       }),
     ),
   );
