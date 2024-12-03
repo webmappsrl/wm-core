@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {from, of} from 'rxjs';
-import {catchError, map, switchMap, withLatestFrom} from 'rxjs/operators';
+import {from, interval, Observable, of} from 'rxjs';
+import {catchError, map, startWith, switchMap, withLatestFrom} from 'rxjs/operators';
 
 import {ApiService} from './ec.service';
 import {ApiRootState} from './ec.reducer';
@@ -20,7 +20,7 @@ import {
 import {Filter} from '@wm-core/types/config';
 import {userActivity} from '@wm-core/store/user-activity/user-activity.selector';
 import {ec} from './ec.selector';
-
+const SYNC_INTERVAL = 60000;
 @Injectable({
   providedIn: 'root',
 })
@@ -29,9 +29,14 @@ export class EcEffects {
     this._actions$.pipe(
       ofType(loadEcPois),
       switchMap(() =>
-        this._apiSVC.getPois().pipe(
-          map(featureCollection => loadEcPoisSuccess({featureCollection})),
-          catchError(() => of(loadEcPoisFail())),
+        interval(SYNC_INTERVAL).pipe(
+          startWith(0),
+          switchMap(() =>
+            this._apiSVC.getPois().pipe(
+              map(featureCollection => loadEcPoisSuccess({featureCollection})),
+              catchError(() => of(loadEcPoisFail())),
+            ),
+          ),
         ),
       ),
     ),

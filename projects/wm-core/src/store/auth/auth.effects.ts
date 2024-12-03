@@ -7,6 +7,7 @@ import {from, of} from 'rxjs';
 import {AlertController} from '@ionic/angular';
 import {LangService} from '@wm-core/localization/lang.service';
 import {UgcService} from '@wm-core/store/features/ugc/ugc.service';
+import {clearUgcData} from '@wm-core/utils/localForage';
 
 @Injectable()
 export class AuthEffects {
@@ -75,7 +76,8 @@ export class AuthEffects {
       ofType(AuthActions.loadSignOuts),
       switchMap(action =>
         this._authSvc.logout().pipe(
-          map(_ => {
+          switchMap(async () => {
+            await clearUgcData();
             return AuthActions.loadSignOutsSuccess();
           }),
           catchError(error => {

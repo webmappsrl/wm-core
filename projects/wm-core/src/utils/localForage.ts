@@ -3,6 +3,20 @@ import {GeoJsonProperties, LineString, Point} from 'geojson';
 import * as localforage from 'localforage';
 import {downloadTiles, getTilesByGeometry, removeTiles} from '../../../../../map-core/src/utils';
 
+export async function clearUgcData(): Promise<void> {
+  await Promise.all([
+    synchronizedEctrack.clear(),
+    synchronizedImg.clear(),
+    synchronizedUgcMedia.clear(),
+    synchronizedUgcTrack.clear(),
+    synchronizedUgcPoi.clear(),
+    deviceUgcTrack.clear(),
+    deviceUgcPoi.clear(),
+    deviceUgcMedia.clear(),
+    deviceImg.clear(),
+  ]);
+}
+
 export async function downloadEcTrack(
   trackid: string,
   track: WmFeature<LineString>,
