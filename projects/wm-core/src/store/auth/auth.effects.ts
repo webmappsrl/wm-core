@@ -8,6 +8,8 @@ import {AlertController} from '@ionic/angular';
 import {LangService} from '@wm-core/localization/lang.service';
 import {UgcService} from '@wm-core/store/features/ugc/ugc.service';
 import {clearUgcData} from '@wm-core/utils/localForage';
+import {Store} from '@ngrx/store';
+import {closeUgc} from '../user-activity/user-activity.action';
 
 @Injectable()
 export class AuthEffects {
@@ -77,6 +79,7 @@ export class AuthEffects {
       switchMap(action =>
         this._authSvc.logout().pipe(
           switchMap(async () => {
+            this._store.dispatch(closeUgc());
             await clearUgcData();
             return AuthActions.loadSignOutsSuccess();
           }),
@@ -140,7 +143,7 @@ export class AuthEffects {
     private _authSvc: AuthService,
     private _alertCtrl: AlertController,
     private _langSvc: LangService,
-    private _ugcSvc: UgcService,
+    private _store: Store,
   ) {}
 
   private _createErrorAlert(error: string): Promise<HTMLIonAlertElement> {
