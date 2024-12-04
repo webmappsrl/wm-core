@@ -95,6 +95,7 @@ export interface IAPP {
   id?: string;
   name: string;
   poi_acquisition_form?: any;
+  sku?: string;
   track_acquisition_form?: any;
   welcome?: string;
 }
@@ -322,11 +323,24 @@ export interface IOPTIONS {
   privacyUrl: string;
   resetFiltersAtStartup: boolean;
   showAppDownloadButtons: IAPPDOWNLOADBUTTONS;
+  showAscent: boolean;
+  showDescent: boolean;
   showDifficultyLegend: boolean;
+  showDistance: boolean;
+  showDurationBackward: boolean;
+  showDurationForward: boolean;
   showEditLink: boolean;
+  showEleFrom: boolean;
+  showEleMax: boolean;
+  showEleMin: boolean;
+  showEleTo: boolean;
+  showGeojsonDownload: boolean;
+  showGpxDownload: boolean;
   showHelp: boolean;
+  showKmlDownload: boolean;
   showMapViewfinder: boolean;
   showPoiListOffline: boolean;
+  showShapefileDownload: boolean;
   showTrackRefLabel: boolean;
   show_searchbar?: boolean;
   skipRouteIndexDownload: boolean;
@@ -339,19 +353,6 @@ export interface IOPTIONS {
   useCaiScaleStyle: boolean;
   useFeatureClassicSelectionStyle: boolean;
   voucherUrl?: string;
-  showGpxDownload: boolean;
-  showKmlDownload: boolean;
-  showDurationForward: boolean;
-  showDurationBackward: boolean;
-  showDistance: boolean;
-  showAscent: boolean;
-  showDescent: boolean;
-  showEleMax: boolean;
-  showEleMin: boolean;
-  showEleFrom: boolean;
-  showEleTo: boolean;
-  showGeojsonDownload: boolean;
-  showShapefileDownload: boolean;
 }
 
 export interface IOVERLAYERS {

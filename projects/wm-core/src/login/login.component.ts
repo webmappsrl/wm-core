@@ -1,4 +1,10 @@
-import {ChangeDetectionStrategy, Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {IonInput, ModalController} from '@ionic/angular';
 import {select, Store} from '@ngrx/store';
@@ -7,6 +13,8 @@ import {filter, take} from 'rxjs/operators';
 import {LangService} from 'wm-core/localization/lang.service';
 import {loadSignIns} from 'wm-core/store/auth/auth.actions';
 import {isLogged} from 'wm-core/store/auth/auth.selectors';
+import {IAPP} from 'wm-core/types/config';
+import {confAPP} from 'wm-core/store/conf/conf.selector';
 
 @Component({
   selector: 'wm-login-component',
@@ -24,6 +32,7 @@ export class LoginComponent implements OnInit {
   @ViewChild('email') emailField: IonInput;
   @ViewChild('password') passwordField: IonInput;
 
+  confAPP$: Observable<IAPP> = this._store.select(confAPP);
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
   loginForm: UntypedFormGroup;
   showPassword$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -33,11 +42,13 @@ export class LoginComponent implements OnInit {
     private _formBuilder: UntypedFormBuilder,
     private _modalCtrl: ModalController,
     private _store: Store,
-
   ) {
-    this.loginForm = this._formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]],
+    this.confAPP$.pipe(take(1)).subscribe(conf => {
+      this.loginForm = this._formBuilder.group({
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required]],
+        referrer: [conf.sku, Validators.required],
+      });
     });
   }
 

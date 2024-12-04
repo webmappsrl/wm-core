@@ -16,7 +16,7 @@ import {WmInnerHtmlComponent} from 'wm-core/inner-html/inner-html.component';
 import {LangService} from 'wm-core/localization/lang.service';
 import {loadSignUps} from 'wm-core/store/auth/auth.actions';
 import {isLogged, selectAuthState} from 'wm-core/store/auth/auth.selectors';
-import {confPAGES, confPRIVACY} from 'wm-core/store/conf/conf.selector';
+import {confAPP, confPAGES, confPRIVACY} from 'wm-core/store/conf/conf.selector';
 
 @Component({
   selector: 'wm-register-component',
@@ -31,16 +31,15 @@ export class RegisterComponent {
     return this.registerForm.controls;
   }
 
-  @Input() referrer: string;
-  isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
-
   checkPasswords: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
     let pass = group.get('password').value;
     let confirmPass = group.get('confirmPassword').value;
     return pass === confirmPass ? null : {notSame: true};
   };
+  confAPP$ = this._store.select(confAPP);
   confPages$: Observable<any>;
   confPrivacy$: Observable<any>;
+  isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
   isValid$: Observable<boolean> = of(false);
   loadingString = '';
   registerForm: UntypedFormGroup;
@@ -56,15 +55,18 @@ export class RegisterComponent {
     private _langSvc: LangService,
     private _store: Store<any>,
   ) {
-    this.registerForm = this._formBuilder.group(
-      {
-        name: ['', [Validators.required]],
-        email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required]],
-        confirmPassword: ['', [Validators.required]],
-      },
-      {validators: this.checkPasswords},
-    );
+    this.confAPP$.pipe(take(1)).subscribe(conf => {
+      this.registerForm = this._formBuilder.group(
+        {
+          name: ['', [Validators.required]],
+          email: ['', [Validators.required, Validators.email]],
+          password: ['', [Validators.required]],
+          confirmPassword: ['', [Validators.required]],
+          referrer: [conf.sku, Validators.required],
+        },
+        {validators: this.checkPasswords},
+      );
+    });
     this.isValid$ = this.registerForm.statusChanges.pipe(map(status => status === 'VALID'));
     this.confPrivacy$ = this._store.select(confPRIVACY);
     this.confPages$ = this._store.select(confPAGES);
@@ -105,7 +107,7 @@ export class RegisterComponent {
   register(): void {
     const loader$ = from(
       this._loadingCtrl.create({
-        message: this._langSvc.instant("Registrazione in corso"),
+        message: this._langSvc.instant('Registrazione in corso'),
       }),
     );
     const present$ = loader$.pipe(switchMap(l => from(l.present())));
@@ -123,7 +125,7 @@ export class RegisterComponent {
         name: this.registerForm.get('name').value,
         email: this.registerForm.get('email').value,
         password: this.registerForm.get('password').value,
-        referrer: this.referrer,
+        referrer: this.registerForm.get('referrer').value,
       }),
     );
   }
@@ -134,8 +136,10 @@ export class RegisterComponent {
       event: ev,
       translucent: true,
       componentProps: {
-        title: this._langSvc.instant("Perchè ti chiediamo il Codice Fiscale?"),
-        message: this._langSvc.instant("Se sei Socia/o CAI inserisci il tuo CF al momento della registrazione. Per te il download delle tappe del Sentiero Italia CAI sarà automaticamente gratuito!"),
+        title: this._langSvc.instant('Perchè ti chiediamo il Codice Fiscale?'),
+        message: this._langSvc.instant(
+          'Se sei Socia/o CAI inserisci il tuo CF al momento della registrazione. Per te il download delle tappe del Sentiero Italia CAI sarà automaticamente gratuito!',
+        ),
       },
     });
     return popover.present();

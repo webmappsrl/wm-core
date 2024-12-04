@@ -6,7 +6,7 @@ import {AuthService} from './auth.service';
 import {of} from 'rxjs';
 import {AlertController, NavController} from '@ionic/angular';
 import {LangService} from 'wm-core/localization/lang.service';
-import { SaveService } from 'wm-core/services/save.service';
+import {SaveService} from 'wm-core/services/save.service';
 
 @Injectable()
 export class AuthEffects {
@@ -44,7 +44,7 @@ export class AuthEffects {
     return this._actions$.pipe(
       ofType(AuthActions.loadSignIns),
       switchMap(action =>
-        this._authSvc.login(action.email, action.password).pipe(
+        this._authSvc.login(action.email, action.password, action.referrer).pipe(
           map(user => {
             return AuthActions.loadSignInsSuccess({user});
           }),
@@ -94,7 +94,6 @@ export class AuthEffects {
           AuthActions.loadAuthsFailure,
         ),
         filter(r => r != null && r.error.error.error != 'Unauthorized'),
-
       ),
     {dispatch: false},
   );
