@@ -21,8 +21,8 @@ export class AuthService {
     }) as Observable<IUser>;
   }
 
-  getUser(): Observable<IUser> {
-    return this._http.post(`${this.environment.api}/api/auth/me`, {}) as Observable<IUser>;
+  getUser(referrer?: string): Observable<IUser> {
+    return this._http.post(`${this.environment.api}/api/auth/me`, {referrer}) as Observable<IUser>;
   }
 
   logout(): Observable<any> {

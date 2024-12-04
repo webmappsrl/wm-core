@@ -7,6 +7,8 @@ import {of} from 'rxjs';
 import {AlertController, NavController} from '@ionic/angular';
 import {LangService} from 'wm-core/localization/lang.service';
 import {SaveService} from 'wm-core/services/save.service';
+import {Store} from '@ngrx/store';
+import {confAPP} from '../conf/conf.selector';
 
 @Injectable()
 export class AuthEffects {
@@ -28,8 +30,9 @@ export class AuthEffects {
   loadAuth$ = createEffect(() => {
     return this._actions$.pipe(
       ofType(AuthActions.loadAuths),
-      switchMap(action =>
-        this._authSvc.getUser().pipe(
+      switchMap(_ => this._store.select(confAPP)),
+      switchMap(confAPP =>
+        this._authSvc.getUser(confAPP?.sku ?? undefined).pipe(
           map(user => {
             return AuthActions.loadAuthsSuccess({user});
           }),
@@ -154,5 +157,6 @@ export class AuthEffects {
     private _alertCtrl: AlertController,
     private _langSvc: LangService,
     private _saveSvc: SaveService,
+    private _store: Store,
   ) {}
 }
