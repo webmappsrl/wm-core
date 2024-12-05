@@ -50,6 +50,7 @@ import {UgcEffects} from './store/features/ugc/ugc.effects';
 import {UgcReducer} from './store/features/ugc/ugc.reducer';
 import {userActivityReducer} from './store/user-activity/user-activity.reducer';
 import {UserActivityEffects} from './store/user-activity/user-activity.effects';
+import {WmSearchBarComponent} from './search-bar/search-bar.component';
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -79,6 +80,7 @@ const declarations = [
   ModalHeaderComponent,
   WmExcerptComponent,
   WmFormComponent,
+  WmSearchBarComponent,
 ];
 const modules = [
   WmSharedModule,
