@@ -112,4 +112,5 @@ export const wmIT = {
   'Annulla': 'Annulla',
   'Dalla libreria': 'Dalla libreria',
   'Scatta una foto': 'Scatta una foto',
+  'placeholder': 'Cerca',
 };

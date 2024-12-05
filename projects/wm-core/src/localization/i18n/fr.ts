@@ -106,4 +106,5 @@ export const wmFR = {
   'Annulla': 'Annuler',
   'Dalla libreria': 'De la bibliothèque',
   'Scatta una foto': 'Prendre une photo',
+  'placeholder': 'Chercher',
 };

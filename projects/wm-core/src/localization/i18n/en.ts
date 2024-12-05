@@ -113,4 +113,5 @@ export const wmEN = {
   'Annulla': 'Cancel',
   'Dalla libreria': 'From the library',
   'Scatta una foto': 'Take a picture',
+  'placeholder': 'Search',
 };
