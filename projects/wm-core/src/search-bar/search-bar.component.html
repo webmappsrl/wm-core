@@ -1,13 +1,8 @@
-<div class="wm-search-main">
-  <ion-item class="wm-search-textcontainer">
-    <i slot="start" class="webmapp-icon-search-outline"></i>
+<div>
+  <ion-item class="wm-searchbar-textcontainer">
+    <ion-icon name="search"></ion-icon>
     <form [formGroup]="searchForm">
-      <ion-input
-        formControlName="search"
-        type="text"
-        class="wm-search-textinput"
-        placeholder="{{'placeholder'|wmtrans}}"
-      >
+      <ion-input formControlName="search" type="text" placeholder="{{'placeholder'|wmtrans}}">
       </ion-input>
     </form>
     <i slot="end" (click)="reset()" *ngIf="(isTypingsEVT|async) === true">

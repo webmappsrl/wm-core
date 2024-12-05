@@ -1,9 +1,8 @@
 @import '../theme/mixins.scss';
-.wm-searchbar-main {
+wm-searchbar {
   text-align: center;
   width: 100%;
   padding: 10px;
-  position: absolute;
 
   .wm-searchbar-textcontainer {
     border-radius: 30px;
@@ -16,91 +15,91 @@
     }
   }
   z-index: 400;
-}
 
-.wm-searchbar-categoryslider {
-  padding: 25px 10px;
-  position: absolute;
-  top: 40px;
+  .wm-searchbar-categoryslider {
+    padding: 25px 10px;
+    position: absolute;
+    top: 40px;
 
-  .wm-searchbar-categorybtn {
-    @include box-shadow-light;
-    background: var(--wm-color-light);
-    color: var(--wm-color-dark);
-    padding: 8px 15px;
-    border-radius: 43px;
-    font-size: var(--wm-font-sm);
-    &.wm-searchbar-categorybtn-selected {
-      background: var(--wm-color-secondary);
-      color: var(--wm-color-light);
+    .wm-searchbar-categorybtn {
+      @include box-shadow-light;
+      background: var(--wm-color-light);
+      color: var(--wm-color-dark);
+      padding: 8px 15px;
+      border-radius: 43px;
+      font-size: var(--wm-font-sm);
+      &.wm-searchbar-categorybtn-selected {
+        background: var(--wm-color-secondary);
+        color: var(--wm-color-light);
+      }
+      .wm-searchbar-categorylabel {
+        padding: 0 5px;
+        font-size: var(--wm-font-xsm);
+      }
     }
-    .wm-searchbar-categorylabel {
-      padding: 0 5px;
-      font-size: var(--wm-font-xsm);
-    }
+    z-index: 400;
   }
-  z-index: 400;
-}
 
-.wm-searchbar-results-backpanel {
-  position: absolute;
-  width: 100%;
-  height: 100vh;
-  top: -40px;
-  left: 0;
-
-  background-color: var(--wm-color-light);
-
-  z-index: 300;
-  .wm-searchbar-results-container {
-    position: relative;
+  .wm-searchbar-results-backpanel {
+    position: absolute;
     width: 100%;
     height: 100vh;
-    .wm-searchbar-results {
-      position: absolute;
-      top: 150px;
-      bottom: 57px;
+    top: -40px;
+    left: 0;
+
+    background-color: var(--wm-color-light);
+
+    z-index: 300;
+    .wm-searchbar-results-container {
+      position: relative;
       width: 100%;
-      height: auto;
-      .wm-searchbar-results-section {
-        text-align: left;
-        padding: 15px 0;
-        border-bottom: 1px solid var(--wm-color-darkgrey);
+      height: 100vh;
+      .wm-searchbar-results {
+        position: absolute;
+        top: 150px;
+        bottom: 57px;
+        width: 100%;
+        height: auto;
+        .wm-searchbar-results-section {
+          text-align: left;
+          padding: 15px 0;
+          border-bottom: 1px solid var(--wm-color-darkgrey);
 
-        .wm-searchbar-results-section-nodata {
-          padding: 15px;
-          font-size: var(--wm-font-sm);
-          color: var(--wm-color-darkgrey);
-        }
+          .wm-searchbar-results-section-nodata {
+            padding: 15px;
+            font-size: var(--wm-font-sm);
+            color: var(--wm-color-darkgrey);
+          }
 
-        .wm-searchbar-results-section-name {
-          font-size: var(--wm-font-sm);
-          color: var(--wm-color-darkgrey);
-          text-transform: uppercase;
-          padding: 15px;
-          display: block;
-        }
+          .wm-searchbar-results-section-name {
+            font-size: var(--wm-font-sm);
+            color: var(--wm-color-darkgrey);
+            text-transform: uppercase;
+            padding: 15px;
+            display: block;
+          }
 
-        .wm-searchbar-results-section-resultname {
-          padding: 5px;
-          color: var(--wm-color-dark);
-          font-size: var(--wm-font-sm);
-          display: block;
-        }
+          .wm-searchbar-results-section-resultname {
+            padding: 5px;
+            color: var(--wm-color-dark);
+            font-size: var(--wm-font-sm);
+            display: block;
+          }
 
-        .wm-searchbar-results-section-resultsubtitle {
-          padding: 0px 5px;
-          color: var(--wm-color-darkgrey);
-          font-size: var(--wm-font-xsm);
-          display: block;
-        }
+          .wm-searchbar-results-section-resultsubtitle {
+            padding: 0px 5px;
+            color: var(--wm-color-darkgrey);
+            font-size: var(--wm-font-xsm);
+            display: block;
+          }
 
-        .wm-searchbar-results-section-resultimage {
-          width: 30px;
-          height: 30px;
-          &::part(image) {
-            object-fit: cover;
-            border-radius: 15px;
+          .wm-searchbar-results-section-resultimage {
+            width: 30px;
+            height: 30px;
+            &::part(image) {
+              object-fit: cover;
+              border-radius: 15px;
+            }
           }
         }
       }

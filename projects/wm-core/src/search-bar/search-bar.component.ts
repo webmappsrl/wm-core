@@ -1,5 +1,13 @@
 import {Subscription} from 'rxjs/internal/Subscription';
-import {Component, EventEmitter, Input, Output, OnDestroy} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnDestroy,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import {FormBuilder, FormGroup, FormControl} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import {debounceTime} from 'rxjs/operators';
@@ -13,6 +21,8 @@ interface SearchForm {
   selector: 'wm-searchbar',
   templateUrl: './search-bar.component.html',
   styleUrls: ['./search-bar.component.scss'],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WmSearchBarComponent implements OnDestroy {
   private _searchSub$: Subscription = Subscription.EMPTY;
