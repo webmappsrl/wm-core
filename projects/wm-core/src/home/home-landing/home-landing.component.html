@@ -1,0 +1,42 @@
+<wm-ugc-box *ngIf="(isLogged$|async)" (clickEVT)="ugcBoxEvt.emit()"> </wm-ugc-box>
+<ng-container *ngFor="let box of confHOME$|async;let idx = index">
+  <webmapp-title *ngIf="box.box_type === 'title'">
+    {{box.title|wmtrans}}
+  </webmapp-title>
+  <wm-horizontal-scroll-box
+    *ngIf="box.box_type === 'horizontal_scroll'"
+    [data]="box"
+    (clickEVT)="sendHorizontalScrollBoxEVT($event,box)"
+  >
+  </wm-horizontal-scroll-box>
+  <wm-poi-type-filter-box
+    *ngIf="box.box_type === 'poi_type_filter'"
+    [data]="box"
+    (clickEVT)="sendPoiTypeFilterBoxEVT(box, idx)"
+  >
+  </wm-poi-type-filter-box>
+  <wm-slug-box
+    *ngIf="box.box_type === 'slug'"
+    [data]="box"
+    (clickEVT)="slugBoxEVT.emit([box.slug,idx])"
+  >
+  </wm-slug-box>
+  <wm-box
+    *ngIf="box.box_type === 'external_url'"
+    [data]="box"
+    (clickEVT)="externalUrlBoxEVT.emit(box.url)"
+  >
+  </wm-box>
+  <wm-tracks-box
+    *ngIf="box.box_type === 'base'"
+    [data]="box"
+    (trackIdEVT)="tracksBoxEVT.emit($event)"
+  >
+  </wm-tracks-box>
+  <wm-layer-box
+    *ngIf="box.box_type === 'layer'"
+    [data]="box"
+    (clickEVT)="layerBoxEVT.emit([box.layer,idx])"
+  >
+  </wm-layer-box>
+</ng-container>

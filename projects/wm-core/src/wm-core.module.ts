@@ -12,8 +12,9 @@ import {WmElevationComponent} from './elevation/elevation.component';
 import {WmEmailComponent} from './email/email.component';
 import {WmFiltersModule} from './filters/filters.module';
 import {WmHomeResultComponent} from './home/home-result/home-result.component';
-import {WmHomeComponent} from './home/home.component';
+import {WmHomeLandingComponent} from './home/home-landing/home-landing.component';
 import {WmHomeLayerComponent} from './home/home-layer/home-layer.component';
+import {WmHomeComponent} from './home/home.component';
 import {LangService} from './localization/lang.service';
 import {WmLocalizationModule} from './localization/localization.module';
 import {WmPhoneComponent} from './phone/phone.component';
@@ -68,6 +69,7 @@ const declarations = [
   WmPhoneComponent,
   WmElevationComponent,
   WmHomeComponent,
+  WmHomeLandingComponent,
   WmHomeResultComponent,
   WmHomeLayerComponent,
   WmHomeUgcComponent,

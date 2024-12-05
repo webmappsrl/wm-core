@@ -1,42 +1,45 @@
-<wm-ugc-box *ngIf="(isLogged$|async)" (clickEVT)="ugcBoxEvt.emit()"> </wm-ugc-box>
-<ng-container *ngFor="let box of confHOME$|async;let idx = index">
-  <webmapp-title *ngIf="box.box_type === 'title'">
-    {{box.title|wmtrans}}
-  </webmapp-title>
-  <wm-horizontal-scroll-box
-    *ngIf="box.box_type === 'horizontal_scroll'"
-    [data]="box"
-    (clickEVT)="sendHorizontalScrollBoxEVT($event,box)"
+<div class="root">
+  <ng-content></ng-content>
+
+  <ng-container *ngIf="(confAPP$|async) as confAPP">
+    <ion-item lines="none" *ngIf="confAPP.welcome as welcome">
+      <ion-label [innerHTML]="sanitizer.bypassSecurityTrustHtml(welcome | wmtrans)"></ion-label>
+    </ion-item>
+  </ng-container>
+
+  <wm-searchbar
+    *ngIf="(confOPTIONS$|async).show_searchbar && !(ugcOpened$|async)"
+    #searchCmp
+    [initSearch]="''"
+    (words)="setSearch($event)"
   >
-  </wm-horizontal-scroll-box>
-  <wm-poi-type-filter-box
-    *ngIf="box.box_type === 'poi_type_filter'"
-    [data]="box"
-    (clickEVT)="sendPoiTypeFilterBoxEVT(box, idx)"
-  >
-  </wm-poi-type-filter-box>
-  <wm-slug-box
-    *ngIf="box.box_type === 'slug'"
-    [data]="box"
-    (clickEVT)="slugBoxEVT.emit([box.slug,idx])"
-  >
-  </wm-slug-box>
-  <wm-box
-    *ngIf="box.box_type === 'external_url'"
-    [data]="box"
-    (clickEVT)="externalUrlBoxEVT.emit(box.url)"
-  >
-  </wm-box>
-  <wm-tracks-box
-    *ngIf="box.box_type === 'base'"
-    [data]="box"
-    (trackIdEVT)="tracksBoxEVT.emit($event)"
-  >
-  </wm-tracks-box>
-  <wm-layer-box
-    *ngIf="box.box_type === 'layer'"
-    [data]="box"
-    (clickEVT)="layerBoxEVT.emit([box.layer,idx])"
-  >
-  </wm-layer-box>
-</ng-container>
+  </wm-searchbar>
+
+  <ng-container *ngIf="(popup$|async) as popup; else mainContent">
+    <wm-inner-component-html [html]="popup.html" [enableDismiss]="false"></wm-inner-component-html>
+  </ng-container>
+
+  <ng-template #mainContent>
+    <ng-container *ngIf="showResult$|async; else home">
+      <wm-status-filter
+        (resetFiltersEVT)="goToHome()"
+        (removeLayerEVT)="removeLayer($event)"
+      ></wm-status-filter>
+      <wm-home-ugc *ngIf="(ugcOpened$|async);else layerView"></wm-home-ugc>
+      <ng-template #layerView>
+        <wm-home-layer></wm-home-layer>
+      </ng-template>
+      <wm-home-result (trackEVT)="setTrack($event)" (poiEVT)="setPoi($event)"></wm-home-result>
+    </ng-container>
+
+    <ng-template #home>
+      <wm-home-landing
+        (slugBoxEVT)="openSlug($event[0], $event[1])"
+        (externalUrlBoxEVT)="openExternalUrl($event)"
+        (tracksBoxEVT)="setTrack($event)"
+        (layerBoxEVT)="setLayer($event[0], $event[1])"
+        (ugcBoxEvt)="setUgc()"
+      ></wm-home-landing>
+    </ng-template>
+  </ng-template>
+</div>
