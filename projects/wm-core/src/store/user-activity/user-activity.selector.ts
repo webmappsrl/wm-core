@@ -12,3 +12,15 @@ export const inputTyped = createSelector(
   userActivity,
   (state: UserActivityState) => state.inputTyped,
 );
+
+export const UICurrentPoi = createSelector(userActivity, state =>
+  state && state.currentPoi ? state.currentPoi : null,
+);
+export const UICurrentPoiId = createSelector(
+  UICurrentPoi,
+  UICurrentPoi => UICurrentPoi?.properties?.id ?? null,
+);
+
+export const enabledDrawTrack = createSelector(userActivity, state =>
+  state && state.drawTrack ? state.drawTrack : false,
+);

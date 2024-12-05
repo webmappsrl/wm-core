@@ -1,5 +1,17 @@
 import {createReducer, on} from '@ngrx/store';
-import {closeUgc, inputTyped, openUgc, resetTrackFilters} from './user-activity.action';
+import {ILAYER} from '@wm-core/types/config';
+import {WmFeature} from '@wm-types/feature';
+import {Point} from 'geojson';
+import {
+  closeUgc,
+  enabledDrawTrack,
+  inputTyped,
+  openUgc,
+  resetTrackFilters,
+  setCurrentFilters,
+  setCurrentLayer,
+  setCurrentPoi,
+} from './user-activity.action';
 
 export const key = 'userActivity';
 export interface UserActivityState {
@@ -7,6 +19,10 @@ export interface UserActivityState {
   inputTyped?: string;
   loading: boolean;
   filterTracks: [];
+  currentLayer?: ILAYER;
+  currentPoi?: WmFeature<Point>;
+  currentFilters?: any[];
+  drawTrack: boolean;
 }
 
 export interface UserAcitivityRootState {
@@ -18,6 +34,7 @@ const initialState: UserActivityState = {
   loading: true,
   inputTyped: null,
   filterTracks: [],
+  drawTrack: false,
 };
 
 export const userActivityReducer = createReducer(
@@ -38,5 +55,29 @@ export const userActivityReducer = createReducer(
       filterTracks: [],
     };
     return newState;
+  }),
+  on(setCurrentLayer, (state, {currentLayer}) => {
+    return {
+      ...state,
+      ...{currentLayer},
+    };
+  }),
+  on(setCurrentPoi, (state, {currentPoi}) => {
+    return {
+      ...state,
+      ...{currentPoi},
+    };
+  }),
+  on(setCurrentFilters, (state, {currentFilters}) => {
+    return {
+      ...state,
+      ...{currentFilters},
+    };
+  }),
+  on(enabledDrawTrack, (state, {drawTrack}) => {
+    return {
+      ...state,
+      ...{drawTrack},
+    };
   }),
 );
