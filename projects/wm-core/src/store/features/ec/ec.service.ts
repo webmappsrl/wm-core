@@ -15,7 +15,7 @@ import {WmFeature} from '@wm-types/feature';
 @Injectable({
   providedIn: 'root',
 })
-export class ApiService {
+export class EcService {
   private _elasticApi: string = this.environment.elasticApi;
   private _geohubAppId: number = this.environment.geohubId;
   private _queryDic: {[query: string]: any} = {};

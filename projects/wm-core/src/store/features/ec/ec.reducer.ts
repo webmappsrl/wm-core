@@ -13,9 +13,12 @@ import {
   updateTrackFilter,
   goToHome,
   setLastFilterType,
+  loadCurrentEcTrackSuccess,
+  loadCurrentEcTrackFailure,
 } from '@wm-core/store/features/ec/ec.actions';
 import {Filter} from '@wm-core/types/config';
 import {IHIT} from '@wm-core/types/elastic';
+import {LineString} from 'geojson';
 
 export const searchKey = 'search';
 export interface Ec {
@@ -28,6 +31,7 @@ export interface Ec {
   hits?: IHIT[];
   aggregations?: any;
   syncing: boolean;
+  currentEcTrack?: WmFeature<LineString>;
 }
 export interface ApiRootState {
   [searchKey]: Ec;
@@ -123,6 +127,20 @@ export const ecReducer = createReducer(
     const newState: Ec = {
       ...state,
       ecPoiFeatures,
+    };
+    return newState;
+  }),
+  on(loadCurrentEcTrackSuccess, (state, {ecTrack}) => {
+    const newState: Ec = {
+      ...state,
+      currentEcTrack: ecTrack,
+    };
+    return newState;
+  }),
+  on(loadCurrentEcTrackFailure, state => {
+    const newState: Ec = {
+      ...state,
+      currentEcTrack: null,
     };
     return newState;
   }),

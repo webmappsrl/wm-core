@@ -3,11 +3,14 @@ import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {from, interval, of} from 'rxjs';
 import {catchError, map, startWith, switchMap, withLatestFrom} from 'rxjs/operators';
 
-import {ApiService} from './ec.service';
+import {EcService} from './ec.service';
 import {ApiRootState} from './ec.reducer';
 import {Store} from '@ngrx/store';
 import {IRESPONSE} from '@wm-core/types/elastic';
 import {
+  currentEcTrackId,
+  loadCurrentEcTrackFailure,
+  loadCurrentEcTrackSuccess,
   loadEcPois,
   loadEcPoisFail,
   loadEcPoisSuccess,
@@ -25,6 +28,17 @@ const SYNC_INTERVAL = 60000;
   providedIn: 'root',
 })
 export class EcEffects {
+  currentEcTrack$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(currentEcTrackId),
+      switchMap(action =>
+        from(this._ecSvc.getEcTrack(+action.currentEcTrackId)).pipe(
+          map(ecTrack => loadCurrentEcTrackSuccess({ecTrack})),
+          catchError(error => of(loadCurrentEcTrackFailure({error}))),
+        ),
+      ),
+    ),
+  );
   loadEcPois$ = createEffect(() =>
     this._actions$.pipe(
       ofType(loadEcPois),
@@ -32,7 +46,7 @@ export class EcEffects {
         interval(SYNC_INTERVAL).pipe(
           startWith(0),
           switchMap(() =>
-            this._apiSVC.getPois().pipe(
+            this._ecSvc.getPois().pipe(
               map(featureCollection => loadEcPoisSuccess({featureCollection})),
               catchError(() => of(loadEcPoisFail())),
             ),
@@ -50,7 +64,7 @@ export class EcEffects {
       ),
       switchMap(([action, ec, userActivity]) => {
         if (action.init) {
-          return from(this._apiSVC.getQuery({})).pipe(
+          return from(this._ecSvc.getQuery({})).pipe(
             map((response: IRESPONSE) => queryEcSuccess({response})),
             catchError(e => of(queryEcFail())),
           );
@@ -64,7 +78,7 @@ export class EcEffects {
           ...{layer: ec.layer},
           ...{inputTyped: userActivity.inputTyped},
         };
-        return from(this._apiSVC.getQuery(newAction)).pipe(
+        return from(this._ecSvc.getQuery(newAction)).pipe(
           map((response: IRESPONSE) => queryEcSuccess({response})),
           catchError(e => of(queryEcFail())),
         );
@@ -101,7 +115,7 @@ export class EcEffects {
   );
 
   constructor(
-    private _apiSVC: ApiService,
+    private _ecSvc: EcService,
     private _actions$: Actions,
     private _store: Store<ApiRootState>,
   ) {}

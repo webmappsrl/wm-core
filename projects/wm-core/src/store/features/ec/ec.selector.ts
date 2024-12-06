@@ -194,3 +194,5 @@ export const hasActiveFilters = createSelector(
     return apiFilterTracks.length > 0 || poiFilters.length > 0 || showPoisResult;
   },
 );
+
+export const currentEcTrack = createSelector(ec, state => state.currentEcTrack);

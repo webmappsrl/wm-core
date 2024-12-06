@@ -1,3 +1,5 @@
+import {error} from './../../auth/auth.selectors';
+import {ecLayer} from '@wm-core/store/features/ec/ec.selector';
 import {LineString, Point} from 'geojson';
 import {createReducer, on} from '@ngrx/store';
 import {
@@ -7,6 +9,8 @@ import {
   syncUgcPois,
   updateUgcTracks,
   updateUgcPois,
+  loadCurrentUgcTrackSuccess,
+  loadCurrentUgcTrackFailure,
 } from '@wm-core/store/features/ugc/ugc.actions';
 import {WmFeature} from '@wm-types/feature';
 import {IHIT} from '@wm-core/types/elastic';
@@ -18,6 +22,7 @@ export interface UgcState {
   ugcTrackFeatures?: WmFeature<LineString>[];
   ugcTracks: IHIT[];
   ugcPois: IHIT[];
+  currentUgcTrack?: WmFeature<LineString>;
 }
 export interface ApiRootState {
   [searchKey]: UgcState;
@@ -57,6 +62,14 @@ export const UgcReducer = createReducer(
   on(syncUgcFailure, (state, {responseType, error}) => ({
     ...state,
     syncing: false,
+  })),
+  on(loadCurrentUgcTrackSuccess, (state, {ugcTrack}) => ({
+    ...state,
+    currentUgcTrack: ugcTrack,
+  })),
+  on(loadCurrentUgcTrackFailure, (state, {error}) => ({
+    ...state,
+    error,
   })),
 );
 export function wmFeatureToHits(features: WmFeature<LineString | Point>[]): IHIT[] {

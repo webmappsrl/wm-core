@@ -3,6 +3,9 @@ import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {mergeMap, map, catchError, switchMap, filter, takeUntil, startWith} from 'rxjs/operators';
 import {of, from, interval} from 'rxjs';
 import {
+  currentUgcTrackId,
+  loadCurrentUgcTrackFailure,
+  loadCurrentUgcTrackSuccess,
   syncUgc,
   syncUgcFailure,
   syncUgcPois,
@@ -13,13 +16,24 @@ import {
 } from '@wm-core/store/features/ugc/ugc.actions';
 import {UgcService} from '@wm-core/store/features/ugc/ugc.service';
 import {select, Store} from '@ngrx/store';
-import {activableUgc} from './ugc.selector';
-import {getUgcPois, getUgcTracks} from '@wm-core/utils/localForage';
+import {activableUgc, ugcTracks} from './ugc.selector';
+import {getUgcPois, getUgcTrack, getUgcTracks} from '@wm-core/utils/localForage';
 const SYNC_INTERVAL = 60000;
 @Injectable({
   providedIn: 'root',
 })
 export class UgcEffects {
+  currentUgcTrack$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(currentUgcTrackId),
+      switchMap(action =>
+        from(from(getUgcTrack(`${action.currentUgcTrackId}`))).pipe(
+          map(ugcTrack => loadCurrentUgcTrackSuccess({ugcTrack})),
+          catchError(error => of(loadCurrentUgcTrackFailure({error}))),
+        ),
+      ),
+    ),
+  );
   loadUgcPois$ = createEffect(() =>
     this._actions$.pipe(
       ofType(syncUgcSuccess),

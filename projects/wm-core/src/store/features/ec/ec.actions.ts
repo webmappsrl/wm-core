@@ -1,7 +1,8 @@
 import {createAction, props} from '@ngrx/store';
-import {FeatureCollection} from 'geojson';
+import {FeatureCollection, LineString} from 'geojson';
 import {IRESPONSE} from '@wm-core/types/elastic';
 import {Filter} from '../../../types/config';
+import {WmFeature} from '@wm-types/feature';
 
 export const queryEc = createAction(
   '[ec] Query',
@@ -46,3 +47,16 @@ export const togglePoiFilter = createAction(
   props<{filterIdentifier: string}>(),
 );
 export const resetPoiFilters = createAction('[ec] pois: reset all pois filters');
+
+export const currentEcTrackId = createAction(
+  '[EcTrack] Set current ec track id',
+  props<{currentEcTrackId: string | null}>(),
+);
+export const loadCurrentEcTrackSuccess = createAction(
+  '[EcTrack] Load Current EcTrack Success',
+  props<{ecTrack: WmFeature<LineString>}>(),
+);
+export const loadCurrentEcTrackFailure = createAction(
+  '[EcTrack] Load Current EcTrack Failure',
+  props<{error: any}>(),
+);

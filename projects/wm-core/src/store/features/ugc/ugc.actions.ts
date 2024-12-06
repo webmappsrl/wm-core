@@ -20,7 +20,15 @@ export const updateUgcPois = createAction(
   props<{ugcPoiFeatures: WmFeature<Point>[]}>(),
 );
 
-export const selectUgcTrack = createAction(
-  '[Ugc] Select Track',
-  props<{trackId: number | string}>(),
+export const currentUgcTrackId = createAction(
+  '[Ugc] Set current Ugc track id',
+  props<{currentUgcTrackId: string | null}>(),
+);
+export const loadCurrentUgcTrackSuccess = createAction(
+  '[Ugc] Load Current UgcTrack Success',
+  props<{ugcTrack: WmFeature<LineString>}>(),
+);
+export const loadCurrentUgcTrackFailure = createAction(
+  '[Ugc] Load Current UgcTrack Failure',
+  props<{error: any}>(),
 );
