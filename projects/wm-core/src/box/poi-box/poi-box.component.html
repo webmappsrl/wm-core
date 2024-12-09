@@ -4,6 +4,9 @@
       <wm-img [src]="img.thumbnail" size="225x100"></wm-img>
     </div>
     <div class="wm-box-name">{{properties.name|wmtrans}}</div>
+    <ng-container *ngIf="properties.updatedAt as updatedAt">
+      <wm-updated-at [updatedAt]="updatedAt"></wm-updated-at>
+    </ng-container>
   </ion-card>
 
   <ng-template #taxonomies>

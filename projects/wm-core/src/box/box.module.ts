@@ -18,7 +18,8 @@ import {TitleComponent} from './title/title.component';
 import {TrackBoxComponent} from './track-box/track-box.component';
 import {ConvertToItemTracksPipe} from './tracks-box/convert-to-base-box.pipe';
 import {TracksBoxComponent} from './tracks-box/tracks-box.component';
-import { UgcBoxComponent } from './ugc-box/ugc-box.component';
+import {UgcBoxComponent} from './ugc-box/ugc-box.component';
+import {UpdatedAtComponent} from './udpated-at/updated-at.component';
 
 const boxComponents = [
   LayerBoxComponent,
@@ -37,6 +38,7 @@ const boxComponents = [
   BoxComponent,
   TracksBoxComponent,
   ConvertToItemTracksPipe,
+  UpdatedAtComponent,
 ];
 @NgModule({
   declarations: boxComponents,
