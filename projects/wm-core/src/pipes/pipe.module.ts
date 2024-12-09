@@ -17,6 +17,7 @@ import { getFormFieldIcnPipe } from './get-form-field-icn.pipe';
 import { getFormFieldValuePipe } from './get-form-field-value.pipe';
 import { WmCreateBlobPipe } from './wm-create-blob.pipe';
 import { WmTimeFormatterPipe } from './wm-time-formatter.pipe';
+import {WmSortPipe} from './wm-sort.pipe';
 
 const pipes = [
   WmTransPipe,
@@ -35,7 +36,8 @@ const pipes = [
   getFormFieldIcnPipe,
   getFormFieldValuePipe,
   WmCreateBlobPipe,
-  WmTimeFormatterPipe
+  WmTimeFormatterPipe,
+  WmSortPipe
 ];
 @NgModule({
   declarations: pipes,

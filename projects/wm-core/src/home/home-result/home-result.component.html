@@ -62,7 +62,7 @@
       <ng-container *ngIf="tracks$|async as tracks">
         <ng-container *ngIf="tracks.length > 0">
           <wm-search-box
-            *ngFor="let card of tracks|slice:0:200"
+            *ngFor="let card of tracks|wmSort:'properties.updatedAt':false|slice:0:200"
             [data]="card"
             (clickEVT)="trackEVT.emit(card.id)"
           >
@@ -71,7 +71,7 @@
       </ng-container>
     </ng-container>
     <div class="pois" *ngIf="showResulType === 'pois'|| showResulType === 'all'">
-      <wm-poi-box *ngFor="let c of pois$|async" [data]="c" (clickEVT)="poiEVT.emit(c)">
+      <wm-poi-box *ngFor="let c of pois$|async|wmSort:'properties.updatedAt':false" [data]="c" (clickEVT)="poiEVT.emit(c)">
       </wm-poi-box>
     </div>
   </ng-container>

@@ -165,6 +165,7 @@ export class CameraService {
       };
       const gallery: GalleryPhotos = await Camera.pickImages(options);
       for (let i = 0; i < gallery.photos.length; i++) {
+        const dateNow = new Date();
         const feature: Feature<Media, MediaProperties> = {
           type: 'Feature',
           geometry: {
@@ -173,7 +174,8 @@ export class CameraService {
           },
           properties: {
             ...gallery.photos[i],
-            date: new Date(),
+            createdAt: dateNow,
+            updatedAt: dateNow,
             uuid: generateUUID(),
             app_id: this.appId,
             photo: gallery.photos[i],
@@ -186,6 +188,7 @@ export class CameraService {
     } else {
       const max = 1 + Math.random() * 8;
       for (let i = 0; i < max; i++) {
+        const dateNow = new Date();
         const fakePhoto: Photo = {
           webPath: `https://picsum.photos/50${i}/75${i}`,
           saved: false,
@@ -198,7 +201,8 @@ export class CameraService {
             coordinates: [location.longitude, location.latitude],
           },
           properties: {
-            date: new Date(),
+            createdAt: dateNow,
+            updatedAt: dateNow,
             uuid: generateUUID(),
             app_id: this.appId,
             photo: fakePhoto,
@@ -299,6 +303,7 @@ export class CameraService {
     }
     const location = this._geoLocationSvc.location;
     const device = await this._deviceSvc.getInfo();
+    const dateNow = new Date();
     const feature: Feature<Media, MediaProperties> = {
       type: 'Feature',
       geometry: {
@@ -306,7 +311,8 @@ export class CameraService {
         coordinates: [location.longitude, location.latitude],
       },
       properties: {
-        date: new Date(),
+        createdAt: dateNow,
+        updatedAt: dateNow,
         uuid: generateUUID(),
         app_id: this.appId,
         device,

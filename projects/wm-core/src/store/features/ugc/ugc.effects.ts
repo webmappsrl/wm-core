@@ -38,11 +38,11 @@ export class UgcEffects {
     this._actions$.pipe(
       ofType(syncUgcSuccess),
       mergeMap(() =>
-        from(getUgcTracks()).pipe(
-          map(ugcTrackFeatures => updateUgcTracks({ugcTrackFeatures})), // Dispatch dell'azione con i dati caricati
+        from(getUgcPois()).pipe(
+          map(ugcPoiFeatures => updateUgcPois({ugcPoiFeatures})), // Dispatch dell'azione con i dati caricati
           catchError(error => {
-            console.error('Error loading UGC tracks:', error);
-            return of(syncUgcFailure({responseType: 'Tracks', error})); // Dispatch a failure action in case of error
+            console.error('Error loading UGC pois:', error);
+            return of(syncUgcFailure({responseType: 'Pois', error})); // Dispatch a failure action in case of error
           }),
         ),
       ),
@@ -52,11 +52,11 @@ export class UgcEffects {
     this._actions$.pipe(
       ofType(syncUgcSuccess),
       mergeMap(() =>
-        from(getUgcPois()).pipe(
-          map(ugcPoiFeatures => updateUgcPois({ugcPoiFeatures})), // Dispatch dell'azione con i dati caricati
+        from(getUgcTracks()).pipe(
+          map(ugcTrackFeatures => updateUgcTracks({ugcTrackFeatures})), // Dispatch dell'azione con i dati caricati
           catchError(error => {
-            console.error('Error loading UGC pois:', error);
-            return of(syncUgcFailure({responseType: 'Pois', error})); // Dispatch a failure action in case of error
+            console.error('Error loading UGC tracks:', error);
+            return of(syncUgcFailure({responseType: 'Tracks', error})); // Dispatch a failure action in case of error
           }),
         ),
       ),

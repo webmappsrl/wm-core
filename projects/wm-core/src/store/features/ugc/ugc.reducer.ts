@@ -86,7 +86,7 @@ export function wmFeatureToHits(features: WmFeature<LineString | Point>[]): IHIT
       feature_image: null,
       layers: [],
       name: feature.properties.name,
-      properties: {},
+      properties: feature?.properties ?? {},
       ref: '',
     };
 
