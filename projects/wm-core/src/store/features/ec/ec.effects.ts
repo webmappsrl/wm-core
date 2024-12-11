@@ -41,6 +41,7 @@ export class EcEffects {
       ofType(loadEcPois),
       switchMap(() =>
         interval(SYNC_INTERVAL).pipe(
+          startWith(0),
           switchMap(() =>
             this._ecSvc.getPois().pipe(
               map(featureCollection => loadEcPoisSuccess({featureCollection})),
