@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {of} from 'rxjs';
-import {catchError, filter, map, switchMap, withLatestFrom} from 'rxjs/operators';
+import {interval, of} from 'rxjs';
+import {catchError, filter, map, startWith, switchMap, withLatestFrom} from 'rxjs/operators';
 import {loadConf, loadConfFail, loadConfSuccess, updateMapWithUgc} from './conf.actions';
 import {ConfService} from './conf.service';
 import {select, Store} from '@ngrx/store';
 import {activableUgc} from '@wm-core/store/features/ugc/ugc.selector';
 import {isConfLoaded} from './conf.selector';
-const SYNC_INTERVAL = 60000;
+const SYNC_INTERVAL = 600000;
 @Injectable({
   providedIn: 'root',
 })
@@ -16,9 +16,15 @@ export class ConfEffects {
     this._actions$.pipe(
       ofType(loadConf),
       switchMap(() =>
-        this._configSVC.getConf().pipe(
-          map(conf => loadConfSuccess({conf})),
-          catchError((_: any) => of(loadConfFail())),
+        interval(SYNC_INTERVAL).pipe(
+          startWith(0),
+          switchMap(() =>
+            this._configSVC.getConf().pipe(
+              filter(conf => conf != null),
+              map(conf => loadConfSuccess({conf})),
+              catchError((_: any) => of(loadConfFail())),
+            ),
+          ),
         ),
       ),
     ),

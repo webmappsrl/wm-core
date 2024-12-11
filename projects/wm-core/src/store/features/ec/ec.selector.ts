@@ -4,11 +4,15 @@ import {confFILTERSTRACKS, confPOISFilter, confPoisIcons} from '../../conf/conf.
 import {buildStats, filterFeatures, filterFeaturesByInputTyped} from './utils';
 import {IELASTIC, IHIT} from '../../../types/elastic';
 import {Ec} from './ec.reducer';
-import {ugcOpened, inputTyped} from '@wm-core/store/user-activity/user-activity.selector';
+import {
+  inputTyped,
+  filterTracks,
+  filterTaxonomies,
+} from '@wm-core/store/user-activity/user-activity.selector';
 
 export const ec = createFeatureSelector<IELASTIC>('ec');
 
-export const queryEc = createSelector(ec, (state: Ec) => state.hits ?? []);
+export const ecTracks = createSelector(ec, (state: Ec) => state.hits ?? []);
 export const countEcTracks = createSelector(ec, (state: Ec) => state.hits.length ?? undefined);
 // @ts-ignore
 export const statsApi = createSelector(ec, (state: SearchResponse<IHIT>) => {
@@ -33,29 +37,8 @@ export const statsApi = createSelector(ec, (state: SearchResponse<IHIT>) => {
     return res;
   }
 });
-
-export const apiElasticState = createSelector(ec, state => {
-  return {
-    layer: state.layer,
-    filterTracks: state.filterTracks,
-    lastFilterType: 'tracks',
-  };
-});
-
-export const apiFilterTracks = createSelector(apiElasticState, state => {
-  return state.filterTracks;
-});
-export const apiTrackFilterIdentifier = createSelector(apiFilterTracks, filterTracks => {
-  return filterTracks.map((f: any) => f.identifier);
-});
-export const ecLayer = createSelector(apiElasticState, state => {
-  return state.layer;
-});
-export const ecElasticStateLoading = createSelector(ec, state => {
-  return state.loading;
-});
-export const apiGoToHome = createSelector(ec, state => {
-  return state.goToHome;
+export const ecTracksLoading = createSelector(ec, state => {
+  return state.ecTracksLoading;
 });
 export const confFILTERSTRACKSOPTIONS = createSelector(
   confFILTERSTRACKS,
@@ -63,23 +46,7 @@ export const confFILTERSTRACKSOPTIONS = createSelector(
 );
 
 export const showPoisResult = createSelector(ec, state => state.where != null);
-export const showResult = createSelector(
-  ec,
-  ugcOpened,
-  inputTyped,
-  (state, ugcOpened, inputTyped) => {
-    return (
-      state.layer != null ||
-      state.filterTracks.length > 0 ||
-      (state.poisSelectedFilterIdentifiers && state.poisSelectedFilterIdentifiers.length > 0) ||
-      (inputTyped != null && inputTyped != '') ||
-      ugcOpened
-    );
-  },
-);
-export const lastFilterType = createSelector(ec, state => {
-  return state.lastFilterType;
-});
+
 export const poiFilterIdentifiers = createSelector(
   ec,
   state => state.poisSelectedFilterIdentifiers ?? [],
@@ -104,11 +71,9 @@ export const poiFilters = createSelector(ec, confPOISFilter, (state, poisFilters
 });
 export const countSelectedFilters = createSelector(
   poiFilters,
-  apiFilterTracks,
+  filterTracks,
   (pFilters, tFilters) => pFilters.length + tFilters.length ?? 0,
 );
-
-export const filterTaxonomies = createSelector(ec, state => state.filterTaxonomies);
 
 export const allEcPois = createSelector(ec, state => state.ecPois);
 export const allEcpoiFeatures = createSelector(ec, state => state.ecPoiFeatures);
@@ -187,11 +152,11 @@ export const poisStats = createSelector(
   poisFilteredFeaturesByInputTypeStats => poisFilteredFeaturesByInputTypeStats,
 );
 export const hasActiveFilters = createSelector(
-  apiFilterTracks,
+  filterTracks,
   poiFilters,
   showPoisResult,
-  (apiFilterTracks, poiFilters, showPoisResult) => {
-    return apiFilterTracks.length > 0 || poiFilters.length > 0 || showPoisResult;
+  (filterTracks, poiFilters, showPoisResult) => {
+    return filterTracks.length > 0 || poiFilters.length > 0 || showPoisResult;
   },
 );
 

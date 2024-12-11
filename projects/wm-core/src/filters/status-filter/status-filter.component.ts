@@ -2,24 +2,26 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Input,
   Output,
   ViewEncapsulation,
 } from '@angular/core';
 import {Store} from '@ngrx/store';
-import {
-  goToHome,
-  resetPoiFilters,
-  setLayer,
-  togglePoiFilter,
-  toggleTrackFilter,
-} from '@wm-core/store/features/ec/ec.actions';
-import {ecLayer, apiFilterTracks, poiFilters} from '@wm-core/store/features/ec/ec.selector';
+
+import {poiFilters} from '@wm-core/store/features/ec/ec.selector';
 import {Filter} from '@wm-core/types/config';
 import {Observable} from 'rxjs';
 import {Location} from '@angular/common';
-import {closeUgc, resetTrackFilters} from '@wm-core/store/user-activity/user-activity.action';
+import {
+  closeUgc,
+  goToHome,
+  resetPoiFilters,
+  resetTrackFilters,
+  setLayer,
+  togglePoiFilter,
+  toggleTrackFilter,
+} from '@wm-core/store/user-activity/user-activity.action';
 import {countAll} from '@wm-core/store/features/features.selector';
+import {ecLayer, filterTracks} from '@wm-core/store/user-activity/user-activity.selector';
 @Component({
   selector: 'wm-status-filter',
   templateUrl: './status-filter.component.html',
@@ -36,7 +38,7 @@ export class StatusFilterComponent {
   countAll$: Observable<number> = this._store.select(countAll);
   layer$ = this._store.select(ecLayer);
   poiFilters$: Observable<any> = this._store.select(poiFilters);
-  trackFilters$: Observable<any[]> = this._store.select(apiFilterTracks);
+  trackFilters$: Observable<any[]> = this._store.select(filterTracks);
 
   constructor(private _store: Store, private _location: Location) {}
 

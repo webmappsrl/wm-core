@@ -17,7 +17,8 @@
     "allowSyntheticDefaultImports": true,
     "paths": {
       "@wm-core/*": ["projects/wm-core/src/*"],
-      "@wm-types/*": ["../wm-types/src/*"]
+      "@wm-types/*": ["../wm-types/src/*"],
+      "@map-core/*": ["../map-core/src/*"]
     }
   },
   "angularCompilerOptions": {

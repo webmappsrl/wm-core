@@ -1,3 +1,4 @@
+import {EmptyInputTyped} from '@wm-core/store/user-activity/user-activity.selector';
 import {Subscription} from 'rxjs/internal/Subscription';
 import {
   Component,
@@ -10,8 +11,9 @@ import {
 } from '@angular/core';
 import {FormBuilder, FormGroup, FormControl} from '@angular/forms';
 import {Store} from '@ngrx/store';
-import {debounceTime} from 'rxjs/operators';
+import {debounceTime, filter} from 'rxjs/operators';
 import {inputTyped} from '@wm-core/store/user-activity/user-activity.action';
+import {merge} from 'rxjs';
 
 interface SearchForm {
   search: FormControl<string>;
@@ -32,14 +34,15 @@ export class WmSearchBarComponent implements OnDestroy {
   }
 
   @Output('isTypings') isTypingsEVT: EventEmitter<boolean> = new EventEmitter<boolean>(false);
-  @Output('words') wordsEVT: EventEmitter<string> = new EventEmitter<string>(false);
 
+  emptyInputTyped$ = this._store.select(EmptyInputTyped);
   searchForm: FormGroup<SearchForm>;
 
   constructor(fb: FormBuilder, private _store: Store<any>) {
     this.searchForm = fb.group<SearchForm>({
       search: new FormControl<string>(''),
     });
+
     /**
      * This code is subscribing to a searchForm valueChanges observable.
      * It is using the debounceTime operator to wait 500 milliseconds before emitting the value from the observable.
@@ -54,11 +57,17 @@ export class WmSearchBarComponent implements OnDestroy {
       if (search != null && search !== '') {
         this._store.dispatch(inputTyped({inputTyped: search}));
         this.isTypingsEVT.emit(true);
-        this.wordsEVT.emit(search);
       } else {
         this.isTypingsEVT.emit(false);
       }
     });
+    this._store
+      .select(EmptyInputTyped)
+      .pipe(filter(f => f))
+      .subscribe(() => {
+        this.searchForm.reset();
+        this.isTypingsEVT.emit(false);
+      });
   }
 
   ngOnDestroy(): void {
@@ -74,7 +83,6 @@ export class WmSearchBarComponent implements OnDestroy {
   reset(): void {
     this.searchForm.reset();
     this._store.dispatch(inputTyped({inputTyped: ''}));
-    this.wordsEVT.emit('');
     this.isTypingsEVT.emit(false);
   }
 }

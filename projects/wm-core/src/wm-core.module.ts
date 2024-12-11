@@ -52,7 +52,8 @@ import {UgcReducer} from './store/features/ugc/ugc.reducer';
 import {userActivityReducer} from './store/user-activity/user-activity.reducer';
 import {UserActivityEffects} from './store/user-activity/user-activity.effects';
 import {WmSearchBarComponent} from './search-bar/search-bar.component';
-
+import { WmCoreMapComponent } from './map/map.component';
+import { WmMapModule } from '@map-core/map-core.module';
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
@@ -83,6 +84,7 @@ const declarations = [
   WmExcerptComponent,
   WmFormComponent,
   WmSearchBarComponent,
+  WmCoreMapComponent
 ];
 const modules = [
   WmSharedModule,
@@ -93,6 +95,7 @@ const modules = [
   WmFiltersModule,
   ReactiveFormsModule,
   WmProfileModule,
+  WmMapModule
 ];
 
 @NgModule({

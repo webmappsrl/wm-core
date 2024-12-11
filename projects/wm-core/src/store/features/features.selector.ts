@@ -1,6 +1,6 @@
 import {createSelector} from '@ngrx/store';
 import {ugcOpened} from '../user-activity/user-activity.selector';
-import {countEcAll, countEcPois, countEcTracks, ecPois, queryEc} from './ec/ec.selector';
+import {countEcAll, countEcPois, countEcTracks, ecPois, ecTracks} from './ec/ec.selector';
 import {
   countUgcAll,
   countUgcPois,
@@ -25,10 +25,9 @@ export const countTracks = createSelector(
   (ec, ugc, ugcOpened) => (ugcOpened ? ugc : ec),
 );
 
-export const tracks = createSelector(queryEc, ugcTracks, ugcOpened, (ec, ugc, ugcOpened) =>
+export const tracks = createSelector(ecTracks, ugcTracks, ugcOpened, (ec, ugc, ugcOpened) =>
   ugcOpened ? ugc : ec,
 );
-
 export const pois = createSelector(ecPois, ugcPoiFeatures, ugcOpened, (ec, ugc, ugcOpened) => {
   return ugcOpened ? ugc : ec;
 });

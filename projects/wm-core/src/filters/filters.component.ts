@@ -12,7 +12,6 @@ import {
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {
-  apiFilterTracks,
   countSelectedFilters,
   poiFilters,
   poisStats,
@@ -21,6 +20,8 @@ import {
 import {confFILTERS} from '../store/conf/conf.selector';
 import {SelectFilterOption, SliderFilter, Filter} from '../types/config';
 import {countPois, countTracks} from '@wm-core/store/features/features.selector';
+import {goToHome} from '@wm-core/store/user-activity/user-activity.action';
+import {filterTracks} from '@wm-core/store/user-activity/user-activity.selector';
 
 @Component({
   selector: 'wm-filters',
@@ -55,7 +56,7 @@ export class FiltersComponent implements OnChanges {
     [name: string]: {[identifier: string]: any};
   }> = this._store.select(poisStats);
   toggle$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  trackFilters$: Observable<any> = this._store.select(apiFilterTracks);
+  trackFilters$: Observable<any> = this._store.select(filterTracks);
   trackStats$: Observable<{
     [name: string]: {[identifier: string]: any};
   }> = this._store.select(trackStats);
@@ -102,6 +103,7 @@ export class FiltersComponent implements OnChanges {
   }
 
   resetFilters(): void {
+    this._store.dispatch(goToHome());
     this.resetFiltersEvt.emit();
   }
 }

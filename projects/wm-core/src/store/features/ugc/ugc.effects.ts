@@ -16,7 +16,7 @@ import {
 } from '@wm-core/store/features/ugc/ugc.actions';
 import {UgcService} from '@wm-core/store/features/ugc/ugc.service';
 import {select, Store} from '@ngrx/store';
-import {activableUgc, ugcTracks} from './ugc.selector';
+import {activableUgc} from './ugc.selector';
 import {getUgcPois, getUgcTrack, getUgcTracks} from '@wm-core/utils/localForage';
 const SYNC_INTERVAL = 60000;
 @Injectable({

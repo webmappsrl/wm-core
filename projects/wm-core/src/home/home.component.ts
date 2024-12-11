@@ -11,12 +11,8 @@ import {ModalController, NavController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {debounceTime, filter, map, take, withLatestFrom} from 'rxjs/operators';
-import {
-  setLayer,
-  togglePoiFilter,
-  toggleTrackFilterByIdentifier,
-} from '@wm-core/store/features/ec/ec.actions';
-import {countEcAll, showResult} from '@wm-core/store/features/ec/ec.selector';
+
+import {countEcAll} from '@wm-core/store/features/ec/ec.selector';
 import {confAPP, confHOME, confPROJECT, confOPTIONS} from '@wm-core/store/conf/conf.selector';
 import {
   IAPP,
@@ -29,13 +25,17 @@ import {
 } from '@wm-core/types/config';
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
 import {countUgcAll} from '@wm-core/store/features/ugc/ugc.selector';
-import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
+import {showResult, ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
 import {
   closeUgc,
+  goToHome,
   inputTyped,
   openUgc,
   resetTrackFilters,
   setCurrentPoi,
+  setLayer,
+  togglePoiFilter,
+  toggleTrackFilterByIdentifier,
 } from '@wm-core/store/user-activity/user-activity.action';
 import {WmFeature} from '@wm-types/feature';
 import {WmSearchBarComponent} from '@wm-core/search-bar/search-bar.component';
@@ -96,13 +96,8 @@ export class WmHomeComponent implements AfterContentInit {
   }
 
   goToHome(): void {
-    this.setLayer(null);
-    this.searchCmp.reset();
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams: {layer: null, filter: null},
-      queryParamsHandling: 'merge',
-    });
+    // this.setLayer(null);
+    this._store.dispatch(goToHome());
   }
 
   openExternalUrl(url: string): void {

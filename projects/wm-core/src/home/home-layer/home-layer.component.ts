@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import {Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
-import {ecLayer} from '../../store/features/ec/ec.selector';
+import {ecLayer} from '@wm-core/store/user-activity/user-activity.selector';
 
 @Component({
   selector: 'wm-home-layer',

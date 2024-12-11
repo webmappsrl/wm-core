@@ -1,5 +1,3 @@
-import {error} from './../../auth/auth.selectors';
-import {ecLayer} from '@wm-core/store/features/ec/ec.selector';
 import {LineString, Point} from 'geojson';
 import {createReducer, on} from '@ngrx/store';
 import {
@@ -86,7 +84,7 @@ export function wmFeatureToHits(features: WmFeature<LineString | Point>[]): IHIT
       feature_image: null,
       layers: [],
       name: feature.properties.name,
-      properties: {},
+      properties: feature.properties,
       ref: '',
     };
 

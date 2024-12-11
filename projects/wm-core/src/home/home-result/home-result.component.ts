@@ -9,14 +9,13 @@ import {
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, Observable, Subscription, combineLatest} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {ecTracksLoading, poisInitCount} from '@wm-core/store/features/ec/ec.selector';
+
 import {
-  ecElasticStateLoading,
   ecLayer,
-  poisInitCount,
   lastFilterType,
-} from '@wm-core/store/features/ec/ec.selector';
-import {IHIT} from '@wm-core/types/elastic';
-import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
+  ugcOpened,
+} from '@wm-core/store/user-activity/user-activity.selector';
 import {
   countAll,
   countPois,
@@ -25,7 +24,7 @@ import {
   tracks,
 } from '@wm-core/store/features/features.selector';
 import {WmFeature} from '@wm-types/feature';
-import {LineString, MultiLineString, Point} from 'geojson';
+import {Point} from 'geojson';
 
 @Component({
   selector: 'wm-home-result',
@@ -49,9 +48,7 @@ export class WmHomeResultComponent implements OnDestroy {
   pois$: Observable<WmFeature<Point>[]> = this._store.select(pois);
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
   tracks$ = this._store.select(tracks);
-  tracksLoading$: Observable<boolean> = combineLatest([
-    this._store.select(ecElasticStateLoading),
-  ]).pipe(map(([apiLoading]) => apiLoading));
+  tracksLoading$: Observable<boolean> = this._store.select(ecTracksLoading);
   ugcOpened$: Observable<boolean> = this._store.select(ugcOpened);
 
   constructor(private _store: Store) {

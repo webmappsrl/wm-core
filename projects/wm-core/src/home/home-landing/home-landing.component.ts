@@ -13,7 +13,7 @@ import {IHOME, IHORIZONTALSCROLLBOX} from '@wm-core/types/config';
 import {
   togglePoiFilter,
   toggleTrackFilterByIdentifier,
-} from '@wm-core/store/features/ec/ec.actions';
+} from '@wm-core/store/user-activity/user-activity.action';
 
 @Component({
   selector: 'wm-home-landing',

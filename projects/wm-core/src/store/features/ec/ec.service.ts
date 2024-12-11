@@ -65,28 +65,41 @@ export class EcService {
     const poisUrl = `${this.environment.awsApi}/pois/${this._geohubAppId}.geojson`;
 
     return new Observable<FeatureCollection>(observer => {
-      // Recupera i dati dalla cache
       synchronizedApi.getItem(poisUrl).then((cachedData: string | null) => {
-        if (cachedData != null) {
-          const parsedData = JSON.parse(cachedData);
-          observer.next(parsedData as FeatureCollection); // Emissione dati dalla cache
+        let parsedData: FeatureCollection | null = null;
+
+        // Verifica se i dati in cache sono validi
+        if (cachedData) {
+          try {
+            parsedData = JSON.parse(cachedData) as FeatureCollection;
+
+            // Controlla se i dati hanno una struttura valida
+            if (!parsedData || !parsedData.features) {
+              console.warn('Invalid cache format. Ignoring cached data.');
+              parsedData = null;
+            }
+          } catch (e) {
+            console.warn('Error parsing cached data. Ignoring cached data.', e);
+            parsedData = null;
+          }
         }
 
-        // Scarica i dati aggiornati
-        this._loadingSvc.show('Loading pois...');
+        // Se i dati in cache sono validi, confrontali con quelli scaricati
         this._http.get<FeatureCollection>(poisUrl).subscribe(
           pois => {
-            synchronizedApi.setItem(poisUrl, JSON.stringify(pois)); // Aggiorna la cache
-            observer.next(pois); // Emissione dati aggiornati
+            if (!cachedData || cachedData !== JSON.stringify(pois)) {
+              synchronizedApi.setItem(poisUrl, JSON.stringify(pois)); // Aggiorna la cache
+              observer.next(pois); // Emissione dati aggiornati
+            } else {
+              console.log('pois Cache is up-to-date. No changes detected.');
+            }
             observer.complete();
-            this._loadingSvc.close('Loading pois...');
           },
           error => {
-            this._loadingSvc.close('Loading pois...');
-            if (cachedData == null) {
-              observer.error(error); // Solo se non ci sono dati in cache
+            if (!parsedData) {
+              observer.error(error); // Emissione errore se non c'è cache
             } else {
-              observer.complete();
+              observer.complete(); // Completa comunque se c'è cache
             }
           },
         );
