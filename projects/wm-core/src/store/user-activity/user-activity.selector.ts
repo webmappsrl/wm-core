@@ -68,3 +68,12 @@ export const mapFilters = createSelector(userActivity, state => {
     lastFilterType: 'tracks',
   };
 });
+export const poiFilterIdentifiers = createSelector(
+  userActivity,
+  state => state.poisSelectedFilterIdentifiers ?? [],
+);
+
+export const poisSelectedFilterIdentifiers = createSelector(
+  userActivity,
+  state => state.poisSelectedFilterIdentifiers,
+);

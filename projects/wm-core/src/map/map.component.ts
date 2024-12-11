@@ -5,11 +5,7 @@ import {LangService} from '@wm-core/localization/lang.service';
 import {WmLoadingService} from '@wm-core/services/loading.service';
 import {confMAP, confMAPLAYERS} from '@wm-core/store/conf/conf.selector';
 import {loadEcPois} from '@wm-core/store/features/ec/ec.actions';
-import {
-  countSelectedFilters,
-  ecPois,
-  poiFilterIdentifiers,
-} from '@wm-core/store/features/ec/ec.selector';
+import {countSelectedFilters, ecPois} from '@wm-core/store/features/ec/ec.selector';
 import {
   openUgc,
   resetPoiFilters,
@@ -30,7 +26,12 @@ import {
   confAUTHEnable,
 } from '@wm-core/store/conf/conf.selector';
 import {IDATALAYER} from '@map-core/types/layer';
-import {ecLayer, inputTyped, mapFilters} from '@wm-core/store/user-activity/user-activity.selector';
+import {
+  ecLayer,
+  inputTyped,
+  mapFilters,
+  poiFilterIdentifiers,
+} from '@wm-core/store/user-activity/user-activity.selector';
 import {WmFeature} from '@wm-types/feature';
 import {LineString, Point} from 'geojson';
 import {ITrackElevationChartHoverElements} from '@map-core/types/track-elevation-charts';

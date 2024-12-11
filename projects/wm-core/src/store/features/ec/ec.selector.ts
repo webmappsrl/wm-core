@@ -8,6 +8,8 @@ import {
   inputTyped,
   filterTracks,
   filterTaxonomies,
+  poiFilterIdentifiers,
+  poisSelectedFilterIdentifiers,
 } from '@wm-core/store/user-activity/user-activity.selector';
 
 export const ec = createFeatureSelector<IELASTIC>('ec');
@@ -47,28 +49,28 @@ export const confFILTERSTRACKSOPTIONS = createSelector(
 
 export const showPoisResult = createSelector(ec, state => state.where != null);
 
-export const poiFilterIdentifiers = createSelector(
-  ec,
-  state => state.poisSelectedFilterIdentifiers ?? [],
-);
-export const poiFilters = createSelector(ec, confPOISFilter, (state, poisFilters) => {
-  let filters: any = [];
+export const poiFilters = createSelector(
+  poisSelectedFilterIdentifiers,
+  confPOISFilter,
+  (poisSelectedFilterIdentifiers, poisFilters) => {
+    let filters: any = [];
 
-  if (state.poisSelectedFilterIdentifiers != null && poisFilters.poi_type != null) {
-    // @ts-ignore
-    filters = [
+    if (poisSelectedFilterIdentifiers != null && poisFilters.poi_type != null) {
       // @ts-ignore
-      ...filters,
-      // @ts-ignore
-      ...poisFilters.poi_type.filter(
+      filters = [
         // @ts-ignore
-        poiFilter => state.poisSelectedFilterIdentifiers.indexOf(poiFilter.identifier) >= 0,
-      ),
-    ];
-  }
-  // @ts-ignore
-  return filters;
-});
+        ...filters,
+        // @ts-ignore
+        ...poisFilters.poi_type.filter(
+          // @ts-ignore
+          poiFilter => poisSelectedFilterIdentifiers.indexOf(poiFilter.identifier) >= 0,
+        ),
+      ];
+    }
+    // @ts-ignore
+    return filters;
+  },
+);
 export const countSelectedFilters = createSelector(
   poiFilters,
   filterTracks,
