@@ -72,6 +72,7 @@ export class EcService {
         if (cachedData) {
           try {
             parsedData = JSON.parse(cachedData) as FeatureCollection;
+            observer.next(parsedData);
 
             // Controlla se i dati hanno una struttura valida
             if (!parsedData || !parsedData.features) {
