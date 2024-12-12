@@ -32,3 +32,16 @@ export const loadCurrentUgcTrackFailure = createAction(
   '[Ugc] Load Current UgcTrack Failure',
   props<{error: any}>(),
 );
+export const enableSyncInterval = createAction('[Ugc] Enable Sync Interval');
+export const disableSyncInterval = createAction('[Ugc] Disable Sync Interval');
+
+export const deleteUgcTrack = createAction(
+  '[Ugc] Delete Ugc Track',
+  props<{track: WmFeature<LineString>}>(),
+);
+export const deleteUgcTrackSuccess = createAction('[Ugc] Delete Ugc Track Success');
+export const deleteUgcTrackFailure = createAction('[Ugc] Delete Ugc Track Failure', props<{error: string}>());
+
+export const deleteUgcPoi = createAction('[Ugc] Delete Ugc Poi', props<{poi: WmFeature<Point>}>());
+export const deleteUgcPoiSuccess = createAction('[Ugc] Delete Ugc Poi Success');
+export const deleteUgcPoiFailure = createAction('[Ugc] Delete Ugc Poi Failure', props<{error: string}>());
