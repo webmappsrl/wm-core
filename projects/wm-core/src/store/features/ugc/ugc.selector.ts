@@ -1,4 +1,3 @@
-import {currentUgcTrackId} from './ugc.actions';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {confAUTHEnable} from '@wm-core/store/conf/conf.selector';
@@ -32,3 +31,8 @@ export const countUgcAll = createSelector(
 );
 
 export const currentUgcTrack = createSelector(ugc, state => state.currentUgcTrack);
+
+export const syncUgcIntervalEnabled = createSelector(
+  ugc,
+  (state: UgcState) => state.syncUgcIntervalEnabled,
+);

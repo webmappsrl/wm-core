@@ -1,9 +1,17 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {mergeMap, map, catchError, switchMap, filter, takeUntil, startWith} from 'rxjs/operators';
-import {of, from, interval} from 'rxjs';
+import {mergeMap, map, catchError, switchMap, filter, takeUntil, startWith, tap, withLatestFrom} from 'rxjs/operators';
+import {of, from, interval, EMPTY} from 'rxjs';
 import {
   currentUgcTrackId,
+  deleteUgcPoi,
+  deleteUgcPoiFailure,
+  deleteUgcPoiSuccess,
+  deleteUgcTrack,
+  deleteUgcTrackFailure,
+  deleteUgcTrackSuccess,
+  disableSyncInterval,
+  enableSyncInterval,
   loadCurrentUgcTrackFailure,
   loadCurrentUgcTrackSuccess,
   syncUgc,
@@ -16,8 +24,10 @@ import {
 } from '@wm-core/store/features/ugc/ugc.actions';
 import {UgcService} from '@wm-core/store/features/ugc/ugc.service';
 import {select, Store} from '@ngrx/store';
-import {activableUgc} from './ugc.selector';
-import {getUgcPois, getUgcTrack, getUgcTracks} from '@wm-core/utils/localForage';
+import {activableUgc, syncUgcIntervalEnabled} from './ugc.selector';
+import {getUgcPois, getUgcTrack, getUgcTracks, removeSynchronizedUgcPoi, removeUgcPoi, removeUgcTrack} from '@wm-core/utils/localForage';
+import {AlertController} from '@ionic/angular';
+import {LangService} from '@wm-core/localization/lang.service';
 const SYNC_INTERVAL = 60000;
 @Injectable({
   providedIn: 'root',
@@ -31,6 +41,81 @@ export class UgcEffects {
           map(ugcTrack => loadCurrentUgcTrackSuccess({ugcTrack})),
           catchError(error => of(loadCurrentUgcTrackFailure({error}))),
         ),
+      ),
+    ),
+  );
+  deleteUgcFailure$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(deleteUgcTrackFailure, deleteUgcPoiFailure),
+      switchMap(() => this._alertCtrl.create({
+        header: this._langSvc.instant('Ops!'),
+        message: this._langSvc.instant('Non è stato possibile eliminare, riprova più tardi'),
+        buttons: ['OK']
+      })),
+      switchMap(alert => alert.present()),
+    ),
+    { dispatch: false }
+  );
+  deleteUgcPoi$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(deleteUgcPoi),
+      mergeMap(action =>
+        of(disableSyncInterval()).pipe(
+          mergeMap(() => {
+            const poiId = action.poi?.properties?.id;
+            if (poiId) {
+              return from(this._ugcSvc.deleteApiPoi(poiId)).pipe(
+                mergeMap(() => [
+                  deleteUgcPoiSuccess({poi: action.poi}),
+                  syncUgcPois(),
+                  enableSyncInterval()
+                ]),
+                catchError(error => of(deleteUgcPoiFailure({error}), enableSyncInterval())),
+              );
+            }
+            return of(deleteUgcPoiFailure({error: 'Poi ID not found'}));
+          })
+        )
+      ),
+    ),
+  );
+  deleteUgcSuccess$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(deleteUgcTrackSuccess, deleteUgcPoiSuccess),
+      switchMap(action => {
+        (action.type === deleteUgcTrackSuccess.type) ? removeUgcTrack(action.track) : removeUgcPoi(action.poi);
+        return of(EMPTY);
+      }),
+      switchMap(() => {
+        return this._alertCtrl.create({
+          message: this._langSvc.instant('Eliminazione effettuata con successo'),
+          buttons: ['OK']
+        });
+      }),
+      switchMap(alert => alert.present()),
+    ),
+    { dispatch: false }
+  );
+  deleteUgcTrack$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(deleteUgcTrack),
+      mergeMap(action =>
+        of(disableSyncInterval()).pipe(
+          mergeMap(() => {
+            const trackId = action.track?.properties?.id;
+            if (trackId) {
+              return from(this._ugcSvc.deleteApiTrack(trackId)).pipe(
+                mergeMap(() => [
+                  deleteUgcTrackSuccess({track: action.track}),
+                  syncUgcTracks(),
+                  enableSyncInterval()
+                ]),
+                catchError(error => of(deleteUgcTrackFailure({error}), enableSyncInterval())),
+              );
+            }
+            return of(deleteUgcTrackFailure({error: 'Track ID not found'}));
+          })
+        )
       ),
     ),
   );
@@ -65,15 +150,17 @@ export class UgcEffects {
   syncOnInterval$ = createEffect(() =>
     this._store.pipe(
       select(activableUgc),
-      filter(activable => activable),
+      withLatestFrom(this._store.pipe(select(syncUgcIntervalEnabled))),
+      filter(([activable, syncEnabled]) => activable && syncEnabled),
       switchMap(() =>
         interval(SYNC_INTERVAL).pipe(
           startWith(0),
           takeUntil(
             this._store.pipe(
               select(activableUgc),
-              filter(activable => !activable),
-            ),
+              withLatestFrom(this._store.pipe(select(syncUgcIntervalEnabled))),
+              filter(([activable, syncEnabled]) => !activable || !syncEnabled)
+            )
           ),
           map(() => syncUgc()),
         ),
@@ -114,5 +201,11 @@ export class UgcEffects {
     ),
   );
 
-  constructor(private _ugcSvc: UgcService, private _actions$: Actions, private _store: Store) {}
+  constructor(
+    private _ugcSvc: UgcService,
+    private _actions$: Actions,
+    private _store: Store,
+    private _alertCtrl: AlertController,
+    private _langSvc: LangService,
+  ) {}
 }

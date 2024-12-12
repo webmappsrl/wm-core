@@ -312,12 +312,37 @@ export async function removeSynchronizedUgcTrack(id: number): Promise<void> {
   await handleAsync(synchronizedUgcTrack.removeItem(`${id}`), 'removeSynchronizedUgcTrack: Failed');
 }
 
-export async function removeUgcTrack(trackId: string): Promise<void> {
-  try {
-    await synchronizedUgcTrack.removeItem(`${trackId}`);
-  } catch (error) {
-    console.error('removeUgcTrack: ', error);
-  }
+export async function removeUgcMedia(media: WmFeature<Media, MediaProperties>): Promise<void> {
+  const properties = media.properties;
+  const featureId = properties.id ?? properties.rawData?.uuid;
+  const storage = properties.id ? synchronizedUgcMedia : deviceUgcMedia;
+  await handleAsync(storage.removeItem(`${featureId}`), 'removeUgcMedia: Failed');
+}
+
+export async function removeUgcPoi(poi: WmFeature<Point>): Promise<void> {
+  const properties = poi.properties;
+  const photos = properties.photos ?? [];
+
+  photos.forEach(photo => {
+    removeUgcMedia(photo);
+  });
+
+  const featureId = properties.id ?? properties.rawData?.uuid;
+  const storage = properties.id ? synchronizedUgcPoi : deviceUgcPoi;
+  await handleAsync(storage.removeItem(`${featureId}`), 'removeUgcPoi: Failed');
+}
+
+export async function removeUgcTrack(track: WmFeature<LineString>): Promise<void> {
+  const properties = track.properties;
+  const photos = properties.photos ?? [];
+
+  photos.forEach(photo => {
+    removeUgcMedia(photo);
+  });
+
+  const featureId = properties.id ?? properties.rawData?.uuid;
+  const storage = properties.id ? synchronizedUgcTrack : deviceUgcTrack;
+  await handleAsync(storage.removeItem(`${featureId}`), 'removeUgcTrack: Failed');
 }
 
 export function saveDeviceUgcTrack(feature: WmFeature<LineString>): void {
