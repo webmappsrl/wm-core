@@ -19,6 +19,9 @@
           {{data?.size|wmToMb}}</ion-label
         >
       </div>
+      <ng-container *ngIf="data?.properties?.updatedAt as updatedAt">
+        <wm-updated-at [updatedAt]="updatedAt"></wm-updated-at>
+      </ng-container>
     </ng-container>
     <ng-template #skeletonTemplate>
       <ion-skeleton-text class="wm-card-big-subtitle-skeleton" animated></ion-skeleton-text>
