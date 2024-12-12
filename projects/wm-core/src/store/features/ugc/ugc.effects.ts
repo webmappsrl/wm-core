@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {mergeMap, map, catchError, switchMap, filter, takeUntil, startWith, finalize, tap, withLatestFrom} from 'rxjs/operators';
-import {of, from, interval} from 'rxjs';
+import {mergeMap, map, catchError, switchMap, filter, takeUntil, startWith, tap, withLatestFrom} from 'rxjs/operators';
+import {of, from, interval, EMPTY} from 'rxjs';
 import {
   currentUgcTrackId,
   deleteUgcPoi,
@@ -25,7 +25,7 @@ import {
 import {UgcService} from '@wm-core/store/features/ugc/ugc.service';
 import {select, Store} from '@ngrx/store';
 import {activableUgc, syncUgcIntervalEnabled} from './ugc.selector';
-import {getUgcPois, getUgcTrack, getUgcTracks, removeDeviceUgcPoi, removeDeviceUgcTrack, removeSynchronizedUgcPoi, removeSynchronizedUgcTrack} from '@wm-core/utils/localForage';
+import {getUgcPois, getUgcTrack, getUgcTracks, removeSynchronizedUgcPoi, removeUgcPoi, removeUgcTrack} from '@wm-core/utils/localForage';
 import {AlertController} from '@ionic/angular';
 import {LangService} from '@wm-core/localization/lang.service';
 const SYNC_INTERVAL = 60000;
@@ -49,7 +49,7 @@ export class UgcEffects {
       ofType(deleteUgcTrackFailure, deleteUgcPoiFailure),
       switchMap(() => this._alertCtrl.create({
         header: this._langSvc.instant('Ops!'),
-        message: this._langSvc.instant('Non è stato possibile eliminare il tracciato, riprova più tardi'),
+        message: this._langSvc.instant('Non è stato possibile eliminare, riprova più tardi'),
         buttons: ['OK']
       })),
       switchMap(alert => alert.present()),
@@ -62,27 +62,18 @@ export class UgcEffects {
       mergeMap(action =>
         of(disableSyncInterval()).pipe(
           mergeMap(() => {
-            if (action.poi?.properties?.id) {
-              const poiId = action.poi?.properties?.id;
+            const poiId = action.poi?.properties?.id;
+            if (poiId) {
               return from(this._ugcSvc.deleteApiPoi(poiId)).pipe(
-                tap(() => removeSynchronizedUgcPoi(poiId)),
                 mergeMap(() => [
-                  deleteUgcPoiSuccess(),
+                  deleteUgcPoiSuccess({poi: action.poi}),
                   syncUgcPois(),
                   enableSyncInterval()
                 ]),
                 catchError(error => of(deleteUgcPoiFailure({error}), enableSyncInterval())),
               );
             }
-
-            return from(removeDeviceUgcPoi(action.poi?.properties?.uuid)).pipe(
-              mergeMap(() => [
-                deleteUgcPoiSuccess(),
-                syncUgcPois(),
-                enableSyncInterval()
-              ]),
-              catchError(error => of(deleteUgcPoiFailure({error}), enableSyncInterval())),
-            );
+            return of(deleteUgcPoiFailure({error: 'Poi ID not found'}));
           })
         )
       ),
@@ -91,10 +82,16 @@ export class UgcEffects {
   deleteUgcSuccess$ = createEffect(() =>
     this._actions$.pipe(
       ofType(deleteUgcTrackSuccess, deleteUgcPoiSuccess),
-      switchMap(() => this._alertCtrl.create({
-        message: this._langSvc.instant('Tracciato eliminato con successo'),
-        buttons: ['OK']
-      })),
+      switchMap(action => {
+        (action.type === deleteUgcTrackSuccess.type) ? removeUgcTrack(action.track) : removeUgcPoi(action.poi);
+        return of(EMPTY);
+      }),
+      switchMap(() => {
+        return this._alertCtrl.create({
+          message: this._langSvc.instant('Eliminazione effettuata con successo'),
+          buttons: ['OK']
+        });
+      }),
       switchMap(alert => alert.present()),
     ),
     { dispatch: false }
@@ -105,46 +102,22 @@ export class UgcEffects {
       mergeMap(action =>
         of(disableSyncInterval()).pipe(
           mergeMap(() => {
-            if (action.track?.properties?.id) {
-              const trackId = action.track?.properties?.id;
+            const trackId = action.track?.properties?.id;
+            if (trackId) {
               return from(this._ugcSvc.deleteApiTrack(trackId)).pipe(
-                tap(() => removeSynchronizedUgcTrack(trackId)),
                 mergeMap(() => [
-                  deleteUgcTrackSuccess(),
+                  deleteUgcTrackSuccess({track: action.track}),
                   syncUgcTracks(),
                   enableSyncInterval()
                 ]),
                 catchError(error => of(deleteUgcTrackFailure({error}), enableSyncInterval())),
               );
             }
-
-            return from(removeDeviceUgcTrack(action.track?.properties?.uuid)).pipe(
-              mergeMap(() => [
-                deleteUgcTrackSuccess(),
-                syncUgcTracks(),
-                enableSyncInterval()
-              ]),
-              catchError(error => of(deleteUgcTrackFailure({error}), enableSyncInterval())),
-            );
+            return of(deleteUgcTrackFailure({error: 'Track ID not found'}));
           })
         )
       ),
     ),
-  );
-  deleyeUgcError$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(deleteUgcTrackFailure, deleteUgcPoiFailure),
-      switchMap((action) => {
-        const entity = action.type === deleteUgcTrackFailure.type ? 'tracciato' : 'POI';
-        return this._alertCtrl.create({
-        header: this._langSvc.instant('Ops!'),
-        message: this._langSvc.instant(`Non è stato possibile eliminare il ${entity}, riprova più tardi`),
-        buttons: ['OK']
-      })
-    }),
-      switchMap(alert => alert.present()),
-    ),
-    { dispatch: false }
   );
   loadUgcPois$ = createEffect(() =>
     this._actions$.pipe(
