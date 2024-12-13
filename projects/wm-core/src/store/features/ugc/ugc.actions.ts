@@ -48,3 +48,24 @@ export const deleteUgcPoi = createAction(
 );
 export const deleteUgcPoiSuccess = createAction('[Ugc] Delete Ugc Poi Success', props<{poi: WmFeature<Point>}>());
 export const deleteUgcPoiFailure = createAction('[Ugc] Delete Ugc Poi Failure', props<{error: string}>());
+export const updateUgcTrack = createAction(
+  '[Ugc] Update Ugc Track',
+  props<{track: WmFeature<LineString>}>(),
+);
+export const updateUgcTrackSuccess = createAction(
+  '[Ugc] Update Ugc Track Success',
+  props<{track: WmFeature<LineString>}>(),
+);
+export const updateUgcTrackFailure = createAction(
+  '[Ugc] Update Ugc Track Failure',
+  props<{error: string}>(),
+);
+export const updateUgcPoi = createAction('[Ugc] Update Ugc Poi', props<{poi: WmFeature<Point>}>());
+export const updateUgcPoiSuccess = createAction(
+  '[Ugc] Update Ugc Poi Success',
+  props<{poi: WmFeature<Point>}>(),
+);
+export const updateUgcPoiFailure = createAction(
+  '[Ugc] Update Ugc Poi Failure',
+  props<{error: string}>(),
+);

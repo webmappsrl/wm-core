@@ -12,6 +12,7 @@ import {
   enableSyncInterval,
   disableSyncInterval,
   deleteUgcTrackSuccess,
+  updateUgcTrackSuccess,
 } from '@wm-core/store/features/ugc/ugc.actions';
 import {WmFeature} from '@wm-types/feature';
 import {IHIT} from '@wm-core/types/elastic';
@@ -85,6 +86,10 @@ export const UgcReducer = createReducer(
   on(deleteUgcTrackSuccess, state => ({
     ...state,
     currentUgcTrack: undefined,
+  })),
+  on(updateUgcTrackSuccess, (state, {track}) => ({
+    ...state,
+    currentUgcTrack: track,
   })),
 );
 export function wmFeatureToHits(features: WmFeature<LineString | Point>[]): IHIT[] {

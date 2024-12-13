@@ -387,6 +387,14 @@ export class UgcService {
     }
   }
 
+  updateApiPoi(poi: WmFeature<Point>): Observable<any> {
+    return this._http.post(`${this.environment.api}/api/ugc/poi/edit`, poi);
+  }
+
+  updateApiTrack(track: WmFeature<LineString>): Observable<any> {
+    return this._http.post(`${this.environment.api}/api/ugc/track/edit`, track);
+  }
+
   // Funzione per verificare se una traccia è stata modificata
   private _isFeatureModified(apiFeature: WmFeature<any>, cloudFeature: WmFeature<any>): boolean {
     if (cloudFeature == null) {

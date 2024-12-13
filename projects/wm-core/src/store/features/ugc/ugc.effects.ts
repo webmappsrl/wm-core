@@ -19,13 +19,19 @@ import {
   syncUgcPois,
   syncUgcSuccess,
   syncUgcTracks,
+  updateUgcPoi,
+  updateUgcPoiFailure,
   updateUgcPois,
+  updateUgcPoiSuccess,
+  updateUgcTrack,
+  updateUgcTrackFailure,
   updateUgcTracks,
+  updateUgcTrackSuccess,
 } from '@wm-core/store/features/ugc/ugc.actions';
 import {UgcService} from '@wm-core/store/features/ugc/ugc.service';
 import {select, Store} from '@ngrx/store';
 import {activableUgc, syncUgcIntervalEnabled} from './ugc.selector';
-import {getUgcPois, getUgcTrack, getUgcTracks, removeSynchronizedUgcPoi, removeUgcPoi, removeUgcTrack} from '@wm-core/utils/localForage';
+import {getUgcPois, getUgcTrack, getUgcTracks, removeSynchronizedUgcPoi, removeUgcPoi, removeUgcTrack, saveUgcPoi, saveUgcTrack} from '@wm-core/utils/localForage';
 import {AlertController} from '@ionic/angular';
 import {LangService} from '@wm-core/localization/lang.service';
 const SYNC_INTERVAL = 60000;
@@ -196,6 +202,87 @@ export class UgcEffects {
         from(Promise.all([this._ugcSvc.syncUgcTracks(), this._ugcSvc.syncUgcPois()])).pipe(
           map(() => syncUgcSuccess({responseType: 'All'})),
           catchError(error => of(syncUgcFailure({responseType: 'All', error}))),
+        ),
+      ),
+    ),
+  );
+  updateUgcFailure$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(updateUgcTrackFailure, updateUgcPoiFailure),
+        switchMap(() =>
+          this._alertCtrl.create({
+            header: this._langSvc.instant('Ops!'),
+            message: this._langSvc.instant('Non è stato possibile aggiornare, riprova più tardi'),
+            buttons: ['OK'],
+          }),
+        ),
+        switchMap(alert => alert.present()),
+      ),
+    {dispatch: false},
+  );
+  updateUgcPoi$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(updateUgcPoi),
+      mergeMap(action =>
+        of(disableSyncInterval()).pipe(
+          mergeMap(() => {
+            const poiId = action.poi?.properties?.id;
+            if (poiId) {
+              return from(this._ugcSvc.updateApiPoi(action.poi)).pipe(
+                mergeMap(() => [
+                  updateUgcPoiSuccess({poi: action.poi}),
+                  syncUgcPois(),
+                  enableSyncInterval(),
+                ]),
+                catchError(error => of(updateUgcTrackFailure({error}), enableSyncInterval())),
+              );
+            }
+            return of(updateUgcTrackFailure({error: 'Track ID not found'}));
+          }),
+        ),
+      ),
+    ),
+  );
+  updateUgcSuccess$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(updateUgcTrackSuccess, updateUgcPoiSuccess),
+        switchMap(action => {
+          action.type === updateUgcTrackSuccess.type
+            ? saveUgcTrack(action.track)
+            : saveUgcPoi(action.poi);
+          return of(EMPTY);
+        }),
+        switchMap(() => {
+          return this._alertCtrl.create({
+            message: this._langSvc.instant('Aggiornamento effettuato con successo'),
+            buttons: ['OK'],
+          });
+        }),
+        switchMap(alert => alert.present()),
+      ),
+    {dispatch: false},
+  );
+  updateUgcTrack$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(updateUgcTrack),
+      mergeMap(action =>
+        of(disableSyncInterval()).pipe(
+          mergeMap(() => {
+            const trackId = action.track?.properties?.id;
+            if (trackId) {
+              return from(this._ugcSvc.updateApiTrack(action.track)).pipe(
+                mergeMap(() => [
+                  updateUgcTrackSuccess({track: action.track}),
+                  syncUgcTracks(),
+                  enableSyncInterval(),
+                ]),
+                catchError(error => of(updateUgcTrackFailure({error}), enableSyncInterval())),
+              );
+            }
+            return of(updateUgcTrackFailure({error: 'Track ID not found'}));
+          }),
         ),
       ),
     ),
