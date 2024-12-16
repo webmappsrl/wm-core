@@ -5,32 +5,13 @@ import {ICONF} from '../../types/config';
 import {ENVIRONMENT_CONFIG, EnvironmentConfig} from './conf.token';
 import {hostToGeohubAppId} from '../features/ec/ec.service';
 import {synchronizedApi} from '@wm-core/utils/localForage';
-import {distinctUntilChanged, shareReplay} from 'rxjs/operators';
+import {distinctUntilChanged, shareReplay, take} from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
 })
 export class ConfService {
   private _conf: BehaviorSubject<ICONF> = new BehaviorSubject<ICONF>(null as ICONF);
   private _geohubAppId: number = this.config.geohubId;
-
-  constructor(
-    @Inject(ENVIRONMENT_CONFIG) public config: EnvironmentConfig,
-    private _http: HttpClient,
-  ) {
-    const hostname: string = window.location.hostname;
-    if (hostname.indexOf('localhost') < 0) {
-      const matchedHost = Object.keys(hostToGeohubAppId).find(host => hostname.includes(host));
-
-      if (matchedHost) {
-        this._geohubAppId = hostToGeohubAppId[matchedHost];
-      } else {
-        const newGeohubId = parseInt(hostname.split('.')[0], 10);
-        if (!Number.isNaN(newGeohubId)) {
-          this._geohubAppId = newGeohubId;
-        }
-      }
-    }
-  }
 
   public get configUrl(): string {
     return `${this._geohubApiBaseUrl}config`;
@@ -50,6 +31,25 @@ export class ConfService {
 
   private get _geohubApiBaseUrl(): string {
     return `${this.config.api}/api/app/webmapp/${this._geohubAppId}/`;
+  }
+
+  constructor(
+    @Inject(ENVIRONMENT_CONFIG) public config: EnvironmentConfig,
+    private _http: HttpClient,
+  ) {
+    const hostname: string = window.location.hostname;
+    if (hostname.indexOf('localhost') < 0) {
+      const matchedHost = Object.keys(hostToGeohubAppId).find(host => hostname.includes(host));
+
+      if (matchedHost) {
+        this._geohubAppId = hostToGeohubAppId[matchedHost];
+      } else {
+        const newGeohubId = parseInt(hostname.split('.')[0], 10);
+        if (!Number.isNaN(newGeohubId)) {
+          this._geohubAppId = newGeohubId;
+        }
+      }
+    }
   }
 
   public getConf(): Observable<ICONF> {
@@ -76,6 +76,7 @@ export class ConfService {
             observe: 'response',
             headers: cachedLastModified ? {'If-Modified-Since': cachedLastModified} : {},
           })
+          .pipe(take(1))
           .subscribe(
             response => {
               const lastModified = response.headers.get('last-modified');

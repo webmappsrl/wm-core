@@ -5,7 +5,7 @@ import {Inject, Injectable} from '@angular/core';
 import {FeatureCollection, LineString} from 'geojson';
 import {from, Observable, of} from 'rxjs';
 // @ts-ignore
-import {catchError, distinctUntilChanged, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {catchError, distinctUntilChanged, shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {IRESPONSE} from '@wm-core/types/elastic';
 import {WmLoadingService} from '../../../services/loading.service';
 import {Filter, SliderFilter} from '../../../types/config';
@@ -20,6 +20,12 @@ export class EcService {
   private _geohubAppId: number = this.environment.geohubId;
   private _queryDic: {[query: string]: any} = {};
   private _shard = 'geohub_app';
+
+  private get _baseUrl(): string {
+    return this._geohubAppId
+      ? `${this._elasticApi}/?app=${this._shard}_${this._geohubAppId}`
+      : this._elasticApi;
+  }
 
   /**
    * Creates an instance of ElasticService.
@@ -45,12 +51,6 @@ export class EcService {
         }
       }
     }
-  }
-
-  private get _baseUrl(): string {
-    return this._geohubAppId
-      ? `${this._elasticApi}/?app=${this._shard}_${this._geohubAppId}`
-      : this._elasticApi;
   }
 
   public getEcTrack(id: string | number): Observable<WmFeature<LineString>> {
@@ -85,6 +85,7 @@ export class EcService {
             observe: 'response',
             headers: cachedLastModified ? {'If-Modified-Since': cachedLastModified} : {},
           })
+          .pipe(take(1))
           .subscribe(
             response => {
               const lastModified = response.headers.get('last-modified');
