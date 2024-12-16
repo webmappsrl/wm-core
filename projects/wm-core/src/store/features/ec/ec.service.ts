@@ -65,7 +65,7 @@ export class EcService {
     const poisUrl = `${this.environment.awsApi}/pois/${this._geohubAppId}.geojson`;
 
     return new Observable<FeatureCollection>(observer => {
-      synchronizedApi.getItem(`${poisUrl}-data`).then((cachedData: string | null) => {
+      synchronizedApi.getItem(`${poisUrl}`).then((cachedData: string | null) => {
         let parsedData: FeatureCollection | null = null;
         const cachedLastModified = localStorage.getItem(`${poisUrl}-last-modified`);
 
@@ -94,7 +94,7 @@ export class EcService {
 
                 if (pois) {
                   // Aggiorna la cache solo con dati nuovi
-                  synchronizedApi.setItem(`${poisUrl}-data`, JSON.stringify(pois));
+                  synchronizedApi.setItem(`${poisUrl}`, JSON.stringify(pois));
                   if (lastModified) {
                     localStorage.setItem(`${poisUrl}-last-modified`, lastModified);
                   }

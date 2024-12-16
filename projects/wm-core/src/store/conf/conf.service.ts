@@ -56,7 +56,7 @@ export class ConfService {
     const url = `${this.config.awsApi}/conf/${this._geohubAppId}.json`;
 
     return new Observable<ICONF>(observer => {
-      synchronizedApi.getItem(`${url}-data`).then((cachedData: string | null) => {
+      synchronizedApi.getItem(`${url}`).then((cachedData: string | null) => {
         let parsedData: ICONF | null = null;
         const cachedLastModified = localStorage.getItem(`${url}-last-modified`);
 
@@ -84,7 +84,7 @@ export class ConfService {
                 const conf = response.body;
                 if (conf) {
                   // Aggiorna cache solo se necessario
-                  synchronizedApi.setItem(`${url}-data`, JSON.stringify(conf));
+                  synchronizedApi.setItem(`${url}`, JSON.stringify(conf));
                   if (lastModified) {
                     localStorage.setItem(`${url}-last-modified`, lastModified);
                   }
