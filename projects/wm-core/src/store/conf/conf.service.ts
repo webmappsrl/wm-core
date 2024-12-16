@@ -5,13 +5,32 @@ import {ICONF} from '../../types/config';
 import {ENVIRONMENT_CONFIG, EnvironmentConfig} from './conf.token';
 import {hostToGeohubAppId} from '../features/ec/ec.service';
 import {synchronizedApi} from '@wm-core/utils/localForage';
-import {distinctUntilChanged} from 'rxjs/operators';
+import {distinctUntilChanged, shareReplay} from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
 })
 export class ConfService {
   private _conf: BehaviorSubject<ICONF> = new BehaviorSubject<ICONF>(null as ICONF);
   private _geohubAppId: number = this.config.geohubId;
+
+  constructor(
+    @Inject(ENVIRONMENT_CONFIG) public config: EnvironmentConfig,
+    private _http: HttpClient,
+  ) {
+    const hostname: string = window.location.hostname;
+    if (hostname.indexOf('localhost') < 0) {
+      const matchedHost = Object.keys(hostToGeohubAppId).find(host => hostname.includes(host));
+
+      if (matchedHost) {
+        this._geohubAppId = hostToGeohubAppId[matchedHost];
+      } else {
+        const newGeohubId = parseInt(hostname.split('.')[0], 10);
+        if (!Number.isNaN(newGeohubId)) {
+          this._geohubAppId = newGeohubId;
+        }
+      }
+    }
+  }
 
   public get configUrl(): string {
     return `${this._geohubApiBaseUrl}config`;
@@ -33,74 +52,62 @@ export class ConfService {
     return `${this.config.api}/api/app/webmapp/${this._geohubAppId}/`;
   }
 
-  constructor(
-    @Inject(ENVIRONMENT_CONFIG) public config: EnvironmentConfig,
-    private _http: HttpClient,
-  ) {
-    const hostname: string = window.location.hostname;
-    if (hostname.indexOf('localhost') < 0) {
-      const matchedHost = Object.keys(hostToGeohubAppId).find(host => hostname.includes(host));
-
-      if (matchedHost) {
-        this._geohubAppId = hostToGeohubAppId[matchedHost];
-      } else {
-        const newGeohubId = parseInt(hostname.split('.')[0], 10);
-        if (!Number.isNaN(newGeohubId)) {
-          this._geohubAppId = newGeohubId;
-        }
-      }
-    }
-  }
-
   public getConf(): Observable<ICONF> {
     const url = `${this.config.awsApi}/conf/${this._geohubAppId}.json`;
 
     return new Observable<ICONF>(observer => {
-      synchronizedApi.getItem(url).then((cachedData: string | null) => {
+      synchronizedApi.getItem(`${url}-data`).then((cachedData: string | null) => {
         let parsedData: ICONF | null = null;
+        const cachedLastModified = localStorage.getItem(`${url}-last-modified`);
 
-        // Verifica se i dati in cache sono validi
+        // Verifica se c'è un dato in cache
         if (cachedData) {
           try {
             parsedData = JSON.parse(cachedData) as ICONF;
-
-            // Controlla la validità del dato (opzionale, se necessario)
-            if (!parsedData) {
-              console.warn('Invalid cache format. Ignoring cached data.');
-              parsedData = null;
-            }
+            observer.next(parsedData); // Invio immediato dei dati in cache
           } catch (e) {
-            console.warn('Error parsing cached data. Ignoring cached data.', e);
-            parsedData = null;
-          }
-
-          // Invia i dati dalla cache se validi
-          if (parsedData) {
-            observer.next(parsedData);
+            console.warn('Error parsing cached data. Ignoring cache.', e);
           }
         }
 
-        // Scarica i dati aggiornati
-        this._http.get<ICONF>(url).subscribe(
-          conf => {
-            if (!cachedData || cachedData !== JSON.stringify(conf)) {
-              synchronizedApi.setItem(url, JSON.stringify(conf)); // Aggiorna la cache
-              observer.next(conf); // Invia i dati aggiornati
-            } else {
-              console.log('conf Cache is up-to-date. No changes detected.');
-            }
-            observer.complete();
-          },
-          error => {
-            if (!parsedData) {
-              observer.error(error); // Errore solo se non ci sono dati cache
-            } else {
+        // Effettua la richiesta HTTP con Last-Modified
+        this._http
+          .get<ICONF>(url, {
+            observe: 'response',
+            headers: cachedLastModified ? {'If-Modified-Since': cachedLastModified} : {},
+          })
+          .subscribe(
+            response => {
+              const lastModified = response.headers.get('last-modified');
+
+              if (response.status === 200) {
+                const conf = response.body;
+                if (conf) {
+                  // Aggiorna cache solo se necessario
+                  synchronizedApi.setItem(`${url}-data`, JSON.stringify(conf));
+                  if (lastModified) {
+                    localStorage.setItem(`${url}-last-modified`, lastModified);
+                  }
+                  observer.next(conf);
+                }
+              } else if (response.status === 304) {
+                console.log('No changes detected, using cached data.');
+              }
               observer.complete();
-            }
-          },
-        );
+            },
+            error => {
+              if (!parsedData) {
+                observer.error(error); // Nessun dato in cache, errore critico
+              } else {
+                observer.complete();
+              }
+            },
+          );
       });
-    }).pipe(distinctUntilChanged((a, b) => JSON.stringify(a) == JSON.stringify(b)));
+    }).pipe(
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+      shareReplay(1), // Riduce chiamate duplicate per più osservatori
+    );
   }
 
   public getHost(): string | undefined {

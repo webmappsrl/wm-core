@@ -16,15 +16,10 @@ export class ConfEffects {
     this._actions$.pipe(
       ofType(loadConf),
       switchMap(() =>
-        interval(SYNC_INTERVAL).pipe(
-          startWith(0),
-          switchMap(() =>
-            this._configSVC.getConf().pipe(
-              filter(conf => conf != null),
-              map(conf => loadConfSuccess({conf})),
-              catchError((_: any) => of(loadConfFail())),
-            ),
-          ),
+        this._configSVC.getConf().pipe(
+          filter(conf => conf != null),
+          map(conf => loadConfSuccess({conf})),
+          catchError((_: any) => of(loadConfFail())),
         ),
       ),
     ),

@@ -40,14 +40,9 @@ export class EcEffects {
     this._actions$.pipe(
       ofType(loadEcPois),
       switchMap(() =>
-        interval(SYNC_INTERVAL).pipe(
-          startWith(0),
-          switchMap(() =>
-            this._ecSvc.getPois().pipe(
-              map(featureCollection => loadEcPoisSuccess({featureCollection})),
-              catchError(() => of(loadEcPoisFailure())),
-            ),
-          ),
+        this._ecSvc.getPois().pipe(
+          map(featureCollection => loadEcPoisSuccess({featureCollection})),
+          catchError(() => of(loadEcPoisFailure())),
         ),
       ),
     ),

@@ -5,7 +5,7 @@ import {Inject, Injectable} from '@angular/core';
 import {FeatureCollection, LineString} from 'geojson';
 import {from, Observable, of} from 'rxjs';
 // @ts-ignore
-import {catchError, switchMap, tap} from 'rxjs/operators';
+import {catchError, distinctUntilChanged, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {IRESPONSE} from '@wm-core/types/elastic';
 import {WmLoadingService} from '../../../services/loading.service';
 import {Filter, SliderFilter} from '../../../types/config';
@@ -20,12 +20,6 @@ export class EcService {
   private _geohubAppId: number = this.environment.geohubId;
   private _queryDic: {[query: string]: any} = {};
   private _shard = 'geohub_app';
-
-  private get _baseUrl(): string {
-    return this._geohubAppId
-      ? `${this._elasticApi}/?app=${this._shard}_${this._geohubAppId}`
-      : this._elasticApi;
-  }
 
   /**
    * Creates an instance of ElasticService.
@@ -53,6 +47,12 @@ export class EcService {
     }
   }
 
+  private get _baseUrl(): string {
+    return this._geohubAppId
+      ? `${this._elasticApi}/?app=${this._shard}_${this._geohubAppId}`
+      : this._elasticApi;
+  }
+
   public getEcTrack(id: string | number): Observable<WmFeature<LineString>> {
     if (id == null) return of(null);
     if (+id > -1) {
@@ -65,47 +65,60 @@ export class EcService {
     const poisUrl = `${this.environment.awsApi}/pois/${this._geohubAppId}.geojson`;
 
     return new Observable<FeatureCollection>(observer => {
-      synchronizedApi.getItem(poisUrl).then((cachedData: string | null) => {
+      synchronizedApi.getItem(`${poisUrl}-data`).then((cachedData: string | null) => {
         let parsedData: FeatureCollection | null = null;
+        const cachedLastModified = localStorage.getItem(`${poisUrl}-last-modified`);
 
-        // Verifica se i dati in cache sono validi
+        // Se ci sono dati in cache, invia immediatamente
         if (cachedData) {
           try {
             parsedData = JSON.parse(cachedData) as FeatureCollection;
             observer.next(parsedData);
-
-            // Controlla se i dati hanno una struttura valida
-            if (!parsedData || !parsedData.features) {
-              console.warn('Invalid cache format. Ignoring cached data.');
-              parsedData = null;
-            }
           } catch (e) {
             console.warn('Error parsing cached data. Ignoring cached data.', e);
-            parsedData = null;
           }
         }
 
-        // Se i dati in cache sono validi, confrontali con quelli scaricati
-        this._http.get<FeatureCollection>(poisUrl).subscribe(
-          pois => {
-            if (!cachedData || cachedData !== JSON.stringify(pois)) {
-              synchronizedApi.setItem(poisUrl, JSON.stringify(pois)); // Aggiorna la cache
-              observer.next(pois); // Emissione dati aggiornati
-            } else {
-              console.log('pois Cache is up-to-date. No changes detected.');
-            }
-            observer.complete();
-          },
-          error => {
-            if (!parsedData) {
-              observer.error(error); // Emissione errore se non c'è cache
-            } else {
-              observer.complete(); // Completa comunque se c'è cache
-            }
-          },
-        );
+        // Effettua la richiesta HTTP con Last-Modified
+        this._http
+          .get<FeatureCollection>(poisUrl, {
+            observe: 'response',
+            headers: cachedLastModified ? {'If-Modified-Since': cachedLastModified} : {},
+          })
+          .subscribe(
+            response => {
+              const lastModified = response.headers.get('last-modified');
+
+              if (response.status === 200) {
+                const pois = response.body;
+
+                if (pois) {
+                  // Aggiorna la cache solo con dati nuovi
+                  synchronizedApi.setItem(`${poisUrl}-data`, JSON.stringify(pois));
+                  if (lastModified) {
+                    localStorage.setItem(`${poisUrl}-last-modified`, lastModified);
+                  }
+                  observer.next(pois);
+                }
+              } else if (response.status === 304) {
+                console.log('No changes detected for pois, using cached data.');
+              }
+
+              observer.complete();
+            },
+            error => {
+              if (!parsedData) {
+                observer.error(error); // Errore se non ci sono dati in cache
+              } else {
+                observer.complete(); // Completa senza errore se esiste la cache
+              }
+            },
+          );
       });
-    });
+    }).pipe(
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+      shareReplay(1), // Condivide la risposta tra più osservatori
+    );
   }
 
   /**
