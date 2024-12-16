@@ -12,6 +12,8 @@ import {
   resetTrackFilters,
   setLastFilterType,
   setLayer,
+  startLoader,
+  stopLoader,
   togglePoiFilter,
   toggleTrackFilter,
   updateTrackFilter,
@@ -127,7 +129,6 @@ export class WmCoreMapComponent {
   constructor(
     private _store: Store,
     private _langService: LangService,
-    private _loadingSvc: WmLoadingService,
     private _modalCtrl: ModalController,
     private _router: Router,
     private _route: ActivatedRoute,
@@ -180,20 +181,16 @@ export class WmCoreMapComponent {
   setLoader(event: string): void {
     console.log(event);
     switch (event) {
+      case 'rendering:pois_start':
       case 'rendering:layer_start':
-        this._loadingSvc.show('Rendering Layer');
+        this._store.dispatch(startLoader());
         break;
       case 'rendering:layer_done':
-        this._loadingSvc.close('Rendering Layer');
-        break;
-      case 'rendering:pois_start':
-        this._loadingSvc.show('Rendering Pois');
-        break;
       case 'rendering:pois_done':
-        this._loadingSvc.close('Rendering Pois');
+        this._store.dispatch(stopLoader());
         break;
       default:
-        this._loadingSvc.close();
+        this._store.dispatch(stopLoader());
     }
   }
 
