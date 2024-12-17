@@ -43,3 +43,7 @@ export const loadCurrentEcTrackFailure = createAction(
   '[ec] Load Current EcTrack Failure',
   props<{error: any}>(),
 );
+export const currentEcRelatedPoiId = createAction(
+  '[ec] Set current ec related poi id',
+  props<{currentRelatedPoiId: string | null}>(),
+);

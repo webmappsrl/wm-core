@@ -11,6 +11,8 @@ import {
   poiFilterIdentifiers,
   poisSelectedFilterIdentifiers,
 } from '@wm-core/store/user-activity/user-activity.selector';
+import {WmFeature} from '@wm-types/feature';
+import {Point} from 'geojson';
 
 export const ec = createFeatureSelector<IELASTIC>('ec');
 
@@ -163,3 +165,15 @@ export const hasActiveFilters = createSelector(
 );
 
 export const currentEcTrack = createSelector(ec, state => state.currentEcTrack);
+export const currentEcRelatedPoiId = createSelector(ec, state => state.currentEcRelatedPoiId);
+export const currentEcRelatedPoi = createSelector(
+  currentEcTrack,
+  currentEcRelatedPoiId,
+  (track, relatedPoiId) => {
+    const related_pois = track?.properties?.related_pois ?? null;
+    if (related_pois != null) {
+      return related_pois.find((p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId);
+    }
+    return null;
+  },
+);
