@@ -11,13 +11,12 @@
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "tsco.accessorsBeforeCtor": true,
   "tsco.addPublicModifierIfMissing": false,
   "tsco.addRegionCaptionToRegionEnd": false,
-  "tsco.addRowNumberInRegionName": false,
   "tsco.organizeOnSave": true,
   "tsco.groupPropertiesWithDecorators": true,
   "tsco.useRegions": false,
+  "tsco.addMemberCountInRegionName": false,
   "tsco.memberOrder": [
     {
       "caption": "Properties",
@@ -38,20 +37,13 @@
         "publicConstProperties",
         "publicStaticReadOnlyProperties",
         "publicReadOnlyProperties",
-        "publicStaticProperties"
+        "publicStaticProperties",
+        "publicProperties"
       ]
     },
     {
-      "caption": "Public Static Accessors",
-      "memberTypes": ["publicStaticGettersAndSetters"]
-    },
-    {
-      "caption": "Public Accessors",
-      "memberTypes": ["publicGettersAndSetters"]
-    },
-    {
-      "caption": "Properties",
-      "memberTypes": ["publicProperties"]
+      "caption": "Static Block Declarations",
+      "memberTypes": ["staticBlockDeclarations"]
     },
     {
       "caption": "Constructors",
@@ -94,31 +86,75 @@
       "memberTypes": ["privateAbstractIndexes"]
     },
     {
+      "caption": "Public Static Accessors",
+      "memberTypes": ["publicStaticAccessors"]
+    },
+    {
+      "caption": "Public Accessors",
+      "memberTypes": ["publicAccessors"]
+    },
+    {
       "caption": "Public Abstract Accessors",
-      "memberTypes": ["publicAbstractGettersAndSetters"]
+      "memberTypes": ["publicAbstractAccessors"]
     },
     {
       "caption": "Protected Static Accessors",
-      "memberTypes": ["protectedStaticGettersAndSetters"]
+      "memberTypes": ["protectedStaticAccessors"]
     },
     {
       "caption": "Protected Accessors",
-      "memberTypes": ["protectedGettersAndSetters"]
+      "memberTypes": ["protectedAccessors"]
     },
     {
       "caption": "Protected Abstract Accessors",
-      "memberTypes": ["protectedAbstractGettersAndSetters"]
+      "memberTypes": ["protectedAbstractAccessors"]
     },
     {
       "caption": "Private Static Accessors",
-      "memberTypes": ["privateStaticGettersAndSetters"]
+      "memberTypes": ["privateStaticAccessors"]
     },
     {
       "caption": "Private Accessors",
-      "memberTypes": ["privateGettersAndSetters"]
+      "memberTypes": ["privateAccessors"]
     },
     {
       "caption": "Private Abstract Accessors",
+      "memberTypes": ["privateAbstractAccessors"]
+    },
+    {
+      "caption": "Public Static Getters And Setters",
+      "memberTypes": ["publicStaticGettersAndSetters"]
+    },
+    {
+      "caption": "Public Getters And Setters",
+      "memberTypes": ["publicGettersAndSetters"]
+    },
+    {
+      "caption": "Public Abstract Getters And Setters",
+      "memberTypes": ["publicAbstractGettersAndSetters"]
+    },
+    {
+      "caption": "Protected Static Getters And Setters",
+      "memberTypes": ["protectedStaticGettersAndSetters"]
+    },
+    {
+      "caption": "Protected Getters And Setters",
+      "memberTypes": ["protectedGettersAndSetters"]
+    },
+    {
+      "caption": "Protected Abstract Getters And Setters",
+      "memberTypes": ["protectedAbstractGettersAndSetters"]
+    },
+    {
+      "caption": "Private Static Getters And Setters",
+      "memberTypes": ["privateStaticGettersAndSetters"]
+    },
+    {
+      "caption": "Private Getters And Setters",
+      "memberTypes": ["privateGettersAndSetters"]
+    },
+    {
+      "caption": "Private Abstract Getters And Setters",
       "memberTypes": ["privateAbstractGettersAndSetters"]
     },
     {

@@ -10,7 +10,12 @@ import {
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Store} from '@ngrx/store';
-import {ecTracksSuccess, ecTracksFailure, ecTracks} from '@wm-core/store/features/ec/ec.actions';
+import {
+  ecTracksSuccess,
+  ecTracksFailure,
+  ecTracks,
+  currentEcLayerId,
+} from '@wm-core/store/features/ec/ec.actions';
 import {
   closeUgc,
   removeTrackFilters,
@@ -24,22 +29,18 @@ import {
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {debounceTime, map, mergeMap, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {combineLatest, of} from 'rxjs';
-import {ActivatedRoute, Router} from '@angular/router';
 import {Filter} from '@wm-core/types/config';
+import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 
 @Injectable()
 export class UserActivityEffects {
   goToHome$ = createEffect(() =>
     this._actions$.pipe(
       ofType(goToHome),
+      tap(() => {
+        this._urlHandlerSvc.resetURL(null);
+      }),
       mergeMap(() => of(inputTyped({inputTyped: ''}), setLayer(null), resetTrackFilters())),
-      tap(() =>
-        this._router.navigate([], {
-          relativeTo: this._route,
-          queryParams: {layer: null, filter: null},
-          queryParamsHandling: 'merge',
-        }),
-      ),
     ),
   );
   removeTrackFilters$ = createEffect(() =>
@@ -47,6 +48,17 @@ export class UserActivityEffects {
       ofType(removeTrackFilters),
       map(() => ecTracks({})),
     ),
+  );
+  setECLayerId$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(currentEcLayerId),
+        tap(action => {
+          const queryParams = {layer: action.currentEcLayerId ?? undefined};
+          this._urlHandlerSvc.updateURL(queryParams);
+        }),
+      ),
+    {dispatch: false},
   );
   setLoadingStart$ = createEffect(() =>
     this._actions$.pipe(
@@ -115,7 +127,6 @@ export class UserActivityEffects {
   constructor(
     private _actions$: Actions,
     private _store: Store,
-    private _router: Router,
-    private _route: ActivatedRoute,
+    private _urlHandlerSvc: UrlHandlerService,
   ) {}
 }

@@ -4,6 +4,7 @@ import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@ang
 import {DomSanitizer} from '@angular/platform-browser';
 import {ModalController} from '@ionic/angular';
 import {iLocalString} from '@wm-core/types/config';
+import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 
 @Component({
   selector: 'wm-inner-component-html',
@@ -18,17 +19,12 @@ export class WmInnerHtmlComponent {
 
   constructor(
     private _modalCtrl: ModalController,
-    private _route: ActivatedRoute,
-    private _router: Router,
+    private _urlHandlerSvc: UrlHandlerService,
     public sanitizer: DomSanitizer,
   ) {}
 
   dismiss(): void {
     this._modalCtrl.dismiss();
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams: {slug: null},
-      queryParamsHandling: 'merge',
-    });
+    this._urlHandlerSvc.updateURL({slug: undefined});
   }
 }

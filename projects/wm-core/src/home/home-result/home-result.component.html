@@ -71,7 +71,11 @@
       </ng-container>
     </ng-container>
     <div class="pois" *ngIf="showResulType === 'pois'|| showResulType === 'all'">
-      <wm-poi-box *ngFor="let c of pois$|async|wmSort:'properties.updatedAt':false" [data]="c" (clickEVT)="poiEVT.emit(c)">
+      <wm-poi-box
+        *ngFor="let c of pois$|async|wmSort:'properties.updatedAt':false"
+        [data]="c"
+        (clickEVT)="setPoi(c)"
+      >
       </wm-poi-box>
     </div>
   </ng-container>

@@ -36,7 +36,7 @@ import {Point} from 'geojson';
 export class WmHomeResultComponent implements OnDestroy {
   private _resultTypeSub$: Subscription = Subscription.EMPTY;
 
-  @Output() poiEVT: EventEmitter<WmFeature<Point>> = new EventEmitter();
+  @Output() poiEVT: EventEmitter<number | string> = new EventEmitter();
   @Output() trackEVT: EventEmitter<number | string> = new EventEmitter();
 
   countAll$ = this._store.select(countAll);
@@ -87,5 +87,10 @@ export class WmHomeResultComponent implements OnDestroy {
 
   changeResultType(event): void {
     this.showResultType$.next(event.target.value);
+  }
+
+  setPoi(f: WmFeature<Point>): void {
+    const id = f?.properties?.id ?? null;
+    this.poiEVT.emit(id);
   }
 }

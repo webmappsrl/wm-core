@@ -1,6 +1,6 @@
 import {CommonModule} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient} from '@angular/common/http';
-import {NgModule} from '@angular/core';
+import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {IonicModule} from '@ionic/angular';
 import {EffectsModule} from '@ngrx/effects';
 import {StoreModule} from '@ngrx/store';
@@ -52,11 +52,9 @@ import {UgcReducer} from './store/features/ugc/ugc.reducer';
 import {userActivityReducer} from './store/user-activity/user-activity.reducer';
 import {UserActivityEffects} from './store/user-activity/user-activity.effects';
 import {WmSearchBarComponent} from './search-bar/search-bar.component';
-import { WmCoreMapComponent } from './map/map.component';
-import { WmMapModule } from '@map-core/map-core.module';
-export function httpTranslateLoader(http: HttpClient): any {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
-}
+import {WmCoreMapComponent} from './map/map.component';
+import {WmMapModule} from '@map-core/map-core.module';
+import {UrlHandlerService} from './services/url-handler.service';
 const declarations = [
   WmAddressComponent,
   WmTabDetailComponent,
@@ -84,7 +82,7 @@ const declarations = [
   WmExcerptComponent,
   WmFormComponent,
   WmSearchBarComponent,
-  WmCoreMapComponent
+  WmCoreMapComponent,
 ];
 const modules = [
   WmSharedModule,
@@ -95,9 +93,8 @@ const modules = [
   WmFiltersModule,
   ReactiveFormsModule,
   WmProfileModule,
-  WmMapModule
+  WmMapModule,
 ];
-
 @NgModule({
   declarations,
   imports: [
@@ -126,7 +123,27 @@ const modules = [
     ],
     ...modules,
   ],
-  providers: [LangService, {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
+  providers: [
+    LangService,
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+    UrlHandlerService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeUrlHandler,
+      deps: [UrlHandlerService],
+      multi: true, // Permette più inizializzatori contemporaneamente
+    },
+  ],
   exports: [...declarations, ...modules, TranslateModule],
 })
 export class WmCoreModule {}
+
+export function httpTranslateLoader(http: HttpClient): any {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
+
+export function initializeUrlHandler(urlHandlerService: UrlHandlerService) {
+  return () => urlHandlerService.initialize();
+}
+
+
