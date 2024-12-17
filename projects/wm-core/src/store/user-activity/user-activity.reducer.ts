@@ -16,6 +16,8 @@ import {
   setCurrentPoi,
   setLastFilterType,
   setLayer,
+  startLoader,
+  stopLoader,
   togglePoiFilter,
   toggleTrackFilter,
   updateTrackFilter,
@@ -34,6 +36,7 @@ export interface UserActivityState {
   drawTrack: boolean;
   layer?: any;
   lastFilterType?: 'tracks' | 'pois' | null;
+  loading: boolean;
 }
 
 export interface UserAcitivityRootState {
@@ -47,6 +50,7 @@ const initialState: UserActivityState = {
   drawTrack: false,
   filterTaxonomies: [],
   lastFilterType: null,
+  loading: false,
 };
 
 export const userActivityReducer = createReducer(
@@ -189,4 +193,6 @@ export const userActivityReducer = createReducer(
     };
     return newState;
   }),
+  on(startLoader, state => ({...state, loading: true})),
+  on(stopLoader, state => ({...state, loading: false})),
 );

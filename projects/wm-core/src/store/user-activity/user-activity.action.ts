@@ -67,3 +67,6 @@ export const togglePoiFilter = createAction(
   props<{filterIdentifier: string}>(),
 );
 export const resetPoiFilters = createAction('[User Activity] pois: reset all pois filters');
+
+export const startLoader = createAction('[User Activity] loader: start loader');
+export const stopLoader = createAction('[User Activity] loader: stop loader');
