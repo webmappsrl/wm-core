@@ -178,18 +178,21 @@ export class WmCoreMapComponent {
   }
 
   setLoader(event: string): void {
-    console.log(event);
     switch (event) {
       case 'rendering:pois_start':
+        this._store.dispatch(startLoader({identifier: 'pois'}));
+        break;
       case 'rendering:layer_start':
-        this._store.dispatch(startLoader());
+        this._store.dispatch(startLoader({identifier: 'layer'}));
         break;
       case 'rendering:layer_done':
+        this._store.dispatch(stopLoader({identifier: 'layer'}));
+        break;
       case 'rendering:pois_done':
-        this._store.dispatch(stopLoader());
+        this._store.dispatch(stopLoader({identifier: 'layer'}));
         break;
       default:
-        this._store.dispatch(stopLoader());
+      //  this._store.dispatch(stopLoader());
     }
   }
 

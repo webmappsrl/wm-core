@@ -35,7 +35,6 @@ export class EcService {
   constructor(
     @Inject(ENVIRONMENT_CONFIG) public environment: EnvironmentConfig,
     private _http: HttpClient,
-    private _loadingSvc: WmLoadingService,
   ) {
     this._elasticApi = this.environment.elasticApi;
     const hostname: string = window.location.hostname;

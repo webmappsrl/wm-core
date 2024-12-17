@@ -6,7 +6,6 @@ import {
   applyWhere,
   closeUgc,
   enabledDrawTrack,
-  goToHome,
   inputTyped,
   openUgc,
   resetPoiFilters,
@@ -36,7 +35,7 @@ export interface UserActivityState {
   drawTrack: boolean;
   layer?: any;
   lastFilterType?: 'tracks' | 'pois' | null;
-  loading: boolean;
+  loading: {pois: boolean; layer: boolean};
 }
 
 export interface UserAcitivityRootState {
@@ -50,7 +49,7 @@ const initialState: UserActivityState = {
   drawTrack: false,
   filterTaxonomies: [],
   lastFilterType: null,
-  loading: false,
+  loading: {pois: true, layer: true},
 };
 
 export const userActivityReducer = createReducer(
@@ -193,6 +192,20 @@ export const userActivityReducer = createReducer(
     };
     return newState;
   }),
-  on(startLoader, state => ({...state, loading: true})),
-  on(stopLoader, state => ({...state, loading: false})),
+  on(startLoader, (state, {identifier}) => {
+    const loading = {...state.loading, [identifier]: true};
+    const newState: UserActivityState = {
+      ...state,
+      loading,
+    };
+    return newState;
+  }),
+  on(stopLoader, (state, {identifier}) => {
+    const loading = {...state.loading, [identifier]: false};
+    const newState: UserActivityState = {
+      ...state,
+      loading,
+    };
+    return newState;
+  }),
 );
