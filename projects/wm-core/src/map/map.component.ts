@@ -39,13 +39,13 @@ import {LineString, Point} from 'geojson';
 import {ITrackElevationChartHoverElements} from '@map-core/types/track-elevation-charts';
 import {ugcPoiFeatures, ugcTracksFeatures} from '@wm-core/store/features/ugc/ugc.selector';
 import {ModalController} from '@ionic/angular';
-import {ActivatedRoute, Router} from '@angular/router';
 import {ProfileAuthComponent} from '@wm-core/profile/profile-auth/profile-auth.component';
 import {extentFromLonLat} from '@map-core/utils';
 import {WmHomeComponent} from '@wm-core/home/home.component';
 import {WmMapTrackRelatedPoisDirective} from '@map-core/directives';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {WmMapComponent} from '@map-core/components';
+import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -130,8 +130,7 @@ export class WmCoreMapComponent {
     private _store: Store,
     private _langService: LangService,
     private _modalCtrl: ModalController,
-    private _router: Router,
-    private _route: ActivatedRoute,
+    private _urlHandlerSvc: UrlHandlerService,
   ) {}
 
   openPopup(popup: {name: string; html: string}): void {
@@ -272,11 +271,7 @@ export class WmCoreMapComponent {
     this.currentLayer$.pipe(take(1)).subscribe(layer => {
       this.mapCmp.fitView(extentFromLonLat(layer.bbox), {duration: 1000});
     });
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams: {ugc_track: undefined, track},
-      queryParamsHandling: 'merge',
-    });
+    this._urlHandlerSvc.updateURL({ugc_track: undefined, track});
   }
 
   updateLastFilterType(filter: 'tracks' | 'pois'): void {
@@ -299,10 +294,6 @@ export class WmCoreMapComponent {
   updateUgcTrack(ugc_track = undefined): void {
     this._store.dispatch(openUgc());
     this.homeCmp.setTrack(ugc_track);
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams: {track: undefined, ugc_track},
-      queryParamsHandling: 'merge',
-    });
+    this._urlHandlerSvc.updateURL({track: undefined, ugc_track});
   }
 }

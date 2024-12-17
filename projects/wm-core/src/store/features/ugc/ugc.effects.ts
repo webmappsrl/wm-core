@@ -1,8 +1,19 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {mergeMap, map, catchError, switchMap, filter, takeUntil, startWith, tap, withLatestFrom} from 'rxjs/operators';
+import {
+  mergeMap,
+  map,
+  catchError,
+  switchMap,
+  filter,
+  takeUntil,
+  startWith,
+  tap,
+  withLatestFrom,
+} from 'rxjs/operators';
 import {of, from, interval, EMPTY} from 'rxjs';
 import {
+  currentUgcPoiId,
   currentUgcTrackId,
   deleteUgcPoi,
   deleteUgcPoiFailure,
@@ -12,6 +23,8 @@ import {
   deleteUgcTrackSuccess,
   disableSyncInterval,
   enableSyncInterval,
+  loadcurrentUgcPoiIdFailure,
+  loadcurrentUgcPoiIdSuccess,
   loadCurrentUgcTrackFailure,
   loadCurrentUgcTrackSuccess,
   syncUgc,
@@ -31,7 +44,17 @@ import {
 import {UgcService} from '@wm-core/store/features/ugc/ugc.service';
 import {select, Store} from '@ngrx/store';
 import {activableUgc, syncUgcIntervalEnabled} from './ugc.selector';
-import {getUgcPois, getUgcTrack, getUgcTracks, removeSynchronizedUgcPoi, removeUgcPoi, removeUgcTrack, saveUgcPoi, saveUgcTrack} from '@wm-core/utils/localForage';
+import {
+  getUgcPoi,
+  getUgcPois,
+  getUgcTrack,
+  getUgcTracks,
+  removeSynchronizedUgcPoi,
+  removeUgcPoi,
+  removeUgcTrack,
+  saveUgcPoi,
+  saveUgcTrack,
+} from '@wm-core/utils/localForage';
 import {AlertController} from '@ionic/angular';
 import {LangService} from '@wm-core/localization/lang.service';
 const SYNC_INTERVAL = 60000;
@@ -39,28 +62,36 @@ const SYNC_INTERVAL = 60000;
   providedIn: 'root',
 })
 export class UgcEffects {
+  currentUgcPoi$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(currentUgcPoiId),
+      switchMap(action => from(getUgcPoi(`${action.currentUgcPoiId}`))),
+      map(ugcPoi => loadcurrentUgcPoiIdSuccess({ugcPoi})),
+      catchError(error => of(loadcurrentUgcPoiIdFailure({error}))),
+    ),
+  );
   currentUgcTrack$ = createEffect(() =>
     this._actions$.pipe(
       ofType(currentUgcTrackId),
-      switchMap(action =>
-        from(from(getUgcTrack(`${action.currentUgcTrackId}`))).pipe(
-          map(ugcTrack => loadCurrentUgcTrackSuccess({ugcTrack})),
-          catchError(error => of(loadCurrentUgcTrackFailure({error}))),
-        ),
-      ),
+      switchMap(action => from(getUgcTrack(`${action.currentUgcTrackId}`))),
+      map(ugcTrack => loadCurrentUgcTrackSuccess({ugcTrack})),
+      catchError(error => of(loadCurrentUgcTrackFailure({error}))),
     ),
   );
-  deleteUgcFailure$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(deleteUgcTrackFailure, deleteUgcPoiFailure),
-      switchMap(() => this._alertCtrl.create({
-        header: this._langSvc.instant('Ops!'),
-        message: this._langSvc.instant('Non è stato possibile eliminare, riprova più tardi'),
-        buttons: ['OK']
-      })),
-      switchMap(alert => alert.present()),
-    ),
-    { dispatch: false }
+  deleteUgcFailure$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(deleteUgcTrackFailure, deleteUgcPoiFailure),
+        switchMap(() =>
+          this._alertCtrl.create({
+            header: this._langSvc.instant('Ops!'),
+            message: this._langSvc.instant('Non è stato possibile eliminare, riprova più tardi'),
+            buttons: ['OK'],
+          }),
+        ),
+        switchMap(alert => alert.present()),
+      ),
+    {dispatch: false},
   );
   deleteUgcPoi$ = createEffect(() =>
     this._actions$.pipe(
@@ -74,33 +105,36 @@ export class UgcEffects {
                 mergeMap(() => [
                   deleteUgcPoiSuccess({poi: action.poi}),
                   syncUgcPois(),
-                  enableSyncInterval()
+                  enableSyncInterval(),
                 ]),
                 catchError(error => of(deleteUgcPoiFailure({error}), enableSyncInterval())),
               );
             }
             return of(deleteUgcPoiFailure({error: 'Poi ID not found'}));
-          })
-        )
+          }),
+        ),
       ),
     ),
   );
-  deleteUgcSuccess$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(deleteUgcTrackSuccess, deleteUgcPoiSuccess),
-      switchMap(action => {
-        (action.type === deleteUgcTrackSuccess.type) ? removeUgcTrack(action.track) : removeUgcPoi(action.poi);
-        return of(EMPTY);
-      }),
-      switchMap(() => {
-        return this._alertCtrl.create({
-          message: this._langSvc.instant('Eliminazione effettuata con successo'),
-          buttons: ['OK']
-        });
-      }),
-      switchMap(alert => alert.present()),
-    ),
-    { dispatch: false }
+  deleteUgcSuccess$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(deleteUgcTrackSuccess, deleteUgcPoiSuccess),
+        switchMap(action => {
+          action.type === deleteUgcTrackSuccess.type
+            ? removeUgcTrack(action.track)
+            : removeUgcPoi(action.poi);
+          return of(EMPTY);
+        }),
+        switchMap(() => {
+          return this._alertCtrl.create({
+            message: this._langSvc.instant('Eliminazione effettuata con successo'),
+            buttons: ['OK'],
+          });
+        }),
+        switchMap(alert => alert.present()),
+      ),
+    {dispatch: false},
   );
   deleteUgcTrack$ = createEffect(() =>
     this._actions$.pipe(
@@ -114,14 +148,14 @@ export class UgcEffects {
                 mergeMap(() => [
                   deleteUgcTrackSuccess({track: action.track}),
                   syncUgcTracks(),
-                  enableSyncInterval()
+                  enableSyncInterval(),
                 ]),
                 catchError(error => of(deleteUgcTrackFailure({error}), enableSyncInterval())),
               );
             }
             return of(deleteUgcTrackFailure({error: 'Track ID not found'}));
-          })
-        )
+          }),
+        ),
       ),
     ),
   );
@@ -165,8 +199,8 @@ export class UgcEffects {
             this._store.pipe(
               select(activableUgc),
               withLatestFrom(this._store.pipe(select(syncUgcIntervalEnabled))),
-              filter(([activable, syncEnabled]) => !activable || !syncEnabled)
-            )
+              filter(([activable, syncEnabled]) => !activable || !syncEnabled),
+            ),
           ),
           map(() => syncUgc()),
         ),

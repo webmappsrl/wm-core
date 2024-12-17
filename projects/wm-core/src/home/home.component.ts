@@ -6,7 +6,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {ModalController, NavController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
@@ -24,8 +24,12 @@ import {
   ISLUGBOX,
 } from '@wm-core/types/config';
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
-import {countUgcAll} from '@wm-core/store/features/ugc/ugc.selector';
-import {showResult, ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
+import {countUgcAll, ugc} from '@wm-core/store/features/ugc/ugc.selector';
+import {
+  currentEcLayer,
+  showResult,
+  ugcOpened,
+} from '@wm-core/store/user-activity/user-activity.selector';
 import {
   closeUgc,
   goToHome,
@@ -33,13 +37,14 @@ import {
   openUgc,
   resetTrackFilters,
   setCurrentPoi,
-  setLayer,
   togglePoiFilter,
   toggleTrackFilterByIdentifier,
 } from '@wm-core/store/user-activity/user-activity.action';
 import {WmFeature} from '@wm-types/feature';
 import {WmSearchBarComponent} from '@wm-core/search-bar/search-bar.component';
 import {Point} from 'geojson';
+import {currentEcLayerId} from '@wm-core/store/features/ec/ec.actions';
+import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 @Component({
   selector: 'wm-home',
   templateUrl: './home.component.html',
@@ -56,16 +61,17 @@ export class WmHomeComponent implements AfterContentInit {
   countAll$: Observable<number>;
   countEcAll$: Observable<number> = this._store.select(countEcAll);
   countUgcAll$: Observable<number> = this._store.select(countUgcAll);
+  currentEcLayer$: Observable<ILAYER> = this._store.select(currentEcLayer);
   popup$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   showResult$ = this._store.select(showResult);
   ugcOpened$ = this._store.select(ugcOpened);
 
   constructor(
     private _store: Store,
-    private _router: Router,
     private _route: ActivatedRoute,
     private _modalCtrl: ModalController,
     private _navCtrl: NavController,
+    private _urlHandlerSvc: UrlHandlerService,
     public sanitizer: DomSanitizer,
   ) {
     this.countAll$ = combineLatest([this.countEcAll$, this.countUgcAll$, this.ugcOpened$]).pipe(
@@ -123,11 +129,7 @@ export class WmHomeComponent implements AfterContentInit {
             .then(modal => {
               modal.present();
               if (idx) {
-                this._router.navigate([], {
-                  relativeTo: this._route,
-                  queryParams: {slug: idx},
-                  queryParamsHandling: 'merge',
-                });
+                this._urlHandlerSvc.updateURL({slug: idx});
               }
             });
         });
@@ -138,11 +140,7 @@ export class WmHomeComponent implements AfterContentInit {
 
   removeLayer(_: any): void {
     this.setLayer(null);
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams: {layer: null},
-      queryParamsHandling: 'merge',
-    });
+    this._urlHandlerSvc.updateURL({layer: undefined});
   }
 
   setFilter(filter: {identifier: string; taxonomy: string}): void {
@@ -161,26 +159,22 @@ export class WmHomeComponent implements AfterContentInit {
       layer = {id: layer};
     }
     if (layer != null && layer.id != null) {
-      this._store.dispatch(setLayer({layer}));
+      this._store.dispatch(currentEcLayerId({currentEcLayerId: layer.id}));
     } else {
-      this._store.dispatch(setLayer(null));
       this._store.dispatch(resetTrackFilters());
     }
-    if (idx) {
-      this._router.navigate([], {
-        relativeTo: this._route,
-        queryParams: {layer: idx},
-        queryParamsHandling: 'merge',
-      });
-    }
+
     this._store.dispatch(closeUgc());
   }
 
-  setPoi(currentPoi: WmFeature<Point>): void {
+  setPoi(id: string | number): void {
     this._store.dispatch(setCurrentPoi({currentPoi: null}));
-    setTimeout(() => {
-      this._store.dispatch(setCurrentPoi({currentPoi: currentPoi}));
-    }, 200);
+    this.ugcOpened$.pipe(take(1)).subscribe(ugcOpened => {
+      const queryParams = ugcOpened
+        ? {ugc_poi: id ? +id : undefined, poi: undefined}
+        : {poi: id ? +id : undefined, ugc_poi: undefined};
+      this._urlHandlerSvc.updateURL(queryParams);
+    });
   }
 
   setSearch(value: string): void {
@@ -189,12 +183,10 @@ export class WmHomeComponent implements AfterContentInit {
 
   setTrack(id: string | number): void {
     this.ugcOpened$.pipe(take(1)).subscribe(ugcOpened => {
-      const queryParams = ugcOpened ? {ugc_track: id ? +id : null} : {track: id ? +id : null};
-      this._router.navigate([], {
-        relativeTo: this._route,
-        queryParams,
-        queryParamsHandling: 'merge',
-      });
+      const queryParams = ugcOpened
+        ? {ugc_track: id ? +id : undefined}
+        : {track: id ? +id : undefined};
+      this._urlHandlerSvc.updateURL(queryParams);
     });
   }
 
@@ -205,11 +197,7 @@ export class WmHomeComponent implements AfterContentInit {
   togglePoiFilter(filterIdentifier: string, idx?: number): void {
     this.setFilter({identifier: filterIdentifier, taxonomy: 'poi_types'});
     if (idx) {
-      this._router.navigate([], {
-        relativeTo: this._route,
-        queryParams: {filter: idx},
-        queryParamsHandling: 'merge',
-      });
+      this._urlHandlerSvc.updateURL({filter: idx});
     }
   }
 }

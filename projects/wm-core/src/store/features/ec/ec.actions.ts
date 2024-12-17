@@ -31,6 +31,10 @@ export const currentEcTrackId = createAction(
   '[ec] Set current ec track id',
   props<{currentEcTrackId: string | null}>(),
 );
+export const currentEcLayerId = createAction(
+  '[ec] Set current ec layer id',
+  props<{currentEcLayerId: number | null}>(),
+);
 export const loadCurrentEcTrackSuccess = createAction(
   '[ec] Load Current EcTrack Success',
   props<{ecTrack: WmFeature<LineString>}>(),

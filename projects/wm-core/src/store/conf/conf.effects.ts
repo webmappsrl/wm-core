@@ -1,13 +1,16 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {interval, of} from 'rxjs';
-import {catchError, filter, map, startWith, switchMap, withLatestFrom} from 'rxjs/operators';
+import {of} from 'rxjs';
+import {catchError, filter, map, switchMap, withLatestFrom} from 'rxjs/operators';
 import {loadConf, loadConfFail, loadConfSuccess, updateMapWithUgc} from './conf.actions';
 import {ConfService} from './conf.service';
 import {select, Store} from '@ngrx/store';
 import {activableUgc} from '@wm-core/store/features/ugc/ugc.selector';
 import {isConfLoaded} from './conf.selector';
-const SYNC_INTERVAL = 600000;
+import {currentEcLayerId} from '../features/ec/ec.actions';
+import {confHOME} from '@wm-core/store/conf/conf.selector';
+import {IHOME, ILAYER, ILAYERBOX} from '@wm-core/types/config';
+import {setLayer} from '../user-activity/user-activity.action';
 @Injectable({
   providedIn: 'root',
 })
@@ -22,6 +25,24 @@ export class ConfEffects {
           catchError((_: any) => of(loadConfFail())),
         ),
       ),
+    ),
+  );
+  updateLayer$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(currentEcLayerId),
+      withLatestFrom(
+        this._store.select(confHOME).pipe(filter(home => home != null && home.length > 0)),
+      ),
+      switchMap(([action, home]) => {
+        const id = +action.currentEcLayerId;
+        const layer: ILAYER =
+          home
+            .filter((item: IHOME) => item?.box_type === 'layer') // Filtra solo i box_type 'Layer'
+            .map((item: ILAYERBOX) => item.layer) // Estrae il layer
+            .find((layer: ILAYER) => +layer.id === +id) ?? null; // Trova il layer con id corrispondente
+
+        return of(setLayer({layer})).pipe(catchError(() => of(setLayer({layer: null}))));
+      }),
     ),
   );
   updateMapWithUgc$ = createEffect(() =>

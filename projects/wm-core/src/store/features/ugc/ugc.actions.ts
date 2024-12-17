@@ -39,15 +39,24 @@ export const deleteUgcTrack = createAction(
   '[Ugc] Delete Ugc Track',
   props<{track: WmFeature<LineString>}>(),
 );
-export const deleteUgcTrackSuccess = createAction('[Ugc] Delete Ugc Track Success', props<{track: WmFeature<LineString>}>());
-export const deleteUgcTrackFailure = createAction('[Ugc] Delete Ugc Track Failure', props<{error: string}>());
+export const deleteUgcTrackSuccess = createAction(
+  '[Ugc] Delete Ugc Track Success',
+  props<{track: WmFeature<LineString>}>(),
+);
+export const deleteUgcTrackFailure = createAction(
+  '[Ugc] Delete Ugc Track Failure',
+  props<{error: string}>(),
+);
 
-export const deleteUgcPoi = createAction(
-  '[Ugc] Delete Ugc Poi',
+export const deleteUgcPoi = createAction('[Ugc] Delete Ugc Poi', props<{poi: WmFeature<Point>}>());
+export const deleteUgcPoiSuccess = createAction(
+  '[Ugc] Delete Ugc Poi Success',
   props<{poi: WmFeature<Point>}>(),
 );
-export const deleteUgcPoiSuccess = createAction('[Ugc] Delete Ugc Poi Success', props<{poi: WmFeature<Point>}>());
-export const deleteUgcPoiFailure = createAction('[Ugc] Delete Ugc Poi Failure', props<{error: string}>());
+export const deleteUgcPoiFailure = createAction(
+  '[Ugc] Delete Ugc Poi Failure',
+  props<{error: string}>(),
+);
 export const updateUgcTrack = createAction(
   '[Ugc] Update Ugc Track',
   props<{track: WmFeature<LineString>}>(),
@@ -60,6 +69,20 @@ export const updateUgcTrackFailure = createAction(
   '[Ugc] Update Ugc Track Failure',
   props<{error: string}>(),
 );
+export const currentUgcPoiId = createAction(
+  '[Ugc] Set current Ugc poi id',
+  props<{currentUgcPoiId: string | null}>(),
+);
+
+export const loadcurrentUgcPoiIdSuccess = createAction(
+  '[Ugc] Load Current UgcPoi Success',
+  props<{ugcPoi: WmFeature<Point>}>(),
+);
+export const loadcurrentUgcPoiIdFailure = createAction(
+  '[Ugc] Load Current UgcPoi Failure',
+  props<{error: any}>(),
+);
+
 export const updateUgcPoi = createAction('[Ugc] Update Ugc Poi', props<{poi: WmFeature<Point>}>());
 export const updateUgcPoiSuccess = createAction(
   '[Ugc] Update Ugc Poi Success',

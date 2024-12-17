@@ -218,8 +218,11 @@ export async function getUgcPois(): Promise<WmFeature<Point>[]> {
 }
 
 export async function getUgcTrack(trackId: string | null): Promise<WmFeature<LineString> | null> {
-  if (!trackId) return null;
-  return (await getSynchronizedUgcTrack(trackId)) ?? (await getDeviceUgcTrack(trackId));
+  if (!trackId || trackId == null) return null;
+
+  const a = await getSynchronizedUgcTrack(trackId);
+  const b = await getDeviceUgcTrack(trackId);
+  return a ?? b;
 }
 
 export async function getUgcTracks(): Promise<WmFeature<LineString>[]> {

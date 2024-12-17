@@ -6,7 +6,7 @@ import {
   OnDestroy,
   ViewEncapsulation,
 } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 
 @Component({
   selector: 'wm-track-edges',
@@ -15,29 +15,33 @@ import {ActivatedRoute, Router} from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class WmTrackEdgesComponent implements OnDestroy, OnChanges {
+export class WmTrackEdgesComponent implements OnChanges {
   @Input() conf: {[property: string]: any};
   @Input() properties: {[property: string]: any};
 
   edges: null | {prev: number[]; next: number[]} = null;
-  nextColors = [  '#FFF500',
+  nextColors = [
+    '#FFF500',
     '#FFA13D',
     '#2DFE54',
     '#3F8DFF',
     '#FFD700',
     '#FF8A00',
     '#1DE43F',
-    '#0066FF',];
-  prevColors = [  '#B0B0B0',
+    '#0066FF',
+  ];
+  prevColors = [
+    '#B0B0B0',
     '#8DAFD3',
     '#88C5A7',
     '#E9B1C2',
     '#A0A0A0',
     '#7D9DC3',
     '#78B597',
-    '#D9A1B2',];
+    '#D9A1B2',
+  ];
 
-  constructor(private _router: Router, private _route: ActivatedRoute) {}
+  constructor(private _urlHandlerSvc: UrlHandlerService) {}
 
   ngOnChanges(): void {
     if (
@@ -51,13 +55,7 @@ export class WmTrackEdgesComponent implements OnDestroy, OnChanges {
     }
   }
 
-  ngOnDestroy(): void {}
-
   goToTrack(trackID: number): void {
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams: {track: trackID ? trackID : null},
-      queryParamsHandling: 'merge',
-    });
+    this._urlHandlerSvc.updateURL({track: trackID});
   }
 }

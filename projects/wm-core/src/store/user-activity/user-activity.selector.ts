@@ -79,3 +79,4 @@ export const poisSelectedFilterIdentifiers = createSelector(
 );
 
 export const loading = createSelector(userActivity, state => state.loading);
+export const currentEcLayer = createSelector(userActivity, state => state.layer);
