@@ -49,7 +49,7 @@ const initialState: UserActivityState = {
   drawTrack: false,
   filterTaxonomies: [],
   lastFilterType: null,
-  loading: {pois: true, layer: true},
+  loading: {pois: false, layer: false},
 };
 
 export const userActivityReducer = createReducer(
