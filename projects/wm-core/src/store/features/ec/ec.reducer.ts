@@ -9,6 +9,8 @@ import {
   loadCurrentEcTrackFailure,
   ecTracks,
   currentEcRelatedPoiId,
+  loadCurrentEcPoiSuccess,
+  loadCurrentEcPoiFailure,
 } from '@wm-core/store/features/ec/ec.actions';
 
 import {IHIT} from '@wm-core/types/elastic';
@@ -21,6 +23,7 @@ export interface Ec {
   ecTracksLoading: boolean;
   aggregations?: any;
   currentEcTrack?: WmFeature<LineString>;
+  currentEcPoi?: WmFeature<Point>;
   currentEcRelatedPoiId?: string;
 }
 export interface ApiRootState {
@@ -82,6 +85,20 @@ export const ecReducer = createReducer(
     const newState: Ec = {
       ...state,
       currentEcRelatedPoiId: currentRelatedPoiId,
+    };
+    return newState;
+  }),
+  on(loadCurrentEcPoiSuccess, (state, {ecPoi}) => {
+    const newState: Ec = {
+      ...state,
+      currentEcPoi: ecPoi,
+    };
+    return newState;
+  }),
+  on(loadCurrentEcPoiFailure, state => {
+    const newState: Ec = {
+      ...state,
+      currentEcPoi: null,
     };
     return newState;
   }),

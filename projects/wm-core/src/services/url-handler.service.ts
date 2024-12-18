@@ -3,12 +3,13 @@ import {Store} from '@ngrx/store';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
   currentEcLayerId,
+  currentEcPoiId,
   currentEcRelatedPoiId,
   currentEcTrackId,
 } from '@wm-core/store/features/ec/ec.actions';
 import {currentUgcPoiId, currentUgcTrackId} from '@wm-core/store/features/ugc/ugc.actions';
 import {Params} from '@angular/router';
-import {skip} from 'rxjs/operators';
+import {debounceTime, skip} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -27,9 +28,10 @@ export class UrlHandlerService {
   constructor(private _route: ActivatedRoute, private _router: Router, private _store: Store) {}
 
   initialize(): void {
-    this._route.queryParams.pipe(skip(1)).subscribe(params => {
+    this._route.queryParams.pipe(skip(1), debounceTime(500)).subscribe(params => {
       this._store.dispatch(currentEcLayerId({currentEcLayerId: params.layer ?? null}));
       this._store.dispatch(currentEcTrackId({currentEcTrackId: params.track ?? null}));
+      this._store.dispatch(currentEcPoiId({currentEcPoiId: params.poi ?? null}));
       this._store.dispatch(
         currentEcRelatedPoiId({currentRelatedPoiId: params.ec_related_poi ?? null}),
       );

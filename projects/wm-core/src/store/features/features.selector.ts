@@ -1,10 +1,15 @@
 import {createSelector} from '@ngrx/store';
+import {WmFeature} from '@wm-types/feature';
+import {Point} from 'geojson';
 import {ugcOpened} from '../user-activity/user-activity.selector';
 import {
   countEcAll,
   countEcPois,
   countEcTracks,
+  currentEcPoi,
+  currentEcRelatedPoi,
   currentEcTrack,
+  ec,
   ecPois,
   ecTracks,
 } from './ec/ec.selector';
@@ -12,6 +17,7 @@ import {
   countUgcAll,
   countUgcPois,
   countUgcTracks,
+  currentUgcPoi,
   currentUgcTrack,
   ugcPoiFeatures,
   ugcTracks,
@@ -37,7 +43,7 @@ export const tracks = createSelector(ecTracks, ugcTracks, ugcOpened, (ec, ugc, u
   ugcOpened ? ugc : ec,
 );
 export const pois = createSelector(ecPois, ugcPoiFeatures, ugcOpened, (ec, ugc, ugcOpened) => {
-  return ugcOpened ? ugc : ec;
+  return (ugcOpened ? ugc : ec) as WmFeature<Point>[];
 });
 
 export const track = createSelector(
@@ -46,5 +52,15 @@ export const track = createSelector(
   ugcOpened,
   (ec, ugc, ugcOpened) => {
     return ugcOpened ? ugc : ec;
+  },
+);
+export const poi = createSelector(
+  currentEcPoi,
+  currentEcRelatedPoi,
+  currentUgcPoi,
+  ugcOpened,
+  (ecPoi, ecRelatedPoi, ugcPoi, ugcOpened) => {
+    let poi = ecPoi ?? ecRelatedPoi;
+    return ugcOpened ? ugcPoi : poi;
   },
 );

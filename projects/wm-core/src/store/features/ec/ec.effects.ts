@@ -17,14 +17,29 @@ import {
   ecTracks,
   ecTracksFailure,
   ecTracksSuccess,
+  loadCurrentEcPoiSuccess,
+  loadCurrentEcPoiFailure,
 } from '@wm-core/store/features/ec/ec.actions';
 
 import {setLayer} from '@wm-core/store/user-activity/user-activity.action';
+import {currentEcPoiId} from './ec.actions';
+import {pois} from '../features.selector';
 const SYNC_INTERVAL = 600000;
 @Injectable({
   providedIn: 'root',
 })
 export class EcEffects {
+  currentEcPoi$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(currentEcPoiId),
+      withLatestFrom(this._store.select(pois)),
+      map(([actions, pois]) => {
+        const ecPoi = pois.find(p => p?.properties?.id == actions.currentEcPoiId);
+        return loadCurrentEcPoiSuccess({ecPoi});
+      }),
+      catchError(error => of(loadCurrentEcPoiFailure({error}))),
+    ),
+  );
   currentEcTrack$ = createEffect(() =>
     this._actions$.pipe(
       ofType(currentEcTrackId),
