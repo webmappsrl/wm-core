@@ -32,6 +32,10 @@ export const countUgcAll = createSelector(
 
 export const currentUgcTrack = createSelector(ugc, state => state.currentUgcTrack);
 export const currentUgcPoi = createSelector(ugc, state => state.currentUgcPoi);
+export const currentUgcPoiId = createSelector(
+  currentUgcPoi,
+  currentUgcPoi => currentUgcPoi?.properties?.id ?? null,
+);
 export const syncUgcIntervalEnabled = createSelector(
   ugc,
   (state: UgcState) => state.syncUgcIntervalEnabled,
