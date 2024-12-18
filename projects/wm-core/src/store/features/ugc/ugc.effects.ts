@@ -8,7 +8,6 @@ import {
   filter,
   takeUntil,
   startWith,
-  tap,
   withLatestFrom,
 } from 'rxjs/operators';
 import {of, from, interval, EMPTY} from 'rxjs';
@@ -49,7 +48,6 @@ import {
   getUgcPois,
   getUgcTrack,
   getUgcTracks,
-  removeSynchronizedUgcPoi,
   removeUgcPoi,
   removeUgcTrack,
   saveUgcPoi,
@@ -57,6 +55,7 @@ import {
 } from '@wm-core/utils/localForage';
 import {AlertController} from '@ionic/angular';
 import {LangService} from '@wm-core/localization/lang.service';
+import {openUgc} from '@wm-core/store/user-activity/user-activity.action';
 const SYNC_INTERVAL = 60000;
 @Injectable({
   providedIn: 'root',
@@ -185,6 +184,17 @@ export class UgcEffects {
           }),
         ),
       ),
+    ),
+  );
+  openUgcEffect$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(currentUgcTrackId, currentUgcPoiId), // Ascolta entrambe le azioni
+      filter(
+        action =>
+          ('currentUgcPoiId' in action && action.currentUgcPoiId !== null) ||
+          ('currentUgcTrackId' in action && action.currentUgcTrackId != null),
+      ), // Controlla che il valore non sia null
+      map(() => openUgc()), // Dispatcha l'azione openUgc
     ),
   );
   syncOnInterval$ = createEffect(() =>

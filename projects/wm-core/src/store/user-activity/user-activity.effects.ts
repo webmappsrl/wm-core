@@ -119,7 +119,7 @@ export class UserActivityEffects {
           query = {...query, ...{filterTracks}};
         }
         query = {...query, ...{layer}};
-        return [ecTracks(query), closeUgc()];
+        return [ecTracks(query)];
       }),
     ),
   );
