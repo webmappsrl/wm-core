@@ -25,6 +25,7 @@
         (removeLayerEVT)="removeLayer($event)"
       ></wm-status-filter>
       <wm-home-ugc *ngIf="(ugcOpened$|async);else layerView"></wm-home-ugc>
+
       <ng-template #layerView>
         <wm-home-layer></wm-home-layer>
       </ng-template>

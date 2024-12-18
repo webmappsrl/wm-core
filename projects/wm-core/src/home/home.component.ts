@@ -40,9 +40,7 @@ import {
   togglePoiFilter,
   toggleTrackFilterByIdentifier,
 } from '@wm-core/store/user-activity/user-activity.action';
-import {WmFeature} from '@wm-types/feature';
 import {WmSearchBarComponent} from '@wm-core/search-bar/search-bar.component';
-import {Point} from 'geojson';
 import {currentEcLayerId} from '@wm-core/store/features/ec/ec.actions';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 @Component({
