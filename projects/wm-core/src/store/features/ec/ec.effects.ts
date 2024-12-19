@@ -65,18 +65,9 @@ export class EcEffects {
   queryApi$ = createEffect(() =>
     this._actions$.pipe(
       ofType(ecTracks),
+
       switchMap(action => {
-        if (action.init) {
-          return from(this._ecSvc.getQuery({})).pipe(
-            map((response: IRESPONSE) => ecTracksSuccess({response})),
-            catchError(e => of(ecTracksFailure())),
-          );
-        }
-        if (
-          action?.filterTracks?.length === 0 &&
-          action?.layer == null &&
-          action?.inputTyped == null
-        ) {
+        if (action?.filterTracks == null && action?.layer == null && action?.inputTyped == null) {
           return of(ecTracksFailure());
         }
         const newAction = {
