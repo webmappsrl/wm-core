@@ -65,6 +65,12 @@ export class EcEffects {
       ofType(ecTracks),
 
       switchMap(action => {
+        if (action.init) {
+          return from(this._ecSvc.getQuery({})).pipe(
+            map((response: IRESPONSE) => ecTracksSuccess({response})),
+            catchError(e => of(ecTracksFailure())),
+          );
+        }
         if (action?.filterTracks == null && action?.layer == null && action?.inputTyped == null) {
           return of(ecTracksFailure());
         }
