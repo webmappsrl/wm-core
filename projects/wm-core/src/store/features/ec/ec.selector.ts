@@ -18,22 +18,23 @@ export const ec = createFeatureSelector<IELASTIC>('ec');
 
 export const ecTracks = createSelector(ec, (state: Ec) => state.hits ?? []);
 export const countEcTracks = createSelector(ec, (state: Ec) => state.hits.length ?? undefined);
+export const aggregations = createSelector(ec, (state: Ec) => state.aggregations ?? undefined);
 // @ts-ignore
-export const statsApi = createSelector(ec, (state: SearchResponse<IHIT>) => {
-  if (state != null && state.aggregations) {
+export const statsApi = createSelector(aggregations, aggregations => {
+  if (aggregations) {
     let res = [];
-    const countKeys = Object.keys(state.aggregations).filter(k => k.indexOf('_count') < 0);
+    const countKeys = Object.keys(aggregations).filter(k => k.indexOf('_count') < 0);
     countKeys.forEach(countKey => {
       res = [
         // @ts-ignore
         ...res,
         // @ts-ignore
-        ...state.aggregations[countKey].count.buckets,
+        ...aggregations[countKey].count.buckets,
         // @ts-ignore
         ...[
           {
             key: countKey,
-            doc_count: state.aggregations.themes.doc_count,
+            doc_count: aggregations.themes.doc_count,
           },
         ],
       ];

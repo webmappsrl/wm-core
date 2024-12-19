@@ -168,7 +168,7 @@ export class EcService {
 
       query += `&filters=[${paramString.toString()}]`;
     }
-    if (this._queryDic[query] == null) {
+    if (this._queryDic[query] == null && query != null) {
       const value = await this._http.request('get', query).toPromise();
       this._queryDic[query] = value;
     }

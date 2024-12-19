@@ -27,7 +27,7 @@ import {
   filterTracks,
   inputTyped as inputTypedSelector,
 } from '@wm-core/store/user-activity/user-activity.selector';
-import {debounceTime, map, mergeMap, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {debounceTime, map, mergeMap, skip, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {combineLatest, of} from 'rxjs';
 import {Filter} from '@wm-core/types/config';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
@@ -47,6 +47,12 @@ export class UserActivityEffects {
     this._actions$.pipe(
       ofType(removeTrackFilters),
       map(() => ecTracks({})),
+    ),
+  );
+  resetTrackFilters$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(resetTrackFilters),
+      map(() => ecTracks({init: true})),
     ),
   );
   setECLayerId$ = createEffect(
@@ -110,6 +116,7 @@ export class UserActivityEffects {
         filterTracks,
         layer,
       })),
+      skip(1),
       switchMap(({inputTyped, filterTracks, layer}) => {
         let query = {init: false};
         if (inputTyped != null && inputTyped !== '') {
