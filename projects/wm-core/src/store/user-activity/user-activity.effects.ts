@@ -17,7 +17,6 @@ import {
   currentEcLayerId,
 } from '@wm-core/store/features/ec/ec.actions';
 import {
-  closeUgc,
   removeTrackFilters,
   resetTrackFilters,
   setLoading,
@@ -34,6 +33,16 @@ import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 
 @Injectable()
 export class UserActivityEffects {
+  filterTracks$ = createEffect(() =>
+    this._store.select(filterTracks).pipe(
+      switchMap(filterTracks => {
+        if (filterTracks == null || filterTracks.length == 0) {
+          return [ecTracks({init: true})];
+        }
+        return [];
+      }),
+    ),
+  );
   goToHome$ = createEffect(() =>
     this._actions$.pipe(
       ofType(goToHome),
@@ -96,10 +105,7 @@ export class UserActivityEffects {
         } catch (_) {}
         let filter = filters.filter(f => f.identifier === action.identifier);
         if (filter.length > 0) {
-          return of({
-            type: '[ec] toggle track filter',
-            filter: {...filter[0], taxonomy: action.taxonomy},
-          });
+          return of(toggleTrackFilter({filter: {...filter[0], taxonomy: action.taxonomy}}));
         }
       }),
     ),
