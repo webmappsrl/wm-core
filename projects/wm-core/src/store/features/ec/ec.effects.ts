@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {from, interval, of} from 'rxjs';
-import {catchError, filter, map, startWith, switchMap, withLatestFrom} from 'rxjs/operators';
+import {from, of} from 'rxjs';
+import {catchError, map, switchMap, withLatestFrom} from 'rxjs/operators';
 
 import {EcService} from './ec.service';
 import {ApiRootState} from './ec.reducer';
@@ -21,10 +21,8 @@ import {
   loadCurrentEcPoiFailure,
 } from '@wm-core/store/features/ec/ec.actions';
 
-import {setLayer} from '@wm-core/store/user-activity/user-activity.action';
 import {currentEcPoiId} from './ec.actions';
 import {pois} from '../features.selector';
-const SYNC_INTERVAL = 600000;
 @Injectable({
   providedIn: 'root',
 })
@@ -79,14 +77,6 @@ export class EcEffects {
           map((response: IRESPONSE) => ecTracksSuccess({response})),
           catchError(e => of(ecTracksFailure())),
         );
-      }),
-    ),
-  );
-  setLayerApi$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(setLayer),
-      switchMap(_ => {
-        return of(ecTracks({}));
       }),
     ),
   );
