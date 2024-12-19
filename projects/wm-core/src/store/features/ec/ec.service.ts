@@ -18,7 +18,6 @@ import {WmFeature} from '@wm-types/feature';
 export class EcService {
   private _elasticApi: string = this.environment.elasticApi;
   private _geohubAppId: number = this.environment.geohubId;
-  private _queryDic: {[query: string]: any} = {};
   private _shard = 'geohub_app';
 
   private get _baseUrl(): string {
@@ -168,11 +167,8 @@ export class EcService {
 
       query += `&filters=[${paramString.toString()}]`;
     }
-    if (this._queryDic[query] == null) {
-      const value = await this._http.request('get', query).toPromise();
-      this._queryDic[query] = value;
-    }
-    return this._queryDic[query];
+    const value: IRESPONSE = (await this._http.request('get', query).toPromise()) as IRESPONSE;
+    return value;
   }
 }
 
