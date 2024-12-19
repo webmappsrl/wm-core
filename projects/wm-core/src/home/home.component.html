@@ -19,7 +19,15 @@
   </ng-container>
 
   <ng-template #mainContent>
-    <ng-container *ngIf="showResult$|async; else home">
+    <wm-home-landing
+      [ngClass]="{'hidden': showResult$ | async}"
+      (slugBoxEVT)="openSlug($event[0], $event[1])"
+      (externalUrlBoxEVT)="openExternalUrl($event)"
+      (tracksBoxEVT)="setTrack($event)"
+      (layerBoxEVT)="setLayer($event[0], $event[1])"
+      (ugcBoxEvt)="setUgc()"
+    ></wm-home-landing>
+    <ng-container *ngIf="showResult$|async">
       <wm-status-filter
         (resetFiltersEVT)="goToHome()"
         (removeLayerEVT)="removeLayer($event)"
@@ -31,15 +39,5 @@
       </ng-template>
       <wm-home-result (trackEVT)="setTrack($event)" (poiEVT)="setPoi($event)"></wm-home-result>
     </ng-container>
-
-    <ng-template #home>
-      <wm-home-landing
-        (slugBoxEVT)="openSlug($event[0], $event[1])"
-        (externalUrlBoxEVT)="openExternalUrl($event)"
-        (tracksBoxEVT)="setTrack($event)"
-        (layerBoxEVT)="setLayer($event[0], $event[1])"
-        (ugcBoxEvt)="setUgc()"
-      ></wm-home-landing>
-    </ng-template>
   </ng-template>
 </div>

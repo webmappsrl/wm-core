@@ -1,4 +1,7 @@
 wm-home {
+  .hidden {
+    display: none;
+  }
   ion-item {
     ion-label {
       white-space: pre-wrap !important;
