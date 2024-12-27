@@ -243,7 +243,13 @@ export class UgcEffects {
     this._actions$.pipe(
       ofType(syncUgc),
       mergeMap(() =>
-        from(Promise.all([this._ugcSvc.syncUgcTracks(), this._ugcSvc.syncUgcPois()])).pipe(
+        from(
+          Promise.all([
+            this._ugcSvc.syncUgcTracks(),
+            this._ugcSvc.syncUgcPois(),
+            this._ugcSvc.syncUgcMedias(),
+          ]),
+        ).pipe(
           map(() => syncUgcSuccess({responseType: 'All'})),
           catchError(error => of(syncUgcFailure({responseType: 'All', error}))),
         ),
