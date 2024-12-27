@@ -1,0 +1,13 @@
+<wm-img [src]="media$|async|wmCreateBlob" />
+<div [innerHTML]="caption|wmtrans"></div>
+<button class="wm-modal-media-close" (click)="closeMediaEVT.emit()">
+  <i class="icon-outline-close"></i>
+</button>
+<span class="wm-modal-media-header" *ngIf="showArrow">
+  <button class="wm-modal-media-left" (click)="prevMediaEVT.emit()">
+    <i class="icon-outline-arrow-left"></i>
+  </button>
+  <button class="wm-modal-media-right" (click)="nextMediaEVT.emit()">
+    <i class="icon-outline-arrow-right"></i>
+  </button>
+</span>

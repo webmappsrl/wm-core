@@ -55,6 +55,7 @@ import {WmSearchBarComponent} from './search-bar/search-bar.component';
 import {WmCoreMapComponent} from './map/map.component';
 import {WmMapModule} from '@map-core/map-core.module';
 import {UrlHandlerService} from './services/url-handler.service';
+import {WmUgcMediasModule} from './ugc-medias/wm-ugc-medias.module';
 const declarations = [
   WmAddressComponent,
   WmTabDetailComponent,
@@ -94,6 +95,7 @@ const modules = [
   ReactiveFormsModule,
   WmProfileModule,
   WmMapModule,
+  WmUgcMediasModule,
 ];
 @NgModule({
   declarations,
@@ -145,5 +147,3 @@ export function httpTranslateLoader(http: HttpClient): any {
 export function initializeUrlHandler(urlHandlerService: UrlHandlerService) {
   return () => urlHandlerService.initialize();
 }
-
-

@@ -1,0 +1,45 @@
+wm-modal-media {
+  position: fixed;
+  border-radius: 15px;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: white;
+  z-index: 999999;
+  height: fit-content;
+  width: 50%;
+  padding: 10px;
+  max-width: fit-content;
+  max-height: fit-content;
+  img {
+    border-radius: 15px;
+    max-height: 89vh;
+  }
+  .wm-modal-media-close,
+  .wm-modal-media-left,
+  .wm-modal-media-right {
+    position: absolute;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 15px;
+  }
+  .wm-modal-media-close {
+    top: 0;
+    right: 0;
+  }
+  .wm-modal-media-left,
+  .wm-modal-media-right {
+    font-size: 30px;
+    border-radius: 25px;
+  }
+  .wm-modal-media-left {
+    top: 45%;
+    left: -20px;
+  }
+  .wm-modal-media-right {
+    top: 45%;
+    right: -20px;
+  }
+}

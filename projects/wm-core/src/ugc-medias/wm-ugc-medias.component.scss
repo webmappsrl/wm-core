@@ -1,0 +1,31 @@
+wm-ugc-medias {
+  position: relative;
+
+  ion-button {
+    --background: var(--wm-color-light);
+    --color: var(--wm-color-dark);
+    --border-radius: 50%;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    width: 40px;
+    height: 40px;
+    z-index: 999;
+    opacity: 0.8;
+
+    &.left {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      margin-left: 5px;
+    }
+
+    &.right {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      margin-right: 5px;
+    }
+  }
+}
