@@ -20,7 +20,7 @@
   <wm-modal-media
     *ngIf="(showMedia$|async)"
     [media]="currentMedia$|async"
-    [showArrows]="showArrows && medias && medias.length > 1"
+    [showArrows]="showArrows && medias.length > 1"
     (closeMediaEVT)="close()"
     (nextMediaEVT)="next()"
     (prevMediaEVT)="prev()"

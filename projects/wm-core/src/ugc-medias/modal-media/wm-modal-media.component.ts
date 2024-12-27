@@ -18,15 +18,15 @@ import {BehaviorSubject} from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WmModalMediaComponent {
-  @Input('media') public set setMedia(media: WmFeature<Point, MediaProperties>) {
+  @Input('media') set setMedia(media: WmFeature<Point, MediaProperties>) {
     this.media$.next(media);
   }
 
   @Input() caption: string;
-  @Input('showArrows') public showArrow = false;
-  @Output() public closeMediaEVT: EventEmitter<void> = new EventEmitter<void>();
-  @Output() public nextMediaEVT: EventEmitter<void> = new EventEmitter<void>();
-  @Output() public prevMediaEVT: EventEmitter<void> = new EventEmitter<void>();
+  @Input('showArrows') showArrow = false;
+  @Output() closeMediaEVT: EventEmitter<void> = new EventEmitter<void>();
+  @Output() nextMediaEVT: EventEmitter<void> = new EventEmitter<void>();
+  @Output() prevMediaEVT: EventEmitter<void> = new EventEmitter<void>();
 
   media$: BehaviorSubject<WmFeature<Point, MediaProperties>> = new BehaviorSubject<
     WmFeature<Point, MediaProperties>
