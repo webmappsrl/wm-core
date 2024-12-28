@@ -1,4 +1,4 @@
-<div class="wm-box" (click)="clickEVT.emit()">
+<div class="wm-box" (click)="clickEVT.emit()" *ngIf="data && data.layer">
   <div
     class="color"
     [ngStyle]="{'background-color':data.layer.style?.color?data.layer.style.color:''}"
