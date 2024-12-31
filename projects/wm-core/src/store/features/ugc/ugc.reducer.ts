@@ -15,6 +15,7 @@ import {
   updateUgcTrackSuccess,
   loadcurrentUgcPoiIdSuccess,
   loadcurrentUgcPoiIdFailure,
+  currentCustomTrack,
 } from '@wm-core/store/features/ugc/ugc.actions';
 import {WmFeature} from '@wm-types/feature';
 import {IHIT} from '@wm-core/types/elastic';
@@ -29,6 +30,7 @@ export interface UgcState {
   currentUgcTrack?: WmFeature<LineString>;
   currentUgcPoi?: WmFeature<Point>;
   syncUgcIntervalEnabled: boolean;
+  currentCustomTrack?: WmFeature<LineString>;
 }
 export interface ApiRootState {
   [searchKey]: UgcState;
@@ -42,6 +44,7 @@ const initialState: UgcState = {
   ugcTracks: [],
   ugcPois: [],
   syncUgcIntervalEnabled: true,
+  currentCustomTrack: null,
 };
 
 export const UgcReducer = createReducer(
@@ -101,6 +104,10 @@ export const UgcReducer = createReducer(
   on(updateUgcTrackSuccess, (state, {track}) => ({
     ...state,
     currentUgcTrack: track,
+  })),
+  on(currentCustomTrack, (state, {currentCustomTrack}) => ({
+    ...state,
+    currentCustomTrack,
   })),
 );
 export function wmFeatureToHits(features: WmFeature<LineString | Point>[]): IHIT[] {

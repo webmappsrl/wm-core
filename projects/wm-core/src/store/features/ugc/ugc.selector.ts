@@ -40,3 +40,7 @@ export const syncUgcIntervalEnabled = createSelector(
   ugc,
   (state: UgcState) => state.syncUgcIntervalEnabled,
 );
+export const currentCustomTrack = createSelector(
+  ugc,
+  (state: UgcState) => state.currentCustomTrack ?? null,
+);

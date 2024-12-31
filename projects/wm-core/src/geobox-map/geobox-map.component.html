@@ -1,5 +1,3 @@
-<p>wm-core-map works!</p>
-
 <wm-map
   #wmap
   [wmMapConf]="confMap$|async"
@@ -14,7 +12,7 @@
   (wmMapFeatureCollectionLayerSelected)="selectedLayerById($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
   (wmMapFeatureCollectionPopup)="openPopup($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
   wmMapCustomTracks
-  [wmMapCustomTrackDrawTrack]="drawTrackEnable$|async"
+  [wmMapCustomTrackDrawTrack]="drawTrackOpened$|async"
   [wmMapCustomTrackDrawTrackHost]="graphhopperHost$|async"
   [reloadCustomTracks]="reloadCustomTracks$|async"
   (currentCustomTrack)="saveCurrentCustomTrack($event)"
@@ -27,7 +25,7 @@
   (colorSelectedFromLayerEVT)="trackColor$.next($event)"
   wmMapPois
   [wmMapInputTyped]="apiSearchInputTyped$|async"
-  [wmMapPoisPoi]="currentPoiIDToMap$|async"
+  [wmMapPoisPoi]="currentEcPoiId$|async"
   [wmMapPoisPois]="pois$|async"
   [wmMapPoisFilters]="poiFilterIdentifiers$|async"
   [WmMapPoisUnselectPoi]="resetSelectedPoi$|async"
@@ -38,8 +36,10 @@
   [trackElevationChartElements]="trackElevationChartHoverElements$|async"
   (trackSelectedFromLayerEVT)="updateEcTrack($event)"
   wmMapTrackRelatedPois
+  [related-current-ec-poi-id]="currentRelatedPoiID$|async"
   (related-poi)="setCurrentRelatedPoi($event)"
   (related-poi-next)="currentPoiNextID$.next(+$event)"
+  (related-poi-prev)="currentPoiPrevID$.next(+$event)"
   [wmMapReletedPoisDisableClusterLayer]="wmMapEcPoisDisableLayer$|async"
   wmMapHitMapCollection
   [wmMapHitMapUrl]="wmMapHitMapUrl$|async"
@@ -64,13 +64,21 @@
     (resetFiltersEvt)="resetFilters()"
     (click)="wmap.wmMapCloseTopRightBtns = 'wm-filters'"
   ></wm-filters>
+  <wm-profile-popup top-right></wm-profile-popup>
+
   <div
     top-right
     class="top-right-button"
     expand="full"
-    *ngIf="(enableDrawTrack$|async)"
+    *ngIf="(showDrawTrackButton$|async)"
     (click)="toggleDrawTrackEnabled();wmap.wmMapCloseTopRightBtns = 'my-paths'"
   >
-    {{ (drawTrackEnable$|async)?'esci':'i miei percorsi'|wmtrans}}
+    {{ (drawTrackOpened$|async)?'esci':'i miei percorsi'|wmtrans}}
   </div>
+  <ion-progress-bar
+    bottom
+    type="indeterminate"
+    color="primary"
+    *ngIf="(loading$|async)"
+  ></ion-progress-bar>
 </wm-map>

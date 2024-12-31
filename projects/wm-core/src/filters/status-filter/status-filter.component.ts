@@ -10,7 +10,6 @@ import {Store} from '@ngrx/store';
 import {poiFilters} from '@wm-core/store/features/ec/ec.selector';
 import {Filter} from '@wm-core/types/config';
 import {Observable} from 'rxjs';
-import {Location} from '@angular/common';
 import {
   closeUgc,
   goToHome,
@@ -22,6 +21,7 @@ import {
 } from '@wm-core/store/user-activity/user-activity.action';
 import {countAll} from '@wm-core/store/features/features.selector';
 import {ecLayer, filterTracks} from '@wm-core/store/user-activity/user-activity.selector';
+import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 @Component({
   selector: 'wm-status-filter',
   templateUrl: './status-filter.component.html',
@@ -40,12 +40,7 @@ export class StatusFilterComponent {
   poiFilters$: Observable<any> = this._store.select(poiFilters);
   trackFilters$: Observable<any[]> = this._store.select(filterTracks);
 
-  constructor(private _store: Store, private _location: Location) {}
-
-  cleanUrl(): void {
-    const baseUrl = this._location.path().split('?')[0].split('#')[0]; // Ottiene solo '/map'
-    this._location.replaceState(baseUrl); // Aggiorna l'URL senza ricaricare la pagina
-  }
+  constructor(private _store: Store, private urlHandlerSvc: UrlHandlerService) {}
 
   removeLayer(layer: any): void {
     this._store.dispatch(setLayer(null));
@@ -69,7 +64,7 @@ export class StatusFilterComponent {
     this._store.dispatch(resetTrackFilters());
     this._store.dispatch(closeUgc());
     this._store.dispatch(goToHome());
-    this.cleanUrl();
+    this.urlHandlerSvc.resetURL(null);
     this.resetFiltersEVT.emit();
   }
 }

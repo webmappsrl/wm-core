@@ -5,8 +5,8 @@ import {Point} from 'geojson';
 import {
   applyWhere,
   closeUgc,
-  enabledDrawTrack,
   inputTyped,
+  drawTrackOpened,
   openUgc,
   resetPoiFilters,
   resetTrackFilters,
@@ -32,10 +32,10 @@ export interface UserActivityState {
   currentPoi?: WmFeature<Point>;
   currentFilters?: any[];
   poisSelectedFilterIdentifiers?: string[];
-  drawTrack: boolean;
   layer?: any;
   lastFilterType?: 'tracks' | 'pois' | null;
   loading: {pois: boolean; layer: boolean};
+  drawTrackOpened: boolean;
 }
 
 export interface UserAcitivityRootState {
@@ -46,7 +46,7 @@ const initialState: UserActivityState = {
   ugcOpened: false,
   inputTyped: null,
   filterTracks: [],
-  drawTrack: false,
+  drawTrackOpened: false,
   filterTaxonomies: [],
   lastFilterType: null,
   loading: {pois: false, layer: false},
@@ -88,10 +88,10 @@ export const userActivityReducer = createReducer(
       ...{currentFilters},
     };
   }),
-  on(enabledDrawTrack, (state, {drawTrack}) => {
+  on(drawTrackOpened, (state, {drawTrackOpened}) => {
     return {
       ...state,
-      ...{drawTrack},
+      ...{drawTrackOpened},
     };
   }),
   on(setLayer, (state, {layer}) => {

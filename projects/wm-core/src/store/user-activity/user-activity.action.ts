@@ -41,10 +41,7 @@ export const setCurrentFilters = createAction(
   '[User Activity] Set current Filters',
   props<{currentFilters: any[]}>(),
 );
-export const enabledDrawTrack = createAction(
-  '[User Activity] Enable draw track',
-  props<{drawTrack: boolean}>(),
-);
+
 export const loadConfFail = createAction('[User Activity] Set current layer Success Fail');
 export const goToHome = createAction('[User Activity] Go to Home');
 export const resetMap = createAction('[User Activity] Reset Map');
@@ -75,4 +72,8 @@ export const startLoader = createAction(
 export const stopLoader = createAction(
   '[User Activity] loader: stop loader',
   props<{identifier: 'layer' | 'pois'}>(),
+);
+export const drawTrackOpened = createAction(
+  '[User Activity] draw track opened',
+  props<{drawTrackOpened: boolean}>(),
 );

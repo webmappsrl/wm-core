@@ -52,7 +52,7 @@ import {UgcReducer} from './store/features/ugc/ugc.reducer';
 import {userActivityReducer} from './store/user-activity/user-activity.reducer';
 import {UserActivityEffects} from './store/user-activity/user-activity.effects';
 import {WmSearchBarComponent} from './search-bar/search-bar.component';
-import {WmCoreMapComponent} from './map/map.component';
+import {WmGeoboxMapComponent} from './geobox-map/geobox-map.component';
 import {WmMapModule} from '@map-core/map-core.module';
 import {UrlHandlerService} from './services/url-handler.service';
 import {WmUgcMediasModule} from './ugc-medias/wm-ugc-medias.module';
@@ -83,7 +83,7 @@ const declarations = [
   WmExcerptComponent,
   WmFormComponent,
   WmSearchBarComponent,
-  WmCoreMapComponent,
+  WmGeoboxMapComponent,
 ];
 const modules = [
   WmSharedModule,

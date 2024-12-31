@@ -1,0 +1,38 @@
+wm-profile-popup {
+  .wm-profile-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 14px;
+    gap: 10px;
+    cursor: pointer;
+    height: 40px;
+    position: relative;
+    background: #ffffff !important;
+    box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+
+    &.logged-in {
+      color: #ffffff !important;
+      background-color: var(--wm-color-primary) !important;
+    }
+  }
+  .wm-profile-content {
+    position: absolute;
+    background-color: white;
+    padding: 10px;
+    top: calc(2% + 60px + env(safe-area-inset-top));
+    right: 1%;
+    width: 350px;
+    z-index: 1;
+    border-radius: 30px;
+    min-height: 100px;
+    -webkit-box-shadow: 0px 2px 12px 0px rgba(0, 0, 0, 0.4);
+    box-shadow: 0px 2px 12px 0px rgba(0, 0, 0, 0.4);
+
+    ion-button {
+      text-transform: none;
+    }
+  }
+}

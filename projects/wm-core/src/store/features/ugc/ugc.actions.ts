@@ -92,3 +92,8 @@ export const updateUgcPoiFailure = createAction(
   '[Ugc] Update Ugc Poi Failure',
   props<{error: string}>(),
 );
+
+export const currentCustomTrack = createAction(
+  '[Ugc] Set current Custom Track',
+  props<{currentCustomTrack: WmFeature<LineString> | null}>(),
+);
