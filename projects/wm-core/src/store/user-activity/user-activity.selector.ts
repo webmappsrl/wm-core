@@ -1,7 +1,5 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
-import {user} from '../auth/auth.selectors';
-import {confAUTHEnable, confShowDrawTrack} from '../conf/conf.selector';
-import {currentCustomTrack} from '../features/ugc/ugc.actions';
+import {currentCustomTrack} from '../features/ugc/ugc.selector';
 import {UserActivityState} from './user-activity.reducer';
 
 export const userActivity = createFeatureSelector<UserActivityState>('user-activity');
@@ -85,14 +83,6 @@ export const loading = createSelector(userActivity, state => {
 });
 export const currentEcLayer = createSelector(userActivity, state => state.layer);
 
-export const homeOpened = createSelector(
-  confShowDrawTrack, // Primo parametro
-  confAUTHEnable, // Secondo parametro
-  currentCustomTrack, // Terzo parametro
-  (showDrawTrackButton, authEnabled, hasCustomTrack) => {
-    if (!showDrawTrackButton || !authEnabled) {
-      return false;
-    }
-    return hasCustomTrack != null;
-  },
-);
+export const homeOpened = createSelector(currentCustomTrack, hasCustomTrack => {
+  return hasCustomTrack == null;
+});
