@@ -2,8 +2,10 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  EventEmitter,
   Inject,
   OnDestroy,
+  Output,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -50,7 +52,7 @@ import {
   SelectFilterOption,
   SliderFilter,
 } from '@wm-core/types/config';
-import {BehaviorSubject, combineLatest, from, merge, of, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, from, merge, of, Subject, Subscription} from 'rxjs';
 import {Observable} from 'rxjs';
 import {
   concatMap,
@@ -133,10 +135,14 @@ export class WmGeoboxMapComponent implements OnDestroy {
     null,
   );
 
+  @Output()
+  openPopupEVT: EventEmitter<{name: string; html: string}> = new EventEmitter<{
+    name: string;
+    html: string;
+  }>();
   @ViewChild(WmMapTrackRelatedPoisDirective)
   WmMapTrackRelatedPoisDirective: WmMapTrackRelatedPoisDirective;
   @ViewChild('filterCmp') filterCmp: FiltersComponent;
-  @ViewChild(WmHomeComponent) homeCmp: WmHomeComponent;
   @ViewChild(WmMapComponent) mapCmp: WmMapComponent;
 
   apiElasticState$: Observable<any> = this._store.select(mapFilters);
@@ -218,6 +224,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   pois$: Observable<WmFeature<Point>[]> = this._store.select(ecPois);
   refreshLayer$: Observable<any>;
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+  resetSelectedOvelayFeatureEVT$ = new Subject<void>();
   resetSelectedPoi$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   resetSelectedUgcPoi$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -334,8 +341,11 @@ export class WmGeoboxMapComponent implements OnDestroy {
     this.WmMapTrackRelatedPoisDirective.poiNext();
   }
 
-  openPopup(popup: {name: string; html: string}): void {
-    this.homeCmp.popup$.next(popup);
+  openPopup(popup: {name: string; html: string} | null): void {
+    this.openPopupEVT.emit(popup);
+    if (popup == null) {
+      this.resetSelectedOvelayFeatureEVT$.next();
+    }
   }
 
   prev(): void {
@@ -364,9 +374,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
     this._store.dispatch(currentCustomTrackAction({currentCustomTrack: null}));
   }
 
-  removeActivityFilter(activity: string): void {
-    //  this.homeCmp.removeFilter(activity);
-  }
+  removeActivityFilter(activity: string): void {}
 
   removeTrackFilter(filter: Filter): void {
     this._store.dispatch(toggleTrackFilter({filter}));
@@ -374,7 +382,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
 
   resetFilters(): void {
     this._store.dispatch(goToHome());
-    // this.homeCmp.goToHome();
   }
 
   saveCurrentCustomTrack(track: WmFeature<LineString>): void {
@@ -382,7 +389,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   }
 
   selectedLayer(layer: any): void {
-    this.homeCmp.setLayer(layer);
+    this._store.dispatch(setLayer(layer));
   }
 
   selectedLayerById(id: number): void {
@@ -449,9 +456,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   }
 
   setWmMapFeatureCollection(overlay: any): void {
-    try {
-      this.homeCmp.setLayer(null);
-    } catch (_) {}
+    this._store.dispatch(setLayer(null));
     this.wmMapFeatureCollectionOverlay$.next(overlay);
     this.overlayFeatureCollections$.pipe(take(1)).subscribe(feature => {
       if (overlay['featureType'] != null && feature[overlay['featureType']] != null) {
@@ -550,7 +555,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
 
   updateUgcTrack(ugc_track = undefined): void {
     this._store.dispatch(openUgc());
-    this.homeCmp.setTrack(ugc_track);
     this._urlHandlerSvc.updateURL({track: undefined, ugc_track});
   }
 }

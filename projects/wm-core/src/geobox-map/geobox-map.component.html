@@ -11,6 +11,7 @@
   (wmMapToggleDataEVT$)="toggleDirective($event)"
   (wmMapFeatureCollectionLayerSelected)="selectedLayerById($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
   (wmMapFeatureCollectionPopup)="openPopup($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
+  (wmMapEmptyClickEVT$)="openPopup(null)"
   wmMapCustomTracks
   [wmMapCustomTrackDrawTrack]="drawTrackOpened$|async"
   [wmMapCustomTrackDrawTrackHost]="graphhopperHost$|async"
