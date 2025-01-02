@@ -496,10 +496,10 @@ export class WmSlopeChartComponent implements OnInit {
   }
 
   private _is3dGeometry(geometry: Geometry): boolean {
-    if (geometry == null) return false;
-    return (
-      geometry != null && geometry.type === 'LineString' && geometry.coordinates[0].length === 3
-    );
+    if (geometry == null || geometry.type !== 'LineString') return false;
+
+    // Controlla che ogni coordinate abbia una lunghezza di 3 e verifica che almeno una abbia una terza posizione diversa da 0
+    return geometry.coordinates.some(coord => coord.length === 3 && coord[2] !== 0);
   }
 
   /**
