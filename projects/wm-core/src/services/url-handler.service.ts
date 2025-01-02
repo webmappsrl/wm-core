@@ -27,6 +27,21 @@ export class UrlHandlerService {
 
   constructor(private _route: ActivatedRoute, private _router: Router, private _store: Store) {}
 
+  changeUrl(selectedTab: string): void {
+    this._router.navigate([`/${selectedTab}`], {
+      queryParams: this._route.snapshot.queryParams, // Mantiene i parametri esistenti
+      queryParamsHandling: 'merge', // Preserva o unisce i parametri
+    });
+  }
+
+  /**
+   * Get the current query params from the URL.
+   * @returns Params - The query parameters as an object.
+   */
+  getCurrentQueryParams(): Params {
+    return this._route.snapshot.queryParams;
+  }
+
   initialize(): void {
     this._route.queryParams.pipe(skip(1), debounceTime(500)).subscribe(params => {
       this._store.dispatch(currentEcLayerId({currentEcLayerId: params.layer ?? null}));
@@ -69,16 +84,16 @@ export class UrlHandlerService {
    * Merge new query params with the existing ones and update the URL.
    * Perform navigation only if query params differ.
    */
-  updateURL(queryParams: Params): void {
+  updateURL(queryParams: Params, routes = []): void {
     const oldParams = this._route.snapshot.queryParams;
     const newParams = {...this._baseParams, ...oldParams, ...queryParams};
 
-    if (JSON.stringify(newParams) !== JSON.stringify(oldParams)) {
+    if (JSON.stringify(newParams) !== JSON.stringify(oldParams) || this._router.url !== routes[0]) {
       // Only navigate if new params differ from old ones
-      this._router.navigate([], {
+      this._router.navigate(routes, {
         relativeTo: this._route,
         queryParams: newParams,
-        queryParamsHandling: 'merge',
+        queryParamsHandling: '',
       });
     }
   }
