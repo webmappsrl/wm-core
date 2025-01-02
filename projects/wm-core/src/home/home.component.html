@@ -2,9 +2,9 @@
   <ng-content></ng-content>
 
   <ng-container *ngIf="(confAPP$|async) as confAPP">
-    <ion-item lines="none" *ngIf="confAPP.welcome as welcome">
+    <div class="wm-home-header-container" *ngIf="confAPP.welcome as welcome">
       <ion-label [innerHTML]="sanitizer.bypassSecurityTrustHtml(welcome | wmtrans)"></ion-label>
-    </ion-item>
+    </div>
   </ng-container>
 
   <wm-searchbar

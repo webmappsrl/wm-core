@@ -23,6 +23,16 @@ wm-home {
   .pois {
     margin-bottom: 100px;
   }
+  .wm-home-header-container {
+    padding-top: 10px;
+    display: block;
+    ion-label {
+      color: var(--wm-color-dark);
+      display: block;
+      font-size: var(--wm-font-xxxlg);
+      font-weight: var(--wm-font-weight-bold);
+    }
+  }
 }
 .wm-modal {
   .modal-wrapper {
