@@ -362,7 +362,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
 
   reloadCustomTrack(): void {
     this._store.dispatch(currentCustomTrackAction({currentCustomTrack: null}));
-    this.reloadCustomTracks$.next(!this.reloadCustomTracks$.value ?? false);
   }
 
   removeActivityFilter(activity: string): void {
