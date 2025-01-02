@@ -2,6 +2,8 @@ import {
   AfterContentInit,
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
+  Output,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -24,7 +26,7 @@ import {
   ISLUGBOX,
 } from '@wm-core/types/config';
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
-import {countUgcAll, ugc} from '@wm-core/store/features/ugc/ugc.selector';
+import {countUgcAll} from '@wm-core/store/features/ugc/ugc.selector';
 import {
   currentEcLayer,
   showResult,
@@ -51,6 +53,8 @@ import {UrlHandlerService} from '@wm-core/services/url-handler.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class WmHomeComponent implements AfterContentInit {
+  @Output()
+  trackClickedEvt$: EventEmitter<void> = new EventEmitter<void>();
   @ViewChild('searchCmp') searchCmp: WmSearchBarComponent;
 
   confAPP$: Observable<IAPP> = this._store.select(confAPP);
@@ -100,7 +104,6 @@ export class WmHomeComponent implements AfterContentInit {
   }
 
   goToHome(): void {
-    // this.setLayer(null);
     this._store.dispatch(goToHome());
   }
 
@@ -186,6 +189,7 @@ export class WmHomeComponent implements AfterContentInit {
         : {track: id ? +id : undefined};
       this._urlHandlerSvc.updateURL(queryParams);
     });
+    this.trackClickedEvt$.emit();
   }
 
   setUgc(): void {

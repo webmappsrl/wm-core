@@ -1,85 +1,88 @@
-<wm-map
-  #wmap
-  [wmMapConf]="confMap$|async"
-  [wmMapPadding]="mapPadding$|async"
-  [wmMapFilters]="apiElasticState$|async"
-  [wmMapTranslationCallback]="translationCallback"
-  (wmMapOverlayEVT$)="setWmMapFeatureCollection($event)"
-  [wmMapFeatureCollection]="(wmMapFeatureCollectionOverlay$|async)!= null"
-  [wmMapFeatureCollectionOverlay]="wmMapFeatureCollectionOverlay$|async"
-  (wmMapStateEvt)="setLoader($event)"
-  (wmMapToggleDataEVT$)="toggleDirective($event)"
-  (wmMapFeatureCollectionLayerSelected)="selectedLayerById($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
-  (wmMapFeatureCollectionPopup)="openPopup($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
-  (wmMapEmptyClickEVT$)="openPopup(null)"
-  wmMapCustomTracks
-  [wmMapCustomTrackDrawTrack]="drawTrackOpened$|async"
-  [wmMapCustomTrackDrawTrackHost]="graphhopperHost$|async"
-  [reloadCustomTracks]="reloadCustomTracks$|async"
-  (currentCustomTrack)="saveCurrentCustomTrack($event)"
-  wmMapLayer
-  [jidoUpdateTime]="confJIDOUPDATETIME$|async"
-  [wmMapLayerDataLayerUrls]="dataLayerUrls$|async"
-  [wmMapLayerLayer]="currentLayer$|async"
-  [wmMapLayerRefresh]="refreshLayer$|async"
-  [wmMapLayerDisableLayers]="wmMapEcTracksDisableLayer$|async"
-  (colorSelectedFromLayerEVT)="trackColor$.next($event)"
-  wmMapPois
-  [wmMapInputTyped]="apiSearchInputTyped$|async"
-  [wmMapPoisPoi]="currentEcPoiId$|async"
-  [wmMapPoisPois]="pois$|async"
-  [wmMapPoisFilters]="poiFilterIdentifiers$|async"
-  [WmMapPoisUnselectPoi]="resetSelectedPoi$|async"
-  [wmMapPoisDisableClusterLayer]="wmMapEcPoisDisableLayer$|async"
-  (currentPoiEvt)="setPoi($event)"
-  wmMapTrack
-  [track]="track$|async"
-  [trackElevationChartElements]="trackElevationChartHoverElements$|async"
-  (trackSelectedFromLayerEVT)="updateEcTrack($event)"
-  wmMapTrackRelatedPois
-  [related-current-ec-poi-id]="currentRelatedPoiID$|async"
-  (related-poi)="setCurrentRelatedPoi($event)"
-  (related-poi-next)="currentPoiNextID$.next(+$event)"
-  (related-poi-prev)="currentPoiPrevID$.next(+$event)"
-  [wmMapReletedPoisDisableClusterLayer]="wmMapEcPoisDisableLayer$|async"
-  wmMapHitMapCollection
-  [wmMapHitMapUrl]="wmMapHitMapUrl$|async"
-  [wmMapUgcTracks]="ugcTracks$|async"
-  [wmMapUgcTrackDisableLayer]="wmMapUgcDisableLayers$|async"
-  (ugcTrackSelectedFromMapEVT)="updateUgcTrack($event)"
-  [wmMapUgcPois]="ugcPois$|async"
-  [wmMapUgcPoiDisableClusterLayer]="wmMapUgcDisableLayers$|async"
-  [wmMapUgcPoi]="currentUgcPoiIDToMap$|async"
-  [wmMapUgcUnselectedPoi]="resetSelectedUgcPoi$|async"
-  (currentUgcPoiEvt)="setUgcPoi($event)"
->
-  <wm-filters
-    top-right
-    #filterCmp
-    [wmFiltersClose]="wmap.wmMapCloseTopRightBtnsEVT$|async"
-    (lastFilterTypeEvt)="updateLastFilterType($event)"
-    (filterPoisEvt)="updatePoiFilter($event)"
-    (filterTracksEvt)="updateTrackFilter($event)"
-    (removefilterTracksEvt)="removeTrackFilter($event)"
-    (removefilterPoiEvt)="updatePoiFilter($event)"
-    (resetFiltersEvt)="resetFilters()"
-    (click)="wmap.wmMapCloseTopRightBtns = 'wm-filters'"
-  ></wm-filters>
-  <wm-profile-popup top-right></wm-profile-popup>
-
-  <div
-    top-right
-    class="top-right-button"
-    expand="full"
-    *ngIf="(showDrawTrackButton$|async)"
-    (click)="toggleDrawTrackEnabled();wmap.wmMapCloseTopRightBtns = 'my-paths'"
+<div class="webmapp-pageroute-map-container">
+  <wm-map
+    #wmap
+    [wmMapConf]="confMap$|async"
+    [wmMapPadding]="mapPadding$|async"
+    [wmMapFilters]="apiElasticState$|async"
+    [wmMapTranslationCallback]="translationCallback"
+    (wmMapOverlayEVT$)="setWmMapFeatureCollection($event)"
+    [wmMapFeatureCollection]="(wmMapFeatureCollectionOverlay$|async)!= null"
+    [wmMapFeatureCollectionOverlay]="wmMapFeatureCollectionOverlay$|async"
+    (wmMapStateEvt)="setLoader($event)"
+    (wmMapToggleDataEVT$)="toggleDirective($event)"
+    (wmMapFeatureCollectionLayerSelected)="selectedLayerById($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
+    (wmMapFeatureCollectionPopup)="openPopup($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
+    (wmMapEmptyClickEVT$)="openPopup(null)"
+    wmMapCustomTracks
+    [wmMapCustomTrackDrawTrack]="drawTrackOpened$|async"
+    [wmMapCustomTrackDrawTrackHost]="graphhopperHost$|async"
+    [reloadCustomTracks]="reloadCustomTracks$|async"
+    (currentCustomTrack)="saveCurrentCustomTrack($event)"
+    wmMapLayer
+    [jidoUpdateTime]="confJIDOUPDATETIME$|async"
+    [wmMapLayerDataLayerUrls]="dataLayerUrls$|async"
+    [wmMapLayerLayer]="currentLayer$|async"
+    [wmMapLayerRefresh]="refreshLayer$|async"
+    [wmMapLayerDisableLayers]="wmMapEcTracksDisableLayer$|async"
+    (colorSelectedFromLayerEVT)="trackColor$.next($event)"
+    wmMapPois
+    [wmMapInputTyped]="apiSearchInputTyped$|async"
+    [wmMapPoisPoi]="currentEcPoiId$|async"
+    [wmMapPoisPois]="pois$|async"
+    [wmMapPoisFilters]="poiFilterIdentifiers$|async"
+    [WmMapPoisUnselectPoi]="resetSelectedPoi$|async"
+    [wmMapPoisDisableClusterLayer]="wmMapEcPoisDisableLayer$|async"
+    (currentPoiEvt)="setPoi($event)"
+    wmMapTrack
+    [track]="track$|async"
+    [trackElevationChartElements]="trackElevationChartHoverElements$|async"
+    (trackSelectedFromLayerEVT)="updateEcTrack($event)"
+    wmMapTrackRelatedPois
+    [related-current-ec-poi-id]="currentRelatedPoiID$|async"
+    (related-poi)="setCurrentRelatedPoi($event)"
+    (related-poi-next)="currentPoiNextID$.next(+$event)"
+    (related-poi-prev)="currentPoiPrevID$.next(+$event)"
+    [wmMapReletedPoisDisableClusterLayer]="wmMapEcPoisDisableLayer$|async"
+    wmMapHitMapCollection
+    [wmMapHitMapUrl]="wmMapHitMapUrl$|async"
+    [wmMapUgcTracks]="ugcTracks$|async"
+    [wmMapUgcTrackDisableLayer]="wmMapUgcDisableLayers$|async"
+    (ugcTrackSelectedFromMapEVT)="updateUgcTrack($event)"
+    [wmMapUgcPois]="ugcPois$|async"
+    [wmMapUgcPoiDisableClusterLayer]="wmMapUgcDisableLayers$|async"
+    [wmMapUgcPoi]="currentUgcPoiIDToMap$|async"
+    [wmMapUgcUnselectedPoi]="resetSelectedUgcPoi$|async"
+    (currentUgcPoiEvt)="setUgcPoi($event)"
   >
-    {{ (drawTrackOpened$|async)?'esci':'i miei percorsi'|wmtrans}}
-  </div>
-  <ion-progress-bar
-    bottom
-    type="indeterminate"
-    color="primary"
-    *ngIf="(loading$|async)"
-  ></ion-progress-bar>
-</wm-map>
+    <wm-filters
+      top-right
+      #filterCmp
+      [wmFiltersClose]="wmap.wmMapCloseTopRightBtnsEVT$|async"
+      (lastFilterTypeEvt)="updateLastFilterType($event)"
+      (filterPoisEvt)="updatePoiFilter($event)"
+      (filterTracksEvt)="updateTrackFilter($event)"
+      (removefilterTracksEvt)="removeTrackFilter($event)"
+      (removefilterPoiEvt)="updatePoiFilter($event)"
+      (resetFiltersEvt)="resetFilters()"
+      (click)="wmap.wmMapCloseTopRightBtns = 'wm-filters'"
+    ></wm-filters>
+    <wm-profile-popup top-right></wm-profile-popup>
+
+    <div
+      top-right
+      class="top-right-button"
+      expand="full"
+      *ngIf="(showDrawTrackButton$|async)"
+      (click)="toggleDrawTrackEnabled();wmap.wmMapCloseTopRightBtns = 'my-paths'"
+    >
+      {{ (drawTrackOpened$|async)?'esci':'i miei percorsi'|wmtrans}}
+    </div>
+    <ion-progress-bar
+      bottom
+      type="indeterminate"
+      color="primary"
+      *ngIf="(loading$|async)"
+    ></ion-progress-bar>
+  </wm-map>
+  <ng-content></ng-content>
+</div>

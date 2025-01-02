@@ -27,11 +27,14 @@ export class UrlHandlerService {
 
   constructor(private _route: ActivatedRoute, private _router: Router, private _store: Store) {}
 
-  changeUrl(selectedTab: string): void {
-    this._router.navigate([`/${selectedTab}`], {
-      queryParams: this._route.snapshot.queryParams, // Mantiene i parametri esistenti
-      queryParamsHandling: 'merge', // Preserva o unisce i parametri
-    });
+  changeURL(route): void {
+    console.log('changeURL', route);
+    if (route != null) {
+      const oldParams = this.getCurrentQueryParams();
+      setTimeout(() => {
+        this.updateURL(oldParams, [route]);
+      }, 100);
+    }
   }
 
   /**
@@ -59,25 +62,10 @@ export class UrlHandlerService {
    * Reset the URL query params to exactly match the provided value.
    * Perform navigation only if query params differ.
    */
-  resetURL(queryParams: Params | null): void {
-    const currentParams = this._route.snapshot.queryParams;
-
-    if (queryParams === null) {
-      if (Object.keys(currentParams).length > 0) {
-        this._router.navigate([], {
-          relativeTo: this._route,
-          queryParams: {}, // Reset query params
-          queryParamsHandling: '', // Clear all query params
-        });
-      }
-    } else if (JSON.stringify(queryParams) !== JSON.stringify(currentParams)) {
-      // Only navigate if query params are different
-      this._router.navigate([], {
-        relativeTo: this._route,
-        queryParams, // Exact query params passed
-        queryParamsHandling: '', // Overwrite completely
-      });
-    }
+  resetURL(queryParams: Params | null, route = null): void {
+    console.log('resetURL', queryParams);
+    const routes = route ? [route] : [];
+    this.updateURL(this._baseParams, routes);
   }
 
   /**
@@ -85,11 +73,14 @@ export class UrlHandlerService {
    * Perform navigation only if query params differ.
    */
   updateURL(queryParams: Params, routes = []): void {
-    const oldParams = this._route.snapshot.queryParams;
+    const oldParams = {...this._baseParams, ...this.getCurrentQueryParams()};
     const newParams = {...this._baseParams, ...oldParams, ...queryParams};
+    const currentPath = this._router.url.split('?')[0].split('/').pop();
 
-    if (JSON.stringify(newParams) !== JSON.stringify(oldParams) || this._router.url !== routes[0]) {
+    if (JSON.stringify(newParams) !== JSON.stringify(oldParams) || currentPath !== routes[0]) {
       // Only navigate if new params differ from old ones
+      console.log('updateURL', queryParams);
+
       this._router.navigate(routes, {
         relativeTo: this._route,
         queryParams: newParams,

@@ -46,9 +46,7 @@ export class UserActivityEffects {
   goToHome$ = createEffect(() =>
     this._actions$.pipe(
       ofType(goToHome),
-      tap(() => {
-        this._urlHandlerSvc.resetURL(null);
-      }),
+
       mergeMap(() => of(inputTyped({inputTyped: ''}), setLayer(null), resetTrackFilters())),
     ),
   );

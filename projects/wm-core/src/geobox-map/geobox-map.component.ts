@@ -525,14 +525,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
   }
 
   updateEcTrack(track = undefined): void {
-    this.currentLayer$
-      .pipe(
-        take(1),
-        filter(l => l),
-      )
-      .subscribe(layer => {
-        this.mapCmp.fitView(extentFromLonLat(layer.bbox), {duration: 1000});
-      });
     this._urlHandlerSvc.updateURL({ugc_track: undefined, track});
   }
 
