@@ -33,13 +33,11 @@ export class UrlHandlerService {
       if (queryParams == null) {
         queryParams = this.getCurrentQueryParams();
       }
-      setTimeout(() => {
-        this._router.navigate([route], {
-          relativeTo: this._route,
-          queryParams,
-          queryParamsHandling: '',
-        });
-      }, 100);
+      this._router.navigate([route], {
+        relativeTo: this._route,
+        queryParams,
+        queryParamsHandling: '',
+      });
     }
   }
 

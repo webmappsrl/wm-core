@@ -8,6 +8,7 @@ import {ICONF, IHOME, ILAYER, ITHEME} from '../../types/config';
 const confFeature = createFeatureSelector<ICONF>(confFeatureKey);
 export const MAX_TRACKS = 200;
 export const isConfLoaded = createSelector(confFeature, state => !!state && state.loaded);
+
 export const confAPP = createSelector(confFeature, state => state.APP);
 export const confGeohubId = createSelector(confAPP, state => state.geohubId);
 export const confWEBAPP = createSelector(confFeature, state => state.WEBAPP);
@@ -20,6 +21,7 @@ export const confAUTHEnable = createSelector(confAUTH, auth => auth?.enable ?? f
 export const confMAP = createSelector(confFeature, state => state.MAP);
 export const confJIDOUPDATETIME = createSelector(confFeature, state => state.JIDO_UPDATE_TIME);
 export const confTRANSLATIONS = createSelector(confFeature, state => state.TRANSLATIONS);
+export const confRecordTrackShow = createSelector(confMAP, state => state.record_track_show);
 export const confFILTERS = createSelector(confMAP, map => {
   if (map == null || map.filters == null) return undefined;
   let filters = {...map.filters};

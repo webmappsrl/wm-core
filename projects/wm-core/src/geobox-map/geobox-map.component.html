@@ -67,7 +67,6 @@
       (click)="wmap.wmMapCloseTopRightBtns = 'wm-filters'"
     ></wm-filters>
     <wm-profile-popup top-right></wm-profile-popup>
-
     <div
       top-right
       class="top-right-button"
@@ -77,6 +76,10 @@
     >
       {{ (drawTrackOpened$|async)?'esci':'i miei percorsi'|wmtrans}}
     </div>
+    <div class="bottom-right" bottom-right>
+      <ng-content select="[bottom-right]"></ng-content>
+    </div>
+
     <ion-progress-bar
       bottom
       type="indeterminate"
