@@ -27,14 +27,16 @@ export class UrlHandlerService {
 
   constructor(private _route: ActivatedRoute, private _router: Router, private _store: Store) {}
 
-  changeURL(route): void {
+  changeURL(route, queryParams?: Params): void {
     console.log('changeURL', route);
     if (route != null) {
-      const oldParams = this.getCurrentQueryParams();
+      if (queryParams == null) {
+        queryParams = this.getCurrentQueryParams();
+      }
       setTimeout(() => {
         this._router.navigate([route], {
           relativeTo: this._route,
-          queryParams: oldParams,
+          queryParams,
           queryParamsHandling: '',
         });
       }, 100);
@@ -78,12 +80,12 @@ export class UrlHandlerService {
    * Merge new query params with the existing ones and update the URL.
    * Perform navigation only if query params differ.
    */
-  updateURL(queryParams: Params): void {
+  updateURL(queryParams: Params, routes = []): void {
     const oldParams = {...this._baseParams, ...this.getCurrentQueryParams()};
     const newParams = {...this._baseParams, ...oldParams, ...queryParams};
 
     if (JSON.stringify(newParams) !== JSON.stringify(oldParams)) {
-      this._router.navigate([], {
+      this._router.navigate(routes, {
         relativeTo: this._route,
         queryParams: newParams,
         queryParamsHandling: '',

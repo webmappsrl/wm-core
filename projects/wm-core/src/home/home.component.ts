@@ -53,8 +53,6 @@ import {UrlHandlerService} from '@wm-core/services/url-handler.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class WmHomeComponent implements AfterContentInit {
-  @Output()
-  trackClickedEvt$: EventEmitter<void> = new EventEmitter<void>();
   @ViewChild('searchCmp') searchCmp: WmSearchBarComponent;
 
   confAPP$: Observable<IAPP> = this._store.select(confAPP);
@@ -182,9 +180,8 @@ export class WmHomeComponent implements AfterContentInit {
       const queryParams = ugcOpened
         ? {ugc_track: id ? +id : undefined}
         : {track: id ? +id : undefined};
-      this._urlHandlerSvc.updateURL(queryParams);
+      this._urlHandlerSvc.updateURL(queryParams, ['map']);
     });
-    this.trackClickedEvt$.emit();
   }
 
   setUgc(): void {
