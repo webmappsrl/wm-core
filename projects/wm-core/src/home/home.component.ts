@@ -140,7 +140,6 @@ export class WmHomeComponent implements AfterContentInit {
   }
 
   removeLayer(_: any): void {
-    this.setLayer(null);
     this._urlHandlerSvc.updateURL({layer: undefined});
   }
 
@@ -159,12 +158,8 @@ export class WmHomeComponent implements AfterContentInit {
     if (layer != null && typeof layer === 'number') {
       layer = {id: layer};
     }
-    if (layer != null && layer.id != null) {
-      this._store.dispatch(currentEcLayerId({currentEcLayerId: layer.id}));
-    } else {
-      this._store.dispatch(resetTrackFilters());
-    }
 
+    this._urlHandlerSvc.updateURL({layer: layer?.id ?? undefined});
     this._store.dispatch(closeUgc());
   }
 

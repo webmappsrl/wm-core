@@ -46,8 +46,8 @@ export class UserActivityEffects {
   goToHome$ = createEffect(() =>
     this._actions$.pipe(
       ofType(goToHome),
-
       mergeMap(() => of(inputTyped({inputTyped: ''}), setLayer(null), resetTrackFilters())),
+      tap(() => this._urlHandlerSvc.resetURL()),
     ),
   );
   removeTrackFilters$ = createEffect(() =>
@@ -62,17 +62,9 @@ export class UserActivityEffects {
       map(() => ecTracks({init: true})),
     ),
   );
-  setECLayerId$ = createEffect(
-    () =>
-      this._actions$.pipe(
-        ofType(currentEcLayerId),
-        tap(action => {
-          const queryParams = {layer: action.currentEcLayerId ?? undefined};
-          this._urlHandlerSvc.updateURL(queryParams);
-        }),
-      ),
-    {dispatch: false},
-  );
+  setECLayerId$ = createEffect(() => this._actions$.pipe(ofType(currentEcLayerId)), {
+    dispatch: false,
+  });
   setLoadingStart$ = createEffect(() =>
     this._actions$.pipe(
       ofType(resetTrackFilters, setLayer, toggleTrackFilter, updateTrackFilter, applyWhere),

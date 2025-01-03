@@ -59,12 +59,8 @@ export class StatusFilterComponent {
   }
 
   resetFilters(): void {
-    this._store.dispatch(setLayer(null));
-    this._store.dispatch(resetPoiFilters());
-    this._store.dispatch(resetTrackFilters());
     this._store.dispatch(closeUgc());
     this._store.dispatch(goToHome());
-    this.urlHandlerSvc.resetURL(null);
     this.resetFiltersEVT.emit();
   }
 }

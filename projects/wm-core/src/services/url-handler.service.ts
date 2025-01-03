@@ -32,7 +32,11 @@ export class UrlHandlerService {
     if (route != null) {
       const oldParams = this.getCurrentQueryParams();
       setTimeout(() => {
-        this.updateURL(oldParams, [route]);
+        this._router.navigate([route], {
+          relativeTo: this._route,
+          queryParams: oldParams,
+          queryParamsHandling: '',
+        });
       }, 100);
     }
   }
@@ -46,7 +50,7 @@ export class UrlHandlerService {
   }
 
   initialize(): void {
-    this._route.queryParams.pipe(skip(1), debounceTime(500)).subscribe(params => {
+    this._route.queryParams.pipe(skip(1), debounceTime(100)).subscribe(params => {
       this._store.dispatch(currentEcLayerId({currentEcLayerId: params.layer ?? null}));
       this._store.dispatch(currentEcTrackId({currentEcTrackId: params.track ?? null}));
       this._store.dispatch(currentEcPoiId({currentEcPoiId: params.poi ?? null}));
@@ -62,26 +66,24 @@ export class UrlHandlerService {
    * Reset the URL query params to exactly match the provided value.
    * Perform navigation only if query params differ.
    */
-  resetURL(queryParams: Params | null, route = null): void {
-    console.log('resetURL', queryParams);
-    const routes = route ? [route] : [];
-    this.updateURL(this._baseParams, routes);
+  resetURL(): void {
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams: this._baseParams,
+      queryParamsHandling: '',
+    });
   }
 
   /**
    * Merge new query params with the existing ones and update the URL.
    * Perform navigation only if query params differ.
    */
-  updateURL(queryParams: Params, routes = []): void {
+  updateURL(queryParams: Params): void {
     const oldParams = {...this._baseParams, ...this.getCurrentQueryParams()};
     const newParams = {...this._baseParams, ...oldParams, ...queryParams};
-    const currentPath = this._router.url.split('?')[0].split('/').pop();
 
-    if (JSON.stringify(newParams) !== JSON.stringify(oldParams) || currentPath !== routes[0]) {
-      // Only navigate if new params differ from old ones
-      console.log('updateURL', queryParams);
-
-      this._router.navigate(routes, {
+    if (JSON.stringify(newParams) !== JSON.stringify(oldParams)) {
+      this._router.navigate([], {
         relativeTo: this._route,
         queryParams: newParams,
         queryParamsHandling: '',
