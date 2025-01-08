@@ -86,3 +86,4 @@ export const currentEcLayer = createSelector(userActivity, state => state.layer)
 export const homeOpened = createSelector(currentCustomTrack, hasCustomTrack => {
   return hasCustomTrack == null;
 });
+export const chartHoverElements = createSelector(userActivity, state => state.chartHoverElements);

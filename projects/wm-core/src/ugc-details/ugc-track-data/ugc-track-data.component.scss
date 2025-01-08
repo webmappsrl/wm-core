@@ -1,0 +1,13 @@
+wm-ugc-track-data{
+  .wm-ugc-track-data-item{
+    font-size: var(--wm-font-mf);
+    .wm-ugc-track-data-label{
+      font-weight: 400;
+      font-family: var(--wm-font-family-content);
+    }
+    .wm-ugc-track-data-value{
+      font-weight: 600;
+      font-family: var(--wm-font-family-content);
+    }
+  }
+}

@@ -77,7 +77,7 @@ export const poiFilters = createSelector(
 export const countSelectedFilters = createSelector(
   poiFilters,
   filterTracks,
-  (pFilters, tFilters) => pFilters.length + tFilters.length ?? 0,
+  (pFilters, tFilters) => pFilters?.length ?? 0 + tFilters?.length ?? 0,
 );
 
 export const allEcPois = createSelector(ec, state => state.ecPois);
@@ -166,14 +166,21 @@ export const hasActiveFilters = createSelector(
 );
 
 export const currentEcTrack = createSelector(ec, state => state.currentEcTrack);
-export const currentEcRelatedPoiId = createSelector(ec, state => state.currentEcRelatedPoiId);
-export const currentEcRelatedPoi = createSelector(
+export const currentEcTrackProperties = createSelector(
   currentEcTrack,
+  currentEcTrack => currentEcTrack?.properties ?? null,
+);
+export const currentEcRelatedPoiId = createSelector(ec, state => state.currentEcRelatedPoiId);
+export const currentEcRelatedPois = createSelector(
+  currentEcTrackProperties,
+  properties => (properties?.related_pois as WmFeature<Point>[]) ?? null,
+);
+export const currentEcRelatedPoi = createSelector(
+  currentEcRelatedPois,
   currentEcRelatedPoiId,
-  (track, relatedPoiId) => {
-    const related_pois = track?.properties?.related_pois ?? null;
-    if (related_pois != null) {
-      return related_pois.find((p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId);
+  (relatedPois, relatedPoiId) => {
+    if (relatedPois != null) {
+      return relatedPois.find((p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId);
     }
     return null;
   },

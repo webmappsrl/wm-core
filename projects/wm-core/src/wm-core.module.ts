@@ -56,6 +56,13 @@ import {WmGeoboxMapComponent} from './geobox-map/geobox-map.component';
 import {WmMapModule} from '@map-core/map-core.module';
 import {UrlHandlerService} from './services/url-handler.service';
 import {WmUgcMediasModule} from './ugc-medias/wm-ugc-medias.module';
+import {UgcTrackDataComponent} from './ugc-details/ugc-track-data/ugc-track-data.component';
+import {UgcDetailsComponent} from './ugc-details/ugc-details.component';
+import { TrackPropertiesComponent } from './track-properties/track-properties.component';
+import { TabImageGalleryComponent } from './tab-image-gallery/tab-image-gallery.component';
+import { ModalImageComponent } from './modal-image/modal-image.component';
+import { ImageGalleryComponent } from './image-gallery/image-gallery.component';
+import { TrackRelatedPoiComponent } from './track-related-poi/track-related-poi.component';
 const declarations = [
   WmAddressComponent,
   WmTabDetailComponent,
@@ -84,6 +91,14 @@ const declarations = [
   WmFormComponent,
   WmSearchBarComponent,
   WmGeoboxMapComponent,
+  UgcDetailsComponent,
+  UgcTrackDataComponent,
+  TrackPropertiesComponent,
+  ModalImageComponent,
+  TabImageGalleryComponent,
+  ImageGalleryComponent,
+  TrackRelatedPoiComponent
+  
 ];
 const modules = [
   WmSharedModule,
@@ -96,6 +111,7 @@ const modules = [
   WmProfileModule,
   WmMapModule,
   WmUgcMediasModule,
+  
 ];
 @NgModule({
   declarations,

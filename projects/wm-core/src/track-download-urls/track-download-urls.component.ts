@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {Filesystem, Directory, Encoding, WriteFileOptions} from '@capacitor/filesystem';
 import {Share} from '@capacitor/share';
 import GeoJsonToGpx from '@dwayneparton/geojson-to-gpx';
@@ -9,6 +9,8 @@ import {DeviceService} from '@wm-core/services/device.service';
   selector: 'wm-track-download-urls',
   templateUrl: './track-download-urls.component.html',
   styleUrls: ['./track-download-urls.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class WmTrackDownloadUrlsComponent implements OnInit {
   @Input() track: Feature;

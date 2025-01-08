@@ -1,5 +1,6 @@
 import {createAction, props} from '@ngrx/store';
 import {Filter, ILAYER} from '@wm-core/types/config';
+import {ISlopeChartHoverElements} from '@wm-core/types/slope-chart';
 import {WmFeature} from '@wm-types/feature';
 import {LineString, Point} from 'geojson';
 
@@ -36,6 +37,10 @@ export const setCurrentLayer = createAction(
 export const setCurrentPoi = createAction(
   '[User Activity] Set current poi',
   props<{currentPoi: WmFeature<Point>}>(),
+);
+export const setCurrentRelatedPoi = createAction(
+  '[User Activity] Set current related poi',
+  props<{currentRelatedPoi: WmFeature<Point>}>(),
 );
 export const setCurrentFilters = createAction(
   '[User Activity] Set current Filters',
@@ -76,4 +81,9 @@ export const stopLoader = createAction(
 export const drawTrackOpened = createAction(
   '[User Activity] draw track opened',
   props<{drawTrackOpened: boolean}>(),
+);
+
+export const trackElevationChartHoverElemenents = createAction(
+  '[User Activity] track elevation chart hover elements',
+  props<{elements: ISlopeChartHoverElements}>(),
 );

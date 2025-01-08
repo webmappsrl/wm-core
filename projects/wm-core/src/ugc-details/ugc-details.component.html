@@ -1,0 +1,94 @@
+<ng-content></ng-content>
+<ng-container *ngIf="track != null">
+  <ion-header>
+    <ion-toolbar>
+      <span
+        *ngIf="track"
+        [innerHtml]="track?.properties?.name | wmtrans"
+        class="wm-ugc-track-details-header"
+      ></span>
+      <ion-buttons slot="end">
+        <ion-button (click)="triggerDismiss()">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  <div #content id="wm-ugc-track-details-content">
+    <div class="wm-ugc-track-title" *ngIf="track?.properties?.name as title">
+      {{title | wmtrans}}
+    </div>
+
+    <wm-form
+      *ngIf="isEditing$|async; else viewData"
+      [confPOIFORMS]="confTRACKFORMS$|async"
+      [init]="track?.properties?.form"
+      (formGroupEvt)="fg = $event"
+    ></wm-form>
+
+    <ng-template #viewData>
+      <wm-slope-chart
+        *ngIf="track != null"
+        [currentTrack]="track"
+        (hover)="onLocationHover($event)"
+      ></wm-slope-chart>
+      <div class="wm-ugc-category-title ion-margin-top">{{"Dettagli" | wmtrans}}</div>
+      <wm-ugc-track-data [track]="track"></wm-ugc-track-data>
+      <ng-container *ngIf="track?.properties?.form">
+        <div class="wm-ugc-category-title">{{'Attività'|wmtrans}}</div>
+        <div class="wm-ugc-track-activity-content">
+          <wm-track-activity [activity]="track?.properties?.form?.activity"></wm-track-activity>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="track?.properties?.description">
+        <div class="wm-ugc-category-title ion-margin-top">{{"Descrizione" | wmtrans}}</div>
+        <webmapp-track-description
+          [description]="track?.properties?.description | wmtrans"
+        ></webmapp-track-description>
+      </ng-container>
+      <div *ngIf="medias$|async as medias" class="wm-ugc-track-media-content">
+        <div class="wm-ugc-category-title ion-margin-top">{{"Media" | wmtrans}}</div>
+        <wm-ugc-medias [medias]="medias" [showArrows]="true"></wm-ugc-medias>
+      </div>
+      <ng-container *ngIf="confOPTIONS$|async as confOPTIONS">
+        <ng-container *ngIf="confOPTIONS.download_track_enable === true">
+          <div class="wm-ugc-category-title ion-margin-top">{{'Downloads'|wmtrans}}</div>
+          <wm-track-download-urls [track]="track"></wm-track-download-urls>
+        </ng-container>
+      </ng-container>
+    </ng-template>
+    <ng-container *ngIf="!(isEditing$|async); else editingButtons">
+      <ion-button
+        class="wm-ugc-track-button"
+        (click)="this.isEditing$.next(true)"
+        >{{'edit'|wmtrans}}</ion-button
+      >
+      <ion-button
+        class="wm-ugc-track-button"
+        color="danger"
+        (click)="deleteTrack()"
+        >{{'delete'|wmtrans}}</ion-button
+      >
+    </ng-container>
+    <ng-template #editingButtons>
+      <ion-button
+        class="wm-ugc-track-button"
+        (click)="updateTrack()"
+        >{{'save'|wmtrans}}</ion-button
+      >
+      <ion-button
+        class="wm-ugc-track-button"
+        (click)="this.isEditing$.next(false)"
+        >{{'cancel'|wmtrans}}</ion-button
+      >
+    </ng-template>
+  </div>
+
+  <wm-modal-image
+    *ngIf="(currentImage$|async) as currentImage"
+    [image]="currentImage"
+    [showArrows]="false"
+    [caption]=""
+    (closeEVT)="close()"
+  ></wm-modal-image>
+</ng-container>

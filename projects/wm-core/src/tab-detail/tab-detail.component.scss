@@ -6,7 +6,10 @@ wm-tab-detail {
     display: block;
     padding: 0 10px;
   }
-
+  .webmapp-title {
+    font-weight: var(--wm-font-weight-bold);
+    font-size: var(--wm-font-lg);
+  }
   .webmapp-pageroute-tabdetail-label {
     color: var(--wm-color-dark);
   }

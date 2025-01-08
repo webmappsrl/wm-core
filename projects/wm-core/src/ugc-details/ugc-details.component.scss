@@ -1,0 +1,67 @@
+wm-ugc-details::-webkit-scrollbar {
+  display: none;
+}
+wm-ugc-details {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-content: stretch;
+  align-items: flex-start;
+  background-color: white;
+  font-style: normal;
+  overflow: scroll;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
+  ion-header {
+    .wm-ugc-track-details-header {
+      font-size: var(--font-md);
+      color: #333333;
+      font-style: normal;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      flex: none;
+      order: 0;
+      flex-grow: 0;
+      padding: 10px;
+    }
+  }
+
+  #wm-ugc-track-details-content > * {
+    padding-top: 20px;
+  }
+  #wm-ugc-track-details-content {
+    width: 100%;
+    height: calc(100% - 56px);
+    font-family: var(--wm-font-family-content);
+    padding: 15px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: inherit;
+    align-self: flex-start;
+    .wm-ugc-track-title:first-letter {
+      text-transform: uppercase;
+    }
+    .wm-ugc-category-title {
+      font-size: var(--wm-font-md);
+      font-weight: 700;
+      line-height: 22px;
+      letter-spacing: 0em;
+      text-align: left;
+      margin-bottom: 10px;
+    }
+    .wm-ugc-track-activity-content {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-content: flex-start;
+      align-items: flex-start;
+    }
+    .wm-ugc-track-button {
+      box-sizing: content-box;
+    }
+  }
+}

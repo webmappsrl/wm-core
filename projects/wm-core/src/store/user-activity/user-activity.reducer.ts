@@ -20,7 +20,9 @@ import {
   togglePoiFilter,
   toggleTrackFilter,
   updateTrackFilter,
+  trackElevationChartHoverElemenents,
 } from './user-activity.action';
+import {ISlopeChartHoverElements} from '@wm-core/types/slope-chart';
 
 export const key = 'userActivity';
 export interface UserActivityState {
@@ -36,6 +38,7 @@ export interface UserActivityState {
   lastFilterType?: 'tracks' | 'pois' | null;
   loading: {pois: boolean; layer: boolean};
   drawTrackOpened: boolean;
+  chartHoverElements: ISlopeChartHoverElements;
 }
 
 export interface UserAcitivityRootState {
@@ -50,6 +53,7 @@ const initialState: UserActivityState = {
   filterTaxonomies: [],
   lastFilterType: null,
   loading: {pois: false, layer: false},
+  chartHoverElements: null,
 };
 
 export const userActivityReducer = createReducer(
@@ -205,6 +209,13 @@ export const userActivityReducer = createReducer(
     const newState: UserActivityState = {
       ...state,
       loading,
+    };
+    return newState;
+  }),
+  on(trackElevationChartHoverElemenents, (state, {elements}) => {
+    const newState: UserActivityState = {
+      ...state,
+      chartHoverElements: elements,
     };
     return newState;
   }),

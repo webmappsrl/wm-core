@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
 import {IGeojsonProperties} from '@wm-core/types/model';
+import {WmProperties} from '@wm-types/feature';
 
 @Component({
   selector: 'wm-tab-howto',
@@ -9,7 +10,7 @@ import {IGeojsonProperties} from '@wm-core/types/model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WmTabHowtoComponent {
-  @Input() properties: IGeojsonProperties;
+  @Input() properties: WmProperties;
 
   constructor() {}
 }

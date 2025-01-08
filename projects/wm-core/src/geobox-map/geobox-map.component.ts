@@ -73,6 +73,7 @@ import {
 import {currentCustomTrack as currentCustomTrackAction} from '@wm-core/store/features/ugc/ugc.actions';
 import {IDATALAYER} from '@map-core/types/layer';
 import {
+  chartHoverElements,
   drawTrackOpened,
   ecLayer,
   inputTyped,
@@ -105,6 +106,7 @@ import {ActivatedRoute} from '@angular/router';
 import {Actions, ofType} from '@ngrx/effects';
 import {currentUgcPoiId} from '@wm-core/store/features/ugc/ugc.selector';
 import {EnvironmentConfig, ENVIRONMENT_CONFIG} from '@wm-core/store/conf/conf.token';
+import {ISlopeChartHoverElements} from '@wm-core/types/slope-chart';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -234,8 +236,8 @@ export class WmGeoboxMapComponent implements OnDestroy {
   toggleLayerDirective$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   togglePoisDirective$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   toggleUgcDirective$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
-  trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
-    new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
+  trackElevationChartHoverElements$: Observable<ISlopeChartHoverElements> =
+    this._store.select(chartHoverElements);
   translationCallback: (any) => string = value => {
     if (value == null) return '';
     return this._langService.instant(value);

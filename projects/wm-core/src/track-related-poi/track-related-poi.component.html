@@ -1,0 +1,47 @@
+<div *ngFor="let poi of pois$|async" class="webmapp-track-poi-list">
+  <div
+    class="webmapp-track-poi-item"
+    (click)="selectPoi(poi)"
+    [ngClass]="{'selected': (currentRelatedEcPid$|async) != null &&poi.properties.id == (currentRelatedEcPid$|async)}"
+  >
+    <ng-container *ngIf="poi.properties as properties">
+      <ng-container *ngIf="properties.feature_image !=null as featureImage;else svgTemplate">
+        <img class="webmapp-track-poi-img" [src]="properties.feature_image.sizes['108x148']" />
+      </ng-container>
+      <ng-template #svgTemplate>
+        <ng-container *ngIf="properties.taxonomy?.poi_type?.icon != null;else noImage">
+          <ng-container *ngIf="properties.taxonomy.poi_type.icon as svg">
+            <div appBuildSvg class="wm-filter-icon" [svg]="svg"></div>
+          </ng-container>
+        </ng-container>
+      </ng-template>
+      <ng-template #noImage>
+        <img class="webmapp-track-poi-img" [src]="defaultPhotoPath" />
+      </ng-template>
+
+      <div class="webmapp-track-poi-text">
+        <div class="webmapp-track-poi-title">
+          {{ properties.name | wmtrans|lowercase }}
+        </div>
+        <div
+          class="webmapp-track-poi-description"
+          [innerHTML]="properties.description | wmtrans"
+        ></div>
+        <div class="webmapp-track-poi-btns">
+          <div class="webmapp-poi-popup-btn" *ngIf="properties.address">
+            <i class="wm-icn icon-fill-pin"></i>
+          </div>
+          <div class="webmapp-poi-popup-btn" *ngIf="properties.contact_phone" target="_blank">
+            <i class="wm-icn icon-fill-phone"></i>
+          </div>
+          <div class="webmapp-poi-popup-btn" *ngIf="properties.contact_email" target="_blank">
+            <i class="wm-icn icon-fill-mail"></i>
+          </div>
+          <div class="webmapp-poi-popup-btn" *ngIf="properties.related_url != null">
+            <i class="wm-icn icon-fill-globe"></i>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

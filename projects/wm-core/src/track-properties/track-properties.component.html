@@ -1,0 +1,58 @@
+<ng-content></ng-content>
+<ng-container *ngIf="ecTrackProperties$|async as ecTrackProperties">
+  <wm-slope-chart
+    (hover)="onLocationHover($event)"
+    [currentTrack]="ecTrack$|async"
+    id="webmapp-track-details-elevation-chart"
+  >
+  </wm-slope-chart>
+  <wm-track-edges [properties]="ecTrackProperties" [conf]="currentLayer$|async"></wm-track-edges>
+  <wm-tab-detail class="webmapp-route-tab" [properties]="ecTrackProperties"></wm-tab-detail>
+  <wm-tab-howto
+    *ngIf="ecTrackProperties?.taxonomy?.activity"
+    [properties]="ecTrackProperties"
+  ></wm-tab-howto>
+  <div
+    *ngIf="ecTrackProperties?.related_url as relatedUrl"
+    class="ripple-parent ion-activatable webmapp-pagepoi-info-reference"
+  >
+    <wm-related-urls [relatedUrls]="relatedUrl"> </wm-related-urls>
+    <ion-ripple-effect></ion-ripple-effect>
+  </div>
+  <wm-tab-image-gallery
+    *ngIf="ecTrackProperties?.image_gallery?.length"
+    [imageGallery]="ecTrackProperties?.image_gallery"
+  ></wm-tab-image-gallery>
+
+  <wm-tab-description
+    *ngIf="ecTrackProperties?.description != null"
+    [description]="ecTrackProperties?.description"
+  ></wm-tab-description>
+  <ng-container *ngIf="ecTrackProperties.related_pois?.length > 0">
+    <div class="wm-track-details-track-related-poi">
+      <wm-track-related-poi></wm-track-related-poi>
+    </div>
+  </ng-container>
+  <div *ngIf="ecTrackProperties.osm_url as osm" target="_blank">
+    <ion-icon class="wm-icn " name="link-outline" slot="start"></ion-icon>
+    <a class="webmapp-track-download-urls-item-label" [href]="osm">
+      {{ "Vedi su OpenStreetMap" | wmtrans }}
+    </a>
+  </div>
+  <wm-track-audio
+    *ngIf="ecTrackProperties.audio"
+    [audio]="ecTrackProperties.audio"
+  ></wm-track-audio>
+  <div class="wm-track-details-download" *ngIf="confOPTIONS$|async as confOPTIONS">
+    <ng-container *ngIf="confOPTIONS.download_track_enable === true">
+      <wm-track-download-urls
+        class="wm-track-details-download-urls"
+        [track]="ecTrack$|async"
+        id="webmapp-track-details-download-urls"
+      >
+        <ng-content></ng-content>
+      </wm-track-download-urls>
+    </ng-container>
+  </div>
+</ng-container>
+<ng-content select="[bottom]"></ng-content>

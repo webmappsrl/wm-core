@@ -3,7 +3,10 @@
     <div class="webmapp-title">{{'Attività'|wmtrans}}</div>
     <div class="webmapp-walkability" *ngIf="taxonomy.activity as activity">
       <ng-container *ngFor="let item of activity">
-        <div class="webmapp-walkability-box" *ngIf="item.identifier ==='hiking'">
+        <div
+          class="webmapp-walkability-box"
+          *ngIf="item.identifier ==='hiking'|| item.identifier === 'trekking'"
+        >
           <i class="icon-fill-trekking"></i>
           <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
         </div>

@@ -1,0 +1,16 @@
+<ng-container *ngIf="imageGallery$|async as imageGallery">
+  <ion-slides
+    pager="false"
+    [options]="sliderOptions$|async"
+    class="webmapp-pagepoi-info-body-photoslider"
+    #slider
+  >
+    <ion-slide *ngFor="let image of imageGallery;let idx = index">
+      <wm-img
+        [src]="image.url"
+        class="webmapp-pagepoi-info-body-photo"
+        (click)="showPhoto(idx)"
+      ></wm-img>
+    </ion-slide>
+  </ion-slides>
+</ng-container>
