@@ -148,6 +148,40 @@ export async function getImg(url: string): Promise<ArrayBuffer | string> {
   return res ?? url;
 }
 
+export async function getLastSynchronizedUgcPoi(): Promise<WmFeature<Point> | null> {
+  try {
+    const keys = await synchronizedUgcPoi.keys();
+
+    if (keys.length === 0) {
+      return null;
+    }
+    const lastKey = keys[keys.length - 1];
+    const lastPoi = await synchronizedUgcPoi.getItem<WmFeature<Point>>(lastKey);
+
+    return lastPoi || null;
+  } catch (error) {
+    console.error('getLastSynchronizedUgcPoi: Failed to get last synchronized poi', error);
+    return null;
+  }
+}
+
+export async function getLastSynchronizedUgcTrack(): Promise<WmFeature<LineString> | null> {
+  try {
+    const keys = await synchronizedUgcTrack.keys();
+
+    if (keys.length === 0) {
+      return null;
+    }
+    const lastKey = keys[keys.length - 1];
+    const lastTrack = await synchronizedUgcTrack.getItem<WmFeature<LineString>>(lastKey);
+
+    return lastTrack || null;
+  } catch (error) {
+    console.error('getLastSynchronizedUgcTrack: Failed to get last synchronized track', error);
+    return null;
+  }
+}
+
 export async function getSynchronizedUgcMedia(
   id: string,
 ): Promise<WmFeature<Media, MediaProperties> | null> {
@@ -207,8 +241,13 @@ export async function getUgcMediasByIds(
   );
 }
 
-export async function getUgcPoi(poiId: string): Promise<WmFeature<Point> | null> {
-  return (await getSynchronizedUgcPoi(poiId)) ?? (await getDeviceUgcPoi(poiId));
+export async function getUgcPoi(poiId: string | null): Promise<WmFeature<Point> | null> {
+  if (!poiId || poiId == null) return null;
+
+  const a = await getSynchronizedUgcPoi(poiId);
+  const b = await getDeviceUgcPoi(poiId);
+  const c = await getLastSynchronizedUgcPoi();
+  return a ?? b ?? c;
 }
 
 export async function getUgcPois(): Promise<WmFeature<Point>[]> {
@@ -222,7 +261,8 @@ export async function getUgcTrack(trackId: string | null): Promise<WmFeature<Lin
 
   const a = await getSynchronizedUgcTrack(trackId);
   const b = await getDeviceUgcTrack(trackId);
-  return a ?? b;
+  const c = await getLastSynchronizedUgcTrack();
+  return a ?? b ?? c;
 }
 
 export async function getUgcTracks(): Promise<WmFeature<LineString>[]> {
