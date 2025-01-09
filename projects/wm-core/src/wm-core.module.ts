@@ -3,7 +3,7 @@ import {HTTP_INTERCEPTORS, HttpClient} from '@angular/common/http';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {IonicModule} from '@ionic/angular';
 import {EffectsModule} from '@ngrx/effects';
-import {StoreModule} from '@ngrx/store';
+import {Store, StoreModule} from '@ngrx/store';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {WmAddressComponent} from './address/address.component';
@@ -63,7 +63,10 @@ import { TabImageGalleryComponent } from './tab-image-gallery/tab-image-gallery.
 import { ModalImageComponent } from './modal-image/modal-image.component';
 import { ImageGalleryComponent } from './image-gallery/image-gallery.component';
 import { TrackRelatedPoiComponent } from './track-related-poi/track-related-poi.component';
-const declarations = [
+import { confMAP } from './store/conf/conf.selector';
+import { take } from 'rxjs/operators';
+import { loadEcPois } from './store/features/ec/ec.actions';
+export const declarations = [
   WmAddressComponent,
   WmTabDetailComponent,
   WmTabDescriptionComponent,
@@ -154,7 +157,17 @@ const modules = [
   ],
   exports: [...declarations, ...modules, TranslateModule],
 })
-export class WmCoreModule {}
+export class WmCoreModule {
+  constructor(private _store:Store) {
+  this._store.select(confMAP)
+    .pipe(take(1))
+    .subscribe((c) => {
+          if (c != null && c.pois != null && c.pois.apppoisApiLayer == true) {
+            this._store.dispatch(loadEcPois());
+          }
+    });
+  }
+}
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
