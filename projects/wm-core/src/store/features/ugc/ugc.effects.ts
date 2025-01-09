@@ -64,7 +64,7 @@ export class UgcEffects {
   currentUgcPoi$ = createEffect(() =>
     this._actions$.pipe(
       ofType(currentUgcPoiId),
-      switchMap(action => from(getUgcPoi(action.currentUgcPoiId ? `${action.currentUgcPoiId}` : null))),
+      switchMap(action => from(getUgcPoi(action.currentUgcPoiId))),
       map(ugcPoi => loadcurrentUgcPoiIdSuccess({ugcPoi})),
       catchError(error => of(loadcurrentUgcPoiIdFailure({error}))),
     ),

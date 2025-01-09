@@ -243,6 +243,7 @@ export async function getUgcMediasByIds(
 
 export async function getUgcPoi(poiId: string | null): Promise<WmFeature<Point> | null> {
   if (!poiId || poiId == null) return null;
+  poiId = `${poiId}`;
 
   const a = await getSynchronizedUgcPoi(poiId);
   const b = await getDeviceUgcPoi(poiId);
