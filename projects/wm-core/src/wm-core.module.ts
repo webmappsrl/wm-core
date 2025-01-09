@@ -158,15 +158,7 @@ const modules = [
   exports: [...declarations, ...modules, TranslateModule],
 })
 export class WmCoreModule {
-  constructor(private _store:Store) {
-  this._store.select(confMAP)
-    .pipe(take(1))
-    .subscribe((c) => {
-          if (c != null && c.pois != null && c.pois.apppoisApiLayer == true) {
-            this._store.dispatch(loadEcPois());
-          }
-    });
-  }
+
 }
 
 export function httpTranslateLoader(http: HttpClient): any {

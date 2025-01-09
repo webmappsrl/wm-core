@@ -87,3 +87,4 @@ export const homeOpened = createSelector(currentCustomTrack, hasCustomTrack => {
   return hasCustomTrack == null;
 });
 export const chartHoverElements = createSelector(userActivity, state => state.chartHoverElements);
+export const currentEcPoiId = createSelector(userActivity, state => state.currentEcPoiId);

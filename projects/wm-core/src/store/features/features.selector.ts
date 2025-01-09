@@ -64,3 +64,9 @@ export const poi = createSelector(
     return ugcOpened ? ugcPoi : poi;
   },
 );
+export const poiProperties = createSelector(poi, poi => {
+  return poi?.properties;
+});
+export const featureOpened = createSelector(track, poi, (track, poi) => {
+  return track != null || poi != null;
+});

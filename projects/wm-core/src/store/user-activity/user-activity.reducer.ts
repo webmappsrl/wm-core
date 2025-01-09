@@ -23,6 +23,7 @@ import {
   trackElevationChartHoverElemenents,
 } from './user-activity.action';
 import {ISlopeChartHoverElements} from '@wm-core/types/slope-chart';
+import {currentEcPoiId} from '../features/ec/ec.actions';
 
 export const key = 'userActivity';
 export interface UserActivityState {
@@ -39,6 +40,7 @@ export interface UserActivityState {
   loading: {pois: boolean; layer: boolean};
   drawTrackOpened: boolean;
   chartHoverElements: ISlopeChartHoverElements;
+  currentEcPoiId?: any;
 }
 
 export interface UserAcitivityRootState {
@@ -216,6 +218,13 @@ export const userActivityReducer = createReducer(
     const newState: UserActivityState = {
       ...state,
       chartHoverElements: elements,
+    };
+    return newState;
+  }),
+  on(currentEcPoiId, (state, {currentEcPoiId}) => {
+    const newState: UserActivityState = {
+      ...state,
+      currentEcPoiId,
     };
     return newState;
   }),

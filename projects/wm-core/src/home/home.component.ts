@@ -167,7 +167,7 @@ export class WmHomeComponent implements AfterContentInit {
       const queryParams = ugcOpened
         ? {ugc_poi: id ? +id : undefined, poi: undefined}
         : {poi: id ? +id : undefined, ugc_poi: undefined};
-      this._urlHandlerSvc.updateURL(queryParams);
+      this._urlHandlerSvc.updateURL(queryParams, ['map']);
     });
   }
 

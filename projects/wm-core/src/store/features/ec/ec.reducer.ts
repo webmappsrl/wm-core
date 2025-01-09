@@ -23,6 +23,7 @@ export interface Ec {
   ecTracksLoading: boolean;
   aggregations?: any;
   currentEcTrack?: WmFeature<LineString>;
+  currentEcPoiId?: string;
   currentEcPoi?: WmFeature<Point>;
   currentEcRelatedPoiId?: string;
 }
@@ -31,7 +32,7 @@ export interface ApiRootState {
 }
 
 const initialConfState: Ec = {
-  ecPoiFeatures: null,
+  ecPoiFeatures: [],
   hits: [],
   ecTracksLoading: false,
 };

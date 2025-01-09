@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {from, of} from 'rxjs';
-import {catchError, map, switchMap, withLatestFrom} from 'rxjs/operators';
+import {catchError, filter, map, switchMap, withLatestFrom} from 'rxjs/operators';
 
 import {EcService} from './ec.service';
 import {ApiRootState} from './ec.reducer';
@@ -30,7 +30,7 @@ export class EcEffects {
   currentEcPoi$ = createEffect(() =>
     this._actions$.pipe(
       ofType(currentEcPoiId),
-      withLatestFrom(this._store.select(pois)),
+      withLatestFrom(this._store.select(pois).pipe(filter(p => p != null && p.length > 0))),
       map(([actions, pois]) => {
         const ecPoi = pois.find(p => p?.properties?.id == actions.currentEcPoiId);
         return loadCurrentEcPoiSuccess({ecPoi});
