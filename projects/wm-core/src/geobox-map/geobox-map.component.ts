@@ -153,13 +153,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
   confJIDOUPDATETIME$: Observable<any> = this._store.select(confJIDOUPDATETIME);
-  confMap$: Observable<any> = this._store.select(confMAP).pipe(
-    tap(c => {
-      if (c != null && c.pois != null && c.pois.apppoisApiLayer == true) {
-        this._store.dispatch(loadEcPois());
-      }
-    }),
-  );
+  confMap$: Observable<any> = this._store.select(confMAP);
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
   currentCustomTrack$: Observable<WmFeature<LineString>> = this._store.select(currentCustomTrack);
   currentEcPoiId$ = this._store.select(currentEcPoiId);
