@@ -1,6 +1,7 @@
 wm-tab-howto {
-  padding-left: 15px;
-
+  .wm-tab-howto-content {
+    padding: 10px;
+  }
   .webmapp-title {
     font-weight: var(--wm-font-weight-bold);
     font-size: var(--wm-font-lg);

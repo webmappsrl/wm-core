@@ -1,6 +1,7 @@
-import {Component, ChangeDetectionStrategy, Input, ViewEncapsulation} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import {ITrackElevationChartHoverElements} from '@map-core/types/track-elevation-charts';
 import {Store} from '@ngrx/store';
+import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {confOPTIONS} from '@wm-core/store/conf/conf.selector';
 import {currentEcTrack, currentEcTrackProperties} from '@wm-core/store/features/ec/ec.selector';
 import {trackElevationChartHoverElemenents} from '@wm-core/store/user-activity/user-activity.action';
@@ -23,7 +24,11 @@ export class TrackPropertiesComponent {
   ecTrackProperties$: Observable<LineStringProperties> =
     this._store.select(currentEcTrackProperties);
 
-  constructor(private _store: Store) {}
+  constructor(private _store: Store, private _urlHandlerSvc: UrlHandlerService) {}
+
+  close(): void {
+    this._urlHandlerSvc.updateURL({track: undefined});
+  }
 
   onLocationHover(event: ITrackElevationChartHoverElements | any): void {
     this._store.dispatch(trackElevationChartHoverElemenents({elements: event}));

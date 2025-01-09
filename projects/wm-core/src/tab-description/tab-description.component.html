@@ -1,9 +1,6 @@
 <div *ngIf="description != null">
-  <ion-label
-    class="webmapp-pageroute-tabdescription-title"
-    >{{'pages.route.description.description' |
-      wmtrans}}</ion-label
-  >
+  <ion-label class="webmapp-pageroute-tabdescription-title">{{'Descrizione' |
+      wmtrans}}</ion-label>
   <div
     class="webmapp-pageroute-tabdescription-description"
     [innerHTML]="domSanitazer.bypassSecurityTrustHtml(description | wmtrans)"

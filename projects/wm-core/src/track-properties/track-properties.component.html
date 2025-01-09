@@ -1,5 +1,19 @@
 <ng-content></ng-content>
 <ng-container *ngIf="ecTrackProperties$|async as ecTrackProperties">
+  <ion-header>
+    <ion-toolbar class="webmapp-track-details-toolbar">
+      <span
+        *ngIf="ecTrackProperties?.name"
+        [innerHtml]="ecTrackProperties?.name | wmtrans"
+        class="wm-track-details-header"
+      ></span>
+      <ion-buttons slot="end">
+        <ion-button class="webmapp-track-details-dismiss" (click)="close()">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
   <wm-slope-chart
     (hover)="onLocationHover($event)"
     [currentTrack]="ecTrack$|async"
@@ -54,5 +68,5 @@
       </wm-track-download-urls>
     </ng-container>
   </div>
+  <ng-content select="[bottom]"></ng-content>
 </ng-container>
-<ng-content select="[bottom]"></ng-content>

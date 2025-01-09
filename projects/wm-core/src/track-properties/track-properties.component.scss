@@ -1,4 +1,4 @@
-wm-poi-properties {
+wm-track-properties {
   position: absolute;
   display: block;
   bottom: 0;
@@ -7,9 +7,20 @@ wm-poi-properties {
   background: white;
   width: 100%;
   height: 100%;
-  padding: 10px;
   z-index: 2;
 
+  .wm-track-details-header {
+    font-size: var(--font-md);
+    color: #333333;
+    font-style: normal;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+    padding: 10px;
+  }
   .webmapp-pagepoi-info-body {
     --padding-bottom: 30px;
     .webmapp-pagepoi-info-reference {
