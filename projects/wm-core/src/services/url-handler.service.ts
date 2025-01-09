@@ -58,7 +58,7 @@ export class UrlHandlerService {
         currentEcRelatedPoiId({currentRelatedPoiId: params.ec_related_poi ?? null}),
       );
       this._store.dispatch(currentUgcTrackId({currentUgcTrackId: params.ugc_track ?? null}));
-      this._store.dispatch(currentUgcPoiId({currentUgcPoiId: params.ugc_poi}));
+      this._store.dispatch(currentUgcPoiId({currentUgcPoiId: params.ugc_poi ?? null}));
     });
   }
 

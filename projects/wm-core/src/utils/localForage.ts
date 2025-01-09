@@ -241,7 +241,7 @@ export async function getUgcMediasByIds(
   );
 }
 
-export async function getUgcPoi(poiId: string | null): Promise<WmFeature<Point> | null> {
+export async function getUgcPoi(poiId: string | number | null): Promise<WmFeature<Point> | null> {
   if (!poiId || poiId == null) return null;
   poiId = `${poiId}`;
 
@@ -257,8 +257,9 @@ export async function getUgcPois(): Promise<WmFeature<Point>[]> {
   return [...deviceUgcPois, ...synchronizedUgcPois];
 }
 
-export async function getUgcTrack(trackId: string | null): Promise<WmFeature<LineString> | null> {
+export async function getUgcTrack(trackId: string | number | null): Promise<WmFeature<LineString> | null> {
   if (!trackId || trackId == null) return null;
+  trackId = `${trackId}`;
 
   const a = await getSynchronizedUgcTrack(trackId);
   const b = await getDeviceUgcTrack(trackId);
