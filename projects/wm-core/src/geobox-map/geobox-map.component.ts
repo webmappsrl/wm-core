@@ -107,6 +107,7 @@ import {Actions, ofType} from '@ngrx/effects';
 import {currentUgcPoiId} from '@wm-core/store/features/ugc/ugc.selector';
 import {EnvironmentConfig, ENVIRONMENT_CONFIG} from '@wm-core/store/conf/conf.token';
 import {ISlopeChartHoverElements} from '@wm-core/types/slope-chart';
+import {DeviceService} from '@wm-core/services/device.service';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -170,6 +171,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   goToHomeSub$: Subscription = Subscription.EMPTY;
   graphhopperHost$: Observable<string> = of(this.environment.graphhopperHost);
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
+  isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this._deviceSvc.isMobile);
   langs$ = this._store.select(confLANGUAGES).pipe(
     tap(l => {
       if (l && l.default) {
@@ -254,6 +256,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
     private _modalCtrl: ModalController,
     private _actions$: Actions,
     private _urlHandlerSvc: UrlHandlerService,
+    private _deviceSvc: DeviceService,
     @Inject(ENVIRONMENT_CONFIG) public environment: EnvironmentConfig,
   ) {
     this.refreshLayer$ = this._store.select(countSelectedFilters);

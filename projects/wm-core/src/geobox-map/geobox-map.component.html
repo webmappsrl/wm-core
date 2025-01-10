@@ -71,7 +71,7 @@
       top-right
       class="top-right-button"
       expand="full"
-      *ngIf="(showDrawTrackButton$|async)"
+      *ngIf="(showDrawTrackButton$|async) && !(isMobile$|async)"
       (click)="toggleDrawTrackEnabled();wmap.wmMapCloseTopRightBtns = 'my-paths'"
     >
       {{ (drawTrackOpened$|async)?'esci':'i miei percorsi'|wmtrans}}
