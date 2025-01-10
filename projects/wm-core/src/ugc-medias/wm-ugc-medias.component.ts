@@ -45,7 +45,7 @@ export class WmUgcMediasComponent {
     this.currentProperties$
       .pipe(
         switchMap(poiProperties => {
-          if (poiProperties.photoKeys) {
+          if (poiProperties?.photoKeys) {
             return from(getUgcMediasByIds(poiProperties.photoKeys.map(key => key.toString())));
           }
           return of(null);
