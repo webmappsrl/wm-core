@@ -190,3 +190,8 @@ export const currentEcPoiId = createSelector(
   state => state.currentEcPoi?.properties?.id ?? null,
 );
 export const currentEcPoi = createSelector(ec, state => state.currentEcPoi);
+
+export const currentEcPoiProperties = createSelector(
+  currentEcPoi,
+  currentEcPoi => currentEcPoi.properties,
+);

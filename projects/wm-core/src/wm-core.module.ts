@@ -3,7 +3,7 @@ import {HTTP_INTERCEPTORS, HttpClient} from '@angular/common/http';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {IonicModule} from '@ionic/angular';
 import {EffectsModule} from '@ngrx/effects';
-import {Store, StoreModule} from '@ngrx/store';
+import {StoreModule} from '@ngrx/store';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {WmAddressComponent} from './address/address.component';
@@ -57,15 +57,12 @@ import {WmMapModule} from '@map-core/map-core.module';
 import {UrlHandlerService} from './services/url-handler.service';
 import {WmUgcMediasModule} from './ugc-medias/wm-ugc-medias.module';
 import {UgcTrackDataComponent} from './ugc-details/ugc-track-data/ugc-track-data.component';
-import {UgcDetailsComponent} from './ugc-details/ugc-details.component';
+import { UgcTrackPropertiesComponent} from './ugc-track-properties/ugc-track-properties.component';
 import { TrackPropertiesComponent } from './track-properties/track-properties.component';
 import { TabImageGalleryComponent } from './tab-image-gallery/tab-image-gallery.component';
 import { ModalImageComponent } from './modal-image/modal-image.component';
 import { ImageGalleryComponent } from './image-gallery/image-gallery.component';
 import { TrackRelatedPoiComponent } from './track-related-poi/track-related-poi.component';
-import { confMAP } from './store/conf/conf.selector';
-import { take } from 'rxjs/operators';
-import { loadEcPois } from './store/features/ec/ec.actions';
 export const declarations = [
   WmAddressComponent,
   WmTabDetailComponent,
@@ -94,7 +91,7 @@ export const declarations = [
   WmFormComponent,
   WmSearchBarComponent,
   WmGeoboxMapComponent,
-  UgcDetailsComponent,
+  UgcTrackPropertiesComponent,
   UgcTrackDataComponent,
   TrackPropertiesComponent,
   ModalImageComponent,

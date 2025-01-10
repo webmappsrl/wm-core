@@ -36,9 +36,10 @@ export const currentUgcTrackProperties = createSelector(
   track => track?.properties,
 );
 export const currentUgcPoi = createSelector(ugc, state => state.currentUgcPoi);
+export const currentUgcPoiProperties = createSelector(currentUgcPoi, poi => poi?.properties);
 export const currentUgcPoiId = createSelector(
-  currentUgcPoi,
-  currentUgcPoi => currentUgcPoi?.properties?.id ?? null,
+  currentUgcPoiProperties,
+  currentUgcPoiProperties => currentUgcPoiProperties?.id ?? null,
 );
 export const syncUgcIntervalEnabled = createSelector(
   ugc,

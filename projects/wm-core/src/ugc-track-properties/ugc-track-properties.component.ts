@@ -24,13 +24,13 @@ import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {ITrackElevationChartHoverElements} from '@wm-core/types/elevation';
 
 @Component({
-  selector: 'wm-ugc-details',
-  templateUrl: './ugc-details.component.html',
-  styleUrls: ['./ugc-details.component.scss'],
+  selector: 'wm-ugc-track-properties',
+  templateUrl: './ugc-track-properties.component.html',
+  styleUrls: ['./ugc-track-properties.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class UgcDetailsComponent {
+export class UgcTrackPropertiesComponent {
   @Input('track') set setTrack(track: WmFeature<LineString>) {
     if (track != null) {
       this.track = track;
