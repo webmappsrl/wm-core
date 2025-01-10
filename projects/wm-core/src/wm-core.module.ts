@@ -63,6 +63,7 @@ import { TabImageGalleryComponent } from './tab-image-gallery/tab-image-gallery.
 import { ModalImageComponent } from './modal-image/modal-image.component';
 import { ImageGalleryComponent } from './image-gallery/image-gallery.component';
 import { TrackRelatedPoiComponent } from './track-related-poi/track-related-poi.component';
+import { UgcPoiPropertiesComponent } from './ugc-poi-properties/ugc-poi-properties.component';
 export const declarations = [
   WmAddressComponent,
   WmTabDetailComponent,
@@ -97,8 +98,8 @@ export const declarations = [
   ModalImageComponent,
   TabImageGalleryComponent,
   ImageGalleryComponent,
-  TrackRelatedPoiComponent
-  
+  TrackRelatedPoiComponent,
+  UgcPoiPropertiesComponent,
 ];
 const modules = [
   WmSharedModule,
@@ -111,7 +112,6 @@ const modules = [
   WmProfileModule,
   WmMapModule,
   WmUgcMediasModule,
-  
 ];
 @NgModule({
   declarations,

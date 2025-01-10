@@ -1,0 +1,56 @@
+<ng-content></ng-content>
+<ng-container *ngIf="currentUgcPoiProperties$|async  as currentUgcPoiProperties">
+  <ion-header class="ion-no-border">
+    <ion-toolbar>
+      <span [innerHtml]="currentUgcPoiProperties?.name"></span>
+      <ion-buttons slot="end">
+        <ion-button (click)="triggerDismiss()">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  <div #content id="wm-ugc-poi-details-content">
+    <wm-form
+      *ngIf="isEditing$|async; else viewData"
+      [confPOIFORMS]="confPOIFORMS$|async"
+      [init]="currentUgcPoiProperties?.form"
+      (formGroupEvt)="fg = $event"
+    ></wm-form>
+    <ng-template #viewData>
+      <ng-container *ngIf="currentUgcPoiProperties?.form as form">
+        <wm-form
+          class="wm-ugc-poi-form-readonly"
+          [disabled]="true"
+          [confPOIFORMS]="confPOIFORMS$|async"
+          [init]="form"
+          (formGroupEvt)="fg = $event"
+        ></wm-form>
+      </ng-container>
+      <div *ngIf="medias$|async as medias" class="wm-ugc-poi-media-content">
+        <wm-ugc-medias [medias]="medias" [showArrows]="true"></wm-ugc-medias>
+      </div>
+    </ng-template>
+    <ng-container *ngIf="!(isEditing$|async); else editingButtons">
+      <ion-button
+        class="wm-ugc-poi-button"
+        (click)="this.isEditing$.next(true)"
+        >{{'edit'|wmtrans}}</ion-button
+      >
+      <ion-button
+        class="wm-ugc-poi-button"
+        color="danger"
+        (click)="deleteTrack()"
+        >{{'delete'|wmtrans}}</ion-button
+      >
+    </ng-container>
+    <ng-template #editingButtons>
+      <ion-button class="wm-ugc-poi-button" (click)="updateTrack()">{{'save'|wmtrans}}</ion-button>
+      <ion-button
+        class="wm-ugc-poi-button"
+        (click)="this.isEditing$.next(false)"
+        >{{'cancel'|wmtrans}}</ion-button
+      >
+    </ng-template>
+  </div>
+</ng-container>
