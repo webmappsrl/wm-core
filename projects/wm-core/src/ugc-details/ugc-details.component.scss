@@ -13,7 +13,11 @@ wm-ugc-details {
   overflow: scroll;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
-
+  .wm-ugc-track-form-readonly {
+    ion-card {
+      box-shadow: none;
+    }
+  }
   ion-header {
     .wm-ugc-track-details-header {
       font-size: var(--font-md);

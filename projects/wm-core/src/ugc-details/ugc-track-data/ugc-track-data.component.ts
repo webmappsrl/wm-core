@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
 import {GeoutilsService} from '@wm-core/services/geoutils.service';
+import {WmFeature} from '@wm-types/feature';
 import {LineString} from 'geojson';
 import {BehaviorSubject} from 'rxjs';
-import {WmFeature} from 'src/app/shared/wm-types/src';
 
 @Component({
   selector: 'wm-ugc-track-data',

@@ -10,6 +10,11 @@ import {WmProperties} from '@wm-types/feature';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WmTabHowtoComponent {
+  @Input()
+  set form(form: any) {
+    this.properties = {...this.properties, ...{identifier: form.activity, label: form.title}};
+  }
+
   @Input() properties: WmProperties;
 
   constructor() {}
