@@ -20,7 +20,7 @@
     </ng-container>
 
     <wm-modal-media
-      *ngIf="(showMedia$|async)"
+      *ngIf="(showMedia$|async) && false"
       [media]="currentMedia$|async"
       [showArrows]="showArrows && medias.length > 1"
       (closeMediaEVT)="close()"

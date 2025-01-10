@@ -5,28 +5,29 @@ import {
   Input,
   ViewChild,
 } from '@angular/core';
-import {IonSlides} from '@ionic/angular';
+import {IonSlides, ModalController} from '@ionic/angular';
 import {MediaProperties, WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, from, of} from 'rxjs';
+import {WmModalMediaComponent} from './modal-media/wm-modal-media.component';
+import {switchMap} from 'rxjs/operators';
+import {getUgcMediasByIds} from '@wm-core/utils/localForage';
+import {Store} from '@ngrx/store';
+import {currentUgcPoiProperties} from '@wm-core/store/features/ugc/ugc.selector';
 
 @Component({
   selector: 'wm-ugc-medias',
   templateUrl: './wm-ugc-medias.component.html',
   styleUrls: ['./wm-ugc-medias.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WmUgcMediasComponent {
-  @Input() set medias(medias: WmFeature<Point, MediaProperties>[]) {
-    this.medias$.next(medias);
-  }
-
   @Input() showArrows = false;
   @ViewChild('slider') slider: IonSlides;
 
   currentMedia$: BehaviorSubject<null | WmFeature<Point, MediaProperties>> =
     new BehaviorSubject<null | WmFeature<Point, MediaProperties>>(null);
+  currentProperties$ = this._store.select(currentUgcPoiProperties);
   medias$: BehaviorSubject<null | WmFeature<Point, MediaProperties>[]> = new BehaviorSubject<
     null | WmFeature<Point, MediaProperties>[]
   >(null);
@@ -39,6 +40,21 @@ export class WmUgcMediasComponent {
     watchSlidesProgress: true,
     spaceBetween: 20,
   };
+
+  constructor(private _modalCtrl: ModalController, private _store: Store) {
+    this.currentProperties$
+      .pipe(
+        switchMap(poiProperties => {
+          if (poiProperties.photoKeys) {
+            return from(getUgcMediasByIds(poiProperties.photoKeys.map(key => key.toString())));
+          }
+          return of(null);
+        }),
+      )
+      .subscribe(medias => {
+        this.medias$.next(medias);
+      });
+  }
 
   close(): void {
     this.showMedia$.next(false);
@@ -57,7 +73,7 @@ export class WmUgcMediasComponent {
     this.currentMedia$.next(this.medias$.value[index]);
   }
 
-  showMedia(media: WmFeature<Point, MediaProperties>): void {
+  async showMedia(media: WmFeature<Point, MediaProperties>) {
     this.currentMedia$.next(media);
     this.showMedia$.next(true);
   }

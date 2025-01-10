@@ -257,7 +257,9 @@ export async function getUgcPois(): Promise<WmFeature<Point>[]> {
   return [...deviceUgcPois, ...synchronizedUgcPois];
 }
 
-export async function getUgcTrack(trackId: string | number | null): Promise<WmFeature<LineString> | null> {
+export async function getUgcTrack(
+  trackId: string | number | null,
+): Promise<WmFeature<LineString> | null> {
   if (!trackId || trackId == null) return null;
   trackId = `${trackId}`;
 
@@ -456,6 +458,9 @@ export async function saveUgcMedia(feature: WmFeature<Media, MediaProperties>): 
 
   if (photo && photo.webPath) {
     await saveImg(photo.webPath);
+  }
+  if (properties.url) {
+    await saveImg(properties.url);
   }
   const featureId = properties.id ?? properties?.uuid;
   const storage = properties.id ? synchronizedUgcMedia : deviceUgcMedia;

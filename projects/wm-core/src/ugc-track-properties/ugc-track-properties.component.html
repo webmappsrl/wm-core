@@ -40,9 +40,7 @@
           ></wm-form>
         </ng-container>
       </ng-container>
-      <div *ngIf="medias$|async as medias" class="wm-ugc-track-media-content">
-        <wm-ugc-medias [medias]="medias" [showArrows]="true"></wm-ugc-medias>
-      </div>
+      <wm-ugc-medias [showArrows]="true" class="wm-ugc-track-media-content"></wm-ugc-medias>
       <ng-container *ngIf="confOPTIONS$|async as confOPTIONS">
         <ng-container *ngIf="confOPTIONS.download_track_enable === true">
           <wm-track-download-urls [track]="track"></wm-track-download-urls>
