@@ -42,7 +42,7 @@ import {
 } from '@wm-core/store/features/ugc/ugc.actions';
 import {UgcService} from '@wm-core/store/features/ugc/ugc.service';
 import {select, Store} from '@ngrx/store';
-import {activableUgc, syncUgcIntervalEnabled} from './ugc.selector';
+import {activableUgc, currentUgcPoi, currentUgcTrack, syncUgcIntervalEnabled} from './ugc.selector';
 import {
   getUgcPoi,
   getUgcPois,
@@ -55,12 +55,27 @@ import {
 } from '@wm-core/utils/localForage';
 import {AlertController} from '@ionic/angular';
 import {LangService} from '@wm-core/localization/lang.service';
-import {openUgc} from '@wm-core/store/user-activity/user-activity.action';
+import {closeUgc, openUgc} from '@wm-core/store/user-activity/user-activity.action';
 const SYNC_INTERVAL = 60000;
 @Injectable({
   providedIn: 'root',
 })
 export class UgcEffects {
+  closeUgcEffect$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(currentUgcTrackId, currentUgcPoiId),
+      withLatestFrom(
+        this._store.pipe(select(currentUgcTrack)),
+        this._store.pipe(select(currentUgcPoi))
+      ),
+      filter(
+        ([action, currentUgcTrack, currentUgcPoi]) =>
+          ('currentUgcPoiId' in action && action.currentUgcPoiId == null && !currentUgcTrack) ||
+          ('currentUgcTrackId' in action && action.currentUgcTrackId == null && !currentUgcPoi)
+      ),
+      map(() => closeUgc()),
+    ),
+  );
   currentUgcPoi$ = createEffect(() =>
     this._actions$.pipe(
       ofType(currentUgcPoiId),
