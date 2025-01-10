@@ -61,21 +61,6 @@ const SYNC_INTERVAL = 60000;
   providedIn: 'root',
 })
 export class UgcEffects {
-  closeUgcEffect$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(currentUgcTrackId, currentUgcPoiId),
-      withLatestFrom(
-        this._store.pipe(select(currentUgcTrack)),
-        this._store.pipe(select(currentUgcPoi))
-      ),
-      filter(
-        ([action, currentUgcTrack, currentUgcPoi]) =>
-          ('currentUgcPoiId' in action && action.currentUgcPoiId == null && !currentUgcTrack) ||
-          ('currentUgcTrackId' in action && action.currentUgcTrackId == null && !currentUgcPoi)
-      ),
-      map(() => closeUgc()),
-    ),
-  );
   currentUgcPoi$ = createEffect(() =>
     this._actions$.pipe(
       ofType(currentUgcPoiId),
@@ -199,17 +184,6 @@ export class UgcEffects {
           }),
         ),
       ),
-    ),
-  );
-  openUgcEffect$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(currentUgcTrackId, currentUgcPoiId), // Ascolta entrambe le azioni
-      filter(
-        action =>
-          ('currentUgcPoiId' in action && action.currentUgcPoiId !== null) ||
-          ('currentUgcTrackId' in action && action.currentUgcTrackId != null),
-      ), // Controlla che il valore non sia null
-      map(() => openUgc()), // Dispatcha l'azione openUgc
     ),
   );
   syncOnInterval$ = createEffect(() =>

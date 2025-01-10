@@ -10,6 +10,7 @@ import {
 import {currentUgcPoiId, currentUgcTrackId} from '@wm-core/store/features/ugc/ugc.actions';
 import {Params} from '@angular/router';
 import {debounceTime, skip} from 'rxjs/operators';
+import {closeUgc, openUgc} from '@wm-core/store/user-activity/user-activity.action';
 
 @Injectable({
   providedIn: 'root',
@@ -59,6 +60,7 @@ export class UrlHandlerService {
       );
       this._store.dispatch(currentUgcTrackId({currentUgcTrackId: params.ugc_track ?? null}));
       this._store.dispatch(currentUgcPoiId({currentUgcPoiId: params.ugc_poi ?? null}));
+      this._checkIfUgcIsOpened(params);
     });
   }
 
@@ -67,6 +69,7 @@ export class UrlHandlerService {
    * Perform navigation only if query params differ.
    */
   resetURL(): void {
+    this._store.dispatch(closeUgc());
     this._router.navigate([], {
       relativeTo: this._route,
       queryParams: this._baseParams,
@@ -83,11 +86,22 @@ export class UrlHandlerService {
     const newParams = {...this._baseParams, ...oldParams, ...queryParams};
 
     if (JSON.stringify(newParams) !== JSON.stringify(oldParams)) {
+      this._checkIfUgcIsOpened(newParams);
       this._router.navigate(routes, {
         relativeTo: this._route,
         queryParams: newParams,
         queryParamsHandling: '',
       });
+    }
+  }
+
+  private _checkIfUgcIsOpened(queryParams: Params): void {
+    console.log('updateURL', queryParams);
+    if (queryParams.track != null || queryParams.poi != null) {
+      this._store.dispatch(closeUgc());
+    }
+    if (queryParams.ugc_track != null || queryParams.ugc_poi != null) {
+      this._store.dispatch(openUgc());
     }
   }
 }
