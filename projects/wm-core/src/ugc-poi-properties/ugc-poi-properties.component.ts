@@ -11,8 +11,8 @@ import {
 } from '@angular/core';
 import {AlertController, IonContent, IonSlides} from '@ionic/angular';
 import {Store} from '@ngrx/store';
-import {BehaviorSubject, from, Observable} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {BehaviorSubject, from, Observable, of} from 'rxjs';
+import {filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {LineString} from 'geojson';
 import {Media, MediaProperties, WmFeature} from '@wm-types/feature';
 import {getUgcMediasByIds} from '@wm-core/utils/localForage';
@@ -42,7 +42,16 @@ export class UgcPoiPropertiesComponent {
   currentUgcPoiProperties$ = this._store.select(currentUgcPoiProperties);
   fg: UntypedFormGroup;
   isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  medias$: Observable<WmFeature<Media, MediaProperties>[]>;
+  medias$: Observable<WmFeature<Media, MediaProperties>[]> = this.currentUgcPoiProperties$.pipe(
+    filter(poiProperties => poiProperties != null),
+    take(1),
+    switchMap(poiProperties => {
+      if (poiProperties.photoKeys) {
+        return from(getUgcMediasByIds(poiProperties.photoKeys.map(key => key.toString())));
+      }
+      return of(null);
+    }),
+  );
   slideOptions = {
     allowTouchMove: false,
     slidesPerView: 1,
