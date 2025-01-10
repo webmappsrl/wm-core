@@ -195,3 +195,14 @@ export const currentEcPoiProperties = createSelector(
   currentEcPoi,
   currentEcPoi => currentEcPoi?.properties ?? null,
 );
+export const currentEcRelatedPoiProperties = createSelector(
+  currentEcRelatedPoi,
+  currentEcRelatedPoiProperties => currentEcRelatedPoiProperties?.properties ?? null,
+);
+export const currentPoiProperties = createSelector(
+  currentEcPoiProperties,
+  currentEcRelatedPoiProperties,
+  (currentEcPoiProperties, currentEcRelatedPoiProperties) => {
+    return currentEcPoiProperties ?? currentEcRelatedPoiProperties;
+  },
+);
