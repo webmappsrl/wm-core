@@ -91,7 +91,7 @@ export class UgcService {
 
       for (let apiUgcMedia of apiUgcMedias.features) {
         const cloudMedia = cloudUgcMedias.find(
-          media => media.properties.uuid === media.properties.uuid,
+          media => media.properties.uuid === apiUgcMedia.properties.uuid,
         );
         if (!cloudMedia || this._isFeatureModified(apiUgcMedia, cloudMedia)) {
           // console.log(`fetchUgcMedias sync: ${apiUgcMedia.properties.id} syncronized`);
@@ -112,7 +112,7 @@ export class UgcService {
       const cloudUgcPois = await getSynchronizedUgcPois();
 
       for (let apiUgcPoi of apiUgcPois.features) {
-        const cloudPoi = cloudUgcPois.find(poi => poi.properties.uuid === poi.properties.uuid);
+        const cloudPoi = cloudUgcPois.find(poi => poi.properties.uuid === apiUgcPoi.properties.uuid);
         if (!cloudPoi || this._isFeatureModified(apiUgcPoi, cloudPoi)) {
           await saveUgcPoi(apiUgcPoi);
           // console.log(`fetchUgcPois sync: ${apiUgcPoi.properties.id}`);

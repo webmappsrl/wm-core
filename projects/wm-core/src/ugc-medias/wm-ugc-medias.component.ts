@@ -8,12 +8,12 @@ import {
 import {IonSlides, ModalController} from '@ionic/angular';
 import {MediaProperties, WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
-import {BehaviorSubject, from, of} from 'rxjs';
+import {BehaviorSubject, from, merge, of} from 'rxjs';
 import {WmModalMediaComponent} from './modal-media/wm-modal-media.component';
 import {switchMap} from 'rxjs/operators';
 import {getUgcMediasByIds} from '@wm-core/utils/localForage';
 import {Store} from '@ngrx/store';
-import {currentUgcPoiProperties} from '@wm-core/store/features/ugc/ugc.selector';
+import {currentUgcPoiProperties, currentUgcTrackProperties} from '@wm-core/store/features/ugc/ugc.selector';
 
 @Component({
   selector: 'wm-ugc-medias',
@@ -25,9 +25,10 @@ export class WmUgcMediasComponent {
   @Input() showArrows = false;
   @ViewChild('slider') slider: IonSlides;
 
+  currenPoiProperties$ = this._store.select(currentUgcPoiProperties);
   currentMedia$: BehaviorSubject<null | WmFeature<Point, MediaProperties>> =
     new BehaviorSubject<null | WmFeature<Point, MediaProperties>>(null);
-  currentProperties$ = this._store.select(currentUgcPoiProperties);
+  currentTrackProperties$ = this._store.select(currentUgcTrackProperties);
   medias$: BehaviorSubject<null | WmFeature<Point, MediaProperties>[]> = new BehaviorSubject<
     null | WmFeature<Point, MediaProperties>[]
   >(null);
@@ -42,11 +43,16 @@ export class WmUgcMediasComponent {
   };
 
   constructor(private _modalCtrl: ModalController, private _store: Store) {
-    this.currentProperties$
-      .pipe(
-        switchMap(poiProperties => {
-          if (poiProperties?.photoKeys) {
-            return from(getUgcMediasByIds(poiProperties.photoKeys.map(key => key.toString())));
+    merge(
+      this.currenPoiProperties$,
+      this.currentTrackProperties$
+    ).pipe(
+        switchMap(properties => {
+          if (properties?.photos && properties.photos.length > 0) {
+            return of(properties.photos);
+          }
+          if (properties?.photoKeys) {
+            return from(getUgcMediasByIds(properties.photoKeys.map(key => key.toString())));
           }
           return of(null);
         }),
