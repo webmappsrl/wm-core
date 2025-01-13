@@ -9,7 +9,7 @@ import {IonSlides, ModalController} from '@ionic/angular';
 import {MediaProperties, WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
 import {BehaviorSubject, from, merge, of} from 'rxjs';
-import {switchMap} from 'rxjs/operators';
+import {filter, switchMap} from 'rxjs/operators';
 import {getUgcMediasByIds} from '@wm-core/utils/localForage';
 import {Store} from '@ngrx/store';
 import {currentUgcPoiProperties, currentUgcTrackProperties} from '@wm-core/store/features/ugc/ugc.selector';
@@ -46,6 +46,7 @@ export class WmUgcMediasComponent {
       this.currentPoiProperties$,
       this.currentTrackProperties$
     ).pipe(
+        filter(properties => properties != null),
         switchMap(properties => {
           if (properties?.photos && properties.photos.length > 0) {
             return of(properties.photos);
