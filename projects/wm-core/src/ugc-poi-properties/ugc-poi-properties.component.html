@@ -38,12 +38,12 @@
       <ion-button
         class="wm-ugc-poi-button"
         color="danger"
-        (click)="deleteTrack()"
+        (click)="deletePoi()"
         >{{'delete'|wmtrans}}</ion-button
       >
     </ng-container>
     <ng-template #editingButtons>
-      <ion-button class="wm-ugc-poi-button" (click)="updateTrack()">{{'save'|wmtrans}}</ion-button>
+      <ion-button class="wm-ugc-poi-button" (click)="updatePoi()">{{'save'|wmtrans}}</ion-button>
       <ion-button
         class="wm-ugc-poi-button"
         (click)="this.isEditing$.next(false)"

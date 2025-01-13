@@ -16,6 +16,8 @@ import {
   loadcurrentUgcPoiIdSuccess,
   loadcurrentUgcPoiIdFailure,
   currentCustomTrack,
+  updateUgcPoiSuccess,
+  deleteUgcPoiSuccess,
 } from '@wm-core/store/features/ugc/ugc.actions';
 import {WmFeature} from '@wm-types/feature';
 import {IHIT} from '@wm-core/types/elastic';
@@ -101,9 +103,17 @@ export const UgcReducer = createReducer(
     ...state,
     currentUgcTrack: undefined,
   })),
+  on(deleteUgcPoiSuccess, state => ({
+    ...state,
+    currentUgcPoi: undefined,
+  })),
   on(updateUgcTrackSuccess, (state, {track}) => ({
     ...state,
     currentUgcTrack: track,
+  })),
+  on(updateUgcPoiSuccess, (state, {poi}) => ({
+    ...state,
+    currentUgcPoi: poi,
   })),
   on(currentCustomTrack, (state, {currentCustomTrack}) => ({
     ...state,

@@ -274,10 +274,10 @@ export class UgcEffects {
                   syncUgcPois(),
                   enableSyncInterval(),
                 ]),
-                catchError(error => of(updateUgcTrackFailure({error}), enableSyncInterval())),
+                catchError(error => of(updateUgcPoiFailure({error}), enableSyncInterval())),
               );
             }
-            return of(updateUgcTrackFailure({error: 'Track ID not found'}));
+            return of(updateUgcPoiFailure({error: 'Poi ID not found'}));
           }),
         ),
       ),

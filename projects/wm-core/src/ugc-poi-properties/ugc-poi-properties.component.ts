@@ -3,8 +3,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  HostListener,
-  Input,
   Output,
   ViewChild,
   ViewEncapsulation,
@@ -12,16 +10,15 @@ import {
 import {AlertController, IonContent, IonSlides} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, from, Observable, of} from 'rxjs';
-import {filter, map, switchMap, take, tap} from 'rxjs/operators';
-import {LineString} from 'geojson';
+import {filter, switchMap, take} from 'rxjs/operators';
+import {Point} from 'geojson';
 import {Media, MediaProperties, WmFeature} from '@wm-types/feature';
 import {getUgcMediasByIds} from '@wm-core/utils/localForage';
-import {ActivatedRoute, Router} from '@angular/router';
 import {LangService} from '@wm-core/localization/lang.service';
-import {deleteUgcTrack, updateUgcTrack} from '@wm-core/store/features/ugc/ugc.actions';
+import {deleteUgcPoi, updateUgcPoi} from '@wm-core/store/features/ugc/ugc.actions';
 import {UntypedFormGroup} from '@angular/forms';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
-import {currentUgcPoiProperties} from '@wm-core/store/features/ugc/ugc.selector';
+import {currentUgcPoi, currentUgcPoiProperties} from '@wm-core/store/features/ugc/ugc.selector';
 
 @Component({
   selector: 'wm-ugc-poi-properties',
@@ -39,6 +36,7 @@ export class UgcPoiPropertiesComponent {
   confOPTIONS$ = this._store.select(confOPTIONS);
   confPOIFORMS$: Observable<any[]> = this._store.select(confPOIFORMS);
   currentImage$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
+  currentUgcPoi$: Observable<WmFeature<Point>> = this._store.select(currentUgcPoi);
   currentUgcPoiProperties$ = this._store.select(currentUgcPoiProperties);
   fg: UntypedFormGroup;
   isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -62,7 +60,6 @@ export class UgcPoiPropertiesComponent {
     spaceBetween: 20,
     loop: true,
   };
-  track: WmFeature<LineString>;
 
   constructor(
     private _store: Store,
@@ -71,40 +68,24 @@ export class UgcPoiPropertiesComponent {
     private _urlHandlerSvc: UrlHandlerService,
   ) {}
 
-  @HostListener('document:keydown.Escape', ['$event'])
-  public close(): void {
-    this.currentImage$.next(null);
-  }
-
-  @HostListener('keydown.ArrowRight', ['$event'])
-  public next(): void {
-    this.slider.slideNext();
-  }
-
-  @HostListener('keydown.ArrowLeft', ['$event'])
-  public prev(): void {
-    this.slider.slidePrev();
-  }
-
-  clickPhoto(): void {
-    from(this.slider.getActiveIndex())
-      .pipe(tap(index => this.currentImage$.next(this.track.properties.photos[index - 1].photoURL)))
-      .subscribe();
-  }
-
-  deleteTrack(): void {
-    from(
-      this._alertCtlr.create({
-        message: this._langSvc.instant(
-          'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.',
-        ),
-        buttons: [
-          {text: this._langSvc.instant('Annulla'), role: 'cancel'},
-          {
-            text: this._langSvc.instant('Elimina'),
-            handler: () => this._store.dispatch(deleteUgcTrack({track: this.track})),
-          },
-        ],
+  deletePoi(): void {
+    this.currentUgcPoi$.pipe(
+      take(1),
+      switchMap(poi => {
+        return from(
+          this._alertCtlr.create({
+            message: this._langSvc.instant(
+              'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.',
+            ),
+            buttons: [
+              {text: this._langSvc.instant('Annulla'), role: 'cancel'},
+              {
+                text: this._langSvc.instant('Elimina'),
+                handler: () => this._store.dispatch(deleteUgcPoi({poi})),
+              },
+            ],
+          }),
+        )
       }),
     ).subscribe(alert => alert.present());
   }
@@ -113,29 +94,31 @@ export class UgcPoiPropertiesComponent {
     this.isEditing$;
   }
 
-  removeUgcTrackFromUrl(): void {
-    this._urlHandlerSvc.updateURL({ugc_track: undefined});
+  removeUgcPoiFromUrl(): void {
+    this._urlHandlerSvc.updateURL({ugc_poi: undefined});
   }
 
   triggerDismiss(): void {
-    this.removeUgcTrackFromUrl();
+    this.removeUgcPoiFromUrl();
     this.dismiss.emit();
   }
 
-  updateTrack(): void {
-    if (this.fg.valid) {
-      const track: WmFeature<LineString> = {
-        ...this.track,
-        properties: {
-          ...this.track?.properties,
-          name: this.fg.value.title,
-          form: this.fg.value,
-          updatedAt: new Date(),
-        },
-      };
+  updatePoi(): void {
+    this.currentUgcPoi$.pipe(take(1)).subscribe(currentUgcPoi => {
+      if (this.fg.valid) {
+        const poi: WmFeature<Point> = {
+          ...currentUgcPoi,
+          properties: {
+            ...currentUgcPoi?.properties,
+            name: this.fg.value.title,
+            form: this.fg.value,
+            updatedAt: new Date(),
+          },
+        };
 
-      this._store.dispatch(updateUgcTrack({track}));
-      this.isEditing$.next(false);
-    }
+        this._store.dispatch(updateUgcPoi({poi}));
+        this.isEditing$.next(false);
+      }
+    })
   }
 }
