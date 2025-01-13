@@ -9,7 +9,6 @@ import {IonSlides, ModalController} from '@ionic/angular';
 import {MediaProperties, WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
 import {BehaviorSubject, from, merge, of} from 'rxjs';
-import {WmModalMediaComponent} from './modal-media/wm-modal-media.component';
 import {switchMap} from 'rxjs/operators';
 import {getUgcMediasByIds} from '@wm-core/utils/localForage';
 import {Store} from '@ngrx/store';
@@ -25,9 +24,9 @@ export class WmUgcMediasComponent {
   @Input() showArrows = false;
   @ViewChild('slider') slider: IonSlides;
 
-  currenPoiProperties$ = this._store.select(currentUgcPoiProperties);
   currentMedia$: BehaviorSubject<null | WmFeature<Point, MediaProperties>> =
     new BehaviorSubject<null | WmFeature<Point, MediaProperties>>(null);
+  currentPoiProperties$ = this._store.select(currentUgcPoiProperties);
   currentTrackProperties$ = this._store.select(currentUgcTrackProperties);
   medias$: BehaviorSubject<null | WmFeature<Point, MediaProperties>[]> = new BehaviorSubject<
     null | WmFeature<Point, MediaProperties>[]
@@ -42,9 +41,9 @@ export class WmUgcMediasComponent {
     spaceBetween: 20,
   };
 
-  constructor(private _modalCtrl: ModalController, private _store: Store) {
+  constructor(private _store: Store) {
     merge(
-      this.currenPoiProperties$,
+      this.currentPoiProperties$,
       this.currentTrackProperties$
     ).pipe(
         switchMap(properties => {
