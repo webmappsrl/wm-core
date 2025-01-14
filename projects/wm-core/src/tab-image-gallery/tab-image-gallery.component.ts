@@ -7,9 +7,11 @@ import {Component, Input} from '@angular/core';
 })
 export class TabImageGalleryComponent {
   @Input() imageGallery;
+  @Input() showArrows = false;
 
   public sliderOptions: any = {
     slidesPerView: 1.3,
   };
+
   constructor() {}
 }
