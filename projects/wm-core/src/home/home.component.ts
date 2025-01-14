@@ -37,13 +37,12 @@ import {
   goToHome,
   inputTyped,
   openUgc,
-  resetTrackFilters,
   setCurrentPoi,
   togglePoiFilter,
   toggleTrackFilterByIdentifier,
 } from '@wm-core/store/user-activity/user-activity.action';
 import {WmSearchBarComponent} from '@wm-core/search-bar/search-bar.component';
-import {currentEcLayerId} from '@wm-core/store/features/ec/ec.actions';
+import {loadEcPois} from '@wm-core/store/features/ec/ec.actions';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 @Component({
   selector: 'wm-home',
@@ -99,6 +98,7 @@ export class WmHomeComponent implements AfterContentInit {
           this.openSlug(slugBox.slug);
         }
       });
+    this._store.dispatch(loadEcPois());
   }
 
   goToHome(): void {
