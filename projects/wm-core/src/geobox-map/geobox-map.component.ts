@@ -84,7 +84,6 @@ import {
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {WmFeature} from '@wm-types/feature';
 import {LineString, Point} from 'geojson';
-import {ITrackElevationChartHoverElements} from '@map-core/types/track-elevation-charts';
 import {
   currentCustomTrack,
   currentUgcPoi,
@@ -94,8 +93,6 @@ import {
 } from '@wm-core/store/features/ugc/ugc.selector';
 import {ModalController} from '@ionic/angular';
 import {ProfileAuthComponent} from '@wm-core/profile/profile-auth/profile-auth.component';
-import {extentFromLonLat} from '@map-core/utils';
-import {WmHomeComponent} from '@wm-core/home/home.component';
 import {WmMapTrackRelatedPoisDirective} from '@map-core/directives';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {WmMapComponent} from '@map-core/components';
@@ -106,7 +103,6 @@ import {ActivatedRoute} from '@angular/router';
 import {Actions, ofType} from '@ngrx/effects';
 import {currentUgcPoiId} from '@wm-core/store/features/ugc/ugc.selector';
 import {EnvironmentConfig, ENVIRONMENT_CONFIG} from '@wm-core/store/conf/conf.token';
-import {ISlopeChartHoverElements} from '@wm-core/types/slope-chart';
 import {DeviceService} from '@wm-core/services/device.service';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 
