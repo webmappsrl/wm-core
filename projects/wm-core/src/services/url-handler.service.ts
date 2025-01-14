@@ -29,7 +29,6 @@ export class UrlHandlerService {
   constructor(private _route: ActivatedRoute, private _router: Router, private _store: Store) {}
 
   changeURL(route, queryParams?: Params): void {
-    console.log('changeURL', route);
     if (route != null) {
       if (queryParams == null) {
         queryParams = this.getCurrentQueryParams();
@@ -98,7 +97,6 @@ export class UrlHandlerService {
   }
 
   private _checkIfUgcIsOpened(queryParams: Params): void {
-    console.log('updateURL', queryParams);
     if (queryParams.track != null || queryParams.poi != null) {
       this._store.dispatch(closeUgc());
     }
