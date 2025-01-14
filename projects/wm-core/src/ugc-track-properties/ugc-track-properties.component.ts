@@ -21,7 +21,7 @@ import {LangService} from '@wm-core/localization/lang.service';
 import {deleteUgcTrack, updateUgcTrack} from '@wm-core/store/features/ugc/ugc.actions';
 import {UntypedFormGroup} from '@angular/forms';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
-import {ITrackElevationChartHoverElements} from '@wm-core/types/elevation';
+import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 
 @Component({
   selector: 'wm-ugc-track-properties',
@@ -45,8 +45,8 @@ export class UgcTrackPropertiesComponent {
   @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
   @Output('trackElevationChartHover')
-  trackElevationChartHover: EventEmitter<ITrackElevationChartHoverElements> =
-    new EventEmitter<ITrackElevationChartHoverElements>();
+  trackElevationChartHover: EventEmitter<WmSlopeChartHoverElements> =
+    new EventEmitter<WmSlopeChartHoverElements>();
   @ViewChild('content') content: IonContent;
   @ViewChild('slider') slider: IonSlides;
 
@@ -119,7 +119,7 @@ export class UgcTrackPropertiesComponent {
     this.isEditing$;
   }
 
-  onLocationHover(event: ITrackElevationChartHoverElements | any): void {
+  onLocationHover(event: WmSlopeChartHoverElements | any): void {
     this.trackElevationChartHover.emit(event);
   }
 

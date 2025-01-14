@@ -19,15 +19,12 @@ import {
   SLOPE_CHART_SLOPE_MEDIUM_HARD,
   SLOPE_CHART_SURFACE,
 } from '../constants/slope-chart';
-import {EGeojsonGeometryTypes} from '../types/egeojson-geometry-types.enum';
 import {ESlopeChartSurface} from '../types/eslope-chart.enum';
-import {ILineString} from '../types/model';
-import {ISlopeChartHoverElements} from '../types/slope-chart';
-import {Location} from '../types/location';
 import {Feature, Geometry, LineString, Position} from 'geojson';
 import {BehaviorSubject} from 'rxjs';
 import {filter, switchMap, take} from 'rxjs/operators';
-import {WmFeature} from '@wm-types/feature';
+import {Location, WmFeature} from '@wm-types/feature';
+import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 
 @Component({
   selector: 'wm-slope-chart',
@@ -54,8 +51,8 @@ export class WmSlopeChartComponent implements OnInit {
 
   @Input()
   currentTrack: WmFeature<LineString>;
-  @Output('hover') hover: EventEmitter<ISlopeChartHoverElements> =
-    new EventEmitter<ISlopeChartHoverElements>();
+  @Output('hover') hover: EventEmitter<WmSlopeChartHoverElements> =
+    new EventEmitter<WmSlopeChartHoverElements>();
 
   route: Feature;
   showChart$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -329,7 +326,9 @@ export class WmSlopeChartComponent implements OnInit {
                 };
 
                 this.hover.emit({
-                  location: this._chartValues[(tooltip as any)?._tooltipItems?.[0]?.dataIndex],
+                  location: this._chartValues[
+                    (tooltip as any)?._tooltipItems?.[0]?.dataIndex
+                  ] as Location,
                   track: surfaceTrack,
                 });
               } else {

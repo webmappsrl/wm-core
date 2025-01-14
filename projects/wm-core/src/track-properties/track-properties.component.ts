@@ -6,7 +6,7 @@ import {currentEcTrack, currentEcTrackProperties} from '@wm-core/store/features/
 import {trackElevationChartHoverElemenents} from '@wm-core/store/user-activity/user-activity.action';
 import {ecLayer} from '@wm-core/store/user-activity/user-activity.selector';
 import {IOPTIONS} from '@wm-core/types/config';
-import {LineStringProperties, WmFeature, WmProperties} from '@wm-types/feature';
+import {LineStringProperties, WmFeature} from '@wm-types/feature';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {LineString} from 'geojson';
 import {Observable} from 'rxjs';
