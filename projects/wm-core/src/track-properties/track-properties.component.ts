@@ -1,5 +1,4 @@
 import {Component, ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
-import {ITrackElevationChartHoverElements} from '@map-core/types/track-elevation-charts';
 import {Store} from '@ngrx/store';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {confOPTIONS} from '@wm-core/store/conf/conf.selector';
@@ -8,6 +7,7 @@ import {trackElevationChartHoverElemenents} from '@wm-core/store/user-activity/u
 import {ecLayer} from '@wm-core/store/user-activity/user-activity.selector';
 import {IOPTIONS} from '@wm-core/types/config';
 import {LineStringProperties, WmFeature, WmProperties} from '@wm-types/feature';
+import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {LineString} from 'geojson';
 import {Observable} from 'rxjs';
 @Component({
@@ -30,7 +30,7 @@ export class TrackPropertiesComponent {
     this._urlHandlerSvc.updateURL({track: undefined});
   }
 
-  onLocationHover(event: ITrackElevationChartHoverElements | any): void {
+  onLocationHover(event: WmSlopeChartHoverElements): void {
     this._store.dispatch(trackElevationChartHoverElemenents({elements: event}));
   }
 }

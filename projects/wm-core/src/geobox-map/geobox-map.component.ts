@@ -108,6 +108,7 @@ import {currentUgcPoiId} from '@wm-core/store/features/ugc/ugc.selector';
 import {EnvironmentConfig, ENVIRONMENT_CONFIG} from '@wm-core/store/conf/conf.token';
 import {ISlopeChartHoverElements} from '@wm-core/types/slope-chart';
 import {DeviceService} from '@wm-core/services/device.service';
+import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -232,7 +233,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   toggleLayerDirective$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   togglePoisDirective$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   toggleUgcDirective$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
-  trackElevationChartHoverElements$: Observable<ISlopeChartHoverElements> =
+  trackElevationChartHoverElements$: Observable<WmSlopeChartHoverElements> =
     this._store.select(chartHoverElements);
   translationCallback: (any) => string = value => {
     if (value == null) return '';

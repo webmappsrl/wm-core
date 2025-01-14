@@ -22,8 +22,8 @@ import {
   updateTrackFilter,
   trackElevationChartHoverElemenents,
 } from './user-activity.action';
-import {ISlopeChartHoverElements} from '@wm-core/types/slope-chart';
 import {currentEcPoiId} from '../features/ec/ec.actions';
+import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 
 export const key = 'userActivity';
 export interface UserActivityState {
@@ -39,7 +39,7 @@ export interface UserActivityState {
   lastFilterType?: 'tracks' | 'pois' | null;
   loading: {pois: boolean; layer: boolean};
   drawTrackOpened: boolean;
-  chartHoverElements: ISlopeChartHoverElements;
+  chartHoverElements: WmSlopeChartHoverElements;
   currentEcPoiId?: any;
 }
 

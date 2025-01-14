@@ -1,8 +1,8 @@
 import {createAction, props} from '@ngrx/store';
 import {Filter, ILAYER} from '@wm-core/types/config';
-import {ISlopeChartHoverElements} from '@wm-core/types/slope-chart';
 import {WmFeature} from '@wm-types/feature';
-import {LineString, Point} from 'geojson';
+import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
+import {Point} from 'geojson';
 
 export const openUgc = createAction('[User Activity] Open User Generated Content');
 export const closeUgc = createAction('[User Activity] Close User Generated Content');
@@ -85,5 +85,5 @@ export const drawTrackOpened = createAction(
 
 export const trackElevationChartHoverElemenents = createAction(
   '[User Activity] track elevation chart hover elements',
-  props<{elements: ISlopeChartHoverElements}>(),
+  props<{elements: WmSlopeChartHoverElements}>(),
 );
