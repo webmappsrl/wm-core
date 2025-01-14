@@ -77,7 +77,9 @@ export const poiFilters = createSelector(
 export const countSelectedFilters = createSelector(
   poiFilters,
   filterTracks,
-  (pFilters, tFilters) => pFilters?.length ?? 0 + tFilters?.length ?? 0,
+  (pFilters, tFilters) => {
+    return (pFilters?.length ?? 0) + (tFilters?.length ?? 0);
+  },
 );
 
 export const allEcPois = createSelector(ec, state => state.ecPois);
