@@ -1,8 +1,7 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
-import {SearchResponse} from 'elasticsearch';
 import {confFILTERSTRACKS, confPOISFilter, confPoisIcons} from '../../conf/conf.selector';
 import {buildStats, filterFeatures, filterFeaturesByInputTyped} from './utils';
-import {IELASTIC, IHIT} from '../../../types/elastic';
+import {IELASTIC} from '../../../types/elastic';
 import {Ec} from './ec.reducer';
 import {
   inputTyped,

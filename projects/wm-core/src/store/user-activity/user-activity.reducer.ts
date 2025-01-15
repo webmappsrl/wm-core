@@ -119,10 +119,9 @@ export const userActivityReducer = createReducer(
       poisSelectedFilterIdentifiers = (state.poisSelectedFilterIdentifiers ?? []).filter(
         i => i.indexOf('poi_') < 0 && i.indexOf('where_') < 0,
       );
-      poisSelectedFilterIdentifiers = [
-        ...poisSelectedFilterIdentifiers,
-        ...(filterTaxonomies ?? []),
-      ];
+      poisSelectedFilterIdentifiers = Array.from(
+        new Set([...poisSelectedFilterIdentifiers, ...(filterTaxonomies ?? [])]),
+      );
     }
     const newState: UserActivityState = {
       ...state,
