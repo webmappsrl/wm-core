@@ -39,6 +39,8 @@ export class ImageGalleryComponent {
   imageGallery$: BehaviorSubject<null | any[]> = new BehaviorSubject<null | any[]>(null);
   sliderOptions$: BehaviorSubject<any> = new BehaviorSubject<any>({
     slidesPerView: 1.3,
+    centeredSlides: true,
+    spaceBetween: 10,
   });
 
   constructor(private _modalCtrl: ModalController) {}
