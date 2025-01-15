@@ -88,3 +88,18 @@ export const homeOpened = createSelector(currentCustomTrack, hasCustomTrack => {
 });
 export const chartHoverElements = createSelector(userActivity, state => state.chartHoverElements);
 export const currentEcPoiId = createSelector(userActivity, state => state.currentEcPoiId);
+export const onlyPoisFilter = createSelector(
+  filterTracks,
+  poisSelectedFilterIdentifiers,
+  (ftracks, fpois) => {
+    return (ftracks.length ?? 0) === 0 && (fpois.length ?? 0) > 0;
+  },
+);
+export const showTracks = createSelector(
+  currentEcLayer,
+  onlyPoisFilter,
+  ugcOpened,
+  (currentLayer, onlyPoisFilter, ugcOpened) => {
+    return currentLayer != null || !onlyPoisFilter || ugcOpened;
+  },
+);

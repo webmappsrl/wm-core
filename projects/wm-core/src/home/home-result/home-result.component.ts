@@ -14,6 +14,7 @@ import {ecTracksLoading, poisInitCount} from '@wm-core/store/features/ec/ec.sele
 import {
   ecLayer,
   lastFilterType,
+  showTracks,
   ugcOpened,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {
@@ -47,6 +48,7 @@ export class WmHomeResultComponent implements OnDestroy {
   lastFilterType$ = this._store.select(lastFilterType);
   pois$: Observable<WmFeature<Point>[]> = this._store.select(pois);
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
+  showTracks$ = this._store.select(showTracks);
   tracks$ = this._store.select(tracks);
   tracksLoading$: Observable<boolean> = this._store.select(ecTracksLoading);
   ugcOpened$: Observable<boolean> = this._store.select(ugcOpened);
