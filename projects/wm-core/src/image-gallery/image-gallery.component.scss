@@ -1,7 +1,6 @@
 wm-image-gallery {
   .webmapp-pagepoi-info-body-photoslider {
     padding: 10px 0;
-    overflow: visible;
     .webmapp-pagepoi-info-body-photo {
       height: 150px !important;
       width: 250px !important;
@@ -12,6 +11,25 @@ wm-image-gallery {
       &::part(image) {
         border-radius: 15px;
       }
+    }
+  }
+  ion-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 99;
+    width: 45px;
+    height: 45px;
+    --border-radius: 100%;
+    --background: #f0f0f0;
+    --color: black;
+
+    &.left {
+      margin-left: 15px;
+    }
+    &.right {
+      right: 0;
+      margin-right: 15px;
     }
   }
 }

@@ -5,7 +5,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {IonModal, ModalController} from '@ionic/angular';
+import {IonModal, IonSlides, ModalController} from '@ionic/angular';
 import {ModalImageComponent} from '@wm-core/modal-image/modal-image.component';
 import {BehaviorSubject} from 'rxjs';
 
@@ -25,12 +25,16 @@ export class ImageGalleryComponent {
     } else {
       this.sliderOptions$.next({
         slidesPerView: 1.3,
+        centeredSlides: true,
+        spaceBetween: 10,
       });
     }
     this.imageGallery$.next(imgGallery);
   }
 
+  @Input() showArrows = false;
   @ViewChild(IonModal) modal: IonModal;
+  @ViewChild('slider') slider: IonSlides;
 
   imageGallery$: BehaviorSubject<null | any[]> = new BehaviorSubject<null | any[]>(null);
   sliderOptions$: BehaviorSubject<any> = new BehaviorSubject<any>({
@@ -38,6 +42,14 @@ export class ImageGalleryComponent {
   });
 
   constructor(private _modalCtrl: ModalController) {}
+
+  next(): void {
+    this.slider.slideNext();
+  }
+
+  prev(): void {
+    this.slider.slidePrev();
+  }
 
   async showPhoto(idx) {
     const modal = await this._modalCtrl.create({
