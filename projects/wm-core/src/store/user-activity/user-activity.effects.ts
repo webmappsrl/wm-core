@@ -1,7 +1,9 @@
 import {
   applyWhere,
+  closeUgc,
   goToHome,
   inputTyped,
+  resetPoiFilters,
   setLayer,
   toggleTrackFilter,
   toggleTrackFilterByIdentifier,
@@ -46,7 +48,15 @@ export class UserActivityEffects {
   goToHome$ = createEffect(() =>
     this._actions$.pipe(
       ofType(goToHome),
-      mergeMap(() => of(inputTyped({inputTyped: ''}), setLayer(null), resetTrackFilters())),
+      mergeMap(() =>
+        of(
+          inputTyped({inputTyped: ''}),
+          setLayer(null),
+          resetTrackFilters(),
+          resetPoiFilters(),
+          closeUgc(),
+        ),
+      ),
       tap(() => this._urlHandlerSvc.resetURL()),
     ),
   );

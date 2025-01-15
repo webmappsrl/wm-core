@@ -101,7 +101,7 @@ export const userActivityReducer = createReducer(
     };
   }),
   on(setLayer, (state, {layer}) => {
-    let poisSelectedFilterIdentifiers = [];
+    let poisSelectedFilterIdentifiers = state.poisSelectedFilterIdentifiers ?? [];
     const filterTaxonomies = layer
       ? [
           ...(layer.taxonomy_wheres ?? [])
@@ -120,7 +120,11 @@ export const userActivityReducer = createReducer(
         i => i.indexOf('poi_') < 0 && i.indexOf('where_') < 0,
       );
       poisSelectedFilterIdentifiers = Array.from(
-        new Set([...poisSelectedFilterIdentifiers, ...(filterTaxonomies ?? [])]),
+        new Set([
+          ...(state?.poisSelectedFilterIdentifiers ?? []),
+          ...poisSelectedFilterIdentifiers,
+          ...(filterTaxonomies ?? []),
+        ]),
       );
     }
     const newState: UserActivityState = {
