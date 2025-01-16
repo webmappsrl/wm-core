@@ -9,7 +9,8 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {hitMapFeatureCollection} from '@map-core/store/map-core.selector';
+import {hitMapFeatureCollection, padding, leftPadding} from '@map-core/store/map-core.selector';
+import {padding as actionPadding} from '@map-core/store/map-core.actions';
 import {select, Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
 import {
@@ -60,10 +61,12 @@ import {
   distinctUntilChanged,
   filter,
   map,
+  mergeAll,
   startWith,
   switchMap,
   take,
   tap,
+  withLatestFrom,
 } from 'rxjs/operators';
 import {
   confJIDOUPDATETIME,
@@ -106,9 +109,7 @@ import {EnvironmentConfig, ENVIRONMENT_CONFIG} from '@wm-core/store/conf/conf.to
 import {DeviceService} from '@wm-core/services/device.service';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 
-const menuOpenLeft = 400;
-const menuCloseLeft = 0;
-const initPadding = [100, 100, 100, menuOpenLeft];
+const initPadding = [10, 10, 10, 10];
 const initMenuOpened = true;
 const maxWidth = 600;
 @Component({
@@ -156,6 +157,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   currentCustomTrack$: Observable<WmFeature<LineString>> = this._store.select(currentCustomTrack);
   currentEcPoiId$ = this._store.select(currentEcPoiId);
   currentLayer$ = this._store.select(ecLayer);
+  currentMapPaddings$: Observable<[number, number, number, number]>;
   currentPoi$ = this._store.select(poi);
   currentPoiNextID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiPrevID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
@@ -176,9 +178,9 @@ export class WmGeoboxMapComponent implements OnDestroy {
       }
     }),
   );
-  leftPadding$: Observable<number>;
+  leftPadding$: Observable<number> = this._store.select(leftPadding);
   loading$: Observable<boolean> = this._store.select(loading);
-  mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
+  mapPadding$ = this._store.select(padding);
   mergedPoi$: Observable<any> = combineLatest([
     merge(
       this.currentPoi$.pipe(
@@ -256,9 +258,22 @@ export class WmGeoboxMapComponent implements OnDestroy {
     private _deviceSvc: DeviceService,
     @Inject(ENVIRONMENT_CONFIG) public environment: EnvironmentConfig,
   ) {
+    this.currentMapPaddings$ = combineLatest([
+      this.showMenu$,
+      this.mapPadding$,
+      this.leftPadding$,
+    ]).pipe(
+      map(([showMenu, mapPadding, leftPadding]) => {
+        if (showMenu) {
+          return [mapPadding[0], mapPadding[1], mapPadding[2], leftPadding];
+        } else {
+          return mapPadding;
+        }
+      }),
+    );
     this.refreshLayer$ = this._store.select(countSelectedFilters);
     if (window.innerWidth < maxWidth) {
-      this.mapPadding$.next([initPadding[0], initPadding[1], initPadding[2], menuCloseLeft]);
+      this._store.dispatch(actionPadding({padding: initPadding}));
       this.resizeEVT.next(!this.resizeEVT.value);
     }
     this.dataLayerUrls$ = this.geohubId$.pipe(
@@ -296,7 +311,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
     this.caretOutLine$ = this.showMenu$.pipe(
       map(showMenu => (showMenu ? 'caret-back-outline' : 'caret-forward-outline')),
     );
-    this.leftPadding$ = this.showMenu$.pipe(map(showMenu => (showMenu ? menuOpenLeft : 0)));
 
     this.currentUgcPoiIDToMap$ = this._store.select(currentUgcPoiId);
     this._actions$.pipe(ofType(goToHome)).subscribe(() => {
