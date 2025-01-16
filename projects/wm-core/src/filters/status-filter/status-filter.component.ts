@@ -59,7 +59,6 @@ export class StatusFilterComponent {
   }
 
   resetFilters(): void {
-    this._store.dispatch(goToHome());
     this.resetFiltersEVT.emit();
   }
 }

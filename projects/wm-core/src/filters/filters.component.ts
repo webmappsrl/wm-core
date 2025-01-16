@@ -103,7 +103,6 @@ export class FiltersComponent implements OnChanges {
   }
 
   resetFilters(): void {
-    this._store.dispatch(goToHome());
     this.resetFiltersEvt.emit();
   }
 }
