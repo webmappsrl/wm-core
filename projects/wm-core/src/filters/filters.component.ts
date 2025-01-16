@@ -20,7 +20,6 @@ import {
 import {confFILTERS} from '../store/conf/conf.selector';
 import {SelectFilterOption, SliderFilter, Filter} from '../types/config';
 import {countPois, countTracks} from '@wm-core/store/features/features.selector';
-import {goToHome} from '@wm-core/store/user-activity/user-activity.action';
 import {filterTracks} from '@wm-core/store/user-activity/user-activity.selector';
 
 @Component({

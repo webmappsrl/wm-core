@@ -43,21 +43,6 @@ export const ecLayer = createSelector(userActivity, state => {
   return state.layer;
 });
 
-export const showResult = createSelector(
-  userActivity,
-  ugcOpened,
-  inputTyped,
-  (state, ugcOpened, inputTyped) => {
-    return (
-      state.layer != null ||
-      state.filterTracks.length > 0 ||
-      (state.poisSelectedFilterIdentifiers && state.poisSelectedFilterIdentifiers.length > 0) ||
-      (inputTyped != null && inputTyped != '') ||
-      ugcOpened
-    );
-  },
-);
-
 export const filterTaxonomies = createSelector(userActivity, state => {
   return state.filterTaxonomies;
 });
@@ -101,5 +86,27 @@ export const showTracks = createSelector(
   ugcOpened,
   (currentLayer, onlyPoisFilter, ugcOpened) => {
     return currentLayer != null || !onlyPoisFilter || ugcOpened;
+  },
+);
+export const showResult = createSelector(
+  currentEcLayer,
+  filterTracks,
+  poisSelectedFilterIdentifiers,
+  ugcOpened,
+  inputTyped,
+  (currentLayer, filterTracks, poisSelectedFilterIdentifiers, ugcOpened, inputTyped) => {
+    const layerCondition = currentLayer != null;
+    const filterTracksCondition = filterTracks.length > 0;
+    const poisSelectedFilterIdentifiersCondition =
+      poisSelectedFilterIdentifiers && poisSelectedFilterIdentifiers.length > 0;
+    const inputTypedCondition = inputTyped != null && inputTyped != '';
+
+    return (
+      layerCondition ||
+      filterTracksCondition ||
+      poisSelectedFilterIdentifiersCondition ||
+      inputTypedCondition ||
+      ugcOpened
+    );
   },
 );

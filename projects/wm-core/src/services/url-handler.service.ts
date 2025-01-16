@@ -43,6 +43,10 @@ export class UrlHandlerService {
     }
   }
 
+  getCurrentPath(): string {
+    return this._router.url.split('?')[0].replace('/', '');
+  }
+
   /**
    * Get the current query params from the URL.
    * @returns Params - The query parameters as an object.

@@ -13,11 +13,9 @@
     [initSearch]="''"
   >
   </wm-searchbar>
-
   <ng-container *ngIf="(popup$|async) as popup; else mainContent">
     <wm-inner-component-html [html]="popup.html" [enableDismiss]="false"></wm-inner-component-html>
   </ng-container>
-
   <ng-template #mainContent>
     <wm-home-landing
       [ngClass]="{'hidden': showResult$ | async}"

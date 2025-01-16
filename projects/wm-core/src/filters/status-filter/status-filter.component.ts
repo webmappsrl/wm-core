@@ -11,9 +11,6 @@ import {poiFilters} from '@wm-core/store/features/ec/ec.selector';
 import {Filter} from '@wm-core/types/config';
 import {Observable} from 'rxjs';
 import {
-  closeUgc,
-  goToHome,
-  resetPoiFilters,
   resetTrackFilters,
   setLayer,
   togglePoiFilter,

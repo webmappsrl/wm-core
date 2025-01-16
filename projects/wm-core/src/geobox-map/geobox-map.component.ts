@@ -167,7 +167,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
   dataLayerUrls$: Observable<IDATALAYER>;
   drawTrackOpened$: Observable<boolean> = this._store.select(drawTrackOpened);
   geohubId$ = this._store.select(confGeohubId);
-  goToHomeSub$: Subscription = Subscription.EMPTY;
   graphhopperHost$: Observable<string> = of(this.environment.graphhopperHost);
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
   isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this._deviceSvc.isMobile);
@@ -343,7 +342,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.goToHomeSub$.unsubscribe();
     this.setCurrentPoiSub$.unsubscribe();
   }
 
