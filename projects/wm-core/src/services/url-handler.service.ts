@@ -11,12 +11,14 @@ import {currentUgcPoiId, currentUgcTrackId} from '@wm-core/store/features/ugc/ug
 import {Params} from '@angular/router';
 import {debounceTime, skip} from 'rxjs/operators';
 import {closeUgc, openUgc} from '@wm-core/store/user-activity/user-activity.action';
+import {BehaviorSubject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UrlHandlerService {
-  private _baseParams: Params = {
+  private _currentQueryParams$: BehaviorSubject<Params> = new BehaviorSubject<Params>({});
+  private _emptyParams: Params = {
     track: undefined,
     poi: undefined,
     ugc_track: undefined,
@@ -26,20 +28,13 @@ export class UrlHandlerService {
     filter: undefined,
   };
 
-  constructor(private _route: ActivatedRoute, private _router: Router, private _store: Store) {}
+  constructor(private _route: ActivatedRoute, private _router: Router, private _store: Store) {
+    this.initialize();
+  }
 
-  changeURL(route, queryParams?: Params): void {
+  changeURL(route, queryParams: Params = this.getCurrentQueryParams()): void {
     if (route != null) {
-      if (queryParams == null) {
-        queryParams = this.getCurrentQueryParams();
-      }
-      setTimeout(() => {
-        this._router.navigate([route], {
-          relativeTo: this._route,
-          queryParams,
-          queryParamsHandling: '',
-        });
-      }, 100);
+      this.navigateTo([route], queryParams);
     }
   }
 
@@ -52,7 +47,7 @@ export class UrlHandlerService {
    * @returns Params - The query parameters as an object.
    */
   getCurrentQueryParams(): Params {
-    return this._route.snapshot.queryParams;
+    return this._currentQueryParams$.value;
   }
 
   initialize(): void {
@@ -69,17 +64,22 @@ export class UrlHandlerService {
     });
   }
 
+  navigateTo(routes: string[] = [], queryParams: Params = this._emptyParams): void {
+    this._currentQueryParams$.next(queryParams);
+    this._router.navigate(routes, {
+      relativeTo: this._route,
+      queryParams,
+      queryParamsHandling: '',
+    });
+  }
+
   /**
    * Reset the URL query params to exactly match the provided value.
    * Perform navigation only if query params differ.
    */
   resetURL(): void {
     this._store.dispatch(closeUgc());
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams: this._baseParams,
-      queryParamsHandling: '',
-    });
+    this.navigateTo();
   }
 
   /**
@@ -87,16 +87,12 @@ export class UrlHandlerService {
    * Perform navigation only if query params differ.
    */
   updateURL(queryParams: Params, routes = []): void {
-    const oldParams = {...this._baseParams, ...this.getCurrentQueryParams()};
-    const newParams = {...this._baseParams, ...oldParams, ...queryParams};
+    const oldParams = {...this._emptyParams, ...this.getCurrentQueryParams()};
+    const newParams = {...oldParams, ...queryParams};
 
     if (JSON.stringify(newParams) !== JSON.stringify(oldParams)) {
       this._checkIfUgcIsOpened(newParams);
-      this._router.navigate(routes, {
-        relativeTo: this._route,
-        queryParams: newParams,
-        queryParamsHandling: '',
-      });
+      this.navigateTo(routes, newParams);
     }
   }
 

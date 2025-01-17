@@ -1,6 +1,6 @@
 import {CommonModule} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient} from '@angular/common/http';
-import {APP_INITIALIZER, NgModule} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {IonicModule} from '@ionic/angular';
 import {EffectsModule} from '@ngrx/effects';
 import {StoreModule} from '@ngrx/store';
@@ -57,13 +57,13 @@ import {WmMapModule} from '@map-core/map-core.module';
 import {UrlHandlerService} from './services/url-handler.service';
 import {WmUgcMediasModule} from './ugc-medias/wm-ugc-medias.module';
 import {UgcTrackDataComponent} from './ugc-details/ugc-track-data/ugc-track-data.component';
-import { UgcTrackPropertiesComponent} from './ugc-track-properties/ugc-track-properties.component';
-import { TrackPropertiesComponent } from './track-properties/track-properties.component';
-import { TabImageGalleryComponent } from './tab-image-gallery/tab-image-gallery.component';
-import { ModalImageComponent } from './modal-image/modal-image.component';
-import { ImageGalleryComponent } from './image-gallery/image-gallery.component';
-import { TrackRelatedPoiComponent } from './track-related-poi/track-related-poi.component';
-import { UgcPoiPropertiesComponent } from './ugc-poi-properties/ugc-poi-properties.component';
+import {UgcTrackPropertiesComponent} from './ugc-track-properties/ugc-track-properties.component';
+import {TrackPropertiesComponent} from './track-properties/track-properties.component';
+import {TabImageGalleryComponent} from './tab-image-gallery/tab-image-gallery.component';
+import {ModalImageComponent} from './modal-image/modal-image.component';
+import {ImageGalleryComponent} from './image-gallery/image-gallery.component';
+import {TrackRelatedPoiComponent} from './track-related-poi/track-related-poi.component';
+import {UgcPoiPropertiesComponent} from './ugc-poi-properties/ugc-poi-properties.component';
 export const declarations = [
   WmAddressComponent,
   WmTabDetailComponent,
@@ -141,22 +141,10 @@ const modules = [
     ],
     ...modules,
   ],
-  providers: [
-    LangService,
-    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
-    UrlHandlerService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeUrlHandler,
-      deps: [UrlHandlerService],
-      multi: true, // Permette più inizializzatori contemporaneamente
-    },
-  ],
+  providers: [LangService, {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
   exports: [...declarations, ...modules, TranslateModule],
 })
-export class WmCoreModule {
-
-}
+export class WmCoreModule {}
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
