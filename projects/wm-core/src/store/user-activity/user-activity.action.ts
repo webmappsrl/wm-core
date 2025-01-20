@@ -87,3 +87,8 @@ export const trackElevationChartHoverElemenents = createAction(
   '[User Activity] track elevation chart hover elements',
   props<{elements: WmSlopeChartHoverElements}>(),
 );
+
+export const setIsMobile = createAction(
+  '[User Activity] set is mobile',
+  props<{isMobile: boolean}>(),
+);

@@ -13,7 +13,7 @@
       ></wm-img>
     </ion-slide>
   </ion-slides>
-  <ng-container *ngIf="showArrows && imageGallery.length > 1">
+  <ng-container *ngIf="!(isMobile$|async) && imageGallery.length > 1">
     <ion-button class="left" (click)="prev()">
       <ion-icon name="arrow-back-outline"></ion-icon>
     </ion-button>

@@ -21,6 +21,7 @@ import {
   toggleTrackFilter,
   updateTrackFilter,
   trackElevationChartHoverElemenents,
+  setIsMobile,
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
@@ -41,6 +42,7 @@ export interface UserActivityState {
   drawTrackOpened: boolean;
   chartHoverElements: WmSlopeChartHoverElements;
   currentEcPoiId?: any;
+  isMobile: boolean;
 }
 
 export interface UserAcitivityRootState {
@@ -56,6 +58,7 @@ const initialState: UserActivityState = {
   lastFilterType: null,
   loading: {pois: false, layer: false},
   chartHoverElements: null,
+  isMobile: false,
 };
 
 export const userActivityReducer = createReducer(
@@ -230,5 +233,8 @@ export const userActivityReducer = createReducer(
       currentEcPoiId,
     };
     return newState;
+  }),
+  on(setIsMobile, (state, {isMobile}) => {
+    return {...state, ...{isMobile}};
   }),
 );

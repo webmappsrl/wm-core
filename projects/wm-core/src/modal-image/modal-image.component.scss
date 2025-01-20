@@ -12,7 +12,12 @@ wm-modal-image {
     ion-slide {
       width: 100%;
       wm-img {
+        height: -webkit-fill-available;
+        width: -webkit-fill-available;
         transition: all 1s;
+        img {
+          object-fit: contain;
+        }
       }
     }
   }
@@ -33,4 +38,11 @@ ion-fab-button {
   --color: black;
   top: calc(constant(safe-area-inset-top));
   top: calc(env(safe-area-inset-top));
+}
+
+@media only screen and (min-width: 768px) and (min-height: 768px) {
+  ion-modal {
+    --width: 700px;
+    --height: 700px;
+  }
 }
