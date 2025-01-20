@@ -162,7 +162,6 @@ export class WmHomeComponent implements AfterContentInit {
   }
 
   setPoi(id: string | number): void {
-    this._store.dispatch(setCurrentPoi({currentPoi: null}));
     this.ugcOpened$.pipe(take(1)).subscribe(ugcOpened => {
       const queryParams = ugcOpened
         ? {ugc_poi: id ? +id : undefined, poi: undefined}

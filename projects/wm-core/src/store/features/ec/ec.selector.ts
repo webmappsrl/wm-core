@@ -172,10 +172,10 @@ export const currentEcTrackProperties = createSelector(
   currentEcTrack => currentEcTrack?.properties ?? null,
 );
 export const currentEcRelatedPoiId = createSelector(ec, state => state.currentEcRelatedPoiId);
-export const currentEcRelatedPois = createSelector(
-  currentEcTrackProperties,
-  properties => (properties?.related_pois as WmFeature<Point>[]) ?? null,
-);
+export const currentEcRelatedPois = createSelector(currentEcTrackProperties, properties => {
+  const res = (properties?.related_pois as WmFeature<Point>[]) ?? null;
+  return res;
+});
 export const currentEcRelatedPoi = createSelector(
   currentEcRelatedPois,
   currentEcRelatedPoiId,
@@ -192,18 +192,25 @@ export const currentEcPoiId = createSelector(
 );
 export const currentEcPoi = createSelector(ec, state => state.currentEcPoi);
 
-export const currentEcPoiProperties = createSelector(
-  currentEcPoi,
-  currentEcPoi => currentEcPoi?.properties ?? null,
-);
+export const currentEcPoiProperties = createSelector(currentEcPoi, currentEcPoi => {
+  const res = currentEcPoi?.properties ?? null;
+  return res;
+});
 export const currentEcRelatedPoiProperties = createSelector(
   currentEcRelatedPoi,
-  currentEcRelatedPoiProperties => currentEcRelatedPoiProperties?.properties ?? null,
+  currentEcRelatedPoiProperties => {
+    const res = currentEcRelatedPoiProperties?.properties ?? null;
+    return res;
+  },
 );
 export const currentPoiProperties = createSelector(
   currentEcPoiProperties,
   currentEcRelatedPoiProperties,
   (currentEcPoiProperties, currentEcRelatedPoiProperties) => {
-    return currentEcPoiProperties ?? currentEcRelatedPoiProperties;
+    if (JSON.stringify(currentEcPoiProperties) === JSON.stringify({related: false})) {
+      currentEcPoiProperties = null;
+    }
+    const res = currentEcPoiProperties ?? currentEcRelatedPoiProperties ?? null;
+    return res;
   },
 );
