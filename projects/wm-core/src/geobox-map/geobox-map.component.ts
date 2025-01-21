@@ -270,7 +270,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
         }
       }),
     );
-    this.refreshLayer$ = this._store.select(countSelectedFilters);
+    this.refreshLayer$ = this._actions$.pipe(ofType(updateTrackFilter, toggleTrackFilter));
     if (window.innerWidth < maxWidth) {
       this._store.dispatch(actionPadding({padding: initPadding}));
       this.resizeEVT.next(!this.resizeEVT.value);
