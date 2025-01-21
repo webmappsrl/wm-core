@@ -110,5 +110,3 @@ export const showResult = createSelector(
     );
   },
 );
-
-export const isMobile = createSelector(userActivity, state => state.isMobile);

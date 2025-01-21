@@ -8,7 +8,7 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {Platform} from '@ionic/angular';
-import {Observable, ReplaySubject} from 'rxjs';
+import {Observable, of, ReplaySubject} from 'rxjs';
 import {Device} from '@capacitor/device';
 import {APP_VERSION} from '@wm-core/store/conf/conf.token';
 import {WmDeviceInfo} from '@wm-types/feature';
@@ -67,6 +67,7 @@ export class DeviceService {
     return this._width;
   }
 
+  isMobile$: Observable<boolean>;
   public onBackground: Observable<void>;
   public onForeground: Observable<void>;
   public onResize: Observable<{
@@ -93,6 +94,7 @@ export class DeviceService {
     this._isAndroid = this._platform.is('android');
     this._isIos = this._platform.is('ios');
     this._isLocalServer = window.location.href.indexOf('localhost') !== -1;
+    this.isMobile$ = of(this._isAndroid || this._isIos);
 
     window.addEventListener('resize', () => {
       this._width = +window.innerWidth;
