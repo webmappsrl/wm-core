@@ -1,4 +1,5 @@
 wm-track-properties {
+  padding: 10px;
   display: block;
   bottom: 0;
   border-radius: 15px;
@@ -17,6 +18,19 @@ wm-track-properties {
     order: 0;
     flex-grow: 0;
     padding: 10px;
+  }
+  .wm-alert {
+    order: -1;
+    color: #ff0000;
+    display: flex;
+    flex-direction: row;
+    ion-icon {
+      font-size: 25px;
+      align-self: center;
+    }
+    ion-label {
+      align-self: center;
+    }
   }
   .webmapp-pagepoi-info-body {
     --padding-bottom: 30px;
