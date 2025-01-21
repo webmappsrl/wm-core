@@ -6,9 +6,9 @@ import {Feature} from 'geojson';
 import tokml from 'geojson-to-kml';
 import {DeviceService} from '@wm-core/services/device.service';
 @Component({
-  selector: 'wm-track-download-urls',
-  templateUrl: './track-download-urls.component.html',
-  styleUrls: ['./track-download-urls.component.scss'],
+  selector: 'wm-track-useful-urls',
+  templateUrl: './track-useful-urls.component.html',
+  styleUrls: ['./track-useful-urls.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })

@@ -43,7 +43,7 @@
       <wm-ugc-medias [showArrows]="true" class="wm-ugc-track-media-content"></wm-ugc-medias>
       <ng-container *ngIf="confOPTIONS$|async as confOPTIONS">
         <ng-container *ngIf="confOPTIONS.download_track_enable === true">
-          <wm-track-download-urls [track]="track"></wm-track-download-urls>
+          <wm-track-useful-urls [track]="track"></wm-track-useful-urls>
         </ng-container>
       </ng-container>
     </ng-template>

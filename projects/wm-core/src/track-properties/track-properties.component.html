@@ -51,25 +51,19 @@
       <wm-track-related-poi></wm-track-related-poi>
     </div>
   </ng-container>
-  <div *ngIf="ecTrackProperties.osm_url as osm" target="_blank">
-    <ion-icon class="wm-icn " name="link-outline" slot="start"></ion-icon>
-    <a class="webmapp-track-download-urls-item-label" [href]="osm">
-      {{ "Vedi su OpenStreetMap" | wmtrans }}
-    </a>
-  </div>
   <wm-track-audio
     *ngIf="ecTrackProperties.audio"
     [audio]="ecTrackProperties.audio"
   ></wm-track-audio>
   <div class="wm-track-details-download" *ngIf="confOPTIONS$|async as confOPTIONS">
     <ng-container *ngIf="confOPTIONS.download_track_enable === true">
-      <wm-track-download-urls
+      <wm-track-useful-urls
         class="wm-track-details-download-urls"
         [track]="ecTrack$|async"
         id="webmapp-track-details-download-urls"
       >
         <ng-content></ng-content>
-      </wm-track-download-urls>
+      </wm-track-useful-urls>
     </ng-container>
   </div>
   <ng-content select="[bottom]"></ng-content>

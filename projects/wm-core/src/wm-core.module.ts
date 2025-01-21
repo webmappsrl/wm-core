@@ -35,7 +35,7 @@ import {WmTrackEdgesComponent} from './track-edges/track-edges.component';
 import {WmInnerHtmlComponent} from './inner-html/inner-html.component';
 import {ButtonsModule} from './buttons/export-to/buttons.module';
 import {WmExcerptComponent} from './excerpt/excerpt.component';
-import {WmTrackDownloadUrlsComponent} from './track-download-urls/track-download-urls.component';
+import {WmTrackDownloadUrlsComponent} from './track-useful-urls/track-useful-urls.component';
 import {AuthInterceptor} from './store/auth/auth.interceptor';
 import {AuthEffects} from './store/auth/auth.effects';
 import {authReducer} from './store/auth/auth.reducer';
@@ -64,7 +64,7 @@ import {ModalImageComponent} from './modal-image/modal-image.component';
 import {ImageGalleryComponent} from './image-gallery/image-gallery.component';
 import {TrackRelatedPoiComponent} from './track-related-poi/track-related-poi.component';
 import {UgcPoiPropertiesComponent} from './ugc-poi-properties/ugc-poi-properties.component';
-import { WmTrackAlertComponent } from './track-alert/track-alert.component';
+import {WmTrackAlertComponent} from './track-alert/track-alert.component';
 export const declarations = [
   WmAddressComponent,
   WmTabDetailComponent,
@@ -101,7 +101,7 @@ export const declarations = [
   ImageGalleryComponent,
   TrackRelatedPoiComponent,
   UgcPoiPropertiesComponent,
-  WmTrackAlertComponent
+  WmTrackAlertComponent,
 ];
 const modules = [
   WmSharedModule,
