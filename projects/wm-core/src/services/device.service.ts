@@ -67,7 +67,7 @@ export class DeviceService {
     return this._width;
   }
 
-  isMobile$: Observable<boolean>;
+  isMobile$: Observable<boolean> = of(false);
   public onBackground: Observable<void>;
   public onForeground: Observable<void>;
   public onResize: Observable<{
