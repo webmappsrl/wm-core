@@ -6,8 +6,9 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {IonModal, IonSlides, ModalController} from '@ionic/angular';
+import {Store} from '@ngrx/store';
 import {ModalImageComponent} from '@wm-core/modal-image/modal-image.component';
-import {DeviceService} from '@wm-core/services/device.service';
+import {confIsMobile} from '@wm-core/store/conf/conf.selector';
 import {BehaviorSubject, Observable} from 'rxjs';
 
 @Component({
@@ -37,14 +38,14 @@ export class ImageGalleryComponent {
   @ViewChild('slider') slider: IonSlides;
 
   imageGallery$: BehaviorSubject<null | any[]> = new BehaviorSubject<null | any[]>(null);
-  isMobile$: Observable<boolean> = this._deviceSvc.isMobile$;
+  isMobile$: Observable<boolean> = this._store.select(confIsMobile);
   sliderOptions$: BehaviorSubject<any> = new BehaviorSubject<any>({
     slidesPerView: 1.3,
     centeredSlides: true,
     spaceBetween: 10,
   });
 
-  constructor(private _modalCtrl: ModalController, private _deviceSvc: DeviceService) {}
+  constructor(private _modalCtrl: ModalController, private _store: Store) {}
 
   next(): void {
     this.slider.slideNext();
