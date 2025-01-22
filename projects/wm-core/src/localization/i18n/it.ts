@@ -113,4 +113,14 @@ export const wmIT = {
   'Dalla libreria': 'Dalla libreria',
   'Scatta una foto': 'Scatta una foto',
   'placeholder': 'Cerca',
+  'Carica File': 'Carica File',
+  'Trascina qui il tuo file o clicca per selezionare':
+    'Trascina qui il tuo file o clicca per selezionare',
+  'Accetta i seguenti formati': 'Accetta i seguenti formati',
+  'Tipo di file non supportato': 'Tipo di file non supportato',
+  'Il file non contiene una geometria valida': 'Il file non contiene una geometria valida',
+  'Errore durante la lettura del file, riprova': 'Errore durante la lettura del file, riprova',
+  'Si è verificato un errore durante il salvataggio della traccia. Riprova':
+    'Si è verificato un errore durante il salvataggio della traccia. Riprova',
+  'La traccia è stata salvata correttamente': 'La traccia è stata salvata correttamente',
 };

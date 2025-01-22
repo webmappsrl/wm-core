@@ -1,6 +1,14 @@
-import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewEncapsulation,
+  ChangeDetectorRef,
+} from '@angular/core';
 import {BaseBoxComponent} from '../box';
 import {IUGCBOX} from '../../types/config';
+import {Store} from '@ngrx/store';
+import {openUgcUploader} from '@wm-core/store/user-activity/user-activity.action';
+import {LangService} from '@wm-core/localization/lang.service';
 
 @Component({
   selector: 'wm-ugc-box',
@@ -11,4 +19,8 @@ import {IUGCBOX} from '../../types/config';
 })
 export class UgcBoxComponent extends BaseBoxComponent<IUGCBOX> {
   public defaultPhotoPath = 'assets/images/profile/my-path.webp';
+
+  openUgcUploader() {
+    this._store.dispatch(openUgcUploader());
+  }
 }

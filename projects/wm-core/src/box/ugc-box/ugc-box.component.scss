@@ -70,4 +70,15 @@ wm-ugc-box {
       white-space: break-spaces;
     }
   }
+
+  ion-button {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    top: 0;
+    left: 0;
+    margin: 10px;
+    --padding-start: 0.5em;
+    --padding-end: 0.5em;
+  }
 }

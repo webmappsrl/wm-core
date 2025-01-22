@@ -114,4 +114,13 @@ export const wmEN = {
   'Dalla libreria': 'From the library',
   'Scatta una foto': 'Take a picture',
   'placeholder': 'Search',
+  'Carica File': 'Upload File',
+  'Trascina qui il tuo file o clicca per selezionare': 'Drag and drop your file or click to select',
+  'Accetta i seguenti formati': 'Accepts the following formats',
+  'Tipo di file non supportato': 'File type not supported',
+  'Il file non contiene una geometria valida': 'The file does not contain a valid geometry',
+  'Errore durante la lettura del file, riprova': 'Error reading file, try again',
+  'Si è verificato un errore durante il salvataggio della traccia. Riprova':
+    'An error occurred while saving the track. Try again',
+  'La traccia è stata salvata correttamente': 'The track has been saved correctly',
 };

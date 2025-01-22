@@ -1,0 +1,75 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{'Carica File'|wmtrans}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ng-container *ngIf="selectedFile$ | async as selectedFile; else noFileSelected">
+    <ion-item lines="none">
+      <ion-icon name="document" slot="start"></ion-icon>
+      <ion-label>
+        <h3>{{'File selezionato'|wmtrans}}:</h3>
+        <p>{{selectedFile.name}}</p>
+      </ion-label>
+      <ion-button (click)="removeFile()" size="small" fill="clear" color="danger" slot="end">
+        <ion-icon name="trash"></ion-icon>
+      </ion-button>
+    </ion-item>
+    <wm-form [confPOIFORMS]="confTRACKFORMS$|async" (formGroupEvt)="fg = $event"></wm-form>
+  </ng-container>
+  <ng-template #noFileSelected>
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-card
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onDrop($event)"
+            [class.ion-activated]="isDragging$|async"
+            (click)="fileInput.click()"
+            class="ion-text-center ion-padding"
+          >
+            <ion-card-content>
+              <ion-icon name="cloud-upload" size="large"></ion-icon>
+              <ion-text>
+                <h2>{{'Trascina qui il tuo file o clicca per selezionare'|wmtrans}}</h2>
+                <p>{{'Accetta i seguenti formati'|wmtrans}}: {{acceptedFileTypes}}</p>
+              </ion-text>
+            </ion-card-content>
+          </ion-card>
+          <input
+            #fileInput
+            type="file"
+            (change)="onFileSelected($event)"
+            [accept]="acceptedFileTypes"
+            [multiple]="false"
+            hidden
+          />
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ng-template>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()" color="medium">{{'Annulla'|wmtrans}}</ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button
+        (click)="upload()"
+        [disabled]="!(selectedFile$|async) || !fg?.valid || !fg?.dirty"
+        color="primary"
+      >
+        {{'Carica'|wmtrans}}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

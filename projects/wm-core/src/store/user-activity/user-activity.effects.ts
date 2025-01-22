@@ -3,6 +3,7 @@ import {
   closeUgc,
   goToHome,
   inputTyped,
+  openUgcUploader,
   resetPoiFilters,
   setLayer,
   toggleTrackFilter,
@@ -32,6 +33,8 @@ import {debounceTime, map, mergeMap, skip, switchMap, tap, withLatestFrom} from 
 import {combineLatest, of} from 'rxjs';
 import {Filter} from '@wm-core/types/config';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
+import {ModalController} from '@ionic/angular';
+import {ModalUgcTrackUploaderComponent} from '@wm-core/modal-ugc-track-uploader/modal-ugc-track-uploader.component';
 
 @Injectable()
 export class UserActivityEffects {
@@ -59,6 +62,19 @@ export class UserActivityEffects {
       ),
       tap(() => this._urlHandlerSvc.resetURL()),
     ),
+  );
+  openUgcUploader$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(openUgcUploader),
+        switchMap(() =>
+          this._modalCtrl.create({
+            component: ModalUgcTrackUploaderComponent,
+          }),
+        ),
+        switchMap(modal => modal.present()),
+      ),
+    {dispatch: false},
   );
   removeTrackFilters$ = createEffect(() =>
     this._actions$.pipe(
@@ -141,5 +157,6 @@ export class UserActivityEffects {
     private _actions$: Actions,
     private _store: Store,
     private _urlHandlerSvc: UrlHandlerService,
+    private _modalCtrl: ModalController,
   ) {}
 }

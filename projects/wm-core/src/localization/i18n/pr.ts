@@ -104,4 +104,15 @@ export const wmPR = {
   'Annulla': 'Cancelar',
   'Dalla libreria': 'Da biblioteca',
   'Scatta una foto': 'Tire uma fotografia',
+  'Carica File': 'Carrega ficheiro',
+  'Trascina qui il tuo file o clicca per selezionare':
+    'Arrastra o seu ficheiro ou clica para selecionar',
+  'Accetta i seguenti formati': 'Aceita os seguintes formatos',
+  'Tipo di file non supportato': 'Tipo de ficheiro não suportado',
+  'Il file non contiene una geometria valida': 'O ficheiro não contém uma geometria válida',
+  'Errore durante la lettura del file, riprova':
+    'Errore durante a leitura do ficheiro, tente novamente',
+  'Si è verificato un errore durante il salvataggio della traccia. Riprova':
+    'Ocorreu um erro ao salvar a trilha. Tente novamente',
+  'La traccia è stata salvata correttamente': 'A trilha foi salva corretamente',
 };

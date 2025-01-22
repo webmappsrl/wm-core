@@ -107,4 +107,14 @@ export const wmFR = {
   'Dalla libreria': 'De la bibliothèque',
   'Scatta una foto': 'Prendre une photo',
   'placeholder': 'Chercher',
+  'Carica File': 'Charger le fichier',
+  'Trascina qui il tuo file o clicca per selezionare':
+    'Déplacez votre fichier ou cliquez pour sélectionner',
+  'Accetta i seguenti formati': 'Accepte les formats suivants',
+  'Tipo di file non supportato': 'Type de fichier non pris en charge',
+  'Il file non contiene una geometria valida': 'Le fichier ne contient pas de géométrie valide',
+  'Errore durante la lettura del file, riprova': 'Erreur lors de la lecture du fichier, réessayez',
+  'Si è verificato un errore durante il salvataggio della traccia. Riprova':
+    'Une erreur est survenue lors de la sauvegarde de la piste. Réessayez',
+  'La traccia è stata salvata correttamente': 'La piste a été sauvegardée correctement',
 };
