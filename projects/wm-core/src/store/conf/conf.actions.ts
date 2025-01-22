@@ -12,3 +12,4 @@ export const updateMapWithUgc = createAction(
   '[conf] Update Map With UGC',
   props<{activableUgc: boolean}>(),
 );
+export const isMobile = createAction('[conf] Is Mobile', props<{isMobile: boolean}>());

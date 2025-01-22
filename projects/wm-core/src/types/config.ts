@@ -81,7 +81,7 @@ export type ITRACKBOX = IBOX & {
 };
 export type IUGCBOX = IBOX & {
   box_type: 'ugc';
-}
+};
 
 export interface Filter {
   identifier: string;
@@ -121,6 +121,7 @@ export interface IAUTH {
   loginToGeohub?: boolean;
   showAtStartup?: boolean;
   skipToDownloadPublicRoute?: boolean;
+  webappEnable?: boolean;
 }
 
 export interface ICLUSTERING {
@@ -146,6 +147,7 @@ export interface ICONF {
   THEME?: ITHEME;
   TRANSLATIONS?: {[lang: string]: {[key: string]: string}};
   WEBAPP?: IWEBAPP;
+  isMobile: boolean;
   loaded: boolean;
 }
 

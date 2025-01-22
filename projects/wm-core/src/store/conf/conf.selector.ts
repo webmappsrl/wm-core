@@ -4,6 +4,7 @@ import {getCSSVariables} from '../../theme/theme';
 import {confFeatureKey} from './conf.reducer';
 import {IHIT} from '../../types/elastic';
 import {ICONF, IHOME, ILAYER, ITHEME} from '../../types/config';
+import {isMobile} from './conf.actions';
 
 const confFeature = createFeatureSelector<ICONF>(confFeatureKey);
 export const MAX_TRACKS = 200;
@@ -17,7 +18,17 @@ export const confTRACKFORMS = createSelector(confAPP, app => app.track_acquisiti
 export const confLANGUAGES = createSelector(confFeature, state => state.LANGUAGES);
 export const confOPTIONS = createSelector(confFeature, state => state.OPTIONS);
 export const confAUTH = createSelector(confFeature, state => state.AUTH);
-export const confAUTHEnable = createSelector(confAUTH, auth => auth?.enable ?? false);
+export const confAUTHMobileEnable = createSelector(confAUTH, auth => auth?.enable ?? false);
+export const confAUTHWebappEnable = createSelector(confAUTH, auth => auth?.webappEnable ?? false);
+export const confIsMobile = createSelector(confFeature, state => state.isMobile);
+export const confAUTHEnable = createSelector(
+  confIsMobile,
+  confAUTHMobileEnable,
+  confAUTHWebappEnable,
+  (isMobile, mobileEnable, webappEnable) => {
+    return isMobile ? mobileEnable : webappEnable;
+  },
+);
 export const confMAP = createSelector(confFeature, state => state.MAP);
 export const confJIDOUPDATETIME = createSelector(confFeature, state => state.JIDO_UPDATE_TIME);
 export const confTRANSLATIONS = createSelector(confFeature, state => state.TRANSLATIONS);

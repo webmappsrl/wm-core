@@ -1,6 +1,6 @@
 import {createReducer, on} from '@ngrx/store';
 import {ICONF, ICONTROLS, ICONTROLSBUTTON, ILAYER} from '@wm-core/types/config';
-import {loadConfSuccess, updateMapWithUgc} from './conf.actions';
+import {isMobile, loadConfSuccess, updateMapWithUgc} from './conf.actions';
 export const confFeatureKey = 'conf';
 export interface IConfRootState {
   [confFeatureKey]: ICONF;
@@ -144,6 +144,7 @@ const initialConfState: ICONF = {
     theme: 'webmapp',
   },
   loaded: false,
+  isMobile: false,
 };
 
 export const confReducer = createReducer(
@@ -220,6 +221,12 @@ export const confReducer = createReducer(
     return {
       ...state,
       MAP: updatedMAP,
+    };
+  }),
+  on(isMobile, (state, {isMobile}) => {
+    return {
+      ...state,
+      isMobile,
     };
   }),
 );
