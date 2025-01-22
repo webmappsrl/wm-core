@@ -6,6 +6,7 @@ import {ENVIRONMENT_CONFIG, EnvironmentConfig} from './conf.token';
 import {hostToGeohubAppId} from '../features/ec/ec.service';
 import {synchronizedApi} from '@wm-core/utils/localForage';
 import {distinctUntilChanged, shareReplay, take} from 'rxjs/operators';
+import {DeviceService} from '@wm-core/services/device.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -36,6 +37,7 @@ export class ConfService {
   constructor(
     @Inject(ENVIRONMENT_CONFIG) public config: EnvironmentConfig,
     private _http: HttpClient,
+    private _deviceSvc: DeviceService,
   ) {
     const hostname: string = window.location.hostname;
     if (hostname.indexOf('localhost') < 0) {
@@ -82,7 +84,7 @@ export class ConfService {
               const lastModified = response.headers.get('last-modified');
 
               if (response.status === 200) {
-                const conf = response.body;
+                const conf = {...response.body, isMobile: this._deviceSvc?.isMobile ?? false};
                 if (conf) {
                   // Aggiorna cache solo se necessario
                   synchronizedApi.setItem(`${url}`, JSON.stringify(conf));

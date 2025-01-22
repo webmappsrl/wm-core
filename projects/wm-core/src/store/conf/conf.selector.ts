@@ -4,15 +4,14 @@ import {getCSSVariables} from '../../theme/theme';
 import {confFeatureKey} from './conf.reducer';
 import {IHIT} from '../../types/elastic';
 import {ICONF, IHOME, ILAYER, ITHEME} from '../../types/config';
-import {isMobile} from './conf.actions';
 
 const confFeature = createFeatureSelector<ICONF>(confFeatureKey);
 export const MAX_TRACKS = 200;
 export const isConfLoaded = createSelector(confFeature, state => !!state && state.loaded);
 
 export const confAPP = createSelector(confFeature, state => state.APP);
-export const confGeohubId = createSelector(confAPP, state => state.geohubId);
 export const confWEBAPP = createSelector(confFeature, state => state.WEBAPP);
+export const confGeohubId = createSelector(confAPP, state => state.geohubId);
 export const confPOIFORMS = createSelector(confAPP, app => app.poi_acquisition_form);
 export const confTRACKFORMS = createSelector(confAPP, app => app.track_acquisition_form);
 export const confLANGUAGES = createSelector(confFeature, state => state.LANGUAGES);
