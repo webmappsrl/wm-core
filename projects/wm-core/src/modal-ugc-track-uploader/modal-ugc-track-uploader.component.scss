@@ -1,0 +1,46 @@
+wm-modal-ugc-track-uploader {
+  ion-content {
+    --padding-top: 0;
+    --padding-bottom: 0;
+  }
+
+  ion-grid {
+    height: 100%;
+    padding: 0;
+  }
+
+  ion-row {
+    height: 100%;
+  }
+
+  ion-col {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  ion-card {
+    flex: 1;
+    margin: 0;
+    height: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.ion-activated {
+      background-color: var(--ion-color-light);
+    }
+  }
+
+  ion-icon[name='cloud-upload'] {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+
+  ion-item {
+    --padding-start: 16px;
+    --padding-end: 16px;
+  }
+}

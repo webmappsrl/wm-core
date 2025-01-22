@@ -1,4 +1,5 @@
 import {ChangeDetectorRef, Directive, EventEmitter, Input, Output} from '@angular/core';
+import {Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
 
 @Directive({selector: 'basebox'})
@@ -10,7 +11,11 @@ export class BaseBoxComponent<T> {
 
   public defaultPhotoPath = '/assets/icon/no-photo.svg';
 
-  constructor(private _langSvc: LangService, private _cdr: ChangeDetectorRef) {
+  constructor(
+    protected _langSvc: LangService,
+    protected _cdr: ChangeDetectorRef,
+    protected _store: Store,
+  ) {
     this._langSvc.onLangChange.subscribe(() => {
       this._cdr.markForCheck();
     });

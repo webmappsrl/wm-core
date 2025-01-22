@@ -87,3 +87,5 @@ export const trackElevationChartHoverElemenents = createAction(
   '[User Activity] track elevation chart hover elements',
   props<{elements: WmSlopeChartHoverElements}>(),
 );
+
+export const openUgcUploader = createAction('[User Activity] open ugc uploader');

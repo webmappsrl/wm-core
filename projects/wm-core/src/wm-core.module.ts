@@ -65,6 +65,7 @@ import {ImageGalleryComponent} from './image-gallery/image-gallery.component';
 import {TrackRelatedPoiComponent} from './track-related-poi/track-related-poi.component';
 import {UgcPoiPropertiesComponent} from './ugc-poi-properties/ugc-poi-properties.component';
 import {WmTrackAlertComponent} from './track-alert/track-alert.component';
+import {ModalUgcTrackUploaderComponent} from './modal-ugc-track-uploader/modal-ugc-track-uploader.component';
 export const declarations = [
   WmAddressComponent,
   WmTabDetailComponent,
@@ -102,6 +103,7 @@ export const declarations = [
   TrackRelatedPoiComponent,
   UgcPoiPropertiesComponent,
   WmTrackAlertComponent,
+  ModalUgcTrackUploaderComponent,
 ];
 const modules = [
   WmSharedModule,

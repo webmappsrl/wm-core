@@ -107,4 +107,15 @@ export const wmDE = {
   'Annulla': 'Stornieren',
   'Dalla libreria': 'Aus der Bibliothek',
   'Scatta una foto': 'Ein Foto machen',
+  'Carica File': 'Datei hochladen',
+  'Trascina qui il tuo file o clicca per selezionare':
+    'Ziehen Sie hier Ihre Datei oder klicken Sie, um zu wählen',
+  'Accetta i seguenti formati': 'Akzeptiert die folgenden Formate',
+  'Tipo di file non supportato': 'Typ des Dateis nicht unterstützt',
+  'Il file non contiene una geometria valida': 'Der Datei enthält keine gültige Geometrie',
+  'Errore durante la lettura del file, riprova':
+    'Fehler beim Lesen des Dateis, versuchen Sie es erneut',
+  'Si è verificato un errore durante il salvataggio della traccia. Riprova':
+    'Es ist ein Fehler beim Speichern der Strecke aufgetreten. Versuchen Sie es erneut',
+  'La traccia è stata salvata correttamente': 'Die Strecke wurde erfolgreich gespeichert',
 };

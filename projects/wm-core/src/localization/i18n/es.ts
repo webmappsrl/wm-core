@@ -104,4 +104,14 @@ export const wmES = {
   'Annulla': 'Cancelar',
   'Dalla libreria': 'De la biblioteca',
   'Scatta una foto': 'Toma una fotografía',
+  'Carica File': 'Carga archivo',
+  'Trascina qui il tuo file o clicca per selezionare':
+    'Arrastra tu archivo o haz clic para seleccionar',
+  'Accetta i seguenti formati': 'Acepta los siguientes formatos',
+  'Tipo di file non supportato': 'Tipo de archivo no soportado',
+  'Il file non contiene una geometria valida': 'El archivo no contiene una geometría válida',
+  'Errore durante la lettura del file, riprova': 'Error al leer el archivo, inténtalo de nuevo',
+  'Si è verificato un errore durante il salvataggio della traccia. Riprova':
+    'Se ha producido un error al guardar la ruta. Inténtalo de nuevo',
+  'La traccia è stata salvata correttamente': 'La ruta se ha guardado correctamente',
 };
