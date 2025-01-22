@@ -192,8 +192,14 @@ export const confReducer = createReducer(
     };
   }),
   on(updateMapWithUgc, (state, {activableUgc}) => {
-    const lastControl = state.MAP.controls.data[state.MAP.controls.data.length - 1];
-    const lastId = (lastControl as ICONTROLSBUTTON).id ?? null;
+    let lastControl = null;
+    try {
+      lastControl = state.MAP.controls.data[state.MAP.controls.data.length - 1] ?? null;
+    } catch (_) {
+      lastControl = null;
+      console.log('error');
+    }
+    const lastId = (lastControl as ICONTROLSBUTTON)?.id ?? null;
     const ugc: ICONTROLSBUTTON = {
       label: {'it': 'I miei percorsi', 'en': 'my paths'},
       type: 'button',
@@ -202,11 +208,15 @@ export const confReducer = createReducer(
       icon: layersSVG,
       id: lastId + 1,
     };
-
+    let updatedControlsData = null;
     // Crea una copia immutabile di MAP.controls.data
-    const updatedControlsData = activableUgc
-      ? [...state.MAP.controls.data, ugc] // Aggiungi il pulsante UGC
-      : state.MAP.controls.data.filter(d => (d as ICONTROLSBUTTON).url !== 'ugc'); // Rimuovi il pulsante UGC
+    try {
+      const updatedControlsData = activableUgc
+        ? [...state.MAP.controls.data, ugc] // Aggiungi il pulsante UGC
+        : state.MAP.controls.data.filter(d => (d as ICONTROLSBUTTON).url !== 'ugc'); // Rimuovi il pulsante UGC
+    } catch (_) {
+      updatedControlsData = null;
+    }
 
     // Crea una copia immutabile di MAP
     const updatedMAP = {
