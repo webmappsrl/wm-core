@@ -349,6 +349,12 @@ export class WmGeoboxMapComponent implements OnDestroy {
     this.setCurrentPoiSub$.unsubscribe();
   }
 
+  navigation(): void {
+    this._geolocationSvc.start();
+    const isFocused = !this.wmMapPositionfocus$.value;
+    this.wmMapPositionfocus$.next(isFocused);
+  }
+
   next(): void {
     this.WmMapTrackRelatedPoisDirective.poiNext();
   }
