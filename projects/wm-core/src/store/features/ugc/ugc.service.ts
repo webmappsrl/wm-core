@@ -384,7 +384,6 @@ export class UgcService {
       } else {
         this.loadUgcTracks().pipe(take(1)).subscribe();
       }
-      this._store.dispatch(syncUgcSuccess({responseType: 'All'}));
     });
   }
 
