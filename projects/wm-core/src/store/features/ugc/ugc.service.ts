@@ -382,7 +382,11 @@ export class UgcService {
         this.syncUgcPois();
         this.syncUgcTracks();
       } else {
-        this.loadUgcTracks().pipe(take(1)).subscribe();
+        from(getUgcTracks())
+          .pipe(take(1))
+          .subscribe(ugcTrackFeatures => {
+            this._store.dispatch(updateUgcTracks({ugcTrackFeatures}));
+          });
       }
     });
   }
