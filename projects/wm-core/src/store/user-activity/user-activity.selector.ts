@@ -1,6 +1,7 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {currentCustomTrack} from '../features/ugc/ugc.selector';
 import {UserActivityState} from './user-activity.reducer';
+import {confFlowLineQuote} from '../conf/conf.selector';
 
 export const userActivity = createFeatureSelector<UserActivityState>('user-activity');
 
@@ -109,4 +110,25 @@ export const showResult = createSelector(
       ugcOpened
     );
   },
+);
+
+export const flowLineQuoteText = createSelector(
+  chartHoverElements,
+  confFlowLineQuote,
+  (elements, flowLine) => {
+    if (!elements?.location?.altitude || !flowLine) return null;
+
+    const {altitude} = elements.location;
+    const {flow_line_quote_orange, flow_line_quote_red} = flowLine;
+
+    const green = `<span class="green">Livello 1: tratti non interessati dall'alta quota (quota minore di ${flow_line_quote_orange} metri)</span>`;
+    const orange = `<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra ${flow_line_quote_orange} metri e ${flow_line_quote_red} metri)</span>`;
+    const red = `<span class="red">Livello 3: in alta quota (quota superiore ${flow_line_quote_red} metri)</span>`;
+
+    return altitude < flow_line_quote_orange
+      ? green
+      : altitude > flow_line_quote_orange && altitude < flow_line_quote_red
+      ? orange
+      : red;
+  }
 );

@@ -18,13 +18,16 @@
     *ngIf="ecTrackProperties?.not_accessible != null && ecTrackProperties?.not_accessible === true"
     [alert]="ecTrackProperties?.not_accessible_message"
   ></wm-track-alert>
+  <wm-track-edges [properties]="ecTrackProperties" [conf]="currentLayer$|async"></wm-track-edges>
+  <ion-label *ngIf="flowLineQuoteText$|async as flowLineQuoteText">
+    <div [innerHTML]="flowLineQuoteText"></div>
+  </ion-label>
   <wm-slope-chart
     (hover)="onLocationHover($event)"
     [currentTrack]="ecTrack$|async"
     id="webmapp-track-details-elevation-chart"
   >
   </wm-slope-chart>
-  <wm-track-edges [properties]="ecTrackProperties" [conf]="currentLayer$|async"></wm-track-edges>
   <wm-tab-detail class="webmapp-route-tab" [properties]="ecTrackProperties"></wm-tab-detail>
   <wm-tab-howto
     *ngIf="ecTrackProperties?.taxonomy?.activity"
