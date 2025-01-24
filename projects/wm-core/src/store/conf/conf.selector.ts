@@ -29,6 +29,14 @@ export const confAUTHEnable = createSelector(
   },
 );
 export const confMAP = createSelector(confFeature, state => state.MAP);
+export const confFlowLineQuote = createSelector(confMAP, state =>
+  state.flow_line_quote_show
+    ? {
+        flow_line_quote_orange: state.flow_line_quote_orange,
+        flow_line_quote_red: state.flow_line_quote_red,
+      }
+    : null,
+);
 export const confJIDOUPDATETIME = createSelector(confFeature, state => state.JIDO_UPDATE_TIME);
 export const confTRANSLATIONS = createSelector(confFeature, state => state.TRANSLATIONS);
 export const confRecordTrackShow = createSelector(confMAP, state => state.record_track_show);
