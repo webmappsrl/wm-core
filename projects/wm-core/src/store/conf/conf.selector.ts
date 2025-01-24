@@ -29,6 +29,7 @@ export const confAUTHEnable = createSelector(
   },
 );
 export const confMAP = createSelector(confFeature, state => state.MAP);
+export const flowLineQuoteShow = createSelector(confMAP, state => state.flow_line_quote_show);
 export const confFlowLineQuote = createSelector(confMAP, state =>
   state.flow_line_quote_show
     ? {

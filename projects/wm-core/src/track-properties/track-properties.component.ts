@@ -1,10 +1,14 @@
 import {Component, ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
-import {confFlowLineQuote, confOPTIONS} from '@wm-core/store/conf/conf.selector';
+import {confFlowLineQuote, confOPTIONS, flowLineQuoteShow} from '@wm-core/store/conf/conf.selector';
 import {currentEcTrack, currentEcTrackProperties} from '@wm-core/store/features/ec/ec.selector';
 import {trackElevationChartHoverElemenents} from '@wm-core/store/user-activity/user-activity.action';
-import {chartHoverElements, ecLayer, flowLineQuoteText} from '@wm-core/store/user-activity/user-activity.selector';
+import {
+  chartHoverElements,
+  ecLayer,
+  flowLineQuoteText,
+} from '@wm-core/store/user-activity/user-activity.selector';
 import {IOPTIONS} from '@wm-core/types/config';
 import {LineStringProperties, WmFeature} from '@wm-types/feature';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
@@ -26,6 +30,7 @@ export class TrackPropertiesComponent {
   ecTrack$: Observable<WmFeature<LineString>> = this._store.select(currentEcTrack);
   ecTrackProperties$: Observable<LineStringProperties> =
     this._store.select(currentEcTrackProperties);
+  flowLineQuoteShow$: Observable<boolean> = this._store.select(flowLineQuoteShow);
   flowLineQuoteText$: Observable<string | null> = this._store.select(flowLineQuoteText);
 
   constructor(private _store: Store, private _urlHandlerSvc: UrlHandlerService) {}

@@ -19,9 +19,13 @@
     [alert]="ecTrackProperties?.not_accessible_message"
   ></wm-track-alert>
   <wm-track-edges [properties]="ecTrackProperties" [conf]="currentLayer$|async"></wm-track-edges>
-  <ion-label *ngIf="flowLineQuoteText$|async as flowLineQuoteText">
-    <div [innerHTML]="flowLineQuoteText"></div>
-  </ion-label>
+
+  <div *ngIf="flowLineQuoteShow$|async" class="wm-flowline">
+    <ion-label
+      *ngIf="flowLineQuoteText$|async as flowLineQuoteText"
+      [innerHTML]="flowLineQuoteText"
+    ></ion-label>
+  </div>
   <wm-slope-chart
     (hover)="onLocationHover($event)"
     [currentTrack]="ecTrack$|async"

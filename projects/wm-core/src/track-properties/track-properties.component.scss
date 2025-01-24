@@ -32,6 +32,18 @@ wm-track-properties {
       align-self: center;
     }
   }
+  .wm-flowline {
+    height: 40px;
+    .red {
+      color: red;
+    }
+    .orange {
+      color: orange;
+    }
+    .green {
+      color: green;
+    }
+  }
   .webmapp-pagepoi-info-body {
     --padding-bottom: 30px;
     .webmapp-pagepoi-info-reference {
