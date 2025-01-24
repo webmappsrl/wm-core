@@ -106,6 +106,7 @@ import {currentUgcPoiId} from '@wm-core/store/features/ugc/ugc.selector';
 import {EnvironmentConfig, ENVIRONMENT_CONFIG} from '@wm-core/store/conf/conf.token';
 import {DeviceService} from '@wm-core/services/device.service';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
+import {GeolocationService} from '@wm-core/services/geolocation.service';
 
 const initPadding = [10, 10, 10, 10];
 const initMenuOpened = true;
@@ -148,6 +149,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   apiSearchInputTyped$: Observable<string> = this._store.select(inputTyped);
   authEnable$: Observable<boolean> = this._store.select(confAUTHEnable);
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
+  centerPositionEvt$: BehaviorSubject<boolean> = new BehaviorSubject<boolean | null>(null);
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
   confJIDOUPDATETIME$: Observable<any> = this._store.select(confJIDOUPDATETIME);
   confMap$: Observable<any> = this._store.select(confMAP);
@@ -159,6 +161,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   currentPoi$ = this._store.select(poi);
   currentPoiNextID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiPrevID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
+  currentPosition$: Observable<any>;
   currentRelatedPoi$ = this._store.select(currentEcRelatedPoi);
   currentRelatedPoiID$ = this._store.select(currentEcRelatedPoiId);
   currentUgcPoiIDToMap$: Observable<number | null>;
@@ -242,6 +245,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
     null,
   );
   wmMapHitMapUrl$: Observable<string | null> = this.confMap$.pipe(map(conf => conf?.hitMapUrl));
+  wmMapPositionfocus$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   wmMapUgcDisableLayers$: Observable<boolean>;
 
   constructor(
@@ -253,8 +257,10 @@ export class WmGeoboxMapComponent implements OnDestroy {
     private _actions$: Actions,
     private _urlHandlerSvc: UrlHandlerService,
     private _deviceSvc: DeviceService,
+    private _geolocationSvc: GeolocationService,
     @Inject(ENVIRONMENT_CONFIG) public environment: EnvironmentConfig,
   ) {
+    this.currentPosition$ = this._geolocationSvc.onLocationChange;
     this.currentMapPaddings$ = combineLatest([
       this.showMenu$,
       this.mapPadding$,

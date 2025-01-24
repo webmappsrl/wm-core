@@ -13,6 +13,10 @@
     (wmMapFeatureCollectionLayerSelected)="selectedLayerById($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
     (wmMapFeatureCollectionPopup)="openPopup($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
     (wmMapEmptyClickEVT$)="openPopup(null)"
+    wmMapPosition
+    [wmMapPositioncurrentLocation]="currentPosition$|async"
+    [wmMapPositionCenter]="centerPositionEvt$|async"
+    [wmMapPositionfocus]="wmMapPositionfocus$|async"
     wmMapCustomTracks
     [wmMapCustomTrackDrawTrack]="drawTrackOpened$|async"
     [wmMapCustomTrackDrawTrackHost]="graphhopperHost$|async"
