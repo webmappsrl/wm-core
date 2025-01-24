@@ -21,10 +21,8 @@ import {
   confMAPLAYERS,
   confOPTIONS,
 } from '@wm-core/store/conf/conf.selector';
-import {loadEcPois} from '@wm-core/store/features/ec/ec.actions';
 import {
   allEcpoiFeatures,
-  countSelectedFilters,
   currentEcRelatedPoi,
   currentEcTrack,
   currentEcRelatedPoiId,

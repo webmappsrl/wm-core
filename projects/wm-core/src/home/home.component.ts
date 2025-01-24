@@ -177,8 +177,8 @@ export class WmHomeComponent implements AfterContentInit {
   setTrack(id: string | number): void {
     this.ugcOpened$.pipe(take(1)).subscribe(ugcOpened => {
       const queryParams = ugcOpened
-        ? {ugc_track: id ? +id : undefined}
-        : {track: id ? +id : undefined};
+        ? {ugc_track: id ? id : undefined}
+        : {track: id ? id : undefined};
       this._urlHandlerSvc.updateURL(queryParams, ['map']);
     });
   }

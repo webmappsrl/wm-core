@@ -1,4 +1,5 @@
-<wm-ugc-box *ngIf="(isLogged$|async)" (clickEVT)="ugcBoxEvt.emit()"> </wm-ugc-box>
+<wm-ugc-box *ngIf="(isLogged$|async)||(countAllUgc$|async)>0" (clickEVT)="ugcBoxEvt.emit()">
+</wm-ugc-box>
 <ng-container *ngFor="let box of confHOME$|async;let idx = index">
   <webmapp-title *ngIf="box.box_type === 'title'">
     {{box.title|wmtrans}}

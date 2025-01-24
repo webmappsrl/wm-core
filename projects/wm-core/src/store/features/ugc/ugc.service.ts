@@ -1,7 +1,8 @@
+import {isLogged} from './../../auth/auth.selectors';
 import {HttpClient} from '@angular/common/http';
 import {Inject, Injectable} from '@angular/core';
-import {catchError, take, tap} from 'rxjs/operators';
-import {Observable, of} from 'rxjs';
+import {catchError, filter, map, take, tap} from 'rxjs/operators';
+import {from, Observable, of} from 'rxjs';
 import {APP_ID, ENVIRONMENT_CONFIG, EnvironmentConfig} from '@wm-core/store/conf/conf.token';
 import {LineString, Point} from 'geojson';
 import {
@@ -21,6 +22,8 @@ import {
   saveUgcTrack,
   getImg,
   removeDeviceUgcPoi,
+  getUgcTracks,
+  getUgcPois,
 } from '@wm-core/utils/localForage';
 import {
   Media,
@@ -29,15 +32,20 @@ import {
   WmFeature,
   WmFeatureCollection,
 } from '@wm-types/feature';
+import {Store} from '@ngrx/store';
+import {syncUgc, syncUgcSuccess, updateUgcPois, updateUgcTracks} from './ugc.actions';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UgcService {
+  isLogged$ = this._store.select(isLogged);
+
   constructor(
     @Inject(ENVIRONMENT_CONFIG) public environment: EnvironmentConfig,
     @Inject(APP_ID) public appId: string,
     private _http: HttpClient,
+    private _store: Store,
   ) {}
 
   deleteApiMedia(id: number): Observable<any> {
@@ -81,6 +89,9 @@ export class UgcService {
         tap(() => this.syncUgc()),
       );
     }
+    if (track.properties.uuid) {
+      return of(removeDeviceUgcTrack(track.properties.uuid));
+    }
     return of({error: 'Track id not found'});
   }
 
@@ -112,7 +123,9 @@ export class UgcService {
       const cloudUgcPois = await getSynchronizedUgcPois();
 
       for (let apiUgcPoi of apiUgcPois.features) {
-        const cloudPoi = cloudUgcPois.find(poi => poi.properties.uuid === apiUgcPoi.properties.uuid);
+        const cloudPoi = cloudUgcPois.find(
+          poi => poi.properties.uuid === apiUgcPoi.properties.uuid,
+        );
         if (!cloudPoi || this._isFeatureModified(apiUgcPoi, cloudPoi)) {
           await saveUgcPoi(apiUgcPoi);
           // console.log(`fetchUgcPois sync: ${apiUgcPoi.properties.id}`);
@@ -192,6 +205,14 @@ export class UgcService {
           observer.complete();
         });
     });
+  }
+
+  loadUgcPois() {
+    return from(getUgcPois()).pipe(map(ugcPoiFeatures => updateUgcPois({ugcPoiFeatures})));
+  }
+
+  loadUgcTracks() {
+    return from(getUgcTracks()).pipe(map(ugcTrackFeatures => updateUgcTracks({ugcTrackFeatures})));
   }
 
   async pushUgcMedias(): Promise<void> {
@@ -355,36 +376,64 @@ export class UgcService {
   }
 
   async syncUgc(): Promise<void> {
-    this.syncUgcMedias();
-    this.syncUgcPois();
-    this.syncUgcTracks();
+    this.isLogged$.pipe(take(1)).subscribe(isLogged => {
+      if (isLogged) {
+        this.syncUgcMedias();
+        this.syncUgcPois();
+        this.syncUgcTracks();
+      } else {
+        this.loadUgcTracks().pipe(take(1)).subscribe();
+      }
+      this._store.dispatch(syncUgcSuccess({responseType: 'All'}));
+    });
   }
 
   async syncUgcMedias(): Promise<void> {
-    try {
-      await this.pushUgcMedias();
-      await this.fetchUgcMedias();
-    } catch (error) {
-      console.error('syncUgcMedias: Errore durante la sincronizzazione:', error);
-    }
+    this.isLogged$
+      .pipe(
+        take(1),
+        filter(isLogged => isLogged),
+      )
+      .subscribe(async _ => {
+        try {
+          await this.pushUgcMedias();
+          await this.fetchUgcMedias();
+        } catch (error) {
+          console.error('syncUgcMedias: Errore durante la sincronizzazione:', error);
+        }
+      });
   }
 
   async syncUgcPois(): Promise<void> {
-    try {
-      await this.pushUgcPois();
-      await this.fetchUgcPois();
-    } catch (error) {
-      console.error('syncUgcPois: Errore durante la sincronizzazione:', error);
-    }
+    this.isLogged$
+      .pipe(
+        take(1),
+        filter(isLogged => isLogged),
+      )
+      .subscribe(async _ => {
+        try {
+          await this.pushUgcPois();
+          await this.fetchUgcPois();
+        } catch (error) {
+          console.error('syncUgcPois: Errore durante la sincronizzazione:', error);
+        }
+      });
   }
 
   async syncUgcTracks(): Promise<void> {
-    try {
-      await this.pushUgcTracks();
-      await this.fetchUgcTracks();
-    } catch (error) {
-      console.error('syncUgcTracks: Errore durante la sincronizzazione:', error);
-    }
+    this.isLogged$
+      .pipe(
+        take(1),
+        filter(isLogged => isLogged),
+      )
+      .subscribe(async _ => {
+        try {
+          await this.pushUgcTracks();
+          await this.fetchUgcTracks();
+        } catch (error) {
+          console.error('syncUgcTracks: Errore durante la sincronizzazione:', error);
+        }
+      });
   }
 
   updateApiPoi(poi: WmFeature<Point>): Observable<any> {

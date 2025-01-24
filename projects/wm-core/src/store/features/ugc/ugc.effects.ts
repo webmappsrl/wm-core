@@ -48,6 +48,7 @@ import {
   getUgcPois,
   getUgcTrack,
   getUgcTracks,
+  removeDeviceUgcTrack,
   removeUgcPoi,
   removeUgcTrack,
   saveUgcPoi,
@@ -56,6 +57,7 @@ import {
 import {AlertController} from '@ionic/angular';
 import {LangService} from '@wm-core/localization/lang.service';
 import {closeUgc, openUgc} from '@wm-core/store/user-activity/user-activity.action';
+import {track} from '../features.selector';
 const SYNC_INTERVAL = 60000;
 @Injectable({
   providedIn: 'root',
@@ -141,9 +143,9 @@ export class UgcEffects {
       mergeMap(action =>
         of(disableSyncInterval()).pipe(
           mergeMap(() => {
-            const trackId = action.track?.properties?.id;
-            if (trackId) {
-              return from(this._ugcSvc.deleteApiTrack(trackId)).pipe(
+            const track = action.track;
+            if (track) {
+              return from(this._ugcSvc.deleteTrack(track)).pipe(
                 mergeMap(() => [
                   deleteUgcTrackSuccess({track: action.track}),
                   syncUgcTracks(),
@@ -152,7 +154,7 @@ export class UgcEffects {
                 catchError(error => of(deleteUgcTrackFailure({error}), enableSyncInterval())),
               );
             }
-            return of(deleteUgcTrackFailure({error: 'Track ID not found'}));
+            return of(deleteUgcTrackFailure({error: 'Track not found'}));
           }),
         ),
       ),
@@ -161,29 +163,21 @@ export class UgcEffects {
   loadUgcPois$ = createEffect(() =>
     this._actions$.pipe(
       ofType(syncUgcSuccess),
-      mergeMap(() =>
-        from(getUgcPois()).pipe(
-          map(ugcPoiFeatures => updateUgcPois({ugcPoiFeatures})), // Dispatch dell'azione con i dati caricati
-          catchError(error => {
-            console.error('Error loading UGC pois:', error);
-            return of(syncUgcFailure({responseType: 'Pois', error})); // Dispatch a failure action in case of error
-          }),
-        ),
-      ),
+      mergeMap(() => this._ugcSvc.loadUgcPois()),
+      catchError(error => {
+        console.error('Error loading UGC pois:', error);
+        return of(syncUgcFailure({responseType: 'Pois', error})); // Dispatch a failure action in case of error
+      }),
     ),
   );
   loadUgcTracks$ = createEffect(() =>
     this._actions$.pipe(
       ofType(syncUgcSuccess),
-      mergeMap(() =>
-        from(getUgcTracks()).pipe(
-          map(ugcTrackFeatures => updateUgcTracks({ugcTrackFeatures})), // Dispatch dell'azione con i dati caricati
-          catchError(error => {
-            console.error('Error loading UGC tracks:', error);
-            return of(syncUgcFailure({responseType: 'Tracks', error})); // Dispatch a failure action in case of error
-          }),
-        ),
-      ),
+      mergeMap(() => this._ugcSvc.loadUgcTracks()),
+      catchError(error => {
+        console.error('Error loading UGC tracks:', error);
+        return of(syncUgcFailure({responseType: 'Tracks', error})); // Dispatch a failure action in case of error
+      }),
     ),
   );
   syncOnInterval$ = createEffect(() =>
@@ -232,13 +226,7 @@ export class UgcEffects {
     this._actions$.pipe(
       ofType(syncUgc),
       mergeMap(() =>
-        from(
-          Promise.all([
-            this._ugcSvc.syncUgcTracks(),
-            this._ugcSvc.syncUgcPois(),
-            this._ugcSvc.syncUgcMedias(),
-          ]),
-        ).pipe(
+        from(this._ugcSvc.syncUgc()).pipe(
           map(() => syncUgcSuccess({responseType: 'All'})),
           catchError(error => of(syncUgcFailure({responseType: 'All', error}))),
         ),
