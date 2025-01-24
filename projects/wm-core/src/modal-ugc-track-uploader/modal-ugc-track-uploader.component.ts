@@ -14,7 +14,6 @@ import {WmFeature, WmProperties} from '@wm-types/feature';
 import {LineString} from 'geojson';
 import {BehaviorSubject, EMPTY, from, Observable} from 'rxjs';
 import * as toGeoJSON from '@tmcw/togeojson';
-import {DOMParser} from 'xmldom';
 import {catchError, map, switchMap, take} from 'rxjs/operators';
 import {DeviceService} from '@wm-core/services/device.service';
 import {LangService} from '@wm-core/localization/lang.service';
