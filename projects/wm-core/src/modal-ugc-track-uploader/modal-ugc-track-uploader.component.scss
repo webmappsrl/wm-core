@@ -2,6 +2,10 @@ wm-modal-ugc-track-uploader {
   ion-content {
     --padding-top: 0;
     --padding-bottom: 0;
+    wm-map {
+      height: 350px;
+      width: 100%;
+    }
   }
 
   ion-grid {

@@ -21,7 +21,18 @@
         <ion-icon name="trash"></ion-icon>
       </ion-button>
     </ion-item>
-    <wm-form [confPOIFORMS]="confTRACKFORMS$|async" (formGroupEvt)="fg = $event"></wm-form>
+    <ng-container *ngIf="(ugcTrack$|async) as ugcTrack">
+      <wm-map
+        [wmMapConf]="confMap$|async"
+        [wmMapOnly]="true"
+        [wmMapGeojson]="ugcTrack$|async"
+      ></wm-map>
+      <wm-form
+        [confPOIFORMS]="confTRACKFORMS$|async"
+        [init]="ugcTrack.properties?.form"
+        (formGroupEvt)="fg = $event"
+      ></wm-form>
+    </ng-container>
   </ng-container>
   <ng-template #noFileSelected>
     <ion-grid>
