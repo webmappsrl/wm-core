@@ -64,8 +64,8 @@ wm-ugc-poi-properties {
       align-content: flex-start;
       align-items: flex-start;
     }
-    .wm-ugc-poi-button {
-      box-sizing: content-box;
+    ion-grid {
+      width: 100%;
     }
   }
 }

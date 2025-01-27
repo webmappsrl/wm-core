@@ -48,29 +48,45 @@
       </ng-container>
     </ng-template>
     <ng-container *ngIf="!(isEditing$|async); else editingButtons">
-      <ion-button
-        class="wm-ugc-track-button"
-        (click)="this.isEditing$.next(true)"
-        >{{'edit'|wmtrans}}</ion-button
-      >
-      <ion-button
-        class="wm-ugc-track-button"
-        color="danger"
-        (click)="deleteTrack()"
-        >{{'delete'|wmtrans}}</ion-button
-      >
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-button
+              expand="block"
+              (click)="this.isEditing$.next(true)"
+              >{{'edit'|wmtrans}}</ion-button
+            >
+          </ion-col>
+          <ion-col>
+            <ion-button
+              expand="block"
+              color="danger"
+              (click)="deleteTrack()"
+              >{{'delete'|wmtrans}}</ion-button
+            >
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </ng-container>
     <ng-template #editingButtons>
-      <ion-button
-        class="wm-ugc-track-button"
-        (click)="updateTrack()"
-        >{{'save'|wmtrans}}</ion-button
-      >
-      <ion-button
-        class="wm-ugc-track-button"
-        (click)="this.isEditing$.next(false)"
-        >{{'cancel'|wmtrans}}</ion-button
-      >
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-button
+              expand="block"
+              (click)="updateTrack()"
+              >{{'save'|wmtrans}}</ion-button
+            >
+          </ion-col>
+          <ion-col>
+            <ion-button
+              expand="block"
+              (click)="this.isEditing$.next(false)"
+              >{{'cancel'|wmtrans}}</ion-button
+            >
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </ng-template>
   </div>
 </ng-container>
