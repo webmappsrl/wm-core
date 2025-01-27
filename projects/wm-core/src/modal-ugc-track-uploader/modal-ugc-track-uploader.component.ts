@@ -9,7 +9,7 @@ import {
 import {UntypedFormGroup} from '@angular/forms';
 import {AlertController, ModalController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
-import {confGeohubId, confTRACKFORMS} from '@wm-core/store/conf/conf.selector';
+import {confGeohubId, confMAP, confTRACKFORMS} from '@wm-core/store/conf/conf.selector';
 import {WmFeature, WmProperties} from '@wm-types/feature';
 import {LineString} from 'geojson';
 import {BehaviorSubject, EMPTY, from, Observable} from 'rxjs';
@@ -29,16 +29,16 @@ import {syncUgcTracks} from '@wm-core/store/features/ugc/ugc.actions';
   encapsulation: ViewEncapsulation.None,
 })
 export class ModalUgcTrackUploaderComponent {
-  private _ugcTrack: WmFeature<LineString> | null = null;
-
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   acceptedFileTypes: string = '.gpx,.kml,.geojson';
+  confMap$: Observable<any> = this._store.select(confMAP);
   confTRACKFORMS$: Observable<any[]> = this._store.select(confTRACKFORMS);
   fg: UntypedFormGroup;
   geohubId$: Observable<number> = this._store.select(confGeohubId);
   isDragging$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   selectedFile$: BehaviorSubject<File | null> = new BehaviorSubject<File | null>(null);
+  ugcTrack$: BehaviorSubject<WmFeature<LineString> | null> = new BehaviorSubject<WmFeature<LineString> | null>(null) ;
 
   constructor(
     private _store: Store,
@@ -84,7 +84,7 @@ export class ModalUgcTrackUploaderComponent {
 
   removeFile(): void {
     this.selectedFile$.next(null);
-    this._ugcTrack = null;
+    this.ugcTrack$.next(null);
   }
 
   upload(): void {
@@ -105,11 +105,14 @@ export class ModalUgcTrackUploaderComponent {
                   updatedAt: dateNow,
                   device,
                 };
-                this._ugcTrack.properties = {
-                  ...this._ugcTrack.properties,
-                  ...properties,
-                };
-                return this._ugcTrack;
+                this.ugcTrack$.next({
+                  ...this.ugcTrack$.value,
+                  properties: {
+                    ...this.ugcTrack$.value?.properties,
+                    ...properties,
+                  },
+                });
+                return this.ugcTrack$.value;
               }),
             ),
           ),
@@ -157,7 +160,7 @@ export class ModalUgcTrackUploaderComponent {
         map(fileContent => {
           const result = this._validateAndConvertToWmFeature(fileContent, file.name);
           if (result) {
-            this._ugcTrack = result;
+            this.ugcTrack$.next(result);
             this.selectedFile$.next(file);
           } else {
             this.selectedFile$.next(null);
