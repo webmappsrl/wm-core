@@ -5,7 +5,7 @@
     [src]="defaultPhotoPath"
     size="225x100"
   ></wm-img>
-  <ion-button color="light" (click)="openUgcUploader()">
+  <ion-button *ngIf="(ugcOpen$|async)" color="light" (click)="openUgcUploader()">
     <ion-icon slot="icon-only" name="cloud-upload-outline"></ion-icon>
   </ion-button>
   <div class="wm-box-title">{{"I miei percorsi" | wmtrans}}</div>
