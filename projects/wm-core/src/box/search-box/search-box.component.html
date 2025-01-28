@@ -28,6 +28,12 @@
       <ion-skeleton-text class="wm-card-big-title-skeleton" animated></ion-skeleton-text>
     </ng-template>
   </ion-card-header>
+  <ng-container *ngIf="(ugcOpened$|async)">
+    <wm-ugc-synchronized
+      *ngIf="data?.properties as properties"
+      [properties]="properties"
+    ></wm-ugc-synchronized>
+  </ng-container>
 </ion-card>
 
 <ng-template #taxonomies>

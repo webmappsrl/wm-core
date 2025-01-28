@@ -131,5 +131,10 @@ wm-search-box {
         font-size: var(--wm-font-sm) !important;
       }
     }
+    wm-ugc-synchronized {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+    }
   }
 }

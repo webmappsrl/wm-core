@@ -1,6 +1,8 @@
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 import {BaseBoxComponent} from '../box';
-import { IHIT } from '../../types/elastic';
+import {IHIT} from '../../types/elastic';
+import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'wm-search-box',
@@ -9,4 +11,6 @@ import { IHIT } from '../../types/elastic';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class SearchBoxComponent extends BaseBoxComponent<IHIT> {}
+export class SearchBoxComponent extends BaseBoxComponent<IHIT> {
+  ugcOpened$: Observable<boolean> = this._store.select(ugcOpened);
+}
