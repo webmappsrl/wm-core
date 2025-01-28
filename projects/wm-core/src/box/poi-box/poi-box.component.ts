@@ -3,7 +3,6 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
 import {BaseBoxComponent} from '../box';
 import {WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
-import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
 
 @Component({
   selector: 'wm-poi-box',
@@ -12,6 +11,4 @@ import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class PoiBoxComponent extends BaseBoxComponent<WmFeature<Point>> {
-  ugcOpened$ = this._store.select(ugcOpened);
-}
+export class PoiBoxComponent extends BaseBoxComponent<WmFeature<Point>> {}

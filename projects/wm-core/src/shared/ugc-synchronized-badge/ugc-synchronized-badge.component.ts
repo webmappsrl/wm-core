@@ -1,9 +1,9 @@
 import {Component, Input, ViewEncapsulation} from '@angular/core';
 import {ChangeDetectionStrategy} from '@angular/core';
-import {LineStringProperties, PointProperties, WmProperties} from '@wm-types/feature';
+import {WmProperties} from '@wm-types/feature';
 
 @Component({
-  selector: 'wm-ugc-synchronized',
+  selector: 'wm-ugc-synchronized-badge',
   template: `
     <ng-container *ngIf="properties?.id; else onlyUuid">
       <ion-icon name="cloud-done-outline" color="primary"></ion-icon>
@@ -14,7 +14,7 @@ import {LineStringProperties, PointProperties, WmProperties} from '@wm-types/fea
   `,
   styles: [
     `
-      wm-ugc-synchronized {
+      wm-ugc-synchronized-badge {
         ion-icon {
           width: 22px;
           height: 22px;
@@ -25,6 +25,6 @@ import {LineStringProperties, PointProperties, WmProperties} from '@wm-types/fea
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class UgcSynchronizedComponent {
+export class UgcSynchronizedBadgeComponent {
   @Input() properties: { [name: string]: any; } | WmProperties;
 }

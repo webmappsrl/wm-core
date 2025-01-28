@@ -3,9 +3,9 @@ import {NgModule} from '@angular/core';
 
 import {IonicModule} from '@ionic/angular';
 import {WmImgComponent} from './img/img.component';
-import {UgcSynchronizedComponent} from './ugc-synchronized/ugc-synchronized.component';
+import {UgcSynchronizedBadgeComponent} from './ugc-synchronized-badge/ugc-synchronized-badge.component';
 
-const declarations = [WmImgComponent, UgcSynchronizedComponent];
+const declarations = [WmImgComponent, UgcSynchronizedBadgeComponent];
 
 @NgModule({
   declarations,
