@@ -2,6 +2,7 @@ import {WmFeature, Media, MediaProperties} from '@wm-types/feature';
 import {GeoJsonProperties, LineString, Point} from 'geojson';
 import * as localforage from 'localforage';
 import {downloadTiles, getTilesByGeometry, removeTiles} from '../../../../../map-core/src/utils';
+import {IUser} from '@wm-core/store/auth/auth.model';
 
 export async function clearUgcData(): Promise<void> {
   await Promise.all([
@@ -94,6 +95,10 @@ export function generateUUID(): string {
     const v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
+}
+
+export function getAuth(): Promise<IUser | null> {
+  return deviceAuth.getItem<IUser>('user');
 }
 
 export async function getDeviceUgcMedia(
@@ -301,6 +306,10 @@ export function isValidUrl(url: string): boolean {
   }
 }
 
+export function removeAuth(): void {
+  deviceAuth.removeItem('user');
+}
+
 export async function removeDeviceUgcMedia(uuid: string): Promise<void> {
   await handleAsync(
     deviceUgcMedia.removeItem(uuid),
@@ -390,6 +399,10 @@ export async function removeUgcTrack(track: WmFeature<LineString>): Promise<void
   const featureId = properties.id ?? properties.rawData?.uuid;
   const storage = properties.id ? synchronizedUgcTrack : deviceUgcTrack;
   await handleAsync(storage.removeItem(`${featureId}`), 'removeUgcTrack: Failed');
+}
+
+export function saveAuth(user: IUser): void {
+  deviceAuth.setItem('user', user);
 }
 
 export function saveDeviceUgcTrack(feature: WmFeature<LineString>): void {
@@ -542,4 +555,8 @@ export const deviceUgcMedia = localforage.createInstance({
 export const deviceImg = localforage.createInstance({
   name: 'device',
   storeName: 'img',
+});
+export const deviceAuth = localforage.createInstance({
+  name: 'device',
+  storeName: 'auth',
 });
