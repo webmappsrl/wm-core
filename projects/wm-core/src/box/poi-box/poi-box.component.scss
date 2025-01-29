@@ -121,5 +121,13 @@ wm-poi-box {
       height: var(--wm-font-sm);
       margin: 10px;
     }
+    wm-updated-at {
+      margin-top: 10px;
+    }
+    .top-right-content {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+    }
   }
 }

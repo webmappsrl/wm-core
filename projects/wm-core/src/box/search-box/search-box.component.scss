@@ -131,5 +131,10 @@ wm-search-box {
         font-size: var(--wm-font-sm) !important;
       }
     }
+    .top-right-content {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+    }
   }
 }

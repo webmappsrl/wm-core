@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 
 import {BaseBoxComponent} from '../box';
-import {IHIT} from '../../types/elastic';
 import {WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
 

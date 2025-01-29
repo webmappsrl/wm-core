@@ -66,6 +66,9 @@
             [data]="card"
             (clickEVT)="trackEVT.emit(card.id)"
           >
+            <ng-container top-right *ngIf="ugcOpened$|async">
+              <wm-ugc-synchronized-badge [properties]="card?.properties"></wm-ugc-synchronized-badge>
+            </ng-container>
           </wm-search-box>
         </ng-container>
       </ng-container>
@@ -76,6 +79,9 @@
         [data]="c"
         (clickEVT)="setPoi(c)"
       >
+        <ng-container top-right *ngIf="ugcOpened$|async">
+          <wm-ugc-synchronized-badge [properties]="c?.properties"></wm-ugc-synchronized-badge>
+        </ng-container>
       </wm-poi-box>
     </div>
   </ng-container>

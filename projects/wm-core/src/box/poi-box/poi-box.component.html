@@ -7,6 +7,9 @@
     <ng-container *ngIf="properties.updatedAt as updatedAt">
       <wm-updated-at [updatedAt]="updatedAt"></wm-updated-at>
     </ng-container>
+    <div class="top-right-content">
+      <ng-content select="[top-right]"></ng-content>
+    </div>
   </ion-card>
 
   <ng-template #taxonomies>

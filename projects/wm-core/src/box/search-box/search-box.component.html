@@ -28,6 +28,9 @@
       <ion-skeleton-text class="wm-card-big-title-skeleton" animated></ion-skeleton-text>
     </ng-template>
   </ion-card-header>
+  <div class="top-right-content">
+    <ng-content select="[top-right]"></ng-content>
+  </div>
 </ion-card>
 
 <ng-template #taxonomies>
