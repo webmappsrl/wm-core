@@ -12,14 +12,22 @@
 </form>
 <ng-container *ngIf="(enableForm$|async) === true">
   <form [formGroup]="formGroup">
-    <ng-container *ngIf="disabled; else modifiable" class="wm-ugc-form-container">
+    <ng-container *ngIf="disabled; else modifiable">
       <ng-container *ngIf="(currentForm$|async) as currentForm">
         <div class="wm-ugc-form-title ion-margin-top">
-          <ion-icon name="keypad-outline"></ion-icon>
-          <ion-badge>{{ currentForm.label | wmtrans }}</ion-badge>
           <ng-content select="[header]"></ng-content>
+          <div class="ion-margin-top">{{"Form" | wmtrans}}</div>
         </div>
         <ion-list>
+          <ion-item class="wm-ugc-form-item">
+            <ion-label class="wm-ugc-form-label">
+              <ion-icon name="keypad-outline"></ion-icon>
+              {{'Tipologia di form'|wmtrans}}
+            </ion-label>
+            <ion-label slot="end" class="wm-ugc-form-value">
+              <ion-badge>{{ currentForm.label | wmtrans }}</ion-badge>
+            </ion-label>
+          </ion-item>
           <ng-container *ngFor="let field of currentForm.fields; let idx = index">
             <ng-container *ngIf="!!formGroup.value[field.name]">
               <ion-item class="wm-ugc-form-item">
