@@ -95,11 +95,56 @@ wm-form {
     padding: 0px 25px 8px 41px;
     display: inline-block;
   }
+
+  .wm-ugc-form-title {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: var(--wm-font-md);
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: 0em;
+    ion-icon {
+      font-size: 1.2em;
+      display: flex;
+      align-items: center;
+    }
+    ion-badge {
+      display: flex;
+      align-items: center;
+    }
+  }
+  .wm-ugc-form-item {
+    font-size: var(--wm-font-mf);
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    .wm-ugc-form-label {
+      font-weight: 400;
+      font-family: var(--wm-font-family-content);
+      flex-shrink: 0;
+      min-width: 30%;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      white-space: normal;
+    }
+    .wm-ugc-form-value {
+      font-weight: 600;
+      font-family: var(--wm-font-family-content);
+      flex: 1;
+      text-align: right;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      white-space: normal;
+    }
+  }
 }
-ion-alert{
-  --min-width: 275px!important;
-  .alert-radio-label{
-    text-wrap: unset!important;
+
+ion-alert {
+  --min-width: 275px !important;
+  .alert-radio-label {
+    text-wrap: unset !important;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     line-clamp: 3;

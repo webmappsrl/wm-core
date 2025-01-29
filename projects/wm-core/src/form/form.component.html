@@ -12,35 +12,35 @@
 </form>
 <ng-container *ngIf="(enableForm$|async) === true">
   <form [formGroup]="formGroup">
-    <ion-card *ngIf="disabled;else modifiable">
+    <ng-container *ngIf="disabled; else modifiable" class="wm-ugc-form-container">
       <ng-container *ngIf="(currentForm$|async) as currentForm">
-        <ion-card-header>
+        <div class="wm-ugc-form-title ion-margin-top">
           <ion-icon name="keypad-outline"></ion-icon>
-          <ion-badge>{{currentForm.label|wmtrans}}</ion-badge>
+          <ion-badge>{{ currentForm.label | wmtrans }}</ion-badge>
           <ng-content select="[header]"></ng-content>
-        </ion-card-header>
-        <ion-card-content>
-          <ng-container *ngFor="let field of currentForm.fields;let idx = index">
+        </div>
+        <ion-list>
+          <ng-container *ngFor="let field of currentForm.fields; let idx = index">
             <ng-container *ngIf="!!formGroup.value[field.name]">
-              <ion-card-subtitle>
-                <i class="{{field.type|getFormFieldIcn}} wm-form-field-icon secondary"></i>
-                {{ field.label | wmtrans }}
-              </ion-card-subtitle>
-              <ng-container *ngIf="field.type!= 'select'">
-                <ion-label>
-                  {{formGroup.value[field.name]}}
+              <ion-item class="wm-ugc-form-item">
+                <ion-label class="wm-ugc-form-label">
+                  <i class="{{field.type | getFormFieldIcn}} wm-form-field-icon secondary"></i>
+                  {{ field.label | wmtrans }}
                 </ion-label>
-              </ng-container>
-              <ng-container *ngIf="field.type === 'select'">
-                <ion-label>
-                  {{field.values|getFormFieldValue:formGroup.value[field.name]|wmtrans}}
+                <ion-label slot="end" class="wm-ugc-form-value">
+                  <ng-container *ngIf="field.type !== 'select'">
+                    {{ formGroup.value[field.name] }}
+                  </ng-container>
+                  <ng-container *ngIf="field.type === 'select'">
+                    {{ field.values | getFormFieldValue:formGroup.value[field.name] | wmtrans }}
+                  </ng-container>
                 </ion-label>
-              </ng-container>
+              </ion-item>
             </ng-container>
           </ng-container>
-        </ion-card-content>
+        </ion-list>
       </ng-container>
-    </ion-card>
+    </ng-container>
     <ng-template #modifiable>
       <ng-container *ngFor="let field of (currentForm$|async).fields">
         <ion-item class="wm-form-field">
