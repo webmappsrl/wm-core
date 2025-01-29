@@ -6,8 +6,7 @@ import {AuthService} from './auth.service';
 import {from, of} from 'rxjs';
 import {AlertController} from '@ionic/angular';
 import {LangService} from '@wm-core/localization/lang.service';
-import {UgcService} from '@wm-core/store/features/ugc/ugc.service';
-import {clearUgcData} from '@wm-core/utils/localForage';
+import {clearUgcData, getAuth, removeAuth, saveAuth} from '@wm-core/utils/localForage';
 import {Store} from '@ngrx/store';
 import {closeUgc} from '../user-activity/user-activity.action';
 
@@ -34,11 +33,19 @@ export class AuthEffects {
       switchMap(action =>
         this._authSvc.getUser().pipe(
           map(user => {
+            saveAuth(user);
             return AuthActions.loadAuthsSuccess({user});
           }),
-          catchError(error => {
-            return of(AuthActions.loadAuthsFailure({error}));
-          }),
+          catchError(error =>
+            from(getAuth()).pipe(
+              map(user => {
+                if (user) {
+                  return AuthActions.loadAuthsSuccess({user});
+                }
+                return AuthActions.loadAuthsFailure({error});
+              })
+            )
+          ),
         ),
       ),
     );
@@ -49,6 +56,7 @@ export class AuthEffects {
       switchMap(action =>
         this._authSvc.login(action.email, action.password).pipe(
           map(user => {
+            saveAuth(user);
             return AuthActions.loadSignInsSuccess({user});
           }),
           catchError(error => {
@@ -64,6 +72,7 @@ export class AuthEffects {
       switchMap(action =>
         this._authSvc.signUp(action.name, action.email, action.password, action.referrer).pipe(
           map(user => {
+            saveAuth(user);
             return AuthActions.loadSignUpsSuccess({user});
           }),
           catchError(error => {
@@ -81,6 +90,7 @@ export class AuthEffects {
           switchMap(async () => {
             this._store.dispatch(closeUgc());
             await clearUgcData();
+            removeAuth();
             return AuthActions.loadSignOutsSuccess();
           }),
           catchError(error => {
@@ -113,7 +123,7 @@ export class AuthEffects {
     () =>
       this._actions$.pipe(
         ofType(AuthActions.loadSignInsSuccess),
-        switchMap(() => {
+        switchMap(_ => {
           return this._createMessageAlert(this._langSvc.instant('Login effettuato con successo'));
         }),
         switchMap(alert => {
