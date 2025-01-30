@@ -31,7 +31,7 @@ import {syncUgcTracks} from '@wm-core/store/features/ugc/ugc.actions';
 export class ModalUgcTrackUploaderComponent {
   @ViewChild('fileInput') fileInput!: ElementRef;
 
-  acceptedFileTypes: string = '.gpx,.kml,.geojson';
+  acceptedFileTypes: string = '.gpx,.kml,.geojson,application/gpx+xml,application/octet-stream';
   confMap$: Observable<any> = this._store.select(confMAP);
   confTRACKFORMS$: Observable<any[]> = this._store.select(confTRACKFORMS);
   fg: UntypedFormGroup;
