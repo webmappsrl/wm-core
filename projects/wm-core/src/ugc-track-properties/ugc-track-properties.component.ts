@@ -16,12 +16,12 @@ import {tap} from 'rxjs/operators';
 import {LineString} from 'geojson';
 import {Media, MediaProperties, WmFeature} from '@wm-types/feature';
 import {getUgcMediasByIds} from '@wm-core/utils/localForage';
-import {ActivatedRoute, Router} from '@angular/router';
 import {LangService} from '@wm-core/localization/lang.service';
 import {deleteUgcTrack, updateUgcTrack} from '@wm-core/store/features/ugc/ugc.actions';
 import {UntypedFormGroup} from '@angular/forms';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
+import {trackElevationChartHoverElemenents} from '@wm-core/store/user-activity/user-activity.action';
 
 @Component({
   selector: 'wm-ugc-track-properties',
@@ -44,9 +44,6 @@ export class UgcTrackPropertiesComponent {
 
   @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
-  @Output('trackElevationChartHover')
-  trackElevationChartHover: EventEmitter<WmSlopeChartHoverElements> =
-    new EventEmitter<WmSlopeChartHoverElements>();
   @ViewChild('content') content: IonContent;
   @ViewChild('slider') slider: IonSlides;
 
@@ -70,8 +67,6 @@ export class UgcTrackPropertiesComponent {
 
   constructor(
     private _store: Store,
-    private _router: Router,
-    private _route: ActivatedRoute,
     private _alertCtlr: AlertController,
     private _langSvc: LangService,
     private _urlHandlerSvc: UrlHandlerService,
@@ -119,8 +114,8 @@ export class UgcTrackPropertiesComponent {
     this.isEditing$;
   }
 
-  onLocationHover(event: WmSlopeChartHoverElements | any): void {
-    this.trackElevationChartHover.emit(event);
+  onLocationHover(event: WmSlopeChartHoverElements): void {
+    this._store.dispatch(trackElevationChartHoverElemenents({elements: event}));
   }
 
   removeUgcTrackFromUrl(): void {
