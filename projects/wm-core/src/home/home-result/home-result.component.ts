@@ -92,7 +92,7 @@ export class WmHomeResultComponent implements OnDestroy {
   }
 
   setPoi(f: WmFeature<Point>): void {
-    const id = f?.properties?.id ?? null;
+    const id = f?.properties?.id ?? f?.properties?.uuid ?? null;
     this.poiEVT.emit(id);
   }
 }
