@@ -32,7 +32,7 @@ export class EcEffects {
       ofType(currentEcPoiId),
       withLatestFrom(this._store.select(pois).pipe(filter(p => p != null && p.length > 0))),
       map(([actions, pois]) => {
-        const ecPoi = pois.find(p => p?.properties?.id == actions.currentEcPoiId);
+        const ecPoi = actions.currentEcPoiId ? pois.find(p => p?.properties?.id == actions.currentEcPoiId) : null;
         return loadCurrentEcPoiSuccess({ecPoi});
       }),
       catchError(error => of(loadCurrentEcPoiFailure({error}))),
