@@ -78,7 +78,7 @@ export const onlyPoisFilter = createSelector(
   filterTracks,
   poisSelectedFilterIdentifiers,
   (ftracks, fpois) => {
-    return (ftracks.length ?? 0) === 0 && (fpois.length ?? 0) > 0;
+    return (ftracks?.length ?? 0) === 0 && (fpois?.length ?? 0) > 0;
   },
 );
 export const showTracks = createSelector(
