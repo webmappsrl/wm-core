@@ -171,7 +171,7 @@ export class GeolocationService {
 
   private _addLocationToRecordedFeature(location: Location): void {
     if (this._recordedFeature) {
-      this._recordedFeature.geometry.coordinates.push([location.longitude, location.latitude]);
+      this._recordedFeature.geometry.coordinates.push([location.longitude, location.latitude, location.altitude]);
       const locations: Array<Location> = this._recordedFeature?.properties?.locations ?? [];
       locations.push(location);
       this._recordedFeature.properties.locations = locations;
