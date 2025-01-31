@@ -128,7 +128,7 @@ export class GeoutilsService {
   getSlope(track: Feature<LineString>): number {
     const locations = this.getLocations(track);
     if (locations == null || locations.length < 2) {
-      return 0;
+      return this._getSlopeFromGeometry(track.geometry);
     }
 
     let totalClimb = 0;
@@ -215,6 +215,23 @@ export class GeoutilsService {
       }
     }
     return max;
+  }
+
+  private _getSlopeFromGeometry(geometry: LineString): number {
+    const coordinates = geometry?.coordinates;
+    if (coordinates == null || coordinates.length < 2) {
+      return 0;
+    }
+
+    let totalClimb = 0;
+    for (let i = 1; i < coordinates.length; i++) {
+      const prev = coordinates[i - 1];
+      const current = coordinates[i];
+      const altitudeDifference = current[2] - prev[2];
+      totalClimb += altitudeDifference;
+    }
+
+    return totalClimb;
   }
 
   /**

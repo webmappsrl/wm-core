@@ -1,6 +1,6 @@
 <div class="wm-ugc-category-title ion-margin-top">{{"Dettagli" | wmtrans}}</div>
 <ion-list>
-  <ion-item class="wm-ugc-track-data-item">
+  <ion-item class="wm-ugc-track-data-item" *ngIf="(time$|async) && (time$|async) > 0">
     <ion-label class="wm-ugc-track-data-label">
       {{'Tempo' | wmtrans}}
     </ion-label>
@@ -8,7 +8,7 @@
       {{time$ | async | wmTimeFormatter}}
     </ion-label>
   </ion-item>
-  <ion-item class="wm-ugc-track-data-item">
+  <ion-item class="wm-ugc-track-data-item" *ngIf="(trackLength$|async) && (trackLength$|async) > 0">
     <ion-label class="wm-ugc-track-data-label">
       {{'Distanza percorsa' | wmtrans}}
     </ion-label>
@@ -16,7 +16,7 @@
       {{trackLength$| async | distance:'km':1 }}
     </ion-label>
   </ion-item>
-  <ion-item class="wm-ugc-track-data-item">
+  <ion-item class="wm-ugc-track-data-item" *ngIf="(slope$|async) && (slope$|async) > 0">
     <ion-label class="wm-ugc-track-data-label">
       {{'Dislivello' | wmtrans}}
     </ion-label>
@@ -24,7 +24,7 @@
       {{slope$| async | distance:'m':1 }}
     </ion-label>
   </ion-item>
-  <ion-item class="wm-ugc-track-data-item">
+  <ion-item class="wm-ugc-track-data-item" *ngIf="(avgSpeed$|async) && (avgSpeed$|async) > 0">
     <ion-label class="wm-ugc-track-data-label">
       {{'Velocità media' | wmtrans}}
     </ion-label>
@@ -32,7 +32,7 @@
       {{avgSpeed$ | async | number:'1.1-1'}} km/h
     </ion-label>
   </ion-item>
-  <ion-item class="wm-ugc-track-data-item">
+  <ion-item class="wm-ugc-track-data-item" *ngIf="(topSpeed$|async) && (topSpeed$|async) > 0">
     <ion-label class="wm-ugc-track-data-label">
       {{'Velocità massima' | wmtrans}}
     </ion-label>
