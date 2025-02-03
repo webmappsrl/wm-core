@@ -1,8 +1,11 @@
-import {Injectable} from '@angular/core';
-import {getDistance} from 'ol/sphere';
-import {Coordinate} from 'ol/coordinate';
-import {IPoint} from '../types/model';
 import {Feature, LineString} from 'geojson';
+
+import {IPoint} from '../types/model';
+import {Injectable} from '@angular/core';
+import {Location} from '@wm-types/feature';
+import {Coordinate} from 'ol/coordinate';
+import {getDistance} from 'ol/sphere';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -112,43 +115,26 @@ export class GeoutilsService {
     return 0;
   }
 
-  getLocations(track: Feature<LineString>): any[] {
+  getLocations(track: Feature<LineString>): Location[] {
     const properties = track.properties;
     const locations = properties?.locations ?? null;
     return locations ?? [];
   }
 
   /**
-   * Get the difference in height of a track
+   * Get the difference in height of a track.
+   * First tries to calculate the slope from locations because locations take the altitudeAccuracy and falls back to geometry if locations are not available.
    *
    * @param {Feature<LineString>} track a track feature
-   *
    * @returns {number} total height difference
    */
   getSlope(track: Feature<LineString>): number {
     const locations = this.getLocations(track);
-    if (locations == null || locations.length < 2) {
-      return 0;
+    const hasLocation = locations != null && locations.length >= 2;
+    if (hasLocation) {
+      return this._getSlopeFromLocations(locations);
     }
-
-    let totalClimb = 0;
-
-    for (let i = 1; i < locations.length; i++) {
-      const prev = locations[i - 1];
-      const current = locations[i];
-
-      // Calcola l'incertezza combinata considerando l'accuracy di entrambi i punti
-      const combinedAccuracy =
-        Math.max(prev.altitudeAccuracy || 0, current.altitudeAccuracy || 0) / 6;
-
-      const altitudeDifference = current.altitude - prev.altitude;
-      // Considera significative solo le variazioni di altitudine che superano l'incertezza combinata
-      if (altitudeDifference > combinedAccuracy) {
-        totalClimb += altitudeDifference;
-      }
-    }
-
-    return totalClimb;
+    return this._getSlopeFromGeometry(track.geometry);
   }
 
   /**
@@ -215,6 +201,38 @@ export class GeoutilsService {
       }
     }
     return max;
+  }
+
+  private _getSlopeFromGeometry(geometry: LineString): number {
+    const coordinates = geometry?.coordinates ?? [];
+    if (coordinates.length < 2) {
+      return 0;
+    }
+    return coordinates.reduce((acc, curr, i, arr) => {
+      if (i == 0) return acc;
+      const difference = curr[2] - arr[i - 1][2];
+      return acc + difference;
+    }, 0);
+  }
+
+  private _getSlopeFromLocations(locations: Location[]): number {
+    let slope = 0;
+
+    for (let i = 1; i < locations.length; i++) {
+      const prev = locations[i - 1];
+      const current = locations[i];
+
+      // Calcola l'incertezza combinata considerando l'accuracy di entrambi i punti
+      const combinedAccuracy =
+        Math.max(prev.altitudeAccuracy || 0, current.altitudeAccuracy || 0) / 6;
+
+      const altitudeDifference = current.altitude - prev.altitude;
+      if (altitudeDifference > combinedAccuracy) {
+        slope += altitudeDifference;
+      }
+    }
+
+    return slope;
   }
 
   /**
