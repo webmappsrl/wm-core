@@ -98,6 +98,10 @@ export class GeolocationService {
     };
   }
 
+  openAppSettings(): void {
+    backgroundGeolocation.openSettings();
+  }
+
   /**
    * Pause the geolocation record if active
    */
