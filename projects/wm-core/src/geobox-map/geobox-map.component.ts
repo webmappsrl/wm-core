@@ -164,7 +164,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   currentPosition$: Observable<any>;
   currentRelatedPoi$ = this._store.select(currentEcRelatedPoi);
   currentRelatedPoiID$ = this._store.select(currentEcRelatedPoiId);
-  currentUgcPoiIDToMap$: Observable<number | null>;
+  currentUgcPoiIDToMap$: Observable<number | string | null>;
   dataLayerUrls$: Observable<IDATALAYER>;
   drawTrackOpened$: Observable<boolean> = this._store.select(drawTrackOpened);
   geohubId$ = this._store.select(confGeohubId);
@@ -468,8 +468,8 @@ export class WmGeoboxMapComponent implements OnDestroy {
   }
 
   setUgcPoi(poi: WmFeature<Point>): void {
-    const id = poi?.properties?.id ?? null;
-    this._urlHandlerSvc.updateURL({ugc_poi: id ? +id : undefined});
+    const id = poi?.properties?.id ?? poi?.properties?.uuid ?? null;
+    this._urlHandlerSvc.updateURL({ugc_poi: id ? id : undefined});
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
   }
 

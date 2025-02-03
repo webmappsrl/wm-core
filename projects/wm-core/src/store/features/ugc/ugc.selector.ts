@@ -39,7 +39,7 @@ export const currentUgcPoi = createSelector(ugc, state => state.currentUgcPoi);
 export const currentUgcPoiProperties = createSelector(currentUgcPoi, poi => poi?.properties);
 export const currentUgcPoiId = createSelector(
   currentUgcPoiProperties,
-  currentUgcPoiProperties => currentUgcPoiProperties?.id ?? null,
+  currentUgcPoiProperties => currentUgcPoiProperties?.id ?? currentUgcPoiProperties?.uuid ?? null,
 );
 export const syncUgcIntervalEnabled = createSelector(
   ugc,
