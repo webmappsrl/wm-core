@@ -11,7 +11,7 @@ import {AlertController, ModalController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {confGeohubId, confMAP, confTRACKFORMS} from '@wm-core/store/conf/conf.selector';
 import {WmFeature, WmProperties} from '@wm-types/feature';
-import {LineString} from 'geojson';
+import {Feature, LineString} from 'geojson';
 import {BehaviorSubject, EMPTY, from, Observable} from 'rxjs';
 import * as toGeoJSON from '@tmcw/togeojson';
 import {catchError, map, switchMap, take} from 'rxjs/operators';
@@ -147,6 +147,25 @@ export class ModalUgcTrackUploaderComponent {
     return feature;
   }
 
+  private _deserializeProperties(feature: Feature): Feature {
+    const isValidJSON = (value: string): boolean => {
+      try {
+        JSON.parse(value);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    return {
+      ...feature,
+      properties: Object.entries(feature.properties).reduce((acc, [key, value]) => {
+        acc[key] = typeof value === 'string' && isValidJSON(value) ? JSON.parse(value) : value;
+        return acc;
+      }, {} as { [key: string]: any }),
+    };
+  }
+
   private _handleFile(file: File): void {
     if (!this._isFileTypeAccepted(file)) {
       this.selectedFile$.next(null);
@@ -276,7 +295,7 @@ export class ModalUgcTrackUploaderComponent {
             feature => feature.geometry?.type === 'LineString',
           );
           if (lineStringKml) {
-            geojsonFeature = lineStringKml as WmFeature<LineString>;
+            geojsonFeature = this._deserializeProperties(lineStringKml) as WmFeature<LineString>;
           } else {
             return null;
           }

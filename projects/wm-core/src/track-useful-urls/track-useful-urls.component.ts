@@ -37,7 +37,14 @@ export class WmTrackDownloadUrlsComponent implements OnInit {
         output = new XMLSerializer().serializeToString(output);
         break;
       case 'kml':
-        output = tokml(g);
+        const serializedFeature = {
+          ...g,
+          properties: Object.entries(g.properties).reduce((acc, [key, value]) => {
+            acc[key] = typeof value === 'object' ? JSON.stringify(value) : value;
+            return acc;
+          }, {} as { [key: string]: any }),
+        };
+        output = tokml(serializedFeature);
         break;
       case 'geojson':
         output = JSON.stringify(g);
