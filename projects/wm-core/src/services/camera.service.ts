@@ -194,6 +194,7 @@ export class CameraService {
           saved: false,
           format: 'image/jpeg',
         };
+        saveImg(fakePhoto.webPath);
         const fakeFeature: Feature<Media, MediaProperties> = {
           type: 'Feature',
           geometry: {

@@ -24,6 +24,7 @@ import {
   removeDeviceUgcPoi,
   getUgcTracks,
   getUgcPois,
+  saveImg,
 } from '@wm-core/utils/localForage';
 import {
   Media,
@@ -98,6 +99,9 @@ export class UgcService {
   async fetchUgcMedias(): Promise<void> {
     try {
       const apiUgcMedias = await this.getApiMedias();
+      if (apiUgcMedias == null) {
+        return;
+      }
       const cloudUgcMedias = await getSynchronizedUgcMedias();
 
       for (let apiUgcMedia of apiUgcMedias.features) {
@@ -120,6 +124,9 @@ export class UgcService {
   async fetchUgcPois(): Promise<void> {
     try {
       const apiUgcPois = await this.getApiPois();
+      if (apiUgcPois == null) {
+        return;
+      }
       const cloudUgcPois = await getSynchronizedUgcPois();
 
       for (let apiUgcPoi of apiUgcPois.features) {
@@ -140,6 +147,9 @@ export class UgcService {
   async fetchUgcTracks(): Promise<void> {
     try {
       const apiUgcTracks = await this.getApiTracks();
+      if (apiUgcTracks == null) {
+        return;
+      }
       const synchronizedUgcTracks = await getSynchronizedUgcTracks();
 
       for (let apiTrack of apiUgcTracks.features) {
@@ -321,8 +331,10 @@ export class UgcService {
    */
   async saveApiPoi(poi: WmFeature<Point>): Promise<WmFeature<Point> | null> {
     if (poi != null) {
+      const data = await this._buildFormData(poi);
+
       return this._http
-        .post<WmFeature<Point>>(`${this.environment.api}/api/ugc/poi/store/v2`, poi)
+        .post<WmFeature<Point>>(`${this.environment.api}/api/ugc/poi/store/v2`, data)
         .pipe(catchError(_ => of(null)))
         .toPromise();
     }
@@ -339,8 +351,10 @@ export class UgcService {
    */
   async saveApiTrack(track: WmFeature<LineString>): Promise<WmFeature<LineString> | null> {
     if (track != null) {
+      const data = await this._buildFormData(track);
+
       return this._http
-        .post<WmFeature<LineString>>(`${this.environment.api}/api/ugc/track/store/v2`, track)
+        .post<WmFeature<LineString>>(`${this.environment.api}/api/ugc/track/store/v2`, data)
         .pipe(catchError(_ => of(null)))
         .toPromise();
     }
@@ -376,11 +390,15 @@ export class UgcService {
   }
 
   async syncUgc(): Promise<void> {
-    this.isLogged$.pipe(take(1)).subscribe(isLogged => {
+    this.isLogged$.pipe(take(1)).subscribe(async isLogged => {
       if (isLogged) {
-        this.syncUgcMedias();
-        this.syncUgcPois();
-        this.syncUgcTracks();
+        try {
+          await this.syncUgcPois();
+          await this.syncUgcTracks();
+          await this.syncUgcMedias();
+        } catch (error) {
+          console.error('syncUgc: Errore durante la sincronizzazione:', error);
+        }
       } else {
         from(getUgcTracks())
           .pipe(take(1))
@@ -392,51 +410,38 @@ export class UgcService {
   }
 
   async syncUgcMedias(): Promise<void> {
-    this.isLogged$
-      .pipe(
-        take(1),
-        filter(isLogged => isLogged),
-      )
-      .subscribe(async _ => {
-        try {
-          await this.pushUgcMedias();
-          await this.fetchUgcMedias();
-        } catch (error) {
-          console.error('syncUgcMedias: Errore durante la sincronizzazione:', error);
-        }
-      });
+    try {
+      const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
+      if (isLogged) {
+        await this.fetchUgcMedias();
+      }
+    } catch (error) {
+      console.error('syncUgcMedias: Errore durante la sincronizzazione:', error);
+    }
   }
 
   async syncUgcPois(): Promise<void> {
-    this.isLogged$
-      .pipe(
-        take(1),
-        filter(isLogged => isLogged),
-      )
-      .subscribe(async _ => {
-        try {
-          await this.pushUgcPois();
-          await this.fetchUgcPois();
-        } catch (error) {
-          console.error('syncUgcPois: Errore durante la sincronizzazione:', error);
-        }
-      });
+    try {
+      const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
+      if (isLogged) {
+        await this.pushUgcPois();
+        await this.fetchUgcPois();
+      }
+    } catch (error) {
+      console.error('syncUgcPois: Errore durante la sincronizzazione:', error);
+    }
   }
 
   async syncUgcTracks(): Promise<void> {
-    this.isLogged$
-      .pipe(
-        take(1),
-        filter(isLogged => isLogged),
-      )
-      .subscribe(async _ => {
-        try {
-          await this.pushUgcTracks();
-          await this.fetchUgcTracks();
-        } catch (error) {
-          console.error('syncUgcTracks: Errore durante la sincronizzazione:', error);
-        }
-      });
+    try {
+      const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
+      if (isLogged) {
+        await this.pushUgcTracks();
+        await this.fetchUgcTracks();
+      }
+    } catch (error) {
+      console.error('syncUgcTracks: Errore durante la sincronizzazione:', error);
+    }
   }
 
   updateApiPoi(poi: WmFeature<Point>): Observable<any> {
@@ -445,6 +450,27 @@ export class UgcService {
 
   updateApiTrack(track: WmFeature<LineString>): Observable<any> {
     return this._http.post(`${this.environment.api}/api/ugc/track/edit`, track);
+  }
+
+  private async _buildFormData(feature: WmFeature<LineString | Point>): Promise<FormData> {
+    const {properties} = feature;
+    const photoFeatures = properties.photos;
+    const data = new FormData();
+    data.append('feature', JSON.stringify(feature));
+    for (let [index, photoFeature] of photoFeatures.entries()) {
+      const {properties} = photoFeature;
+      const {photo} = properties;
+      if (photo && photo.webPath) {
+        await saveImg(photo.webPath);
+      }
+      if (properties.url) {
+        await saveImg(properties.url);
+      }
+      const blob: ArrayBuffer = (await getImg(photo.webPath)) as ArrayBuffer;
+      const image = new Blob([blob]) as Blob;
+      data.append(`images[]`, image, `image_${index}.jpg`);
+    }
+    return data;
   }
 
   // Funzione per verificare se una traccia è stata modificata
