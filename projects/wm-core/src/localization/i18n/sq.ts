@@ -129,4 +129,19 @@ export const wmSQ = {
   'apri pdf': 'Hap PDF',
   'pendenza': 'Pjerrësia',
   'Galleria': 'Galeria',
+  'resetta la memoria': 'Rivendos memorien',
+  'rimani acceso': 'Qëndro i ndezur',
+  'forza il dispositivo a non spegnersi': 'Detyro pajisjen të mos fiket',
+  'PAGINE': 'FAQE',
+  'I tuoi dati': 'Të dhënat e tua',
+  'pages.profile.projectlink': 'Projekti',
+  'pages.profile.disclaimerlink': 'Mohim përgjegjësie',
+  'pages.profile.creditslink': 'Kreditë',
+  'pages.profile.privacylink': 'Privatësia',
+  'pages.profile.title': 'Profili',
+  'MEMORIA': 'MEMORIA',
+  'la distanza espressa in metri che indica la cadenza di rilevamento posizione, più il distance filter è minore piu il consumo della batteria sarà maggiore.':
+    'Distanca e shprehur në metra që tregon frekuencën e zbulimit të pozicionit, sa më i vogël të jetë filtri i distancës, aq më i madh do të jetë konsumi i baterisë.',
+  "Per registrare tracce e poi correttamente, abilita l'autorizzazione alla posizione nelle impostazioni":
+    'Për të regjistruar gjurmët dhe pikat e interesit saktësisht, aktivizo lejen e vendndodhjes në cilësimet.',
 };
