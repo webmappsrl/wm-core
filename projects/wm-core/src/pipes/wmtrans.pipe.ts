@@ -22,6 +22,9 @@ export class WmTransPipe extends TranslatePipe {
       if (typeof value === 'string') {
         return super.transform(value);
       }
+      if (typeof value === 'number') {
+        return super.transform(value.toString());
+      }
       for (const val in value) {
         if (value[val]) {
           return value[val];
