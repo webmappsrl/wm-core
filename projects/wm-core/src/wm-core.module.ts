@@ -145,6 +145,7 @@ const modules = [
     ],
     ...modules,
   ],
+  providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
   exports: [...declarations, ...modules, TranslateModule],
 })
 export class WmCoreModule {}
