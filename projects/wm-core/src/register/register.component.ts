@@ -24,7 +24,6 @@ import {confPAGES, confPRIVACY} from '@wm-core/store/conf/conf.selector';
   styleUrls: ['./register.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  providers: [LangService],
 })
 export class RegisterComponent {
   get errorControl() {

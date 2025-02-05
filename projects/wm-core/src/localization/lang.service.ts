@@ -29,7 +29,9 @@ import {Store} from '@ngrx/store';
 import {confTRANSLATIONS} from '@wm-core/store/conf/conf.selector';
 import {filter, take} from 'rxjs/operators';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class LangService extends TranslateService implements TranslateService {
   private _confTRANSLATIONS = this._store.select(confTRANSLATIONS);
 

@@ -20,7 +20,6 @@ import {isLogged} from '@wm-core/store/auth/auth.selectors';
   styleUrls: ['./login.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  providers: [LangService],
 })
 export class LoginComponent implements OnInit {
   get errorControl() {

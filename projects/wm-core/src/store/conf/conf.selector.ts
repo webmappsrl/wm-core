@@ -40,7 +40,10 @@ export const confFlowLineQuote = createSelector(confMAP, state =>
 );
 export const confJIDOUPDATETIME = createSelector(confFeature, state => state.JIDO_UPDATE_TIME);
 export const confTRANSLATIONS = createSelector(confFeature, state => state.TRANSLATIONS);
-export const confRecordTrackShow = createSelector(confMAP, state => state.record_track_show);
+export const confRecordTrackShow = createSelector(
+  confMAP,
+  state => state?.record_track_show ?? false,
+);
 export const confFILTERS = createSelector(confMAP, map => {
   if (map == null || map.filters == null) return undefined;
   let filters = {...map.filters};
