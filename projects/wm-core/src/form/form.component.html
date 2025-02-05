@@ -14,9 +14,9 @@
   <form [formGroup]="formGroup">
     <ng-container *ngIf="disabled; else modifiable">
       <ng-container *ngIf="(currentForm$|async) as currentForm">
-        <div class="wm-ugc-form-title ion-margin-top">
+        <div class="wm-ugc-form-title">
           <ng-content select="[header]"></ng-content>
-          <div class="ion-margin-top">{{"Form" | wmtrans}}</div>
+          <div>{{"Form" | wmtrans}}</div>
         </div>
         <ion-list>
           <ion-item class="wm-ugc-form-item">

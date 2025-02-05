@@ -1,7 +1,12 @@
 wm-track-audio {
+  display: block;
+  margin: var(--wm-feature-details-margin);
+  ion-title {
+    font-size: var(--wm-feature-details-title-font-size);
+    font-weight: var(--wm-feature-details-title-font-weight);
+    color: var(--wm-feature-details-title-color);
+  }
   audio {
     width: -webkit-fill-available;
   }
-  margin-bottom: 36px;
-  display: block;
 }

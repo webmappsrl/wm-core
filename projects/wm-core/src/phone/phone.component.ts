@@ -3,17 +3,26 @@ import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
 @Component({
   selector: 'wm-phone',
   template: `
-            <div
+            <ion-item
               *ngIf="phone != null"
-              class="ripple-parent ion-activatable webmapp-pagepoi-info-reference"
+              href="tel:{{phone}}"
             >
-              <a href="tel:{{phone}}">
-                <i class="icon-outline-phone webmapp-pagepoi-info-icon"></i>
-                {{phone}}</a
-              >
-              <ion-ripple-effect></ion-ripple-effect>
-            </div>
+              <i class="icon-outline-phone" slot="start"></i>
+              <ion-label>{{phone}}</ion-label>
+            </ion-item>
 `,
+styles: [`
+  ion-item {
+    padding: 0;
+    i{
+      color: var(--wm-color-icon, var(--ion-color-primary));
+    }
+    ion-label {
+      font-weight: 600;
+      color: var(wm-feature-details-description-color), var(--wm-color-dark);
+    }
+  }
+`],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WmPhoneComponent {

@@ -43,12 +43,12 @@
       <wm-ugc-medias [showArrows]="true" class="wm-ugc-track-media-content"></wm-ugc-medias>
       <ng-container *ngIf="confOPTIONS$|async as confOPTIONS">
         <ng-container *ngIf="confOPTIONS.download_track_enable === true">
-          <wm-track-useful-urls [track]="track"></wm-track-useful-urls>
+          <wm-feature-useful-urls [track]="track"></wm-feature-useful-urls>
         </ng-container>
       </ng-container>
     </ng-template>
     <ng-container *ngIf="!(isEditing$|async); else editingButtons">
-      <ion-grid>
+      <ion-grid class="ion-margin-top">
         <ion-row>
           <ion-col>
             <ion-button
@@ -69,7 +69,7 @@
       </ion-grid>
     </ng-container>
     <ng-template #editingButtons>
-      <ion-grid>
+      <ion-grid class="ion-margin-top">
         <ion-row>
           <ion-col>
             <ion-button

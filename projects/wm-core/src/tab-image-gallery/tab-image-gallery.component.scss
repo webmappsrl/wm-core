@@ -1,23 +1,27 @@
-.webmapp-pageroute-tabdescription-description {
-  padding: 15px;
-  margin-bottom: 10px;
-}
+wm-tab-image-gallery{
+  display: block;
+  margin: var(--wm-feature-details-margin);
+  .webmapp-pageroute-tabdescription-description {
+    padding: 15px;
+    margin-bottom: 10px;
+  }
 
-.webmapp-pageroute-tabdescription-title {
-  padding-left: 15px;
-  font-weight: var(--wm-font-weight-bold);
-  font-size: var(--wm-font-lg);
-}
+  .webmapp-pageroute-tabdescription-title {
+    font-weight: var(--wm-feature-details-title-font-weight);
+    font-size: var(--wm-feature-details-title-font-size);
+    color: var(--wm-feature-details-title-color);
+  }
 
-.webmapp-pageroute-tabdescription-photoslider {
-  padding: 20px 0;
-  overflow: visible;
+  .webmapp-pageroute-tabdescription-photoslider {
+    padding: 20px 0;
+    overflow: visible;
 
-  .webmapp-pageroute-tabdescription-photo {
-    height: 150px;
-    width: 250px;
-    &::part(image) {
-      border-radius: 15px;
+    .webmapp-pageroute-tabdescription-photo {
+      height: 150px;
+      width: 250px;
+      &::part(image) {
+        border-radius: 15px;
+      }
     }
   }
 }

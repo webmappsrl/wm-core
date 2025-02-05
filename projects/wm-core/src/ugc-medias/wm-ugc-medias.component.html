@@ -1,6 +1,6 @@
 <ng-container *ngIf="medias$|async as medias">
   <ng-container *ngIf="medias.length>0">
-    <div class="wm-ugc-category-title ion-margin-top">{{"Media" | wmtrans}}</div>
+    <div class="wm-ugc-category-title">{{"Media" | wmtrans}}</div>
     <ion-slides [options]="sliderOptions" class="webmapp-pagepoi-info-body-photoslider" #slider>
       <ion-slide *ngFor="let media of medias;let idx = index">
         <wm-img

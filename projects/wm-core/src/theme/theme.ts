@@ -142,5 +142,11 @@ export const getCSSVariables = (colors: ITHEME): {[name: string]: any} => {
     '--wm-font-xsm': fontXsm,
     '--wm-font-family-header': fontFamilyHeader,
     '--wm-font-family-content': fontFamilyContent,
+    '--wm-feature-details-title-font-size': fontLg,
+    '--wm-feature-details-title-font-weight': 500,
+    '--wm-feature-details-title-color': '#737373',
+    '--wm-feature-details-description-color': dark,
+    '--wm-feature-details-padding': '10px',
+    '--wm-feature-details-margin': '10px 6px 24px 6px',
   };
 };

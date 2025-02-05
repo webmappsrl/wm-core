@@ -1,10 +1,10 @@
 wm-tab-howto {
-  .wm-tab-howto-content {
-    padding: 10px;
-  }
+  display: block;
+  margin: var(--wm-feature-details-margin);
   .webmapp-title {
-    font-weight: var(--wm-font-weight-bold);
-    font-size: var(--wm-font-lg);
+    font-weight: var(--wm-feature-details-title-font-weight);
+    font-size: var(--wm-feature-details-title-font-size);
+    color: var(--wm-feature-details-title-color);
   }
   .webmapp-walkability {
     display: flex;
@@ -13,6 +13,7 @@ wm-tab-howto {
     justify-content: flex-start;
     align-content: flex-start;
     align-items: flex-start;
+    padding: 10px;
 
     .webmapp-walkability-box {
       display: flex;

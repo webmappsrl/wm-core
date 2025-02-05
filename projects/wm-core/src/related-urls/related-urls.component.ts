@@ -3,17 +3,27 @@ import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
 @Component({
   selector: 'wm-related-urls',
   template: `
-    <div *ngIf="relatedUrls != null" 
-      class="ripple-parent ion-activatable webmapp-pagepoi-info-reference"
-    >
-        <ng-container *ngFor="let item of relatedUrls|keyvalue">
-            <a  style="display:block"  (click)="url(item.value)">
-                <i class="icon-outline-globe webmapp-pagepoi-info-icon"></i>
-                {{item.key}}
-            </a>
-        </ng-container>
-    </div>
+    <ion-list *ngIf="relatedUrls != null">
+      <ion-item *ngFor="let item of relatedUrls|keyvalue" (click)="url(item.value)" href="#">
+          <i class="icon-outline-globe" slot="start"></i>
+          <ion-label>{{item.key}}</ion-label>
+      </ion-item>
+    </ion-list>
 `,
+  styles: [`
+    ion-list {
+      padding: 0;
+      ion-item {
+        i{
+          color: var(--wm-color-icon, var(--ion-color-primary));
+        }
+        ion-label {
+          font-weight: 600;
+          color: var(wm-feature-details-description-color), var(--wm-color-dark);
+        }
+      }
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WmRelatedUrlsComponent {
