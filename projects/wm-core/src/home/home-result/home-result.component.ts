@@ -7,11 +7,12 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {Store} from '@ngrx/store';
-import {BehaviorSubject, Observable, Subscription, combineLatest} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {BehaviorSubject, Observable, Subscription, combineLatest, from} from 'rxjs';
+import {map, startWith, switchMap} from 'rxjs/operators';
 import {ecTracksLoading, poisInitCount} from '@wm-core/store/features/ec/ec.selector';
 
 import {
+  downloadsOpened,
   ecLayer,
   lastFilterType,
   showTracks,
@@ -26,6 +27,10 @@ import {
 } from '@wm-core/store/features/features.selector';
 import {WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
+import {IHIT} from '@wm-core/types/elastic';
+import {getEcTracks, removeEcTrack} from '@wm-core/utils/localForage';
+import {LangService} from '@wm-core/localization/lang.service';
+import {AlertController} from '@ionic/angular';
 
 @Component({
   selector: 'wm-home-result',
@@ -38,6 +43,7 @@ export class WmHomeResultComponent implements OnDestroy {
   private _resultTypeSub$: Subscription = Subscription.EMPTY;
 
   @Output() poiEVT: EventEmitter<number | string> = new EventEmitter();
+  @Output() refreshDownloads: EventEmitter<void> = new EventEmitter<void>();
   @Output() trackEVT: EventEmitter<number | string> = new EventEmitter();
 
   countAll$ = this._store.select(countAll);
@@ -45,15 +51,42 @@ export class WmHomeResultComponent implements OnDestroy {
   countPois$: Observable<number> = this._store.select(countPois);
   countTracks$: Observable<number> = this._store.select(countTracks);
   currentLayer$ = this._store.select(ecLayer);
+  downaloadOpened$ = this._store.select(downloadsOpened);
+  downloadsTracks$ = this.refreshDownloads.pipe(
+    startWith(undefined), // Emetti un valore iniziale per avviare il flusso
+    switchMap(() =>
+      from(getEcTracks()).pipe(map(t => t.map(track => track.properties as unknown as IHIT))),
+    ),
+  );
+  ectracks$ = this._store.select(tracks);
   lastFilterType$ = this._store.select(lastFilterType);
   pois$: Observable<WmFeature<Point>[]> = this._store.select(pois);
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
   showTracks$ = this._store.select(showTracks);
-  tracks$ = this._store.select(tracks);
+  tracks$: Observable<IHIT[]>;
   tracksLoading$: Observable<boolean> = this._store.select(ecTracksLoading);
   ugcOpened$: Observable<boolean> = this._store.select(ugcOpened);
 
-  constructor(private _store: Store) {
+  constructor(
+    private _store: Store,
+    private _langSvc: LangService,
+    private _alertCtrl: AlertController,
+  ) {
+    this.downaloadOpened$.subscribe(value => {
+      console.log('downloadsOpened', value);
+    });
+    this.tracks$ = combineLatest([
+      this.ectracks$,
+      this.downloadsTracks$,
+      this.downaloadOpened$,
+    ]).pipe(
+      map(([ectracks, downloadsTracks, downloadsOpened]) => {
+        if (downloadsOpened) {
+          return downloadsTracks;
+        }
+        return ectracks;
+      }),
+    );
     this._resultTypeSub$ = combineLatest([
       this.countTracks$,
       this.countPois$,
@@ -89,6 +122,25 @@ export class WmHomeResultComponent implements OnDestroy {
 
   changeResultType(event): void {
     this.showResultType$.next(event.target.value);
+  }
+
+  async removeDownloads(event: Event, id: string): Promise<void> {
+    event.stopPropagation();
+    const alert = await this._alertCtrl.create({
+      header: this._langSvc.instant('Attenzione'),
+      message: this._langSvc.instant('Sei sicuro di voler eliminare la traccia?'),
+      buttons: [
+        this._langSvc.instant('Annulla'),
+        {
+          text: this._langSvc.instant('Elimina'),
+          handler: async () => {
+            await removeEcTrack(`${id}`);
+            this.refreshDownloads.emit();
+          },
+        },
+      ],
+    });
+    alert.present().then();
   }
 
   setPoi(f: WmFeature<Point>): void {

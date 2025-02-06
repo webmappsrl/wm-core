@@ -6,6 +6,8 @@ import {Point} from 'geojson';
 
 export const openUgc = createAction('[User Activity] Open User Generated Content');
 export const closeUgc = createAction('[User Activity] Close User Generated Content');
+export const openDownloads = createAction('[User Activity] Open User downloads');
+export const closeDownloads = createAction('[User Activity] Close User downloads');
 export const inputTyped = createAction(
   '[User Activity] set input typed',
   props<{inputTyped: string | null}>(),

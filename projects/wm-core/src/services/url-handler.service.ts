@@ -10,7 +10,7 @@ import {
 import {currentUgcPoiId, currentUgcTrackId} from '@wm-core/store/features/ugc/ugc.actions';
 import {Params} from '@angular/router';
 import {debounceTime, skip} from 'rxjs/operators';
-import {closeUgc, openUgc} from '@wm-core/store/user-activity/user-activity.action';
+import {closeDownloads, closeUgc, openUgc} from '@wm-core/store/user-activity/user-activity.action';
 import {BehaviorSubject} from 'rxjs';
 
 @Injectable({
@@ -80,6 +80,7 @@ export class UrlHandlerService {
    */
   resetURL(): void {
     this._store.dispatch(closeUgc());
+    this._store.dispatch(closeDownloads());
     this.navigateTo();
   }
 
@@ -100,6 +101,7 @@ export class UrlHandlerService {
   private _checkIfUgcIsOpened(queryParams: Params): void {
     if (queryParams.track != null || queryParams.poi != null) {
       this._store.dispatch(closeUgc());
+      this._store.dispatch(closeDownloads());
     }
     if (queryParams.ugc_track != null || queryParams.ugc_poi != null) {
       this._store.dispatch(openUgc());

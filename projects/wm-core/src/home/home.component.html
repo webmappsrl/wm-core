@@ -6,9 +6,8 @@
       <ion-label [innerHTML]="sanitizer.bypassSecurityTrustHtml(welcome | wmtrans)"></ion-label>
     </div>
   </ng-container>
-
   <wm-searchbar
-    *ngIf="(confOPTIONS$|async).show_searchbar && !(ugcOpened$|async)"
+    *ngIf="(confOPTIONS$|async).show_searchbar && !(ugcOpened$|async) && (online$|async)"
     #searchCmp
     [initSearch]="''"
   >

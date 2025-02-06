@@ -1,93 +1,120 @@
-<ng-container *ngIf="(countAll$|async)>0;">
-  <ion-segment [value]="showResultType$|async" (ionChange)="changeResultType($event)">
-    <ng-container *ngIf="tracks$|async as tracks">
-      <ion-segment-button value="tracks" *ngIf="tracks.length > 0 &&  showTracks$|async">
-        <ion-label>
-          <ng-container *ngIf="(currentLayer$|async)?.track_type as trackType;else noLab">
-            {{trackType|wmtrans}}
-          </ng-container>
-          <ng-template #noLab>
-            {{'Sentieri'|wmtrans}}
-          </ng-template>
-          <ng-container *ngIf="tracksLoading$|async;else count">
-            <ion-spinner name="dots"></ion-spinner>
-          </ng-container>
-          <ng-template #count>
-            <span *ngIf="countTracks$|async as countTracks;">
-              {{countTracks}}
-            </span>
-          </ng-template>
-        </ion-label>
-      </ion-segment-button>
-    </ng-container>
-    <ng-container *ngIf="countPois$|async as countPois">
-      <ion-segment-button value="pois" *ngIf="countPois > 0">
-        <ion-label>
-          {{'Punti di interesse'|wmtrans}}
-          <span>
-            {{countPois}}
-          </span>
-        </ion-label>
-      </ion-segment-button>
-    </ng-container>
+<ng-container *ngIf="(downaloadOpened$|async) === true;else noDownload">
+  <wm-downloads-ec-track-box></wm-downloads-ec-track-box>
+  <ion-segment>
+    <ion-segment-button value="tracks">
+      {{'Sentieri'|wmtrans}}
+    </ion-segment-button>
   </ion-segment>
-</ng-container>
-
-<div class="wm-home-content">
-  <ng-container *ngIf="showResultType$|async as showResulType;">
-    <ng-container *ngIf="showResulType === 'tracks'|| showResulType == null">
-      <ng-container *ngIf="tracksLoading$|async">
-        <ion-list *ngFor="let idx of [1,1,1,1,1,1,1]">
-          <ion-list-header>
-            <ion-skeleton-text [animated]="true" style="width: 80px"></ion-skeleton-text>
-          </ion-list-header>
-          <ion-item>
-            <ion-thumbnail slot="start">
-              <ion-skeleton-text [animated]="true"></ion-skeleton-text>
-            </ion-thumbnail>
-            <ion-label>
-              <h3>
-                <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
-              </h3>
-              <p>
-                <ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text>
-              </p>
-              <p>
-                <ion-skeleton-text [animated]="true" style="width: 30%;"></ion-skeleton-text>
-              </p>
-            </ion-label>
-          </ion-item>
-        </ion-list>
-      </ng-container>
-      <ng-container *ngIf="tracks$|async as tracks">
-        <ng-container *ngIf="tracks.length > 0">
-          <wm-search-box
-            *ngFor="let card of tracks|wmSort:'properties.updatedAt':false|slice:0:200"
-            [data]="card"
-            (clickEVT)="trackEVT.emit(card.id)"
-          >
-            <ng-container top-right *ngIf="ugcOpened$|async">
-              <wm-ugc-synchronized-badge [properties]="card?.properties"></wm-ugc-synchronized-badge>
-            </ng-container>
-          </wm-search-box>
-        </ng-container>
+  <div class="wm-home-content">
+    <ng-container *ngIf="tracks$|async as tracks">
+      <ng-container *ngIf="tracks.length > 0">
+        <wm-search-box
+          *ngFor="let card of tracks|wmSort:'properties.updatedAt':false|slice:0:200"
+          [data]="card"
+          (clickEVT)="trackEVT.emit(card.id)"
+        >
+          <ng-container top-right>
+            <ion-button (click)="removeDownloads($event,card.id)">elimina</ion-button>
+          </ng-container>
+        </wm-search-box>
       </ng-container>
     </ng-container>
-    <div class="pois" *ngIf="showResulType === 'pois'|| showResulType === 'all'">
-      <wm-poi-box
-        *ngFor="let c of pois$|async|wmSort:'properties.updatedAt':false"
-        [data]="c"
-        (clickEVT)="setPoi(c)"
-      >
-        <ng-container top-right *ngIf="ugcOpened$|async">
-          <wm-ugc-synchronized-badge [properties]="c?.properties"></wm-ugc-synchronized-badge>
-        </ng-container>
-      </wm-poi-box>
-    </div>
+  </div>
+</ng-container>
+<ng-template #noDownload>
+  <ng-container *ngIf="(countAll$|async)>0;">
+    <ion-segment [value]="showResultType$|async" (ionChange)="changeResultType($event)">
+      <ng-container *ngIf="tracks$|async as tracks">
+        <ion-segment-button value="tracks" *ngIf="tracks.length > 0 &&  showTracks$|async">
+          <ion-label>
+            <ng-container *ngIf="(currentLayer$|async)?.track_type as trackType;else noLab">
+              {{trackType|wmtrans}}
+            </ng-container>
+            <ng-template #noLab>
+              {{'Sentieri'|wmtrans}}
+            </ng-template>
+            <ng-container *ngIf="tracksLoading$|async;else count">
+              <ion-spinner name="dots"></ion-spinner>
+            </ng-container>
+            <ng-template #count>
+              <span *ngIf="countTracks$|async as countTracks;">
+                {{countTracks}}
+              </span>
+            </ng-template>
+          </ion-label>
+        </ion-segment-button>
+      </ng-container>
+      <ng-container *ngIf="countPois$|async as countPois">
+        <ion-segment-button value="pois" *ngIf="countPois > 0">
+          <ion-label>
+            {{'Punti di interesse'|wmtrans}}
+            <span>
+              {{countPois}}
+            </span>
+          </ion-label>
+        </ion-segment-button>
+      </ng-container>
+    </ion-segment>
   </ng-container>
-  <ion-item lines="none" *ngIf="(countAll$|async)==0;">
-    <h5>
-      {{'Spiacenti non ci sono risultati con questi criteri di ricerca.'|wmtrans}}
-    </h5>
-  </ion-item>
-</div>
+
+  <div class="wm-home-content">
+    <ng-container *ngIf="showResultType$|async as showResulType;">
+      <ng-container *ngIf="showResulType === 'tracks'|| showResulType == null">
+        <ng-container *ngIf="tracksLoading$|async">
+          <ion-list *ngFor="let idx of [1,1,1,1,1,1,1]">
+            <ion-list-header>
+              <ion-skeleton-text [animated]="true" style="width: 80px"></ion-skeleton-text>
+            </ion-list-header>
+            <ion-item>
+              <ion-thumbnail slot="start">
+                <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+              </ion-thumbnail>
+              <ion-label>
+                <h3>
+                  <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
+                </h3>
+                <p>
+                  <ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text>
+                </p>
+                <p>
+                  <ion-skeleton-text [animated]="true" style="width: 30%;"></ion-skeleton-text>
+                </p>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </ng-container>
+        <ng-container *ngIf="tracks$|async as tracks">
+          <ng-container *ngIf="tracks.length > 0">
+            <wm-search-box
+              *ngFor="let card of tracks|wmSort:'properties.updatedAt':false|slice:0:200"
+              [data]="card"
+              (clickEVT)="trackEVT.emit(card.id)"
+            >
+              <ng-container top-right *ngIf="ugcOpened$|async">
+                <wm-ugc-synchronized-badge
+                  [properties]="card?.properties"
+                ></wm-ugc-synchronized-badge>
+              </ng-container>
+            </wm-search-box>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+      <div class="pois" *ngIf="showResulType === 'pois'|| showResulType === 'all'">
+        <wm-poi-box
+          *ngFor="let c of pois$|async|wmSort:'properties.updatedAt':false"
+          [data]="c"
+          (clickEVT)="setPoi(c)"
+        >
+          <ng-container top-right *ngIf="ugcOpened$|async">
+            <wm-ugc-synchronized-badge [properties]="c?.properties"></wm-ugc-synchronized-badge>
+          </ng-container>
+        </wm-poi-box>
+      </div>
+    </ng-container>
+    <ion-item lines="none" *ngIf="(countAll$|async)==0;">
+      <h5>
+        {{'Spiacenti non ci sono risultati con questi criteri di ricerca.'|wmtrans}}
+      </h5>
+    </ion-item>
+  </div>
+</ng-template>

@@ -33,6 +33,7 @@ import {
   ugcOpened,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {
+  closeDownloads,
   closeUgc,
   goToHome,
   inputTyped,
@@ -44,6 +45,7 @@ import {
 import {WmSearchBarComponent} from '@wm-core/search-bar/search-bar.component';
 import {loadEcPois} from '@wm-core/store/features/ec/ec.actions';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
+import {online} from '@wm-core/store/network/network.selector';
 @Component({
   selector: 'wm-home',
   templateUrl: './home.component.html',
@@ -61,6 +63,7 @@ export class WmHomeComponent implements AfterContentInit {
   countEcAll$: Observable<number> = this._store.select(countEcAll);
   countUgcAll$: Observable<number> = this._store.select(countUgcAll);
   currentEcLayer$: Observable<ILAYER> = this._store.select(currentEcLayer);
+  online$: Observable<boolean> = this._store.select(online);
   popup$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   showResult$ = this._store.select(showResult);
   ugcOpened$ = this._store.select(ugcOpened);
@@ -159,6 +162,7 @@ export class WmHomeComponent implements AfterContentInit {
 
     this._urlHandlerSvc.updateURL({layer: layer?.id ?? undefined});
     this._store.dispatch(closeUgc());
+    this._store.dispatch(closeDownloads());
   }
 
   setPoi(id: string | number): void {

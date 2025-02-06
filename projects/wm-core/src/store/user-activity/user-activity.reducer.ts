@@ -21,6 +21,8 @@ import {
   toggleTrackFilter,
   updateTrackFilter,
   trackElevationChartHoverElemenents,
+  openDownloads,
+  closeDownloads,
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
@@ -28,6 +30,7 @@ import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 export const key = 'userActivity';
 export interface UserActivityState {
   ugcOpened: boolean;
+  downloadsOpened: boolean;
   inputTyped?: string;
   filterTracks: Filter[];
   filterTaxonomies: any[];
@@ -49,6 +52,7 @@ export interface UserAcitivityRootState {
 
 const initialState: UserActivityState = {
   ugcOpened: false,
+  downloadsOpened: false,
   inputTyped: null,
   filterTracks: [],
   drawTrackOpened: false,
@@ -62,6 +66,8 @@ export const userActivityReducer = createReducer(
   initialState,
   on(openUgc, state => ({...state, ugcOpened: true})),
   on(closeUgc, state => ({...state, ugcOpened: false})),
+  on(openDownloads, state => ({...state, downloadsOpened: true})),
+  on(closeDownloads, state => ({...state, downloadsOpened: false})),
   on(inputTyped, (state, {inputTyped}) => {
     const newState: UserActivityState = {
       ...state,

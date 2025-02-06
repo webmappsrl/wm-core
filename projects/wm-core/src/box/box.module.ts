@@ -20,6 +20,7 @@ import {ConvertToItemTracksPipe} from './tracks-box/convert-to-base-box.pipe';
 import {TracksBoxComponent} from './tracks-box/tracks-box.component';
 import {UgcBoxComponent} from './ugc-box/ugc-box.component';
 import {UpdatedAtComponent} from './udpated-at/updated-at.component';
+import {DownloadsEcTrackBox} from './downloads-ec-track-box /downloads-ec-track-box.component';
 
 const boxComponents = [
   LayerBoxComponent,
@@ -39,6 +40,7 @@ const boxComponents = [
   TracksBoxComponent,
   ConvertToItemTracksPipe,
   UpdatedAtComponent,
+  DownloadsEcTrackBox,
 ];
 @NgModule({
   declarations: boxComponents,

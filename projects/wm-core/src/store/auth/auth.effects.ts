@@ -43,8 +43,8 @@ export class AuthEffects {
                   return AuthActions.loadAuthsSuccess({user});
                 }
                 return AuthActions.loadAuthsFailure({error});
-              })
-            )
+              }),
+            ),
           ),
         ),
       ),

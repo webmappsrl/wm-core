@@ -2,12 +2,17 @@ import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {currentCustomTrack} from '../features/ugc/ugc.selector';
 import {UserActivityState} from './user-activity.reducer';
 import {confFlowLineQuote} from '../conf/conf.selector';
+import State from 'ol/source/State';
 
 export const userActivity = createFeatureSelector<UserActivityState>('user-activity');
 
 export const ugcOpened = createSelector(
   userActivity,
   (state: UserActivityState) => state.ugcOpened,
+);
+export const downloadsOpened = createSelector(
+  userActivity,
+  (state: UserActivityState) => state.downloadsOpened,
 );
 
 export const inputTyped = createSelector(
@@ -94,8 +99,16 @@ export const showResult = createSelector(
   filterTracks,
   poisSelectedFilterIdentifiers,
   ugcOpened,
+  downloadsOpened,
   inputTyped,
-  (currentLayer, filterTracks, poisSelectedFilterIdentifiers, ugcOpened, inputTyped) => {
+  (
+    currentLayer,
+    filterTracks,
+    poisSelectedFilterIdentifiers,
+    ugcOpened,
+    downloadsOpened,
+    inputTyped,
+  ) => {
     const layerCondition = currentLayer != null;
     const filterTracksCondition = filterTracks.length > 0;
     const poisSelectedFilterIdentifiersCondition =
@@ -107,7 +120,8 @@ export const showResult = createSelector(
       filterTracksCondition ||
       poisSelectedFilterIdentifiersCondition ||
       inputTypedCondition ||
-      ugcOpened
+      ugcOpened ||
+      downloadsOpened
     );
   },
 );
@@ -130,5 +144,5 @@ export const flowLineQuoteText = createSelector(
       : altitude > flow_line_quote_orange && altitude < flow_line_quote_red
       ? orange
       : red;
-  }
+  },
 );

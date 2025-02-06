@@ -17,7 +17,11 @@ import {
   toggleTrackFilter,
 } from '@wm-core/store/user-activity/user-activity.action';
 import {countAll} from '@wm-core/store/features/features.selector';
-import {ecLayer, filterTracks} from '@wm-core/store/user-activity/user-activity.selector';
+import {
+  downloadsOpened,
+  ecLayer,
+  filterTracks,
+} from '@wm-core/store/user-activity/user-activity.selector';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 @Component({
   selector: 'wm-status-filter',
@@ -33,6 +37,7 @@ export class StatusFilterComponent {
   @Output() resetFiltersEVT: EventEmitter<void> = new EventEmitter();
 
   countAll$: Observable<number> = this._store.select(countAll);
+  downaloadOpened$ = this._store.select(downloadsOpened);
   layer$ = this._store.select(ecLayer);
   poiFilters$: Observable<any> = this._store.select(poiFilters);
   trackFilters$: Observable<any[]> = this._store.select(filterTracks);

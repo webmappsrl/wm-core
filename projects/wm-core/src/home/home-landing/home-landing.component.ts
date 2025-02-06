@@ -15,6 +15,7 @@ import {
   toggleTrackFilterByIdentifier,
 } from '@wm-core/store/user-activity/user-activity.action';
 import {countUgcAll} from '@wm-core/store/features/ugc/ugc.selector';
+import {offline} from '@wm-core/store/network/network.selector';
 
 @Component({
   selector: 'wm-home-landing',
@@ -36,6 +37,7 @@ export class WmHomeLandingComponent {
   countAllUgc$: Observable<number> = this._store.select(countUgcAll);
   enableDrawTrack$: Observable<boolean> = this._store.select(confShowDrawTrack);
   isLogged$: Observable<boolean> = this._store.select(isLogged);
+  offline$: Observable<boolean> = this._store.select(offline);
 
   constructor(private _store: Store) {}
 

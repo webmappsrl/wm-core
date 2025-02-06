@@ -3,7 +3,7 @@ import {HTTP_INTERCEPTORS, HttpClient} from '@angular/common/http';
 import {NgModule} from '@angular/core';
 import {IonicModule} from '@ionic/angular';
 import {EffectsModule} from '@ngrx/effects';
-import {StoreModule} from '@ngrx/store';
+import {Store, StoreModule} from '@ngrx/store';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {BoxModule} from './box/box.module';
@@ -64,6 +64,8 @@ import {TrackRelatedPoiComponent} from './track-related-poi/track-related-poi.co
 import {UgcPoiPropertiesComponent} from './ugc-poi-properties/ugc-poi-properties.component';
 import {WmTrackAlertComponent} from './track-alert/track-alert.component';
 import {ModalUgcTrackUploaderComponent} from './modal-ugc-track-uploader/modal-ugc-track-uploader.component';
+import { NetworkEffects } from './store/network/network.effects';
+import { networkReducer } from './store/network/netwotk.reducer';
 export const declarations = [
   WmTabDetailComponent,
   WmTabDescriptionComponent,
@@ -124,12 +126,14 @@ const modules = [
       StoreModule.forFeature('auth', authReducer),
       StoreModule.forFeature('ugc', UgcReducer),
       StoreModule.forFeature('user-activity', userActivityReducer),
+      StoreModule.forFeature('network', networkReducer),
       EffectsModule.forFeature([
         EcEffects,
         ConfEffects,
         AuthEffects,
         UgcEffects,
         UserActivityEffects,
+        NetworkEffects
       ]),
       TranslateModule.forRoot({
         loader: {
