@@ -19,8 +19,8 @@ export class WmTransPipe extends TranslatePipe {
       if (value[this._translateSvc.defaultLang]) {
         return value[this._translateSvc.defaultLang];
       }
-      if (typeof value === 'string') {
-        return super.transform(value);
+      if (typeof value === 'string' || typeof value === 'number') {
+        return super.transform(`${value}`);
       }
       for (const val in value) {
         if (value[val]) {
