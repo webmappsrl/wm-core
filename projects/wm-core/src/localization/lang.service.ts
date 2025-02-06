@@ -25,6 +25,7 @@ import {wmDE} from './i18n/de';
 import {wmFR} from './i18n/fr';
 import {wmPR} from './i18n/pr';
 import {wmES} from './i18n/es';
+import {wmSQ} from './i18n/sq';
 import {Store} from '@ngrx/store';
 import {confTRANSLATIONS} from '@wm-core/store/conf/conf.selector';
 import {filter, take} from 'rxjs/operators';
@@ -62,6 +63,7 @@ export class LangService extends TranslateService implements TranslateService {
     this.setTranslation('fr', wmFR);
     this.setTranslation('pr', wmPR);
     this.setTranslation('es', wmES);
+    this.setTranslation('sq', wmSQ);
     this._confTRANSLATIONS
       .pipe(
         filter(f => f != null),
