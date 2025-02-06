@@ -124,6 +124,6 @@ export class WmTrackDownloadUrlsComponent implements OnInit {
       return name.replace(/\s+/g, ''); // Rimuove tutti gli spazi
     }
     const values = Object.values(name);
-    return values[0] ? String(values[0]).replace(/\s+/g, '') : 'export'; // Rimuove spazi dal primo valore non undefined
+    return values[0] ? `${values[0]}`.replace(/\s+/g, '') : 'export'; // Rimuove spazi dal primo valore non undefined
   }
 }
