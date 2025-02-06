@@ -72,9 +72,6 @@ export class WmHomeResultComponent implements OnDestroy {
     private _langSvc: LangService,
     private _alertCtrl: AlertController,
   ) {
-    this.downaloadOpened$.subscribe(value => {
-      console.log('downloadsOpened', value);
-    });
     this.tracks$ = combineLatest([
       this.ectracks$,
       this.downloadsTracks$,
