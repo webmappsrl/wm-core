@@ -33,11 +33,9 @@ import {
   syncUgcTracks,
   updateUgcPoi,
   updateUgcPoiFailure,
-  updateUgcPois,
   updateUgcPoiSuccess,
   updateUgcTrack,
   updateUgcTrackFailure,
-  updateUgcTracks,
   updateUgcTrackSuccess,
 } from '@wm-core/store/features/ugc/ugc.actions';
 import {UgcService} from '@wm-core/store/features/ugc/ugc.service';
@@ -45,19 +43,16 @@ import {select, Store} from '@ngrx/store';
 import {activableUgc, currentUgcPoi, currentUgcTrack, syncUgcIntervalEnabled} from './ugc.selector';
 import {
   getUgcPoi,
-  getUgcPois,
   getUgcTrack,
-  getUgcTracks,
-  removeDeviceUgcTrack,
   removeUgcPoi,
   removeUgcTrack,
+  saveUgcLoadedOnce,
   saveUgcPoi,
   saveUgcTrack,
 } from '@wm-core/utils/localForage';
 import {AlertController} from '@ionic/angular';
 import {LangService} from '@wm-core/localization/lang.service';
-import {closeUgc, openUgc} from '@wm-core/store/user-activity/user-activity.action';
-import {track} from '../features.selector';
+import {setUgcLoaded} from '@wm-core/store/user-activity/user-activity.action';
 const SYNC_INTERVAL = 60000;
 @Injectable({
   providedIn: 'root',
@@ -177,6 +172,17 @@ export class UgcEffects {
       catchError(error => {
         console.error('Error loading UGC tracks:', error);
         return of(syncUgcFailure({responseType: 'Tracks', error})); // Dispatch a failure action in case of error
+      }),
+    ),
+  );
+  setUgcLoaded$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(syncUgcSuccess, syncUgcFailure),
+      map((action) => {
+        if (action.type === syncUgcSuccess.type) {
+          saveUgcLoadedOnce(true);
+        }
+        return setUgcLoaded({ugcLoaded: true});
       }),
     ),
   );

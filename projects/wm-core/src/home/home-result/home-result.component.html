@@ -58,63 +58,70 @@
   </ng-container>
 
   <div class="wm-home-content">
-    <ng-container *ngIf="showResultType$|async as showResulType;">
-      <ng-container *ngIf="showResulType === 'tracks'|| showResulType == null">
-        <ng-container *ngIf="tracksLoading$|async">
-          <ion-list *ngFor="let idx of [1,1,1,1,1,1,1]">
-            <ion-list-header>
-              <ion-skeleton-text [animated]="true" style="width: 80px"></ion-skeleton-text>
-            </ion-list-header>
-            <ion-item>
-              <ion-thumbnail slot="start">
-                <ion-skeleton-text [animated]="true"></ion-skeleton-text>
-              </ion-thumbnail>
-              <ion-label>
-                <h3>
-                  <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
-                </h3>
-                <p>
-                  <ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text>
-                </p>
-                <p>
-                  <ion-skeleton-text [animated]="true" style="width: 30%;"></ion-skeleton-text>
-                </p>
-              </ion-label>
-            </ion-item>
-          </ion-list>
-        </ng-container>
-        <ng-container *ngIf="tracks$|async as tracks">
-          <ng-container *ngIf="tracks.length > 0">
-            <wm-search-box
-              *ngFor="let card of tracks|wmSort:'properties.updatedAt':false|slice:0:200"
-              [data]="card"
-              (clickEVT)="trackEVT.emit(card.id)"
-            >
-              <ng-container top-right *ngIf="ugcOpened$|async">
-                <wm-ugc-synchronized-badge
-                  [properties]="card?.properties"
-                ></wm-ugc-synchronized-badge>
-              </ng-container>
-            </wm-search-box>
-          </ng-container>
-        </ng-container>
-      </ng-container>
-      <div class="pois" *ngIf="showResulType === 'pois'|| showResulType === 'all'">
-        <wm-poi-box
-          *ngFor="let c of pois$|async|wmSort:'properties.updatedAt':false"
-          [data]="c"
-          (clickEVT)="setPoi(c)"
-        >
-          <ng-container top-right *ngIf="ugcOpened$|async">
-            <wm-ugc-synchronized-badge [properties]="c?.properties"></wm-ugc-synchronized-badge>
-          </ng-container>
-        </wm-poi-box>
+    <ng-container *ngIf="(ugcOpened$|async) && !(ugcLoaded$|async); else results">
+      <div class="ugc-loading">
+        <ion-spinner color="primary"></ion-spinner>
       </div>
     </ng-container>
-    <ion-item lines="none" *ngIf="(countAll$|async)==0;">
-      <h5>
-        {{'Spiacenti non ci sono risultati con questi criteri di ricerca.'|wmtrans}}
-      </h5>
-    </ion-item>
+    <ng-template #results>
+      <ng-container *ngIf="showResultType$|async as showResulType;">
+        <ng-container *ngIf="showResulType === 'tracks'|| showResulType == null">
+          <ng-container *ngIf="tracksLoading$|async">
+            <ion-list *ngFor="let idx of [1,1,1,1,1,1,1]">
+              <ion-list-header>
+                <ion-skeleton-text [animated]="true" style="width: 80px"></ion-skeleton-text>
+              </ion-list-header>
+              <ion-item>
+                <ion-thumbnail slot="start">
+                  <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+                </ion-thumbnail>
+                <ion-label>
+                  <h3>
+                    <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
+                  </h3>
+                  <p>
+                    <ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text>
+                  </p>
+                  <p>
+                    <ion-skeleton-text [animated]="true" style="width: 30%;"></ion-skeleton-text>
+                  </p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+          </ng-container>
+          <ng-container *ngIf="tracks$|async as tracks">
+            <ng-container *ngIf="tracks.length > 0">
+              <wm-search-box
+                *ngFor="let card of tracks|wmSort:'properties.updatedAt':false|slice:0:200"
+                [data]="card"
+                (clickEVT)="trackEVT.emit(card.id)"
+              >
+                <ng-container top-right *ngIf="ugcOpened$|async">
+                  <wm-ugc-synchronized-badge
+                    [properties]="card?.properties"
+                  ></wm-ugc-synchronized-badge>
+                </ng-container>
+              </wm-search-box>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+        <div class="pois" *ngIf="showResulType === 'pois'|| showResulType === 'all'">
+          <wm-poi-box
+            *ngFor="let c of pois$|async|wmSort:'properties.updatedAt':false"
+            [data]="c"
+            (clickEVT)="setPoi(c)"
+          >
+            <ng-container top-right *ngIf="ugcOpened$|async">
+              <wm-ugc-synchronized-badge [properties]="c?.properties"></wm-ugc-synchronized-badge>
+            </ng-container>
+          </wm-poi-box>
+        </div>
+      </ng-container>
+      <ion-item lines="none" *ngIf="(countAll$|async)==0;">
+        <h5>
+          {{'Spiacenti non ci sono risultati con questi criteri di ricerca.'|wmtrans}}
+        </h5>
+      </ion-item>
+    </ng-template>
   </div>
 </ng-template>

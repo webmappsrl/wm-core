@@ -4,6 +4,10 @@ import * as localforage from 'localforage';
 import {downloadTiles, getTilesByGeometry, removeTiles} from '../../../../../map-core/src/utils';
 import {IUser} from '@wm-core/store/auth/auth.model';
 
+export async function clearAuthData(): Promise<void> {
+  await deviceAuth.clear();
+}
+
 export async function clearUgcData(): Promise<void> {
   await Promise.all([
     synchronizedEctrack.clear(),
@@ -225,6 +229,10 @@ export async function getSynchronizedUgcTracks(): Promise<WmFeature<LineString>[
   return keys ? await Promise.all(keys.map(key => getSynchronizedUgcTrack(key))) : [];
 }
 
+export function getUgcLoadedOnce(): Promise<boolean> {
+  return deviceAuth.getItem<boolean>('ugcLoadedOnce');
+}
+
 export async function getUgcMedia(
   mediaId: string,
 ): Promise<WmFeature<Media, MediaProperties> | null> {
@@ -368,6 +376,10 @@ export async function removeSynchronizedUgcTrack(id: number): Promise<void> {
   await handleAsync(synchronizedUgcTrack.removeItem(`${id}`), 'removeSynchronizedUgcTrack: Failed');
 }
 
+export function removeUgcLoadedOnce(): void {
+  deviceAuth.removeItem('ugcLoadedOnce');
+}
+
 export async function removeUgcMedia(media: WmFeature<Media, MediaProperties>): Promise<void> {
   const properties = media.properties;
   const featureId = properties.id ?? properties.rawData?.uuid;
@@ -462,6 +474,10 @@ export async function saveImgInsideTrack(
     });
   }
   return Promise.resolve(totalSize);
+}
+
+export function saveUgcLoadedOnce(ugcLoadedOnce: boolean): void {
+  deviceAuth.setItem('ugcLoadedOnce', ugcLoadedOnce);
 }
 
 export async function saveUgcMedia(feature: WmFeature<Media, MediaProperties>): Promise<void> {

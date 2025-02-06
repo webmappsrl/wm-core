@@ -6,7 +6,7 @@ import {AuthService} from './auth.service';
 import {from, of} from 'rxjs';
 import {AlertController} from '@ionic/angular';
 import {LangService} from '@wm-core/localization/lang.service';
-import {clearUgcData, getAuth, removeAuth, saveAuth} from '@wm-core/utils/localForage';
+import {clearAuthData, clearUgcData, getAuth, saveAuth} from '@wm-core/utils/localForage';
 import {Store} from '@ngrx/store';
 import {closeUgc} from '../user-activity/user-activity.action';
 
@@ -90,7 +90,7 @@ export class AuthEffects {
           switchMap(async () => {
             this._store.dispatch(closeUgc());
             await clearUgcData();
-            removeAuth();
+            await clearAuthData();
             return AuthActions.loadSignOutsSuccess();
           }),
           catchError(error => {

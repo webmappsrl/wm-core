@@ -146,3 +146,5 @@ export const flowLineQuoteText = createSelector(
       : red;
   },
 );
+
+export const ugcLoaded = createSelector(userActivity, state => state.ugcLoaded);

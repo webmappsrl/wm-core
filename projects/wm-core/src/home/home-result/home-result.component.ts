@@ -16,6 +16,7 @@ import {
   ecLayer,
   lastFilterType,
   showTracks,
+  ugcLoaded,
   ugcOpened,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {
@@ -65,6 +66,7 @@ export class WmHomeResultComponent implements OnDestroy {
   showTracks$ = this._store.select(showTracks);
   tracks$: Observable<IHIT[]>;
   tracksLoading$: Observable<boolean> = this._store.select(ecTracksLoading);
+  ugcLoaded$: Observable<boolean> = this._store.select(ugcLoaded);
   ugcOpened$: Observable<boolean> = this._store.select(ugcOpened);
 
   constructor(

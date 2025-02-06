@@ -2,5 +2,13 @@ wm-home-result {
   .wm-home-content {
     height: 100%;
     overflow: scroll;
+
+    .ugc-loading{
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
   }
 }

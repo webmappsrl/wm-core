@@ -23,6 +23,7 @@ import {
   trackElevationChartHoverElemenents,
   openDownloads,
   closeDownloads,
+  setUgcLoaded,
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
@@ -44,6 +45,7 @@ export interface UserActivityState {
   drawTrackOpened: boolean;
   chartHoverElements: WmSlopeChartHoverElements;
   currentEcPoiId?: any;
+  ugcLoaded: boolean;
 }
 
 export interface UserAcitivityRootState {
@@ -60,6 +62,7 @@ const initialState: UserActivityState = {
   lastFilterType: null,
   loading: {pois: false, layer: false},
   chartHoverElements: null,
+  ugcLoaded: false,
 };
 
 export const userActivityReducer = createReducer(
@@ -234,6 +237,13 @@ export const userActivityReducer = createReducer(
     const newState: UserActivityState = {
       ...state,
       currentEcPoiId,
+    };
+    return newState;
+  }),
+  on(setUgcLoaded, (state, {ugcLoaded}) => {
+    const newState: UserActivityState = {
+      ...state,
+      ugcLoaded,
     };
     return newState;
   }),

@@ -91,3 +91,5 @@ export const trackElevationChartHoverElemenents = createAction(
 );
 
 export const openUgcUploader = createAction('[User Activity] open ugc uploader');
+
+export const setUgcLoaded = createAction('[User Activity] set ugc loaded', props<{ugcLoaded: boolean}>());
