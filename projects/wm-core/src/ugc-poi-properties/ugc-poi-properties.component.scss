@@ -33,28 +33,12 @@ wm-ugc-poi-properties {
     }
   }
 
-  #wm-ugc-poi-details-content > * {
-    padding-top: 20px;
-  }
   #wm-ugc-poi-details-content {
     width: 100%;
     height: calc(100% - 56px);
     font-family: var(--wm-font-family-content);
-    padding: 15px 20px 20px;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: inherit;
-    align-self: flex-start;
     .wm-ugc-poi-title:first-letter {
       text-transform: uppercase;
-    }
-    .wm-ugc-category-title {
-      font-size: var(--wm-font-md);
-      font-weight: 700;
-      line-height: 22px;
-      letter-spacing: 0em;
-      text-align: left;
-      margin-bottom: 10px;
     }
     .wm-ugc-poi-activity-content {
       display: flex;

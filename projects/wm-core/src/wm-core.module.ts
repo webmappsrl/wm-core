@@ -6,9 +6,7 @@ import {EffectsModule} from '@ngrx/effects';
 import {StoreModule} from '@ngrx/store';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {WmAddressComponent} from './address/address.component';
 import {BoxModule} from './box/box.module';
-import {WmElevationComponent} from './elevation/elevation.component';
 import {WmEmailComponent} from './email/email.component';
 import {WmFiltersModule} from './filters/filters.module';
 import {WmHomeResultComponent} from './home/home-result/home-result.component';
@@ -35,7 +33,7 @@ import {WmTrackEdgesComponent} from './track-edges/track-edges.component';
 import {WmInnerHtmlComponent} from './inner-html/inner-html.component';
 import {ButtonsModule} from './buttons/export-to/buttons.module';
 import {WmExcerptComponent} from './excerpt/excerpt.component';
-import {WmTrackDownloadUrlsComponent} from './track-useful-urls/track-useful-urls.component';
+import {WmFeatureUsefulUrlsComponent} from './feature-useful-urls/feature-useful-urls.component';
 import {AuthInterceptor} from './store/auth/auth.interceptor';
 import {AuthEffects} from './store/auth/auth.effects';
 import {authReducer} from './store/auth/auth.reducer';
@@ -67,7 +65,6 @@ import {UgcPoiPropertiesComponent} from './ugc-poi-properties/ugc-poi-properties
 import {WmTrackAlertComponent} from './track-alert/track-alert.component';
 import {ModalUgcTrackUploaderComponent} from './modal-ugc-track-uploader/modal-ugc-track-uploader.component';
 export const declarations = [
-  WmAddressComponent,
   WmTabDetailComponent,
   WmTabDescriptionComponent,
   WmTabHowtoComponent,
@@ -77,7 +74,6 @@ export const declarations = [
   WmRelatedUrlsComponent,
   WmEmailComponent,
   WmPhoneComponent,
-  WmElevationComponent,
   WmHomeComponent,
   WmHomeLandingComponent,
   WmHomeResultComponent,
@@ -85,7 +81,7 @@ export const declarations = [
   WmHomeUgcComponent,
   WmTrackEdgesComponent,
   WmInnerHtmlComponent,
-  WmTrackDownloadUrlsComponent,
+  WmFeatureUsefulUrlsComponent,
   LoginComponent,
   RegisterComponent,
   GenericPopoverComponent,

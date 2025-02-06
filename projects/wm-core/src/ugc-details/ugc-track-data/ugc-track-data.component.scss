@@ -1,4 +1,11 @@
 wm-ugc-track-data{
+  display: block;
+  margin: var(--wm-feature-details-margin);
+  .wm-ugc-category-title{
+    font-weight: var(--wm-feature-details-title-font-weight);
+    font-size: var(--wm-feature-details-title-font-size);
+    color: var(--wm-feature-details-title-color);
+  }
   .wm-ugc-track-data-item{
     font-size: var(--wm-font-mf);
     .wm-ugc-track-data-label{

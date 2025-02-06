@@ -127,5 +127,21 @@
         <ion-note slot="end" class="webmapp-pageroute-tabdetail-value"> {{ ele_max }}m </ion-note>
       </ion-item>
     </ng-container>
+
+    <ion-item *ngIf="properties?.address as address">
+      <i class="icon-outline-pin webmapp-pagepoi-info-icon" slot="end"></i>
+      <ion-label start class="webmapp-pageroute-tabdetail-label">
+        {{ "Indirizzo" | wmtrans }}
+      </ion-label>
+      <ion-note slot="end" class="webmapp-pageroute-tabdetail-value"> {{ address }} </ion-note>
+    </ion-item>
+
+    <ion-item *ngIf="properties?.ele as ele">
+      <i class="icon-outline-plus webmapp-pageroute-tabdetail-icon"> </i>
+      <ion-label start class="webmapp-pageroute-tabdetail-label">
+        {{ "Quota" | wmtrans }}
+      </ion-label>
+      <ion-note slot="end" class="webmapp-pageroute-tabdetail-value"> {{ ele }}m </ion-note>
+    </ion-item>
   </ion-list>
 </ng-container>

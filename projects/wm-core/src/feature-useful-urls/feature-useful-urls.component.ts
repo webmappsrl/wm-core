@@ -2,18 +2,19 @@ import {ChangeDetectionStrategy, Component, Input, OnInit, ViewEncapsulation} fr
 import {Filesystem, Directory, Encoding, WriteFileOptions} from '@capacitor/filesystem';
 import {Share} from '@capacitor/share';
 import GeoJsonToGpx from '@dwayneparton/geojson-to-gpx';
-import {Feature} from 'geojson';
+import {Feature, LineString} from 'geojson';
 import tokml from 'geojson-to-kml';
 import {DeviceService} from '@wm-core/services/device.service';
+import { WmFeature } from '@wm-types/feature';
 @Component({
-  selector: 'wm-track-useful-urls',
-  templateUrl: './track-useful-urls.component.html',
-  styleUrls: ['./track-useful-urls.component.scss'],
+  selector: 'wm-feature-useful-urls',
+  templateUrl: './feature-useful-urls.component.html',
+  styleUrls: ['./feature-useful-urls.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class WmTrackDownloadUrlsComponent implements OnInit {
-  @Input() track: Feature;
+export class WmFeatureUsefulUrlsComponent implements OnInit {
+  @Input() track: WmFeature<LineString>;
 
   osm: string;
 
