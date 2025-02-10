@@ -1,7 +1,7 @@
 import {isLogged} from './../../auth/auth.selectors';
 import {HttpClient} from '@angular/common/http';
 import {Inject, Injectable} from '@angular/core';
-import {catchError, filter, map, take, tap} from 'rxjs/operators';
+import {catchError, map, take, tap} from 'rxjs/operators';
 import {from, Observable, of} from 'rxjs';
 import {APP_ID, ENVIRONMENT_CONFIG, EnvironmentConfig} from '@wm-core/store/conf/conf.token';
 import {LineString, Point} from 'geojson';
@@ -34,7 +34,7 @@ import {
   WmFeatureCollection,
 } from '@wm-types/feature';
 import {Store} from '@ngrx/store';
-import {syncUgc, syncUgcSuccess, updateUgcPois, updateUgcTracks} from './ugc.actions';
+import {updateUgcPois, updateUgcTracks} from './ugc.actions';
 
 @Injectable({
   providedIn: 'root',
@@ -390,23 +390,22 @@ export class UgcService {
   }
 
   async syncUgc(): Promise<void> {
-    this.isLogged$.pipe(take(1)).subscribe(async isLogged => {
-      if (isLogged) {
-        try {
-          await this.syncUgcPois();
-          await this.syncUgcTracks();
-          await this.syncUgcMedias();
-        } catch (error) {
-          console.error('syncUgc: Errore durante la sincronizzazione:', error);
-        }
-      } else {
-        from(getUgcTracks())
-          .pipe(take(1))
-          .subscribe(ugcTrackFeatures => {
-            this._store.dispatch(updateUgcTracks({ugcTrackFeatures}));
-          });
+    const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
+    if (isLogged) {
+      try {
+        await this.syncUgcPois();
+        await this.syncUgcTracks();
+        await this.syncUgcMedias();
+      } catch (error) {
+        console.error('syncUgc: Errore durante la sincronizzazione:', error);
       }
-    });
+    } else {
+      from(getUgcTracks())
+        .pipe(take(1))
+        .subscribe(ugcTrackFeatures => {
+          this._store.dispatch(updateUgcTracks({ugcTrackFeatures}));
+        });
+    }
   }
 
   async syncUgcMedias(): Promise<void> {
