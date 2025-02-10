@@ -306,8 +306,8 @@ export function isValidUrl(url: string): boolean {
   }
 }
 
-export function removeAuth(): void {
-  deviceAuth.removeItem('user');
+export function removeAuth(): Promise<void> {
+  return deviceAuth.removeItem('user');
 }
 
 export async function removeDeviceUgcMedia(uuid: string): Promise<void> {

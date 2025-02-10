@@ -90,7 +90,7 @@ export class AuthEffects {
           switchMap(async () => {
             this._store.dispatch(closeUgc());
             await clearUgcData();
-            removeAuth();
+            await removeAuth();
             return AuthActions.loadSignOutsSuccess();
           }),
           catchError(error => {
