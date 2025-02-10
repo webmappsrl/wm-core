@@ -30,22 +30,26 @@ export class AuthEffects {
   loadAuth$ = createEffect(() => {
     return this._actions$.pipe(
       ofType(AuthActions.loadAuths),
-      switchMap(action =>
-        this._authSvc.getUser().pipe(
-          map(user => {
-            saveAuth(user);
-            return AuthActions.loadAuthsSuccess({user});
-          }),
-          catchError(error =>
-            from(getAuth()).pipe(
-              map(user => {
-                if (user) {
+      switchMap(_ =>
+        from(getAuth()).pipe(
+          switchMap(user => {
+            if (user) {
+              return of(AuthActions.loadAuthsSuccess({user}));
+            } else {
+              return this._authSvc.getUser().pipe(
+                map(user => {
+                  saveAuth(user);
                   return AuthActions.loadAuthsSuccess({user});
-                }
-                return AuthActions.loadAuthsFailure({error});
-              }),
-            ),
-          ),
+                }),
+                catchError(error => {
+                  return of(AuthActions.loadAuthsFailure({error}));
+                }),
+              );
+            }
+          }),
+          catchError(error => {
+            return of(AuthActions.loadAuthsFailure({error}));
+          }),
         ),
       ),
     );
@@ -93,7 +97,13 @@ export class AuthEffects {
             removeAuth();
             return AuthActions.loadSignOutsSuccess();
           }),
-          catchError(error => {
+          catchError(httpErrorResponse => {
+            const error = {
+              ...httpErrorResponse,
+              error: {
+                error: 'Si è verificato un errore durante il logout. Riprova più tardi.',
+              },
+            };
             return of(AuthActions.loadSignOutsFailure({error}));
           }),
         ),
@@ -107,6 +117,7 @@ export class AuthEffects {
           AuthActions.loadSignInsFailure,
           AuthActions.loadSignUpsFailure,
           AuthActions.loadAuthsFailure,
+          AuthActions.loadSignOutsFailure,
         ),
         filter(r => r != null && r.error.error.error != 'Unauthorized'),
         switchMap(e => {
