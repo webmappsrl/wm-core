@@ -1,14 +1,16 @@
-import {Injectable} from '@angular/core';
-import {Actions, createEffect, ofType} from '@ngrx/effects';
-import * as AuthActions from './auth.actions';
-import {catchError, filter, map, switchMap} from 'rxjs/operators';
-import {AuthService} from './auth.service';
 import {from, of} from 'rxjs';
+
+import {syncUgc} from '../features/ugc/ugc.actions';
+import {closeUgc} from '../user-activity/user-activity.action';
+import * as AuthActions from './auth.actions';
+import {AuthService} from './auth.service';
+import {Injectable} from '@angular/core';
 import {AlertController} from '@ionic/angular';
+import {Actions, createEffect, ofType} from '@ngrx/effects';
+import {Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
 import {clearUgcData, getAuth, removeAuth, saveAuth} from '@wm-core/utils/localForage';
-import {Store} from '@ngrx/store';
-import {closeUgc} from '../user-activity/user-activity.action';
+import {catchError, filter, map, switchMap} from 'rxjs/operators';
 
 @Injectable()
 export class AuthEffects {
@@ -91,6 +93,7 @@ export class AuthEffects {
             this._store.dispatch(closeUgc());
             await clearUgcData();
             await removeAuth();
+            this._store.dispatch(syncUgc());
             return AuthActions.loadSignOutsSuccess();
           }),
           catchError(error => {
