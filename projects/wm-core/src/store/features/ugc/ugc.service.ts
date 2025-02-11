@@ -1,40 +1,30 @@
+import {LineString, Point} from 'geojson';
+import {Observable, from, of} from 'rxjs';
+
 import {isLogged} from './../../auth/auth.selectors';
+import {updateUgcPois, updateUgcTracks} from './ugc.actions';
 import {HttpClient} from '@angular/common/http';
 import {Inject, Injectable} from '@angular/core';
-import {catchError, map, take, tap} from 'rxjs/operators';
-import {from, Observable, of} from 'rxjs';
+import {Store} from '@ngrx/store';
 import {APP_ID, ENVIRONMENT_CONFIG, EnvironmentConfig} from '@wm-core/store/conf/conf.token';
-import {LineString, Point} from 'geojson';
 import {
-  getSynchronizedUgcMedias,
-  getSynchronizedUgcPoi,
-  getSynchronizedUgcPois,
-  getSynchronizedUgcTracks,
-  getDeviceUgcMedias,
   getDeviceUgcPoi,
   getDeviceUgcPois,
   getDeviceUgcTracks,
-  removeSynchronizedUgcMedia,
-  removeDeviceUgcMedia,
+  getImg,
+  getSynchronizedUgcPoi,
+  getSynchronizedUgcPois,
+  getSynchronizedUgcTracks,
+  getUgcPois,
+  getUgcTracks,
+  removeDeviceUgcPoi,
   removeDeviceUgcTrack,
-  saveUgcMedia,
+  saveImg,
   saveUgcPoi,
   saveUgcTrack,
-  getImg,
-  removeDeviceUgcPoi,
-  getUgcTracks,
-  getUgcPois,
-  saveImg,
 } from '@wm-core/utils/localForage';
-import {
-  Media,
-  MediaProperties,
-  responseDeleteMedia,
-  WmFeature,
-  WmFeatureCollection,
-} from '@wm-types/feature';
-import {Store} from '@ngrx/store';
-import {updateUgcPois, updateUgcTracks} from './ugc.actions';
+import {Media, MediaProperties, WmFeature, WmFeatureCollection} from '@wm-types/feature';
+import {catchError, map, take, tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -61,20 +51,6 @@ export class UgcService {
     return this._http.get(`${this.environment.api}/api/ugc/track/delete/${id}`);
   }
 
-  deleteMedia(media: WmFeature<Media>): Observable<any> {
-    const id = media.properties.id;
-    return this.deleteApiMedia(id).pipe(
-      take(1),
-      tap((res: responseDeleteMedia) => {
-        // console.log(res);
-        if (res.success != null) {
-          removeSynchronizedUgcMedia(media.properties.id);
-          this.syncUgc();
-        }
-      }),
-    );
-  }
-
   deletePoi(poi: WmFeature<Point>): Observable<any> {
     const id = poi.properties.id;
     return this.deleteApiPoi(id).pipe(
@@ -94,31 +70,6 @@ export class UgcService {
       return of(removeDeviceUgcTrack(track.properties.uuid));
     }
     return of({error: 'Track id not found'});
-  }
-
-  async fetchUgcMedias(): Promise<void> {
-    try {
-      const apiUgcMedias = await this.getApiMedias();
-      if (apiUgcMedias == null) {
-        return;
-      }
-      const cloudUgcMedias = await getSynchronizedUgcMedias();
-
-      for (let apiUgcMedia of apiUgcMedias.features) {
-        const cloudMedia = cloudUgcMedias.find(
-          media => media.properties.uuid === apiUgcMedia.properties.uuid,
-        );
-        if (!cloudMedia || this._isFeatureModified(apiUgcMedia, cloudMedia)) {
-          // console.log(`fetchUgcMedias sync: ${apiUgcMedia.properties.id} syncronized`);
-          await saveUgcMedia(apiUgcMedia);
-        } else {
-          // console.log(`fetchUgcMedias sync: ${apiUgcMedia.properties.id}`);
-        }
-      }
-      // console.log('fetchUgcMedias: Sincronizzazione eseguita correttamente');
-    } catch (error) {
-      console.error('fetchUgcMedias: Errore durante la sincronizzazione:', error);
-    }
   }
 
   async fetchUgcPois(): Promise<void> {
@@ -223,30 +174,6 @@ export class UgcService {
 
   loadUgcTracks() {
     return from(getUgcTracks()).pipe(map(ugcTrackFeatures => updateUgcTracks({ugcTrackFeatures})));
-  }
-
-  async pushUgcMedias(): Promise<void> {
-    try {
-      let deviceUgcMedias = await getDeviceUgcMedias();
-      for (let deviceUgcMedia of deviceUgcMedias) {
-        try {
-          const res = await this.saveApiMedia(deviceUgcMedia);
-          if (res) {
-            await removeDeviceUgcMedia(deviceUgcMedia.properties.uuid);
-            // console.log(`pushUgcMedias: Media con uuid ${deviceUgcMedia.properties.uuid} sincronizzata e rimossa.` );
-          }
-        } catch (trackError) {
-          console.error(
-            `Errore durante la sincronizzazione del media ${deviceUgcMedia.properties.uuid}:`,
-            trackError,
-          );
-        }
-      }
-
-      // console.log('Sincronizzazione dei pois eseguita correttamente');
-    } catch (error) {
-      console.error('Errore durante la sincronizzazione dei poi:', error);
-    }
   }
 
   async pushUgcPois(): Promise<void> {
@@ -362,40 +289,12 @@ export class UgcService {
     return Promise.resolve(null);
   }
 
-  async saveMedias(photos: WmFeature<Media, MediaProperties>[]): Promise<void> {
-    for (let photo of photos) {
-      await saveUgcMedia(photo);
-    }
-    this.syncUgc();
-  }
-
-  savePoi(poi: WmFeature<Point>): Observable<any> {
-    if (poi.properties.uuid) {
-      return of(saveUgcPoi(poi)).pipe(
-        take(1),
-        tap(() => this.syncUgc()),
-      );
-    }
-    return of({error: 'savePoi: id not found'});
-  }
-
-  saveTrack(track: WmFeature<LineString>): Observable<any> {
-    if (track.properties.uuid) {
-      return of(saveUgcTrack(track)).pipe(
-        take(1),
-        tap(() => this.syncUgc()),
-      );
-    }
-    return of({error: 'saveTrack: id not found'});
-  }
-
   async syncUgc(): Promise<void> {
     const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
     if (isLogged) {
       try {
         await this.syncUgcPois();
         await this.syncUgcTracks();
-        await this.syncUgcMedias();
       } catch (error) {
         console.error('syncUgc: Errore durante la sincronizzazione:', error);
       }
@@ -405,17 +304,6 @@ export class UgcService {
         .subscribe(ugcTrackFeatures => {
           this._store.dispatch(updateUgcTracks({ugcTrackFeatures}));
         });
-    }
-  }
-
-  async syncUgcMedias(): Promise<void> {
-    try {
-      const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
-      if (isLogged) {
-        await this.fetchUgcMedias();
-      }
-    } catch (error) {
-      console.error('syncUgcMedias: Errore durante la sincronizzazione:', error);
     }
   }
 

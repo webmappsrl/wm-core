@@ -15,7 +15,6 @@ import {BehaviorSubject, from, Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {LineString} from 'geojson';
 import {Media, MediaProperties, WmFeature} from '@wm-types/feature';
-import {getUgcMediasByIds} from '@wm-core/utils/localForage';
 import {LangService} from '@wm-core/localization/lang.service';
 import {deleteUgcTrack, updateUgcTrack} from '@wm-core/store/features/ugc/ugc.actions';
 import {UntypedFormGroup} from '@angular/forms';
@@ -34,11 +33,6 @@ export class UgcTrackPropertiesComponent {
   @Input('track') set setTrack(track: WmFeature<LineString>) {
     if (track != null) {
       this.track = track;
-      if (track.properties.photoKeys) {
-        this.medias$ = from(
-          getUgcMediasByIds(track.properties.photoKeys.map(key => key.toString())),
-        );
-      }
     }
   }
 

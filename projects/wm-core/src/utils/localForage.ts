@@ -8,12 +8,10 @@ export async function clearUgcData(): Promise<void> {
   await Promise.all([
     synchronizedEctrack.clear(),
     synchronizedImg.clear(),
-    synchronizedUgcMedia.clear(),
     synchronizedUgcTrack.clear(),
     synchronizedUgcPoi.clear(),
     deviceUgcTrack.clear(),
     deviceUgcPoi.clear(),
-    deviceUgcMedia.clear(),
     deviceImg.clear(),
   ]);
 }
@@ -101,20 +99,6 @@ export function getAuth(): Promise<IUser | null> {
   return deviceAuth.getItem<IUser>('user');
 }
 
-export async function getDeviceUgcMedia(
-  uuid: string,
-): Promise<WmFeature<Media, MediaProperties> | null> {
-  return handleAsync(
-    deviceUgcMedia.getItem<WmFeature<Media, MediaProperties>>(`${uuid}`),
-    'getDeviceUgcMedia: Failed',
-  );
-}
-
-export async function getDeviceUgcMedias(): Promise<WmFeature<Media, MediaProperties>[]> {
-  const keys = await handleAsync(deviceUgcMedia.keys(), 'Failed to get device UGC track keys');
-  return keys ? await Promise.all(keys.map(key => getDeviceUgcMedia(key))) : [];
-}
-
 export async function getDeviceUgcPoi(uuid: string): Promise<WmFeature<Point> | null> {
   return handleAsync(deviceUgcPoi.getItem<WmFeature<Point>>(`${uuid}`), 'getDeviceUgcPoi: Failed');
 }
@@ -187,20 +171,6 @@ export async function getLastSynchronizedUgcTrack(): Promise<WmFeature<LineStrin
   }
 }
 
-export async function getSynchronizedUgcMedia(
-  id: string,
-): Promise<WmFeature<Media, MediaProperties> | null> {
-  return handleAsync(
-    synchronizedUgcMedia.getItem<WmFeature<Media, MediaProperties>>(`${id}`),
-    'getSynchronizedUgcMedia: Failed',
-  );
-}
-
-export async function getSynchronizedUgcMedias(): Promise<WmFeature<Media, MediaProperties>[]> {
-  const keys = await handleAsync(synchronizedUgcMedia.keys(), 'getSynchronizedUgcMedias: Failed');
-  return keys ? await Promise.all(keys.map(key => getSynchronizedUgcMedia(key))) : [];
-}
-
 export async function getSynchronizedUgcPoi(id: string): Promise<WmFeature<Point> | null> {
   return handleAsync(
     synchronizedUgcPoi.getItem<WmFeature<Point>>(`${id}`),
@@ -223,27 +193,6 @@ export async function getSynchronizedUgcTrack(id: string): Promise<WmFeature<Lin
 export async function getSynchronizedUgcTracks(): Promise<WmFeature<LineString>[]> {
   const keys = await handleAsync(synchronizedUgcTrack.keys(), 'getSynchronizedUgcTracks: Failed');
   return keys ? await Promise.all(keys.map(key => getSynchronizedUgcTrack(key))) : [];
-}
-
-export async function getUgcMedia(
-  mediaId: string,
-): Promise<WmFeature<Media, MediaProperties> | null> {
-  return (await getSynchronizedUgcMedia(mediaId)) ?? (await getDeviceUgcMedia(mediaId));
-}
-
-export async function getUgcMedias(): Promise<WmFeature<Media, MediaProperties>[]> {
-  const deviceUgcMedias = await getDeviceUgcMedias();
-  const synchronizedUgcMedias = await getSynchronizedUgcMedias();
-  return [...deviceUgcMedias, ...synchronizedUgcMedias];
-}
-
-export async function getUgcMediasByIds(
-  ids: string[] = [],
-): Promise<WmFeature<Media, MediaProperties>[]> {
-  const ugcMedias = await getUgcMedias();
-  return ugcMedias.filter(media =>
-    ids.includes(media.properties.id?.toString() || media.properties.uuid),
-  );
 }
 
 export async function getUgcPoi(poiId: string | number | null): Promise<WmFeature<Point> | null> {
@@ -310,13 +259,6 @@ export function removeAuth(): Promise<void> {
   return deviceAuth.removeItem('user');
 }
 
-export async function removeDeviceUgcMedia(uuid: string): Promise<void> {
-  await handleAsync(
-    deviceUgcMedia.removeItem(uuid),
-    'removeDeviceUgcMedia: Failed to remove device UGC media',
-  );
-}
-
 export async function removeDeviceUgcPoi(uuid: string): Promise<void> {
   await handleAsync(
     deviceUgcPoi.removeItem(uuid),
@@ -356,10 +298,6 @@ export async function removeImgInsideTrack(track: WmFeature<LineString>): Promis
   await Promise.all(urls.map(url => removeImg(url)));
 }
 
-export async function removeSynchronizedUgcMedia(id: number): Promise<void> {
-  await handleAsync(synchronizedUgcMedia.removeItem(`${id}`), 'removeSynchronizedUgcMedia: Failed');
-}
-
 export async function removeSynchronizedUgcPoi(id: number): Promise<void> {
   await handleAsync(synchronizedUgcPoi.removeItem(`${id}`), 'removeSynchronizedUgcPoi: Failed');
 }
@@ -368,21 +306,8 @@ export async function removeSynchronizedUgcTrack(id: number): Promise<void> {
   await handleAsync(synchronizedUgcTrack.removeItem(`${id}`), 'removeSynchronizedUgcTrack: Failed');
 }
 
-export async function removeUgcMedia(media: WmFeature<Media, MediaProperties>): Promise<void> {
-  const properties = media.properties;
-  const featureId = properties.id ?? properties.rawData?.uuid;
-  const storage = properties.id ? synchronizedUgcMedia : deviceUgcMedia;
-  await handleAsync(storage.removeItem(`${featureId}`), 'removeUgcMedia: Failed');
-}
-
 export async function removeUgcPoi(poi: WmFeature<Point>): Promise<void> {
   const properties = poi.properties;
-  const photos = properties.photos ?? [];
-
-  photos.forEach(photo => {
-    removeUgcMedia(photo);
-  });
-
   const featureId = properties.id ?? properties.rawData?.uuid;
   const storage = properties.id ? synchronizedUgcPoi : deviceUgcPoi;
   await handleAsync(storage.removeItem(`${featureId}`), 'removeUgcPoi: Failed');
@@ -390,12 +315,6 @@ export async function removeUgcPoi(poi: WmFeature<Point>): Promise<void> {
 
 export async function removeUgcTrack(track: WmFeature<LineString>): Promise<void> {
   const properties = track.properties;
-  const photos = properties.photos ?? [];
-
-  photos.forEach(photo => {
-    removeUgcMedia(photo);
-  });
-
   const featureId = properties.id ?? properties.rawData?.uuid;
   const storage = properties.id ? synchronizedUgcTrack : deviceUgcTrack;
   await handleAsync(storage.removeItem(`${featureId}`), 'removeUgcTrack: Failed');
@@ -464,22 +383,6 @@ export async function saveImgInsideTrack(
   return Promise.resolve(totalSize);
 }
 
-export async function saveUgcMedia(feature: WmFeature<Media, MediaProperties>): Promise<void> {
-  if (!feature) return;
-  const properties = feature.properties;
-  const photo = properties.photo;
-
-  if (photo && photo.webPath) {
-    await saveImg(photo.webPath);
-  }
-  if (properties.url) {
-    await saveImg(properties.url);
-  }
-  const featureId = properties.id ?? properties?.uuid;
-  const storage = properties.id ? synchronizedUgcMedia : deviceUgcMedia;
-  await handleAsync(storage.setItem(`${featureId}`, feature), 'saveUgcMedia: Failed');
-}
-
 export async function saveUgcPoi(feature: WmFeature<Point>): Promise<void> {
   if (!feature) return;
   const properties = feature.properties;
@@ -513,10 +416,6 @@ export const synchronizedImg = localforage.createInstance({
   name: 'synchronized',
   storeName: 'img',
 });
-export const synchronizedUgcMedia = localforage.createInstance({
-  name: 'synchronized',
-  storeName: 'ugc-media',
-});
 export const synchronizedUgcTrack = localforage.createInstance({
   name: 'synchronized',
   storeName: 'ugc-tracks',
@@ -536,10 +435,6 @@ export const deviceUgcTrack = localforage.createInstance({
 export const deviceUgcPoi = localforage.createInstance({
   name: 'device',
   storeName: 'ugc-pois',
-});
-export const deviceUgcMedia = localforage.createInstance({
-  name: 'device',
-  storeName: 'ugc-media',
 });
 export const deviceImg = localforage.createInstance({
   name: 'device',

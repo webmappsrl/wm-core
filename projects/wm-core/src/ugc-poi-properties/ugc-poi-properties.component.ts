@@ -13,7 +13,6 @@ import {BehaviorSubject, from, Observable, of} from 'rxjs';
 import {filter, switchMap, take} from 'rxjs/operators';
 import {Point} from 'geojson';
 import {Media, MediaProperties, WmFeature} from '@wm-types/feature';
-import {getUgcMediasByIds} from '@wm-core/utils/localForage';
 import {LangService} from '@wm-core/localization/lang.service';
 import {deleteUgcPoi, updateUgcPoi} from '@wm-core/store/features/ugc/ugc.actions';
 import {UntypedFormGroup} from '@angular/forms';
@@ -44,9 +43,6 @@ export class UgcPoiPropertiesComponent {
     filter(poiProperties => poiProperties != null),
     take(1),
     switchMap(poiProperties => {
-      if (poiProperties.photoKeys) {
-        return from(getUgcMediasByIds(poiProperties.photoKeys.map(key => key.toString())));
-      }
       return of(null);
     }),
   );
@@ -69,25 +65,27 @@ export class UgcPoiPropertiesComponent {
   ) {}
 
   deletePoi(): void {
-    this.currentUgcPoi$.pipe(
-      take(1),
-      switchMap(poi => {
-        return from(
-          this._alertCtlr.create({
-            message: this._langSvc.instant(
-              'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.',
-            ),
-            buttons: [
-              {text: this._langSvc.instant('Annulla'), role: 'cancel'},
-              {
-                text: this._langSvc.instant('Elimina'),
-                handler: () => this._store.dispatch(deleteUgcPoi({poi})),
-              },
-            ],
-          }),
-        )
-      }),
-    ).subscribe(alert => alert.present());
+    this.currentUgcPoi$
+      .pipe(
+        take(1),
+        switchMap(poi => {
+          return from(
+            this._alertCtlr.create({
+              message: this._langSvc.instant(
+                'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.',
+              ),
+              buttons: [
+                {text: this._langSvc.instant('Annulla'), role: 'cancel'},
+                {
+                  text: this._langSvc.instant('Elimina'),
+                  handler: () => this._store.dispatch(deleteUgcPoi({poi})),
+                },
+              ],
+            }),
+          );
+        }),
+      )
+      .subscribe(alert => alert.present());
   }
 
   enableEditing(): void {
@@ -119,6 +117,6 @@ export class UgcPoiPropertiesComponent {
         this._store.dispatch(updateUgcPoi({poi}));
         this.isEditing$.next(false);
       }
-    })
+    });
   }
 }

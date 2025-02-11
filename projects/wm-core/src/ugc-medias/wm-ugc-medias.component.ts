@@ -10,9 +10,11 @@ import {MediaProperties, WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
 import {BehaviorSubject, from, merge, of} from 'rxjs';
 import {filter, switchMap} from 'rxjs/operators';
-import {getUgcMediasByIds} from '@wm-core/utils/localForage';
 import {Store} from '@ngrx/store';
-import {currentUgcPoiProperties, currentUgcTrackProperties} from '@wm-core/store/features/ugc/ugc.selector';
+import {
+  currentUgcPoiProperties,
+  currentUgcTrackProperties,
+} from '@wm-core/store/features/ugc/ugc.selector';
 
 @Component({
   selector: 'wm-ugc-medias',
@@ -42,18 +44,14 @@ export class WmUgcMediasComponent {
   };
 
   constructor(private _store: Store) {
-    merge(
-      this.currentPoiProperties$,
-      this.currentTrackProperties$
-    ).pipe(
+    merge(this.currentPoiProperties$, this.currentTrackProperties$)
+      .pipe(
         filter(properties => properties != null),
         switchMap(properties => {
           if (properties?.photos && properties.photos.length > 0) {
             return of(properties.photos);
           }
-          if (properties?.photoKeys) {
-            return from(getUgcMediasByIds(properties.photoKeys.map(key => key.toString())));
-          }
+
           return of(null);
         }),
       )
