@@ -344,9 +344,7 @@ export class UgcService {
     const photoFeatures = properties.photos;
     const data = new FormData();
     data.append('feature', JSON.stringify(feature));
-    for (let [index, photoFeature] of photoFeatures.entries()) {
-      const {properties} = photoFeature;
-      const {photo} = properties;
+    for (let [index, photo] of photoFeatures.entries()) {
       if (photo && photo.webPath) {
         await saveImg(photo.webPath);
       }
