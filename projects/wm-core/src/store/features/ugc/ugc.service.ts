@@ -307,7 +307,7 @@ export class UgcService {
 
   private async _buildFormData(feature: WmFeature<LineString | Point>): Promise<FormData> {
     const {properties} = feature;
-    const photoFeatures = properties.photos;
+    const photoFeatures = properties.media;
     const data = new FormData();
     data.append('feature', JSON.stringify(feature));
     for (let [index, photo] of photoFeatures.entries()) {
