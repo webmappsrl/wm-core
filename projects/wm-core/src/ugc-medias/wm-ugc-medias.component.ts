@@ -1,12 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ViewEncapsulation,
-  Input,
-  ViewChild,
-} from '@angular/core';
-import {IonSlides, ModalController} from '@ionic/angular';
-import {MediaProperties, WmFeature} from '@wm-types/feature';
+import {Component, ViewEncapsulation, Input, ViewChild} from '@angular/core';
+import {IonSlides} from '@ionic/angular';
+import {Media, WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
 import {BehaviorSubject, from, merge, of} from 'rxjs';
 import {filter, switchMap} from 'rxjs/operators';
@@ -26,13 +20,10 @@ export class WmUgcMediasComponent {
   @Input() showArrows = false;
   @ViewChild('slider') slider: IonSlides;
 
-  currentMedia$: BehaviorSubject<null | WmFeature<Point, MediaProperties>> =
-    new BehaviorSubject<null | WmFeature<Point, MediaProperties>>(null);
+  currentMedia$: BehaviorSubject<null | Media> = new BehaviorSubject<null | Media>(null);
   currentPoiProperties$ = this._store.select(currentUgcPoiProperties);
   currentTrackProperties$ = this._store.select(currentUgcTrackProperties);
-  medias$: BehaviorSubject<null | WmFeature<Point, MediaProperties>[]> = new BehaviorSubject<
-    null | WmFeature<Point, MediaProperties>[]
-  >(null);
+  medias$: BehaviorSubject<null | Media[]> = new BehaviorSubject<null | Media[]>(null);
   showMedia$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   sliderOptions = {
     slidesPerView: 1,
@@ -48,8 +39,8 @@ export class WmUgcMediasComponent {
       .pipe(
         filter(properties => properties != null),
         switchMap(properties => {
-          if (properties?.photos && properties.photos.length > 0) {
-            return of(properties.photos);
+          if (properties?.media && properties.media.length > 0) {
+            return of(properties.media);
           }
 
           return of(null);
@@ -77,7 +68,7 @@ export class WmUgcMediasComponent {
     this.currentMedia$.next(this.medias$.value[index]);
   }
 
-  async showMedia(media: WmFeature<Point, MediaProperties>) {
+  async showMedia(media: Media) {
     this.currentMedia$.next(media);
     this.showMedia$.next(true);
   }

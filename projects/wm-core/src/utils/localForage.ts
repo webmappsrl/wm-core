@@ -1,4 +1,4 @@
-import {WmFeature, Media, MediaProperties} from '@wm-types/feature';
+import {WmFeature} from '@wm-types/feature';
 import {GeoJsonProperties, LineString, Point} from 'geojson';
 import * as localforage from 'localforage';
 import {downloadTiles, getTilesByGeometry, removeTiles} from '../../../../../map-core/src/utils';

@@ -14,7 +14,7 @@ import {Store} from '@ngrx/store';
 import {BehaviorSubject, from, Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {LineString} from 'geojson';
-import {Media, MediaProperties, WmFeature} from '@wm-types/feature';
+import {WmFeature} from '@wm-types/feature';
 import {LangService} from '@wm-core/localization/lang.service';
 import {deleteUgcTrack, updateUgcTrack} from '@wm-core/store/features/ugc/ugc.actions';
 import {UntypedFormGroup} from '@angular/forms';
@@ -46,7 +46,6 @@ export class UgcTrackPropertiesComponent {
   currentImage$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
   fg: UntypedFormGroup;
   isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  medias$: Observable<WmFeature<Media, MediaProperties>[]>;
   slideOptions = {
     allowTouchMove: false,
     slidesPerView: 1,

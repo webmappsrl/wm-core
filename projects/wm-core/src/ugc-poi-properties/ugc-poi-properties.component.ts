@@ -10,9 +10,9 @@ import {
 import {AlertController, IonContent, IonSlides} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, from, Observable, of} from 'rxjs';
-import {filter, switchMap, take} from 'rxjs/operators';
+import {switchMap, take} from 'rxjs/operators';
 import {Point} from 'geojson';
-import {Media, MediaProperties, WmFeature} from '@wm-types/feature';
+import {WmFeature} from '@wm-types/feature';
 import {LangService} from '@wm-core/localization/lang.service';
 import {deleteUgcPoi, updateUgcPoi} from '@wm-core/store/features/ugc/ugc.actions';
 import {UntypedFormGroup} from '@angular/forms';
@@ -39,13 +39,7 @@ export class UgcPoiPropertiesComponent {
   currentUgcPoiProperties$ = this._store.select(currentUgcPoiProperties);
   fg: UntypedFormGroup;
   isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  medias$: Observable<WmFeature<Media, MediaProperties>[]> = this.currentUgcPoiProperties$.pipe(
-    filter(poiProperties => poiProperties != null),
-    take(1),
-    switchMap(poiProperties => {
-      return of(null);
-    }),
-  );
+
   slideOptions = {
     allowTouchMove: false,
     slidesPerView: 1,

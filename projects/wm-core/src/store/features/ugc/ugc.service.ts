@@ -23,7 +23,7 @@ import {
   saveUgcPoi,
   saveUgcTrack,
 } from '@wm-core/utils/localForage';
-import {Media, MediaProperties, WmFeature, WmFeatureCollection} from '@wm-types/feature';
+import {WmFeature, WmFeatureCollection} from '@wm-types/feature';
 import {catchError, map, take, tap} from 'rxjs/operators';
 
 @Injectable({
@@ -116,15 +116,6 @@ export class UgcService {
     } catch (error) {
       console.error('fetchUgcTracks: Errore durante la sincronizzazione:', error);
     }
-  }
-
-  async getApiMedias(): Promise<WmFeatureCollection<Media, MediaProperties>> {
-    return await this._http
-      .get<WmFeatureCollection<Media, MediaProperties>>(
-        `${this.environment.api}/api/ugc/media/index/v2`,
-      )
-      .pipe(catchError(_ => of(null)))
-      .toPromise();
   }
 
   async getApiPois(): Promise<WmFeatureCollection<Point>> {
@@ -221,31 +212,6 @@ export class UgcService {
       // console.log('Sincronizzazione delle tracce eseguita correttamente');
     } catch (error) {
       console.error('Errore durante la sincronizzazione delle tracce:', error);
-    }
-  }
-
-  /**
-   * Save a photo as a EC MEDIA to the Geohub
-   *
-   * @param photo the photo to save
-   *
-   * @returns
-   */
-  async saveApiMedia(media: WmFeature<Media>): Promise<WmFeature<Media, MediaProperties>> {
-    if (media != null) {
-      const {properties} = media;
-      const photo = properties.photo;
-      const data = new FormData();
-      data.append('feature', JSON.stringify(media));
-
-      if (photo.webPath) {
-        const blob: ArrayBuffer = (await getImg(photo.webPath)) as ArrayBuffer;
-        data.append('image', new Blob([blob]) as Blob, 'image.jpg');
-      }
-      return await this._http
-        .post(`${this.environment.api}/api/ugc/media/store/v2`, data)
-        .pipe(catchError(_ => of(null)))
-        .toPromise();
     }
   }
 

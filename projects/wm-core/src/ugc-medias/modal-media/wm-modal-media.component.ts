@@ -6,8 +6,7 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import {MediaProperties, WmFeature} from '@wm-types/feature';
-import {Point} from 'geojson';
+import {Media} from '@wm-types/feature';
 import {BehaviorSubject} from 'rxjs';
 
 @Component({
@@ -18,7 +17,7 @@ import {BehaviorSubject} from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WmModalMediaComponent {
-  @Input('media') set setMedia(media: WmFeature<Point, MediaProperties>) {
+  @Input('media') set setMedia(media: Media) {
     this.media$.next(media);
   }
 
@@ -28,7 +27,5 @@ export class WmModalMediaComponent {
   @Output() nextMediaEVT: EventEmitter<void> = new EventEmitter<void>();
   @Output() prevMediaEVT: EventEmitter<void> = new EventEmitter<void>();
 
-  media$: BehaviorSubject<WmFeature<Point, MediaProperties>> = new BehaviorSubject<
-    WmFeature<Point, MediaProperties>
-  >(null);
+  media$: BehaviorSubject<Media> = new BehaviorSubject<Media>(null);
 }

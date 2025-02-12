@@ -1,17 +1,24 @@
-import { IRegisterItem } from "../types/track";
-import { DeviceService } from "./device.service";
-import { GeolocationService } from "./geolocation.service";
-import { HttpClient } from "@angular/common/http";
-import { Inject, Injectable } from "@angular/core";
-import { Camera, CameraDirection, CameraResultType, CameraSource, GalleryImageOptions, GalleryPhotos, Photo } from "@capacitor/camera";
-import { Capacitor } from "@capacitor/core";
-import { Directory, Filesystem, GetUriResult } from "@capacitor/filesystem";
-import { ActionSheetController } from "@ionic/angular";
-import { LangService } from "@wm-core/localization/lang.service";
-import { APP_ID, APP_VERSION } from "@wm-core/store/conf/conf.token";
-import { Location } from "@wm-core/types/location";
-import { saveImg } from "@wm-core/utils/localForage";
-import { MediaProperties } from "@wm-types/feature";
+import {IRegisterItem} from '../types/track';
+import {DeviceService} from './device.service';
+import {GeolocationService} from './geolocation.service';
+import {HttpClient} from '@angular/common/http';
+import {Inject, Injectable} from '@angular/core';
+import {
+  Camera,
+  CameraDirection,
+  CameraResultType,
+  CameraSource,
+  GalleryImageOptions,
+  GalleryPhotos,
+  Photo,
+} from '@capacitor/camera';
+import {Capacitor} from '@capacitor/core';
+import {Directory, Filesystem, GetUriResult} from '@capacitor/filesystem';
+import {ActionSheetController} from '@ionic/angular';
+import {LangService} from '@wm-core/localization/lang.service';
+import {APP_ID, APP_VERSION} from '@wm-core/store/conf/conf.token';
+import {Location} from '@wm-core/types/location';
+import {saveImg} from '@wm-core/utils/localForage';
 
 export interface IPhotoItem extends IRegisterItem {
   blob?: Blob;
