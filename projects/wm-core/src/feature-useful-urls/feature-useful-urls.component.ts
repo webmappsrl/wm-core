@@ -2,10 +2,10 @@ import {ChangeDetectionStrategy, Component, Input, OnInit, ViewEncapsulation} fr
 import {Filesystem, Directory, Encoding, WriteFileOptions} from '@capacitor/filesystem';
 import {Share} from '@capacitor/share';
 import GeoJsonToGpx from '@dwayneparton/geojson-to-gpx';
-import {Feature, LineString} from 'geojson';
+import {LineString} from 'geojson';
 import tokml from 'geojson-to-kml';
 import {DeviceService} from '@wm-core/services/device.service';
-import { WmFeature } from '@wm-types/feature';
+import {WmFeature} from '@wm-types/feature';
 @Component({
   selector: 'wm-feature-useful-urls',
   templateUrl: './feature-useful-urls.component.html',
@@ -43,7 +43,7 @@ export class WmFeatureUsefulUrlsComponent implements OnInit {
           properties: Object.entries(g.properties).reduce((acc, [key, value]) => {
             acc[key] = typeof value === 'object' ? JSON.stringify(value) : value;
             return acc;
-          }, {} as { [key: string]: any }),
+          }, {} as {[key: string]: any}),
         };
         output = tokml(serializedFeature);
         break;

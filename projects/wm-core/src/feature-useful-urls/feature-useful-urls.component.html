@@ -1,29 +1,29 @@
 <div class="webmapp-title">{{'Link utili'|wmtrans}}</div>
-<ion-list id="wm-track-useful-urls-list">
-  <ion-item *ngIf="osm" [href]="osm" class="wm-track-useful-urls-item" target="_blank">
+<ion-list id="wm-feature-useful-urls-list">
+  <ion-item *ngIf="osm" [href]="osm" class="wm-feature-useful-urls-item" target="_blank">
     <ion-icon class="wm-icn " name="link-outline" slot="start"></ion-icon>
-    <ion-label class="wm-track-useful-urls-item-label">
+    <ion-label class="wm-feature-useful-urls-item-label">
       {{ "Vedi su OpenStreetMap" | wmtrans }}
     </ion-label>
   </ion-item>
   <ng-container *ngIf="track!=null">
-    <ion-item (click)="export('gpx')" class="wm-track-useful-urls-item">
+    <ion-item (click)="export('gpx')" class="wm-feature-useful-urls-item">
       <ion-icon name="download" slot="start"></ion-icon>
-      <ion-label class="wm-track-useful-urls-item-label">
+      <ion-label class="wm-feature-useful-urls-item-label">
         {{ "Scarica il tracciato GPX" | wmtrans }}
       </ion-label>
     </ion-item>
-    <ion-item (click)="export('kml')" class="wm-track-useful-urls-item">
+    <ion-item (click)="export('kml')" class="wm-feature-useful-urls-item">
       <ion-icon name="download" slot="start"></ion-icon>
-      <ion-label class="wm-track-useful-urls-item-label">
+      <ion-label class="wm-feature-useful-urls-item-label">
         {{ "Scarica il tracciato KML" | wmtrans }}
       </ion-label>
     </ion-item>
-    <ion-item (click)="export('geojson')" class="wm-track-useful-urls-item">
-    <ion-icon name="download" slot="start"></ion-icon>
-    <ion-label class="wm-track-useful-urls-item-label">
-      {{ "Scarica il tracciato GEOJSON" | wmtrans }}
-    </ion-label>
+    <ion-item (click)="export('geojson')" class="wm-feature-useful-urls-item">
+      <ion-icon name="download" slot="start"></ion-icon>
+      <ion-label class="wm-feature-useful-urls-item-label">
+        {{ "Scarica il tracciato GEOJSON" | wmtrans }}
+      </ion-label>
     </ion-item>
   </ng-container>
   <ng-content></ng-content>
