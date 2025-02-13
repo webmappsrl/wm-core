@@ -6,7 +6,7 @@ import {confMAP} from '@wm-core/store/conf/conf.selector';
 import {wmMapHitMapChangeFeatureById} from '@wm-core/store/user-activity/user-activity.action';
 import {Feature, FeatureCollection} from 'geojson';
 import {Observable, of} from 'rxjs';
-import {catchError, map, switchMap} from 'rxjs/operators';
+import {catchError, filter, map, switchMap} from 'rxjs/operators';
 
 @Component({
   selector: 'wm-home-hitmap',
@@ -20,6 +20,7 @@ export class WmHomeHitMapComponent {
   searchTerm: string = '';
 
   wmMapHitMap$: Observable<FeatureCollection> = this.confMAP$.pipe(
+    filter(conf => conf != null),
     map(conf => conf?.hitMapUrl),
     switchMap(url => {
       return this._http.get(url) as Observable<FeatureCollection>;
