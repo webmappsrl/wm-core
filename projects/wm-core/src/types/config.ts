@@ -266,6 +266,7 @@ export interface IMAP {
   alert_poi_show?: boolean;
   bbox: [number, number, number, number];
   center?: [number, number];
+  hitMapUrl?: string;
   controls: ICONTROLS;
   defZoom: number;
   edges?: {[trackId: number]: {prev: number[]; next: number[]}};

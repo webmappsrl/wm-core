@@ -1,0 +1,14 @@
+<ng-container *ngIf="wmMapHitMap$|async as hitmap">
+  <ng-container *ngIf="hitmap.features as features">
+    <ion-searchbar [(ngModel)]="searchTerm" placeholder="{{'placeholder'|wmtrans}}"></ion-searchbar>
+    <ng-container *ngFor="let feature of features|wmFilterFeatures:searchTerm">
+      <ion-card *ngIf="feature.properties as properties" (click)="onClick(feature)">
+        <ion-card-header>
+          <ion-card-title>
+            {{properties.carg_code}}
+          </ion-card-title>
+        </ion-card-header>
+      </ion-card>
+    </ng-container>
+  </ng-container>
+</ng-container>

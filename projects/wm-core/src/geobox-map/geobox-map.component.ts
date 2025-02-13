@@ -82,6 +82,7 @@ import {
   mapFilters,
   poiFilterIdentifiers,
   ugcOpened,
+  wmMapHitMapChangeFeatureById,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {WmFeature} from '@wm-types/feature';
 import {LineString, Point} from 'geojson';
@@ -247,7 +248,9 @@ export class WmGeoboxMapComponent implements OnDestroy {
   wmMapHitMapUrl$: Observable<string | null> = this.confMap$.pipe(map(conf => conf?.hitMapUrl));
   wmMapPositionfocus$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   wmMapUgcDisableLayers$: Observable<boolean>;
-
+  wmMapHitMapChangeFeatureById$: Observable<number> = this._store.select(
+    wmMapHitMapChangeFeatureById,
+  );
   constructor(
     private _route: ActivatedRoute,
     private _cdr: ChangeDetectorRef,

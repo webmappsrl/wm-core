@@ -23,6 +23,7 @@ import {
   trackElevationChartHoverElemenents,
   openDownloads,
   closeDownloads,
+  wmMapHitMapChangeFeatureById,
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
@@ -44,6 +45,7 @@ export interface UserActivityState {
   drawTrackOpened: boolean;
   chartHoverElements: WmSlopeChartHoverElements;
   currentEcPoiId?: any;
+  wmMapHitMapChangeFeatureById?: number;
 }
 
 export interface UserAcitivityRootState {
@@ -60,6 +62,7 @@ const initialState: UserActivityState = {
   lastFilterType: null,
   loading: {pois: false, layer: false},
   chartHoverElements: null,
+  wmMapHitMapChangeFeatureById: null,
 };
 
 export const userActivityReducer = createReducer(
@@ -234,6 +237,13 @@ export const userActivityReducer = createReducer(
     const newState: UserActivityState = {
       ...state,
       currentEcPoiId,
+    };
+    return newState;
+  }),
+  on(wmMapHitMapChangeFeatureById, (state, {id}) => {
+    const newState: UserActivityState = {
+      ...state,
+      wmMapHitMapChangeFeatureById: id,
     };
     return newState;
   }),

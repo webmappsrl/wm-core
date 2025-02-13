@@ -13,11 +13,12 @@ import {WmHowMany} from './wm-how-many.pipe';
 import {WmOrderedBySelection} from './wm-filter-by-selection.pipe';
 import {WmAsAny} from './wm-as-any.pipe';
 import {WmIsSelected} from './wm-filter-is-selected.pipe';
-import { getFormFieldIcnPipe } from './get-form-field-icn.pipe';
-import { getFormFieldValuePipe } from './get-form-field-value.pipe';
-import { WmCreateBlobPipe } from './wm-create-blob.pipe';
-import { WmTimeFormatterPipe } from './wm-time-formatter.pipe';
+import {getFormFieldIcnPipe} from './get-form-field-icn.pipe';
+import {getFormFieldValuePipe} from './get-form-field-value.pipe';
+import {WmCreateBlobPipe} from './wm-create-blob.pipe';
+import {WmTimeFormatterPipe} from './wm-time-formatter.pipe';
 import {WmSortPipe} from './wm-sort.pipe';
+import {WmFilterFeaturesPipe} from './wm-filter-features';
 
 const pipes = [
   WmTransPipe,
@@ -37,7 +38,8 @@ const pipes = [
   getFormFieldValuePipe,
   WmCreateBlobPipe,
   WmTimeFormatterPipe,
-  WmSortPipe
+  WmSortPipe,
+  WmFilterFeaturesPipe,
 ];
 @NgModule({
   declarations: pipes,

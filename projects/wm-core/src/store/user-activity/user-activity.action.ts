@@ -91,3 +91,8 @@ export const trackElevationChartHoverElemenents = createAction(
 );
 
 export const openUgcUploader = createAction('[User Activity] open ugc uploader');
+
+export const wmMapHitMapChangeFeatureById = createAction(
+  '[User Activity] hit map change feature by id',
+  props<{id: number}>(),
+);

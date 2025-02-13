@@ -39,7 +39,7 @@ import {AuthEffects} from './store/auth/auth.effects';
 import {authReducer} from './store/auth/auth.reducer';
 import {ModalHeaderComponent} from './modal-header/modal-header.component';
 import {LoginComponent} from './login/login.component';
-import {ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {WmProfileModule} from './profile/profile.module';
 import {RegisterComponent} from './register/register.component';
 import {GenericPopoverComponent} from './generic-popover/generic-popover.component';
@@ -64,8 +64,9 @@ import {TrackRelatedPoiComponent} from './track-related-poi/track-related-poi.co
 import {UgcPoiPropertiesComponent} from './ugc-poi-properties/ugc-poi-properties.component';
 import {WmTrackAlertComponent} from './track-alert/track-alert.component';
 import {ModalUgcTrackUploaderComponent} from './modal-ugc-track-uploader/modal-ugc-track-uploader.component';
-import { NetworkEffects } from './store/network/network.effects';
-import { networkReducer } from './store/network/netwotk.reducer';
+import {NetworkEffects} from './store/network/network.effects';
+import {networkReducer} from './store/network/netwotk.reducer';
+import {WmHomeHitMapComponent} from './home/home-hitmap/home-hitmap.component';
 export const declarations = [
   WmTabDetailComponent,
   WmTabDescriptionComponent,
@@ -102,6 +103,7 @@ export const declarations = [
   UgcPoiPropertiesComponent,
   WmTrackAlertComponent,
   ModalUgcTrackUploaderComponent,
+  WmHomeHitMapComponent,
 ];
 const modules = [
   WmSharedModule,
@@ -114,6 +116,7 @@ const modules = [
   WmProfileModule,
   WmMapModule,
   WmUgcMediasModule,
+  FormsModule,
 ];
 @NgModule({
   declarations,
@@ -133,7 +136,7 @@ const modules = [
         AuthEffects,
         UgcEffects,
         UserActivityEffects,
-        NetworkEffects
+        NetworkEffects,
       ]),
       TranslateModule.forRoot({
         loader: {

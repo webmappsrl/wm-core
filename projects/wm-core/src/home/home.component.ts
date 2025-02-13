@@ -15,12 +15,19 @@ import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {debounceTime, filter, map, take, withLatestFrom} from 'rxjs/operators';
 
 import {countEcAll} from '@wm-core/store/features/ec/ec.selector';
-import {confAPP, confHOME, confPROJECT, confOPTIONS} from '@wm-core/store/conf/conf.selector';
+import {
+  confAPP,
+  confHOME,
+  confPROJECT,
+  confOPTIONS,
+  confMAP,
+} from '@wm-core/store/conf/conf.selector';
 import {
   IAPP,
   IHOME,
   ILAYER,
   ILAYERBOX,
+  IMAP,
   IOPTIONS,
   IPOITYPEFILTERBOX,
   ISLUGBOX,
@@ -57,6 +64,7 @@ export class WmHomeComponent implements AfterContentInit {
   @ViewChild('searchCmp') searchCmp: WmSearchBarComponent;
 
   confAPP$: Observable<IAPP> = this._store.select(confAPP);
+  confMAP$: Observable<IMAP> = this._store.select(confMAP);
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
   countAll$: Observable<number>;

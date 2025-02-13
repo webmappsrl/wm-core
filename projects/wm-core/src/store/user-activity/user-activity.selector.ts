@@ -14,7 +14,10 @@ export const downloadsOpened = createSelector(
   userActivity,
   (state: UserActivityState) => state.downloadsOpened,
 );
-
+export const wmMapHitMapChangeFeatureById = createSelector(
+  userActivity,
+  (state: UserActivityState) => state.wmMapHitMapChangeFeatureById,
+);
 export const inputTyped = createSelector(
   userActivity,
   (state: UserActivityState) => state.inputTyped,

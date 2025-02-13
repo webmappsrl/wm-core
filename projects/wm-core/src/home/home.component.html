@@ -7,7 +7,7 @@
     </div>
   </ng-container>
   <wm-searchbar
-    *ngIf="(confOPTIONS$|async).show_searchbar && !(ugcOpened$|async) && (online$|async)"
+    *ngIf="(confMAP$|async)?.hitMapUrl==null &&(confOPTIONS$|async)?.show_searchbar && !(ugcOpened$|async) && (online$|async)"
     #searchCmp
     [initSearch]="''"
   >
@@ -37,4 +37,5 @@
       <wm-home-result (trackEVT)="setTrack($event)" (poiEVT)="setPoi($event)"></wm-home-result>
     </ng-container>
   </ng-template>
+  <wm-home-hitmap></wm-home-hitmap>
 </div>
