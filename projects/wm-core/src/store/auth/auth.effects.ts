@@ -160,6 +160,7 @@ export class AuthEffects {
   ) {}
 
   private _createErrorAlert(error: string): Promise<HTMLIonAlertElement> {
+    return null;
     return this._alertCtrl.create({
       mode: 'ios',
       header: this._langSvc.instant('Ops!'),
