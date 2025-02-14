@@ -4,7 +4,7 @@ import {
   ViewChild,
   ChangeDetectionStrategy,
   ViewEncapsulation,
-  Input,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {UntypedFormGroup} from '@angular/forms';
 import {AlertController, ModalController} from '@ionic/angular';
@@ -46,6 +46,7 @@ export class ModalUgcTrackUploaderComponent {
     private _deviceSvc: DeviceService,
     private _langSvc: LangService,
     private _alertCtrl: AlertController,
+    private _cdr: ChangeDetectorRef,
   ) {}
 
   cancel(): void {
@@ -85,6 +86,13 @@ export class ModalUgcTrackUploaderComponent {
   removeFile(): void {
     this.selectedFile$.next(null);
     this.ugcTrack$.next(null);
+  }
+
+  setFormGroup(formGroup: UntypedFormGroup): void {
+    this.fg = formGroup;
+    setTimeout(() => {
+      this._cdr.detectChanges();
+    }, 0);
   }
 
   upload(): void {

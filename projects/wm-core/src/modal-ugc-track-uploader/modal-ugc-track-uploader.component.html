@@ -30,7 +30,7 @@
       <wm-form
         [confPOIFORMS]="confTRACKFORMS$|async"
         [init]="ugcTrack.properties?.form"
-        (formGroupEvt)="fg = $event"
+        (formGroupEvt)="setFormGroup($event)"
       ></wm-form>
     </ng-container>
   </ng-container>

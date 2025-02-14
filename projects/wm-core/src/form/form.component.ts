@@ -100,6 +100,9 @@ export class WmFormComponent {
       formObj['index'] = idx;
       formObj['id'] = this.currentForm$.value.id;
       this.formGroup = this._fb.group(formObj);
+      if (values) {
+        this.formGroup.markAsDirty();
+      }
       this.formGroupEvt.emit(this.formGroup);
     });
   }
