@@ -8,10 +8,20 @@ import {Feature} from 'geojson';
 export class WmFilterFeaturesPipe implements PipeTransform {
   transform(features: Feature[], filter: string): any[] {
     if (!features || !filter) {
-      return features;
+      return features.sort(this._sortFeatures);
     }
-    return features.filter(feature =>
-      feature.properties?.carg_code?.toLowerCase().includes(filter.toLowerCase()),
-    );
+    return features
+      .filter(feature =>
+        feature.properties?.carg_code?.toLowerCase().includes(filter.toLowerCase()),
+      )
+      .sort(this._sortFeatures);
+  }
+
+  private _sortFeatures(a: Feature, b: Feature): number {
+    const aCargCode = a.properties?.carg_code ?? '';
+    const bCargCode = b.properties?.carg_code ?? '';
+
+    // Confronta alfanumericamente le proprietà carg_code
+    return aCargCode.localeCompare(bCargCode, undefined, {numeric: true, sensitivity: 'base'});
   }
 }
