@@ -31,6 +31,7 @@ import {catchError, map, take, tap} from 'rxjs/operators';
 })
 export class UgcService {
   isLogged$ = this._store.select(isLogged);
+  private syncQueue: Promise<void> = Promise.resolve();
 
   constructor(
     @Inject(ENVIRONMENT_CONFIG) public environment: EnvironmentConfig,
@@ -170,48 +171,76 @@ export class UgcService {
   async pushUgcPois(): Promise<void> {
     try {
       let deviceUgcPois = await getDeviceUgcPois();
+      let synchronizedUgcPois = await getSynchronizedUgcPois();
+
       for (let deviceUgcPoi of deviceUgcPois) {
+        const existingPoi = synchronizedUgcPois.find(
+          poi => poi.properties.uuid === deviceUgcPoi.properties.uuid,
+        );
+
+        if (existingPoi) {
+          console.log(
+            `POI with UUID ${deviceUgcPoi.properties.uuid} already exists. Skipping save.`,
+          );
+          continue;
+        }
+
         try {
           const res = await this.saveApiPoi(deviceUgcPoi);
           if (res) {
             await removeDeviceUgcPoi(deviceUgcPoi.properties.uuid);
-            // console.log(`Poi con uuid ${deviceUgcPoi.properties.uuid} sincronizzata e rimossa.`);
+            synchronizedUgcPois.push(deviceUgcPoi); // Aggiorna la lista dei POI sincronizzati
+            // console.log(`POI with UUID ${deviceUgcPoi.properties.uuid} synchronized and removed.`);
           }
-        } catch (trackError) {
+        } catch (poiError) {
           console.error(
-            `Errore durante la sincronizzazione del pou ${deviceUgcPoi.properties.uuid}:`,
-            trackError,
+            `Error during synchronization of POI ${deviceUgcPoi.properties.uuid}:`,
+            poiError,
           );
         }
       }
 
-      // console.log('Sincronizzazione dei pois eseguita correttamente');
+      // console.log('POI synchronization completed successfully');
     } catch (error) {
-      console.error('Errore durante la sincronizzazione dei poi:', error);
+      console.error('Error during POI synchronization:', error);
     }
   }
 
   async pushUgcTracks(): Promise<void> {
     try {
       let deviceUgcTracks = await getDeviceUgcTracks();
+      let synchronizedUgcTracks = await getSynchronizedUgcTracks();
+
       for (let deviceUgcTrack of deviceUgcTracks) {
+        const existingTrack = synchronizedUgcTracks.find(
+          track => track.properties.uuid === deviceUgcTrack.properties.uuid,
+        );
+
+        if (existingTrack) {
+          console.log(
+            `Track with UUID ${deviceUgcTrack.properties.uuid} already exists. Skipping save.`,
+          );
+          continue;
+        }
+
         try {
           const res = await this.saveApiTrack(deviceUgcTrack);
           if (res) {
             await removeDeviceUgcTrack(deviceUgcTrack.properties.uuid);
-            // console.log( `Traccia con uuid ${deviceUgcTrack.properties.uuid} sincronizzata e rimossa.`);
+            synchronizedUgcTracks.push(deviceUgcTrack); // Aggiorna la lista delle tracce sincronizzate
+            // console.log(`Track with UUID ${deviceUgcTrack.properties.uuid} synchronized and removed.`);
           }
         } catch (trackError) {
           console.error(
-            `Errore durante la sincronizzazione della traccia ${deviceUgcTrack.properties.uuid}:`,
+            `Error during synchronization of track ${deviceUgcTrack.properties.uuid}:`,
             trackError,
           );
         }
       }
 
-      // console.log('Sincronizzazione delle tracce eseguita correttamente');
+      // console.log('Track synchronization completed successfully');
     } catch (error) {
-      console.error('Errore durante la sincronizzazione delle tracce:', error);
+      console.error('Error during track synchronization:', error);
     }
   }
 
@@ -258,18 +287,23 @@ export class UgcService {
   async syncUgc(): Promise<void> {
     const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
     if (isLogged) {
-      try {
-        await this.syncUgcPois();
-        await this.syncUgcTracks();
-      } catch (error) {
-        console.error('syncUgc: Errore durante la sincronizzazione:', error);
-      }
-    } else {
-      from(getUgcTracks())
-        .pipe(take(1))
-        .subscribe(ugcTrackFeatures => {
-          this._store.dispatch(updateUgcTracks({ugcTrackFeatures}));
-        });
+      this.syncQueue = this.syncQueue.then(async () => {
+        if (isLogged) {
+          try {
+            await this.syncUgcPois();
+            await this.syncUgcTracks();
+          } catch (error) {
+            console.error('syncUgc: Errore durante la sincronizzazione:', error);
+          }
+        } else {
+          from(getUgcTracks())
+            .pipe(take(1))
+            .subscribe(ugcTrackFeatures => {
+              this._store.dispatch(updateUgcTracks({ugcTrackFeatures}));
+            });
+        }
+      });
+      return this.syncQueue;
     }
   }
 
