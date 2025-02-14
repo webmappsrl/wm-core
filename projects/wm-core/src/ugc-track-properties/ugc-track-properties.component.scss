@@ -29,15 +29,15 @@ wm-ugc-track-properties {
       padding: 10px;
     }
   }
-
-  #wm-ugc-track-details-content > * {
-    padding-top: 20px;
+  ion-grid {
+    width: 100%;
   }
+
   #wm-ugc-track-details-content {
     width: 100%;
     height: calc(100% - 56px);
     font-family: var(--wm-font-family-content);
-    padding: 15px 20px 20px;
+    padding: 0px 10px;
     display: flex;
     flex-direction: column;
     flex-wrap: inherit;
@@ -46,12 +46,9 @@ wm-ugc-track-properties {
       text-transform: uppercase;
     }
     .wm-ugc-category-title {
-      font-size: var(--wm-font-md);
-      font-weight: 700;
-      line-height: 22px;
-      letter-spacing: 0em;
-      text-align: left;
-      margin-bottom: 10px;
+      font-weight: var(--wm-feature-details-title-font-weight);
+      font-size: var(--wm-feature-details-title-font-size);
+      color: var(--wm-feature-details-title-color);
     }
     .wm-ugc-track-activity-content {
       display: flex;

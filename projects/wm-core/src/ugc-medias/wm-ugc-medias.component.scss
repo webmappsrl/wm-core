@@ -2,6 +2,10 @@ wm-ugc-medias {
   position: relative;
   display: block;
   margin: var(--wm-feature-details-margin);
+  &:empty {
+    margin: 0;
+  }
+
   .wm-ugc-category-title{
     font-weight: var(--wm-feature-details-title-font-weight);
     font-size: var(--wm-feature-details-title-font-size);
