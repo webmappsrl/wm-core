@@ -4,7 +4,6 @@ import {
   ViewChild,
   ChangeDetectionStrategy,
   ViewEncapsulation,
-  Input,
 } from '@angular/core';
 import {UntypedFormGroup} from '@angular/forms';
 import {AlertController, ModalController} from '@ionic/angular';
@@ -12,7 +11,7 @@ import {Store} from '@ngrx/store';
 import {confGeohubId, confMAP, confTRACKFORMS} from '@wm-core/store/conf/conf.selector';
 import {WmFeature, WmProperties} from '@wm-types/feature';
 import {Feature, LineString} from 'geojson';
-import {BehaviorSubject, EMPTY, from, Observable} from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, from, Observable} from 'rxjs';
 import * as toGeoJSON from '@tmcw/togeojson';
 import {catchError, map, switchMap, take} from 'rxjs/operators';
 import {DeviceService} from '@wm-core/services/device.service';
@@ -34,19 +33,27 @@ export class ModalUgcTrackUploaderComponent {
   acceptedFileTypes: string = '.gpx,.kml,.geojson,application/gpx+xml,application/octet-stream';
   confMap$: Observable<any> = this._store.select(confMAP);
   confTRACKFORMS$: Observable<any[]> = this._store.select(confTRACKFORMS);
-  fg: UntypedFormGroup;
+  formGroup$: BehaviorSubject<UntypedFormGroup> = new BehaviorSubject<UntypedFormGroup>(null);
   geohubId$: Observable<number> = this._store.select(confGeohubId);
   isDragging$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   selectedFile$: BehaviorSubject<File | null> = new BehaviorSubject<File | null>(null);
-  ugcTrack$: BehaviorSubject<WmFeature<LineString> | null> = new BehaviorSubject<WmFeature<LineString> | null>(null) ;
-
+  ugcTrack$: BehaviorSubject<WmFeature<LineString> | null> =
+    new BehaviorSubject<WmFeature<LineString> | null>(null);
+  isUploadDisabled$: Observable<boolean>;
   constructor(
     private _store: Store,
     private _modalCtrl: ModalController,
     private _deviceSvc: DeviceService,
     private _langSvc: LangService,
     private _alertCtrl: AlertController,
-  ) {}
+  ) {
+    this.isUploadDisabled$ = combineLatest([this.selectedFile$, this.formGroup$]).pipe(
+      map(([selectedFile, fg]) => {
+        const isInvalid = fg?.invalid;
+        return !selectedFile || isInvalid;
+      }),
+    );
+  }
 
   cancel(): void {
     this._modalCtrl.dismiss();
@@ -86,6 +93,9 @@ export class ModalUgcTrackUploaderComponent {
     this.selectedFile$.next(null);
     this.ugcTrack$.next(null);
   }
+  setForm(form: UntypedFormGroup): void {
+    this.formGroup$.next(form);
+  }
 
   upload(): void {
     if (this.selectedFile$.value) {
@@ -96,9 +106,11 @@ export class ModalUgcTrackUploaderComponent {
             from(this._deviceSvc.getInfo()).pipe(
               map(device => {
                 const dateNow = new Date();
+                const fg = this.formGroup$.value;
+                const formValue = fg.value;
                 const properties: WmProperties = {
-                  name: this.fg.value.title,
-                  form: this.fg.value,
+                  name: formValue?.title,
+                  form: formValue,
                   uuid: generateUUID(),
                   app_id: `${geohubId}`,
                   createdAt: dateNow,
@@ -162,7 +174,7 @@ export class ModalUgcTrackUploaderComponent {
       properties: Object.entries(feature.properties).reduce((acc, [key, value]) => {
         acc[key] = typeof value === 'string' && isValidJSON(value) ? JSON.parse(value) : value;
         return acc;
-      }, {} as { [key: string]: any }),
+      }, {} as {[key: string]: any}),
     };
   }
 

@@ -30,7 +30,7 @@
       <wm-form
         [confPOIFORMS]="confTRACKFORMS$|async"
         [init]="ugcTrack.properties?.form"
-        (formGroupEvt)="fg = $event"
+        (formGroupEvt)="setForm($event)"
       ></wm-form>
     </ng-container>
   </ng-container>
@@ -74,11 +74,7 @@
       <ion-button (click)="cancel()" color="medium">{{'Annulla'|wmtrans}}</ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button
-        (click)="upload()"
-        [disabled]="!(selectedFile$|async) || !fg?.valid || !fg?.dirty"
-        color="primary"
-      >
+      <ion-button (click)="upload()" [disabled]="isUploadDisabled$|async" color="primary">
         {{'Carica'|wmtrans}}
       </ion-button>
     </ion-buttons>
