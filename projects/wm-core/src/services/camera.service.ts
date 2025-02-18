@@ -142,7 +142,30 @@ export class CameraService {
     }
     return blob;
   }
+  private _sanitizeObjectValues(input: any): any {
+    if (input === null || input === undefined) {
+      return input;
+    }
 
+    if (typeof input === 'object') {
+      if (Array.isArray(input)) {
+        return input.map(this._sanitizeObjectValues);
+      } else {
+        const sanitizedObject: Record<string, any> = {};
+        for (const [key, value] of Object.entries(input)) {
+          sanitizedObject[key] = this._sanitizeObjectValues(value);
+        }
+        return sanitizedObject;
+      }
+    }
+
+    if (typeof input === 'string') {
+      // Sostituisce tutti i caratteri di controllo Unicode (U+0000 - U+001F) eccetto tab, newline e carriage return
+      return input.replace(/[\u0000-\u001F]/g, '?');
+    }
+
+    return String(input);
+  }
   async getPhotos(dateLimit: Date = null): Promise<Photo[]> {
     let filePath = null;
     const location = this._geoLocationSvc.location;
@@ -161,8 +184,12 @@ export class CameraService {
         // limit : 100 //	number	iOS only: Maximum number of pictures the user will be able to choose.	0 (unlimited)	1.2.0
       };
       const gallery: GalleryPhotos = await Camera.pickImages(options);
+      const photos = (gallery.photos as Photo[]).map(photo => {
+        photo.exif = this._sanitizeObjectValues(photo.exif);
+        return photo;
+      });
 
-      return gallery.photos as Photo[];
+      return photos;
     } else {
       const max = 1 + Math.random() * 8;
       const res = [];
