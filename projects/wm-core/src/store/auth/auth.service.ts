@@ -1,20 +1,17 @@
 import {HttpClient} from '@angular/common/http';
 import {Inject, Injectable} from '@angular/core';
+import {EnvironmentService} from '@wm-core/services/environment.service';
 import {Observable} from 'rxjs';
-import {ENVIRONMENT_CONFIG, EnvironmentConfig} from '../conf/conf.token';
 import {IUser} from './auth.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(
-    @Inject(ENVIRONMENT_CONFIG) public environment: EnvironmentConfig,
-    private _http: HttpClient,
-  ) {}
+  constructor(private _http: HttpClient, private _environmentSvc: EnvironmentService) {}
 
   login(email: string, password: string, referrer?: string): Observable<IUser> {
-    return this._http.post(`${this.environment.api}/api/auth/login`, {
+    return this._http.post(`${this._environmentSvc.origin}/api/auth/login`, {
       email,
       password,
       referrer,
@@ -22,15 +19,15 @@ export class AuthService {
   }
 
   getUser(): Observable<IUser> {
-    return this._http.post(`${this.environment.api}/api/auth/me`, {}) as Observable<IUser>;
+    return this._http.post(`${this._environmentSvc.origin}/api/auth/me`, {}) as Observable<IUser>;
   }
 
   logout(): Observable<any> {
-    return this._http.post(`${this.environment.api}/api/auth/logout`, {}) as Observable<any>;
+    return this._http.post(`${this._environmentSvc.origin}/api/auth/logout`, {}) as Observable<any>;
   }
 
   signUp(name: string, email: string, password: string, referrer?: string): Observable<IUser> {
-    return this._http.post(`${this.environment.api}/api/auth/signup`, {
+    return this._http.post(`${this._environmentSvc.origin}/api/auth/signup`, {
       name,
       email,
       password,
@@ -39,6 +36,6 @@ export class AuthService {
   }
 
   delete(): Observable<any> {
-    return this._http.post(`${this.environment.api}/api/auth/delete`, {}) as Observable<any>;
+    return this._http.post(`${this._environmentSvc.origin}/api/auth/delete`, {}) as Observable<any>;
   }
 }

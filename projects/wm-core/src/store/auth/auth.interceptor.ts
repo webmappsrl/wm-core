@@ -1,26 +1,22 @@
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {Inject, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
+import {EnvironmentService} from '@wm-core/services/environment.service';
 import {Observable} from 'rxjs';
-import {ConfService} from '../conf/conf.service';
-import {ENVIRONMENT_CONFIG, EnvironmentConfig} from '../conf/conf.token';
 @Injectable({
   providedIn: 'root',
 })
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(
-    @Inject(ENVIRONMENT_CONFIG) public environment: EnvironmentConfig,
-    private _confSvc: ConfService,
-  ) {}
+  constructor(private _environmentSvc: EnvironmentService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const idToken = localStorage.getItem('access_token');
-    const isGeohubUrl = req.url.includes(this.environment.api);
-    if (idToken && isGeohubUrl) {
+    const isOriginUrl = req.url.includes(this._environmentSvc.origin);
+    if (idToken && isOriginUrl) {
       // Cloniamo la richiesta per aggiungere le nuove intestazioni
       const clonedReq = req.clone({
         setHeaders: {
           Authorization: `Bearer ${idToken}`,
-          'App-id': `${this._confSvc.geohubAppId}`,
+          'App-id': `${this._environmentSvc.appId}`,
         },
       });
 

@@ -48,8 +48,8 @@ export const ecReducer = createReducer(
   on(ecTracksSuccess, (state, {response}) => {
     const newState: Ec = {
       ...state,
-      hits: response.hits,
-      aggregations: response.aggregations,
+      hits: response?.hits ?? [],
+      aggregations: response?.aggregations ?? null,
       ecTracksLoading: false,
     };
     return newState;
