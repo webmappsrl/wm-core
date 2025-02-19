@@ -41,15 +41,15 @@ export class UgcService {
   ) {}
 
   deleteApiMedia(id: number): Observable<any> {
-    return this._http.get(`${this.environment.api}/api/ugc/media/delete/${id}`);
+    return this._http.get(`${this.environment.api}/api/v2/ugc/media/delete/${id}`);
   }
 
   deleteApiPoi(id: number): Observable<any> {
-    return this._http.get(`${this.environment.api}/api/ugc/poi/delete/${id}`);
+    return this._http.get(`${this.environment.api}/api/v2/ugc/poi/delete/${id}`);
   }
 
   deleteApiTrack(id: number): Observable<any> {
-    return this._http.get(`${this.environment.api}/api/ugc/track/delete/${id}`);
+    return this._http.get(`${this.environment.api}/api/v2/ugc/track/delete/${id}`);
   }
 
   deletePoi(poi: WmFeature<Point>): Observable<any> {
@@ -121,14 +121,14 @@ export class UgcService {
 
   async getApiPois(): Promise<WmFeatureCollection<Point>> {
     return await this._http
-      .get<WmFeatureCollection<Point>>(`${this.environment.api}/api/ugc/poi/index/v2`)
+      .get<WmFeatureCollection<Point>>(`${this.environment.api}/api/v2/ugc/poi/index`)
       .pipe(catchError(_ => of(null)))
       .toPromise();
   }
 
   async getApiTracks(): Promise<WmFeatureCollection<LineString>> {
     return await this._http
-      .get<WmFeatureCollection<LineString>>(`${this.environment.api}/api/ugc/track/index/v2`)
+      .get<WmFeatureCollection<LineString>>(`${this.environment.api}/api/v2/ugc/track/index`)
       .pipe(catchError(_ => of(null)))
       .toPromise();
   }
@@ -256,7 +256,7 @@ export class UgcService {
       const data = await this._buildFormData(poi);
 
       return this._http
-        .post<WmFeature<Point>>(`${this.environment.api}/api/ugc/poi/store/v2`, data)
+        .post<WmFeature<Point>>(`${this.environment.api}/api/v2/ugc/poi/store`, data)
         .pipe(catchError(_ => of(null)))
         .toPromise();
     }
@@ -276,7 +276,7 @@ export class UgcService {
       const data = await this._buildFormData(track);
 
       return this._http
-        .post<WmFeature<LineString>>(`${this.environment.api}/api/ugc/track/store/v2`, data)
+        .post<WmFeature<LineString>>(`${this.environment.api}/api/v2/ugc/track/store`, data)
         .pipe(catchError(_ => of(null)))
         .toPromise();
     }
@@ -332,11 +332,11 @@ export class UgcService {
   }
 
   updateApiPoi(poi: WmFeature<Point>): Observable<any> {
-    return this._http.post(`${this.environment.api}/api/ugc/poi/edit`, poi);
+    return this._http.post(`${this.environment.api}/api/v2/ugc/poi/edit`, poi);
   }
 
   updateApiTrack(track: WmFeature<LineString>): Observable<any> {
-    return this._http.post(`${this.environment.api}/api/ugc/track/edit`, track);
+    return this._http.post(`${this.environment.api}/api/v2/ugc/track/edit`, track);
   }
 
   private async _buildFormData(feature: WmFeature<LineString | Point>): Promise<FormData> {
