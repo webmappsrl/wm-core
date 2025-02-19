@@ -1,25 +1,27 @@
 import {Injectable} from '@angular/core';
+import {Environment, Redirect, Redirects, Shard} from '@wm-types/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EnvironmentService {
-  private _environment: any;
+  private _environment: Environment;
   private _hostname: string;
   private _wmpackagesRegex = /^(\d+)\.([a-zA-Z0-9-]+)\.[^.]+(?:\.[^.]+)?$/;
-
   private _localHostRegex = /^localhost/;
   private _appId: number;
   private _shardName: string;
   private _origin: string;
   private _elasticApi: string;
   private _graphhopperHost: string;
-  private _shard: {[shard: string]: any};
+  private _shard: Shard;
   private _awsApi: string;
   private _awsPoisUrl: string;
   private _awsPbfUrl: string;
   private _confUrl: string;
-  constructor() {}
+  private _redirects: Redirects;
+  private _redirect: Redirect;
+
   init(environment: any) {
     this._environment = environment;
     this._hostname = window.location.hostname;
@@ -27,18 +29,20 @@ export class EnvironmentService {
     const wmpackagesRegexMatch = this._hostname.match(this._wmpackagesRegex);
     const _localHostRegex = this._hostname.match(this._localHostRegex);
     if (_localHostRegex) {
-      this._appId = environment.geohubId;
+      this._appId = environment.appId;
       this._shardName = environment.shardName;
     } else if (wmpackagesRegexMatch && wmpackagesRegexMatch[2] !== 'app') {
       this._appId = +wmpackagesRegexMatch[1];
       this._shardName = wmpackagesRegexMatch[2];
     } else {
-      const redirect = this._environment.redirect;
-      const matchedHost = Object.keys(redirect ?? {}).find(host => this._hostname.includes(host));
+      this._redirects = this._environment.redirects;
+      const matchedHost = Object.keys(this._redirects ?? {}).find(host =>
+        this._hostname.includes(host),
+      );
       if (matchedHost) {
-        const redirectData = redirect[matchedHost];
-        this._appId = redirectData.appId;
-        this._shardName = redirectData.shardName;
+        this._redirect = this._redirects[matchedHost];
+        this._appId = this._redirect.appId;
+        this._shardName = this._redirect.shardName;
       } else {
         this._appId = parseInt(this._hostname.split('.')[0], 10);
         this._shardName = 'geohub';
@@ -87,8 +91,11 @@ export class EnvironmentService {
   get confUrl(): string {
     return this._confUrl;
   }
-  get redirectHost(): {[hostName: string]: number} {
-    return this._shard.redirectHost ?? null;
+  get redirect(): Redirect {
+    return this._redirect ?? null;
+  }
+  get redirects(): Redirects {
+    return this._redirects;
   }
   get origin(): string {
     return this._origin;
