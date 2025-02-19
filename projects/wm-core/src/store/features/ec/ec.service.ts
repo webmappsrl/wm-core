@@ -15,14 +15,14 @@ import {EnvironmentService} from '@wm-core/services/environment.service';
   providedIn: 'root',
 })
 export class EcService {
-  private _elasticApi: string = this._environmentSvc.elasticApi;
-  private _geohubAppId: number = this._environmentSvc.appId;
   private _queryDic: {[query: string]: any} = {};
   private _shard = 'geohub_app';
 
   private get _baseUrl(): string {
     const appId = this._environmentSvc.appId;
-    return appId ? `${this._elasticApi}/?app=${this._shard}_${appId}` : this._elasticApi;
+    return appId
+      ? `${this._environmentSvc.elasticApi}/?app=${this._shard}_${appId}`
+      : this._environmentSvc.elasticApi;
   }
 
   /**
@@ -30,10 +30,7 @@ export class EcService {
    * @param {HttpClient} _http
    * @memberof ElasticService
    */
-  constructor(private _http: HttpClient, private _environmentSvc: EnvironmentService) {
-    this._elasticApi = this._environmentSvc.elasticApi;
-    this._geohubAppId = this._environmentSvc.appId;
-  }
+  constructor(private _http: HttpClient, private _environmentSvc: EnvironmentService) {}
 
   public getEcTrack(id: string | number): Observable<WmFeature<LineString>> {
     if (id == null) return of(null);

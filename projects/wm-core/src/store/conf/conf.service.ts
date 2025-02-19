@@ -1,8 +1,7 @@
 import {HttpClient} from '@angular/common/http';
-import {Inject, Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
 import {ICONF} from '../../types/config';
-import {hostToGeohubAppId} from '../features/ec/ec.service';
 import {synchronizedApi} from '@wm-core/utils/localForage';
 import {distinctUntilChanged, shareReplay, take} from 'rxjs/operators';
 import {DeviceService} from '@wm-core/services/device.service';
@@ -11,7 +10,6 @@ import {EnvironmentService} from '@wm-core/services/environment.service';
   providedIn: 'root',
 })
 export class ConfService {
-  private _conf: BehaviorSubject<ICONF> = new BehaviorSubject<ICONF>(null as ICONF);
   private _geohubAppId: number = this._environmentSvc.appId;
 
   public get configUrl(): string {
@@ -99,12 +97,5 @@ export class ConfService {
       distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
       shareReplay(1), // Riduce chiamate duplicate per più osservatori
     );
-  }
-
-  public getHost(): string | undefined {
-    const host = Object.entries(this._environmentSvc.redirectHost).find(
-      ([key, val]) => val === this._geohubAppId,
-    );
-    return host ? host[0] : undefined;
   }
 }
