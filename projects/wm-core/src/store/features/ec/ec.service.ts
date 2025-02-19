@@ -1,30 +1,28 @@
 import {HttpClient} from '@angular/common/http';
 
 /* eslint-disable quote-props */
-import {Inject, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {FeatureCollection, LineString} from 'geojson';
-import {from, Observable, of} from 'rxjs';
+import {Observable, of} from 'rxjs';
 // @ts-ignore
-import {catchError, distinctUntilChanged, shareReplay, switchMap, take, tap} from 'rxjs/operators';
+import {distinctUntilChanged, shareReplay, take} from 'rxjs/operators';
 import {IRESPONSE} from '@wm-core/types/elastic';
-import {WmLoadingService} from '../../../services/loading.service';
 import {Filter, SliderFilter} from '../../../types/config';
-import {EnvironmentConfig, ENVIRONMENT_CONFIG} from '../../conf/conf.token';
 import {synchronizedApi} from '@wm-core/utils/localForage';
 import {WmFeature} from '@wm-types/feature';
+import {EnvironmentService} from '@wm-core/services/environment.service';
 @Injectable({
   providedIn: 'root',
 })
 export class EcService {
-  private _elasticApi: string = this.environment.elasticApi;
-  private _geohubAppId: number = this.environment.geohubId;
+  private _elasticApi: string = this._environmentSvc.elasticApi;
+  private _geohubAppId: number = this._environmentSvc.appId;
   private _queryDic: {[query: string]: any} = {};
   private _shard = 'geohub_app';
 
   private get _baseUrl(): string {
-    return this._geohubAppId
-      ? `${this._elasticApi}/?app=${this._shard}_${this._geohubAppId}`
-      : this._elasticApi;
+    const appId = this._environmentSvc.appId;
+    return appId ? `${this._elasticApi}/?app=${this._shard}_${appId}` : this._elasticApi;
   }
 
   /**
@@ -32,36 +30,21 @@ export class EcService {
    * @param {HttpClient} _http
    * @memberof ElasticService
    */
-  constructor(
-    @Inject(ENVIRONMENT_CONFIG) public environment: EnvironmentConfig,
-    private _http: HttpClient,
-  ) {
-    this._elasticApi = this.environment.elasticApi;
-    const hostname: string = window.location.hostname;
-    if (hostname.indexOf('localhost') < 0) {
-      const matchedHost = Object.keys(hostToGeohubAppId).find(host => hostname.includes(host));
-
-      if (matchedHost) {
-        this._geohubAppId = hostToGeohubAppId[matchedHost];
-      } else {
-        const newGeohubId = parseInt(hostname.split('.')[0], 10);
-        if (!Number.isNaN(newGeohubId)) {
-          this._geohubAppId = newGeohubId;
-        }
-      }
-    }
+  constructor(private _http: HttpClient, private _environmentSvc: EnvironmentService) {
+    this._elasticApi = this._environmentSvc.elasticApi;
+    this._geohubAppId = this._environmentSvc.appId;
   }
 
   public getEcTrack(id: string | number): Observable<WmFeature<LineString>> {
     if (id == null) return of(null);
     if (+id > -1) {
-      const url = `${this.environment.awsApi}/tracks/${id}.json`;
+      const url = `${this._environmentSvc.awsApi}/tracks/${id}.json`;
       return this._http.get<WmFeature<LineString>>(url);
     }
   }
 
   public getPois(): Observable<FeatureCollection> {
-    const poisUrl = `${this.environment.awsApi}/pois/${this._geohubAppId}.geojson`;
+    const poisUrl = this._environmentSvc.awsPoisUrl;
 
     return new Observable<FeatureCollection>(observer => {
       synchronizedApi.getItem(`${poisUrl}`).then((cachedData: string | null) => {

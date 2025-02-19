@@ -2,7 +2,7 @@ import {IRegisterItem} from '../types/track';
 import {DeviceService} from './device.service';
 import {GeolocationService} from './geolocation.service';
 import {HttpClient} from '@angular/common/http';
-import {Inject, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {
   Camera,
   CameraDirection,
@@ -16,7 +16,6 @@ import {Capacitor} from '@capacitor/core';
 import {Directory, Filesystem, GetUriResult} from '@capacitor/filesystem';
 import {ActionSheetController} from '@ionic/angular';
 import {LangService} from '@wm-core/localization/lang.service';
-import {APP_ID, APP_VERSION} from '@wm-core/store/conf/conf.token';
 import {Location} from '@wm-core/types/location';
 import {saveImg} from '@wm-core/utils/localForage';
 
@@ -41,8 +40,6 @@ export class CameraService {
     private _geoLocationSvc: GeolocationService,
     private _lanSvc: LangService,
     private _actionSheetCtrl: ActionSheetController,
-    @Inject(APP_ID) public appId: string,
-    @Inject(APP_VERSION) public appVersion: string,
   ) {}
 
   async addPhotos(): Promise<Photo[]> {

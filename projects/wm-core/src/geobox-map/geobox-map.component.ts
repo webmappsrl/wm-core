@@ -104,10 +104,10 @@ import {FiltersComponent} from '@wm-core/filters/filters.component';
 import {ActivatedRoute} from '@angular/router';
 import {Actions, ofType} from '@ngrx/effects';
 import {currentUgcPoiId} from '@wm-core/store/features/ugc/ugc.selector';
-import {EnvironmentConfig, ENVIRONMENT_CONFIG} from '@wm-core/store/conf/conf.token';
 import {DeviceService} from '@wm-core/services/device.service';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {GeolocationService} from '@wm-core/services/geolocation.service';
+import {EnvironmentService} from '@wm-core/services/environment.service';
 
 const initPadding = [10, 10, 10, 10];
 const initMenuOpened = true;
@@ -169,7 +169,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   dataLayerUrls$: Observable<IDATALAYER>;
   drawTrackOpened$: Observable<boolean> = this._store.select(drawTrackOpened);
   geohubId$ = this._store.select(confGeohubId);
-  graphhopperHost$: Observable<string> = of(this.environment.graphhopperHost);
+  graphhopperHost$: Observable<string> = of(this._environmentSvc.graphhopperHost);
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
   isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this._deviceSvc.isMobile);
   langs$ = this._store.select(confLANGUAGES).pipe(
@@ -261,7 +261,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
     private _urlHandlerSvc: UrlHandlerService,
     private _deviceSvc: DeviceService,
     private _geolocationSvc: GeolocationService,
-    @Inject(ENVIRONMENT_CONFIG) public environment: EnvironmentConfig,
+    private _environmentSvc: EnvironmentService,
   ) {
     this.currentPosition$ = this._geolocationSvc.onLocationChange;
     this.currentMapPaddings$ = combineLatest([
@@ -286,8 +286,8 @@ export class WmGeoboxMapComponent implements OnDestroy {
       filter(g => g != null),
       map(geohubId => {
         return {
-          low: `https://wmpbf.s3.eu-central-1.amazonaws.com/${geohubId}/{z}/{x}/{y}.pbf`,
-          high: `https://wmpbf.s3.eu-central-1.amazonaws.com/${geohubId}/{z}/{x}/{y}.pbf`,
+          low: this._environmentSvc.pbfUrl,
+          high: this._environmentSvc.pbfUrl,
         } as IDATALAYER;
       }),
     );
