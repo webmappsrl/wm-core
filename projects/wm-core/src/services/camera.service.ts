@@ -271,7 +271,7 @@ export class CameraService {
   }
 
   async shotPhoto(): Promise<Photo> {
-    if (!this._geoLocationSvc.active) await this._geoLocationSvc.start();
+    if (!this._geoLocationSvc.active) await this._geoLocationSvc.startNavigation();
     const photo: Photo = await Camera.getPhoto({
       quality: 90,
       // allowEditing: true,

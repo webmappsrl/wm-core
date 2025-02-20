@@ -353,7 +353,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   }
 
   navigation(): void {
-    this._geolocationSvc.start();
+    this._geolocationSvc.startNavigation();
     const isFocused = !this.wmMapPositionfocus$.value;
     this.wmMapPositionfocus$.next(isFocused);
   }
