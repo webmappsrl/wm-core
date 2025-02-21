@@ -11,6 +11,7 @@ import {LineString} from 'geojson';
 import {WmFeature} from '@wm-types/feature';
 import {DeviceService} from './device.service';
 import {CStopwatch} from '@wm-core/utils/cstopwatch';
+import {getDistance} from 'ol/sphere';
 
 @Injectable({
   providedIn: 'root',
@@ -20,8 +21,7 @@ export class GeolocationService {
   private _recordedFeature: WmFeature<LineString> | null = null;
   private _recordStopwatch: CStopwatch | null = null;
 
-  private _navigationWatcherId: string | null = null;
-  private _recordingWatcherId: string | null = null;
+  private _watcherId: string | null = null;
   private _webWatcherId: number | null = null;
 
   private _mode: 'navigation' | 'recording' | 'stopped' = 'stopped';
@@ -42,13 +42,13 @@ export class GeolocationService {
           `[AppState] Stato: ${isActive ? 'FOREGROUND' : 'BACKGROUND'}, Modalità: ${this._mode}`,
         );
 
-        if (this._mode === 'navigation') {
-          if (isActive) {
-            console.log('[Navigation] Rientrato in foreground: Avvio watcher');
-            this._startNavigationWatcher();
-          } else {
+        if (isActive) {
+          console.log('[Navigation] Rientrato in foreground: Avvio watcher');
+          this._startWatcher();
+        } else {
+          if (this._mode != 'recording') {
             console.log('[Navigation] Andato in background: Stop watcher');
-            await this._stopNavigationWatcher();
+            await this._stopWatcher();
           }
         }
       });
@@ -80,17 +80,16 @@ export class GeolocationService {
   }
 
   startNavigation(): void {
-    if (this._mode === 'navigation') return;
+    if (this._mode === 'navigation' || this._mode === 'recording') return;
     console.log('[Navigation] Avvio modalità');
 
     this._mode = 'navigation';
     this.onModeChange.next(this._mode);
-    this._stopRecordingWatcher();
 
     if (this._deviceService.isBrowser) {
       this._startWebWatcher('low');
     } else {
-      this._startNavigationWatcher();
+      this._startWatcher();
     }
   }
 
@@ -106,12 +105,10 @@ export class GeolocationService {
     this._recordedFeature = this._getEmptyWmFeature();
     this._isPaused = false;
 
-    this._stopNavigationWatcher();
-
     if (this._deviceService.isBrowser) {
       this._startWebWatcher('high');
     } else {
-      this._startRecordingWatcher();
+      this._startWatcher();
     }
   }
 
@@ -126,8 +123,9 @@ export class GeolocationService {
     this._recordedFeature = null;
     this._isPaused = false;
     this.onRecord$.next(false);
+    this._mode = 'stopped';
+    this.onModeChange.next(this._mode);
 
-    await this._stopRecordingWatcher();
     this.startNavigation();
 
     return recordedFeature;
@@ -135,8 +133,7 @@ export class GeolocationService {
 
   async stopAll(): Promise<void> {
     console.log('[GeolocationService] Stop di tutti i watcher');
-    await this._stopRecordingWatcher();
-    await this._stopNavigationWatcher();
+    await this._stopWatcher();
     this._mode = 'stopped';
     this.onModeChange.next(this._mode);
     this.onRecord$.next(false);
@@ -161,18 +158,8 @@ export class GeolocationService {
     }
   }
 
-  private _startNavigationWatcher(): void {
-    console.log('[Navigation] Attivo watcher con low accuracy');
-    backgroundGeolocation
-      .addWatcher(this._getWatcherOptions('low'), (location, error) => {
-        if (error) return;
-        console.log('[Navigation] Nuova posizione:', location);
-        this._onLocationUpdate(location);
-      })
-      .then(id => (this._navigationWatcherId = id));
-  }
-
-  private _startRecordingWatcher(): void {
+  private _startWatcher(): void {
+    if (this._watcherId != null) return;
     console.log('[Recording] Attivo watcher con HIGH ACCURACY');
     backgroundGeolocation
       .addWatcher(this._getWatcherOptions('high'), (location, error) => {
@@ -186,9 +173,10 @@ export class GeolocationService {
             location.latitude,
             location.altitude ?? 0,
           ]);
+          this._recordedFeature.properties.locations.push(location);
         }
       })
-      .then(id => (this._recordingWatcherId = id));
+      .then(id => (this._watcherId = id));
   }
 
   private _startWebWatcher(accuracy: 'high' | 'low'): void {
@@ -207,24 +195,31 @@ export class GeolocationService {
     );
   }
 
-  private async _stopNavigationWatcher(): Promise<void> {
-    if (this._navigationWatcherId) {
-      console.log('[Navigation] Stop watcher');
-      await backgroundGeolocation.removeWatcher({id: this._navigationWatcherId});
-      this._navigationWatcherId = null;
-    }
-  }
-
-  private async _stopRecordingWatcher(): Promise<void> {
-    if (this._recordingWatcherId) {
+  private async _stopWatcher(): Promise<void> {
+    if (this._watcherId) {
       console.log('[Recording] Stop watcher');
-      await backgroundGeolocation.removeWatcher({id: this._recordingWatcherId});
-      this._recordingWatcherId = null;
+      await backgroundGeolocation.removeWatcher({id: this._watcherId});
+      this._watcherId = null;
     }
   }
+  private _calculateSpeed(prevLocation: Location, currentLocation: Location): number {
+    if (prevLocation != null && currentLocation != null) {
+      const prevCoords = [prevLocation.longitude, prevLocation.latitude];
+      const currentCoords = [currentLocation.longitude, currentLocation.latitude];
+      const dist = getDistance(prevCoords, currentCoords);
+      const time = (currentLocation.time - prevLocation.time) / 1000;
 
+      return dist / 1000 / (time / 3600);
+    }
+    return 0;
+  }
   private _onLocationUpdate(location: Location): void {
     console.log('[GeolocationService] Aggiornamento posizione:', location);
+    location.time = location.time || Date.now();
+    location.speed =
+      location.speed != null
+        ? location.speed * 3.6
+        : this._calculateSpeed(this._currentLocation, location);
     this._currentLocation = location;
     this.onLocationChange.next(location);
   }
@@ -242,7 +237,11 @@ export class GeolocationService {
   }
 
   private _getEmptyWmFeature(): WmFeature<LineString> {
-    return {type: 'Feature', geometry: {type: 'LineString', coordinates: []}, properties: {}};
+    return {
+      type: 'Feature',
+      geometry: {type: 'LineString', coordinates: []},
+      properties: {locations: []},
+    };
   }
 }
 
