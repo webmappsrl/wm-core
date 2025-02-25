@@ -105,6 +105,7 @@ export class WmFormComponent implements OnDestroy {
       formObj['id'] = this.currentForm$.value.id;
       this.formGroup = this._fb.group(formObj);
       this.formGroupEvt.emit(this.formGroup);
+      this.isInvalidEvt.emit(this.formGroup.invalid);
     });
   }
 

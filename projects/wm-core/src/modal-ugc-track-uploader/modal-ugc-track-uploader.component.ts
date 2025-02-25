@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  ViewChild,
-  ViewEncapsulation,
-} from '@angular/core';
+import {Component, ElementRef, ViewChild, ViewEncapsulation} from '@angular/core';
 import {UntypedFormGroup} from '@angular/forms';
 import {AlertController, ModalController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
@@ -13,7 +7,7 @@ import {WmFeature, WmProperties} from '@wm-types/feature';
 import {Feature, LineString} from 'geojson';
 import {BehaviorSubject, combineLatest, EMPTY, from, Observable} from 'rxjs';
 import * as toGeoJSON from '@tmcw/togeojson';
-import {catchError, filter, map, startWith, switchMap, take} from 'rxjs/operators';
+import {catchError, map, startWith, switchMap, take} from 'rxjs/operators';
 import {DeviceService} from '@wm-core/services/device.service';
 import {LangService} from '@wm-core/localization/lang.service';
 import {saveUgcTrack} from '@wm-core/utils/localForage';
@@ -24,7 +18,6 @@ import {syncUgcTracks} from '@wm-core/store/features/ugc/ugc.actions';
   selector: 'wm-modal-ugc-track-uploader',
   templateUrl: './modal-ugc-track-uploader.component.html',
   styleUrls: ['./modal-ugc-track-uploader.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
 export class ModalUgcTrackUploaderComponent {
