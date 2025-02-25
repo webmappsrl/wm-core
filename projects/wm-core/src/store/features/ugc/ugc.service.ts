@@ -315,6 +315,9 @@ export class UgcService {
 
   async syncUgcPois(): Promise<void> {
     try {
+      if (this.isSyncing) {
+        return;
+      }
       const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
       if (isLogged) {
         await this.pushUgcPois();
@@ -327,6 +330,9 @@ export class UgcService {
 
   async syncUgcTracks(): Promise<void> {
     try {
+      if (this.isSyncing) {
+        return;
+      }
       const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
       if (isLogged) {
         await this.pushUgcTracks();
