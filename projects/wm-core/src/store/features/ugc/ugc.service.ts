@@ -32,7 +32,8 @@ import {catchError, map, take, tap} from 'rxjs/operators';
 export class UgcService {
   isLogged$ = this._store.select(isLogged);
   private syncQueue: Promise<void> = Promise.resolve();
-  private isSyncing = false;
+  private isSyncingUgcPoi = false;
+  private isSyncingUgcTrack = false;
   constructor(
     @Inject(ENVIRONMENT_CONFIG) public environment: EnvironmentConfig,
     @Inject(APP_ID) public appId: string,
@@ -286,11 +287,8 @@ export class UgcService {
 
   async syncUgc(): Promise<void> {
     const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
-    if (this.isSyncing) {
-      return;
-    }
+
     if (isLogged) {
-      this.isSyncing = true;
       this.syncQueue = this.syncQueue.then(async () => {
         if (isLogged) {
           try {
@@ -298,8 +296,6 @@ export class UgcService {
             await this.syncUgcTracks();
           } catch (error) {
             console.error('syncUgc: Errore durante la sincronizzazione:', error);
-          } finally {
-            this.isSyncing = false; // Sblocca la sincronizzazione al termine
           }
         } else {
           from(getUgcTracks())
@@ -315,30 +311,36 @@ export class UgcService {
 
   async syncUgcPois(): Promise<void> {
     try {
-      if (this.isSyncing) {
+      if (this.isSyncingUgcPoi) {
         return;
       }
       const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
       if (isLogged) {
+        this.isSyncingUgcPoi = true;
         await this.pushUgcPois();
         await this.fetchUgcPois();
+        this.isSyncingUgcPoi = false;
       }
     } catch (error) {
+      this.isSyncingUgcPoi = false;
       console.error('syncUgcPois: Errore durante la sincronizzazione:', error);
     }
   }
 
   async syncUgcTracks(): Promise<void> {
     try {
-      if (this.isSyncing) {
+      if (this.isSyncingUgcTrack) {
         return;
       }
       const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
       if (isLogged) {
+        this.isSyncingUgcTrack = true;
         await this.pushUgcTracks();
         await this.fetchUgcTracks();
+        this.isSyncingUgcTrack = false;
       }
     } catch (error) {
+      this.isSyncingUgcTrack = false;
       console.error('syncUgcTracks: Errore durante la sincronizzazione:', error);
     }
   }
