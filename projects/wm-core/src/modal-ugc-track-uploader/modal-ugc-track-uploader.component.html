@@ -31,6 +31,7 @@
         [confPOIFORMS]="confTRACKFORMS$|async"
         [init]="ugcTrack.properties?.form"
         (formGroupEvt)="setForm($event)"
+        (isInvalidEvt)="isIvalidForm$.next($event)"
       ></wm-form>
     </ng-container>
   </ng-container>

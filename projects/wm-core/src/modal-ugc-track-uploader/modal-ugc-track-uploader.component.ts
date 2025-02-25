@@ -1,8 +1,8 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   ViewChild,
-  ChangeDetectionStrategy,
   ViewEncapsulation,
 } from '@angular/core';
 import {UntypedFormGroup} from '@angular/forms';
@@ -13,7 +13,7 @@ import {WmFeature, WmProperties} from '@wm-types/feature';
 import {Feature, LineString} from 'geojson';
 import {BehaviorSubject, combineLatest, EMPTY, from, Observable} from 'rxjs';
 import * as toGeoJSON from '@tmcw/togeojson';
-import {catchError, map, switchMap, take} from 'rxjs/operators';
+import {catchError, filter, map, startWith, switchMap, take} from 'rxjs/operators';
 import {DeviceService} from '@wm-core/services/device.service';
 import {LangService} from '@wm-core/localization/lang.service';
 import {saveUgcTrack} from '@wm-core/utils/localForage';
@@ -40,6 +40,7 @@ export class ModalUgcTrackUploaderComponent {
   ugcTrack$: BehaviorSubject<WmFeature<LineString> | null> =
     new BehaviorSubject<WmFeature<LineString> | null>(null);
   isUploadDisabled$: Observable<boolean>;
+  isIvalidForm$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   constructor(
     private _store: Store,
     private _modalCtrl: ModalController,
@@ -47,11 +48,11 @@ export class ModalUgcTrackUploaderComponent {
     private _langSvc: LangService,
     private _alertCtrl: AlertController,
   ) {
-    this.isUploadDisabled$ = combineLatest([this.selectedFile$, this.formGroup$]).pipe(
-      map(([selectedFile, fg]) => {
-        const isInvalid = fg?.invalid;
-        return !selectedFile || isInvalid;
+    this.isUploadDisabled$ = combineLatest([this.selectedFile$, this.isIvalidForm$]).pipe(
+      map(([selectedFile, invalid]) => {
+        return !selectedFile || invalid;
       }),
+      startWith(true),
     );
   }
 

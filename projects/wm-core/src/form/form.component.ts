@@ -3,11 +3,12 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnDestroy,
   Output,
   ViewEncapsulation,
 } from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Subscription} from 'rxjs';
 import {distinctUntilChanged, filter} from 'rxjs/operators';
 
 @Component({
@@ -17,7 +18,7 @@ import {distinctUntilChanged, filter} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class WmFormComponent {
+export class WmFormComponent implements OnDestroy {
   private _currentFormId = 0;
 
   @Input() set confPOIFORMS(forms: any[]) {
@@ -43,13 +44,13 @@ export class WmFormComponent {
 
   @Input() disabled: boolean = false;
   @Output() formGroupEvt: EventEmitter<UntypedFormGroup> = new EventEmitter<UntypedFormGroup>();
-
+  @Output() isInvalidEvt: EventEmitter<boolean> = new EventEmitter<boolean>();
   currentForm$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   enableForm$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   formGroup: UntypedFormGroup;
   formIdGroup: UntypedFormGroup;
   forms$: BehaviorSubject<any[]> = new BehaviorSubject<any>([]);
-
+  formGroupValueChangesSub: Subscription = Subscription.EMPTY;
   constructor(private _fb: UntypedFormBuilder) {
     this.formIdGroup = this._fb.group({
       id: [null, [Validators.required]],
@@ -64,6 +65,9 @@ export class WmFormComponent {
         if (form.id != null) {
           this.setForm(form.id);
           this.enableForm$.next(true);
+          this.formGroupValueChangesSub = this.formGroup.valueChanges.subscribe(() => {
+            this.isInvalidEvt.emit(this.formGroup.invalid);
+          });
         }
       });
   }
@@ -102,5 +106,9 @@ export class WmFormComponent {
       this.formGroup = this._fb.group(formObj);
       this.formGroupEvt.emit(this.formGroup);
     });
+  }
+
+  ngOnDestroy(): void {
+    this.formGroupValueChangesSub.unsubscribe();
   }
 }
