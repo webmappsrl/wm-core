@@ -138,14 +138,14 @@ export const flowLineQuoteText = createSelector(
     const {altitude} = elements.location;
     const {flow_line_quote_orange, flow_line_quote_red} = flowLine;
 
-    const green = `<span class="green">Livello 1: tratti non interessati dall'alta quota (quota minore di ${flow_line_quote_orange} metri)</span>`;
-    const orange = `<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra ${flow_line_quote_orange} metri e ${flow_line_quote_red} metri)</span>`;
-    const red = `<span class="red">Livello 3: in alta quota (quota superiore ${flow_line_quote_red} metri)</span>`;
-
-    return altitude < flow_line_quote_orange
-      ? green
-      : altitude > flow_line_quote_orange && altitude < flow_line_quote_red
-      ? orange
-      : red;
+    return {
+      flow_line_quote_orange,
+      flow_line_quote_red,
+      html: altitude < flow_line_quote_orange
+        ? '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>'
+        : altitude > flow_line_quote_orange && altitude < flow_line_quote_red
+        ? '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra {{orange}} metri e {{red}} metri)</span>'
+        : '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>',
+    };
   },
 );

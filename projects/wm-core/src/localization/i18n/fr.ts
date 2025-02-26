@@ -26,7 +26,7 @@ export const wmFR = {
   'hiking': 'Randonnée',
   'Escursionismo': 'Randonnée',
   'escursionismo': 'Randonnée',
-  'i miei percorsi': 'Mes parcours',
+  'i miei percorsi': 'Tracer un chemin',
   'metri': 'Mètres',
   'Vedi su OpenStreetMap': 'Voir sur OpenStreetMap',
   'Descrizione Audio': 'Description audio',
@@ -117,4 +117,34 @@ export const wmFR = {
   'Si è verificato un errore durante il salvataggio della traccia. Riprova':
     'Une erreur est survenue lors de la sauvegarde de la piste. Réessayez',
   'La traccia è stata salvata correttamente': 'La piste a été sauvegardée correctement',
+  'Scarica il tracciato GPX': 'Télécharger le tracé GPX',
+  'Scarica il tracciato KML': 'Télécharger le tracé KML',
+  'Scarica il tracciato GEOJSON': 'Télécharger le tracé GEOJSON',
+  'Link utili': 'Liens utiles',
+  'apri pdf': 'Ouvrir le PDF',
+  'pendenza': 'Pente',
+  'Galleria': 'Galerie',
+  'resetta la memoria': 'Réinitialiser la mémoire',
+  'rimani acceso': 'Restez connecté',
+  'forza il dispositivo a non spegnersi': 'Forcez le périphérique à ne pas s\'éteindre',
+  'PAGINE': 'PAGES',
+  'I tuoi dati': 'Vos données',
+  'pages.profile.projectlink': 'Projet',
+  'pages.profile.disclaimerlink': 'Avertissement',
+  'pages.profile.creditslink': 'Crédits',
+  'pages.profile.privacylink': 'Confidentialité',
+  'pages.profile.title': 'Profil',
+  'MEMORIA': 'MÉMOIRE',
+  'la distanza espressa in metri che indica la cadenza di rilevamento posizione, più il distance filter è minore piu il consumo della batteria sarà maggiore.':
+    'La distance exprimée en mètres indique la fréquence de détection de la position, plus le filtre de distance est faible, plus le consommation de la batterie sera élevée.',
+  "Per registrare tracce e poi correttamente, abilita l'autorizzazione alla posizione nelle impostazioni":
+    'Pour enregistrer les pistes et les points d\'intérêt correctement, activez la permission de position dans les paramètres.',
+  'I miei percorsi': 'Mes parcours',
+  'Sentieri': 'Sentiers',
+  '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
+    '<span class="green">Niveau 1: sections non affectées par l\'altitude (altitude inférieure à {{orange}} mètres)</span>',
+  '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa entre {{orange}} mètres et {{red}} metri)</span>':
+    '<span class="orange">Niveau 2: sections partiellement en altitude (altitude comprise entre {{orange}} mètres et {{red}} mètres)</span>',
+  '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
+    '<span class="red">Niveau 3: sections en altitude (altitude supérieure à {{red}} mètres)</span>',
 };

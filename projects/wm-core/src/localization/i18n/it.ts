@@ -123,4 +123,34 @@ export const wmIT = {
   'Si è verificato un errore durante il salvataggio della traccia. Riprova':
     'Si è verificato un errore durante il salvataggio della traccia. Riprova',
   'La traccia è stata salvata correttamente': 'La traccia è stata salvata correttamente',
+  'Scarica il tracciato GPX': 'Scarica il tracciato GPX',
+  'Scarica il tracciato KML': 'Scarica il tracciato KML',
+  'Scarica il tracciato GEOJSON': 'Scarica il tracciato GEOJSON',
+  'Link utili': 'Link utili',
+  'apri pdf': 'Apri PDF',
+  'pendenza': 'Pendenza',
+  'Galleria': 'Galleria',
+  'resetta la memoria': 'Resetta la memoria',
+  'rimani acceso': 'Rimani acceso',
+  'forza il dispositivo a non spegnersi': 'Forza il dispositivo a non spegnersi',
+  'PAGINE': 'PAGINE',
+  'I tuoi dati': 'I tuoi dati',
+  'pages.profile.projectlink': 'Progetto',
+  'pages.profile.disclaimerlink': 'Disclaimer',
+  'pages.profile.creditslink': 'Credits',
+  'pages.profile.privacylink': 'Privacy',
+  'pages.profile.title': 'Profilo',
+  'MEMORIA': 'MEMORIA',
+  'la distanza espressa in metri che indica la cadenza di rilevamento posizione, più il distance filter è minore piu il consumo della batteria sarà maggiore.':
+    'Distanza espressa in metri che indica la cadenza di rilevamento posizione, più il distance filter è minore piu il consumo della batteria sarà maggiore.',
+  "Per registrare tracce e poi correttamente, abilita l'autorizzazione alla posizione nelle impostazioni":
+    'Per registrare tracce e poi correttamente, abilita l\'autorizzazione alla posizione nelle impostazioni',
+  'I miei percorsi': 'I miei percorsi',
+  'Sentieri': 'Sentieri',
+  '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
+    '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>',
+  '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra {{orange}} metri e {{red}} metri)</span>':
+    '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra {{orange}} metri e {{red}} metri)</span>',
+  '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
+    '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>',
 };

@@ -144,4 +144,12 @@ export const wmSQ = {
     'Distanca e shprehur në metra që tregon frekuencën e zbulimit të pozicionit, sa më i vogël të jetë filtri i distancës, aq më i madh do të jetë konsumi i baterisë.',
   "Per registrare tracce e poi correttamente, abilita l'autorizzazione alla posizione nelle impostazioni":
     'Për të regjistruar gjurmët dhe pikat e interesit saktësisht, aktivizo lejen e vendndodhjes në cilësimet.',
+  'I miei percorsi': 'Itineraret e mia',
+  'Sentieri': 'Shtigjet',
+  '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
+    '<span class="green">Niveli 1: seksione që nuk preken nga lartësia e madhe (lartësia më e ulët se {{orange}} metra)</span>',
+  '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra {{orange}} metri e {{red}} metri)</span>':
+    '<span class="orange">Niveli 2: seksione që nuk preken nga lartësia e madhe (lartësia midis {{orange}} metra dhe {{red}} metra)</span>',
+  '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
+    '<span class="red">Niveli 3: seksione që preken nga lartësia e madhe (lartësia më e madhe se {{red}} metra)</span>',
 };
