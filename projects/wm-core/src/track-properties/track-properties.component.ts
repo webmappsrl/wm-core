@@ -1,6 +1,6 @@
 import {Component, ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
-import { LangService } from '@wm-core/localization/lang.service';
+import {LangService} from '@wm-core/localization/lang.service';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {confOPTIONS, flowLineQuoteShow} from '@wm-core/store/conf/conf.selector';
 import {currentEcTrack, currentEcTrackProperties} from '@wm-core/store/features/ec/ec.selector';
@@ -12,7 +12,7 @@ import {
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {IOPTIONS} from '@wm-core/types/config';
 import {LineStringProperties, WmFeature} from '@wm-types/feature';
-import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
+import {WmSlopeChartFlowLineQuote, WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {LineString} from 'geojson';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -32,7 +32,7 @@ export class TrackPropertiesComponent {
   ecTrackProperties$: Observable<LineStringProperties> =
     this._store.select(currentEcTrackProperties);
   flowLineQuoteHtml$: Observable<string> = this._store.select(flowLineQuoteText).pipe(
-    map((flowLineQuoteText) => {
+    map((flowLineQuoteText: WmSlopeChartFlowLineQuote) => {
       if (!flowLineQuoteText) return '';
       const translatedText = this._langSvc.instant(flowLineQuoteText.html);
       return translatedText.replace('{{orange}}', flowLineQuoteText.flow_line_quote_orange).replace('{{red}}', flowLineQuoteText.flow_line_quote_red);
