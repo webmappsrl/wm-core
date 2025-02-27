@@ -26,7 +26,7 @@ export const wmDE = {
   'hiking': 'Wandern',
   'Escursionismo': 'Wandern',
   'escursionismo': 'Wandern',
-  'i miei percorsi': 'Meine Strecken',
+  'i miei percorsi': 'Strecke zeichnen',
   'metri': 'Meter',
   'Vedi su OpenStreetMap': 'Auf OpenStreetMap ansehen',
   'Descrizione Audio': 'Audiobeschreibung',
@@ -118,4 +118,34 @@ export const wmDE = {
   'Si è verificato un errore durante il salvataggio della traccia. Riprova':
     'Es ist ein Fehler beim Speichern der Strecke aufgetreten. Versuchen Sie es erneut',
   'La traccia è stata salvata correttamente': 'Die Strecke wurde erfolgreich gespeichert',
+  'Scarica il tracciato GPX': 'GPX-Track herunterladen',
+  'Scarica il tracciato KML': 'KML-Track herunterladen',
+  'Scarica il tracciato GEOJSON': 'GEOJSON-Track herunterladen',
+  'Link utili': 'Nützliche Links',
+  'apri pdf': 'PDF öffnen',
+  'pendenza': 'Steigung',
+  'Galleria': 'Galerie',
+  'resetta la memoria': 'Speicher zurücksetzen',
+  'rimani acceso': 'Immer verbunden',
+  'forza il dispositivo a non spegnersi': 'Gerät ausschalten verhindern',
+  'PAGINE': 'SEITEN',
+  'I tuoi dati': 'Ihre Daten',
+  'pages.profile.projectlink': 'Projekt',
+  'pages.profile.disclaimerlink': 'Haftungsausschluss',
+  'pages.profile.creditslink': 'Credits',
+  'pages.profile.privacylink': 'Datenschutz',
+  'pages.profile.title': 'Profil',
+  'MEMORIA': 'SPEICHER',
+  'la distanza espressa in metri che indica la cadenza di rilevamento posizione, più il distance filter è minore piu il consumo della batteria sarà maggiore.':
+    'Distanz in Metern, die die Abstände zwischen den Messungen angibt. Je kleiner der Abstand, desto höher ist der Stromverbrauch.',
+  "Per registrare tracce e poi correttamente, abilita l'autorizzazione alla posizione nelle impostazioni":
+    'Um gültige Routen und Interessantenpunkte zu erfassen, aktivieren Sie die Standortberechtigung in den Einstellungen.',
+  'I miei percorsi': 'Meine Strecken',
+  'Sentieri': 'Wanderwege',
+  '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
+    '<span class="green">Stufe 1: Abschnitte nicht von großer Höhe betroffen (Höhe unter {{orange}} Metern)</span>',
+  '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra {{orange}} metri e {{red}} metri)</span>':
+    '<span class="orange">Stufe 2: Abschnitte teilweise in großer Höhe (Höhe zwischen {{orange}} und {{red}} Metern)</span>',
+  '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
+    '<span class="red">Stufe 3: in großer Höhe (Höhe über {{red}} Metern)</span>',
 };

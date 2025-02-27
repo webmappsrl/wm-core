@@ -26,7 +26,7 @@ export const wmPR = {
   'hiking': 'Caminhada',
   'Escursionismo': 'Caminhada',
   'escursionismo': 'Caminhada',
-  'i miei percorsi': 'Minhas rotas',
+  'i miei percorsi': 'Desenhar percurso',
   'metri': 'Metros',
   'Vedi su OpenStreetMap': 'Ver no OpenStreetMap',
   'Descrizione Audio': 'Descrição de áudio',
@@ -115,4 +115,34 @@ export const wmPR = {
   'Si è verificato un errore durante il salvataggio della traccia. Riprova':
     'Ocorreu um erro ao salvar a trilha. Tente novamente',
   'La traccia è stata salvata correttamente': 'A trilha foi salva corretamente',
+  'Scarica il tracciato GPX': 'Descarregar o rastreio GPX',
+  'Scarica il tracciato KML': 'Descarregar o rastreio KML',
+  'Scarica il tracciato GEOJSON': 'Descarregar o rastreio GEOJSON',
+  'Link utili': 'Links úteis',
+  'apri pdf': 'Abrir PDF',
+  'pendenza': 'Pendência',
+  'Galleria': 'Galeria',
+  'resetta la memoria': 'Reiniciar a memória',
+  'rimani acceso': 'Ficar ligado',
+  'forza il dispositivo a non spegnersi': 'Forçar o dispositivo a não desligar',
+  'PAGINE': 'PÁGINAS',
+  'I tuoi dati': 'Os seus dados',
+  'pages.profile.projectlink': 'Projeto',
+  'pages.profile.disclaimerlink': 'Desculpas',
+  'pages.profile.creditslink': 'Créditos',
+  'pages.profile.privacylink': 'Privacidade',
+  'pages.profile.title': 'Perfil',
+  'MEMORIA': 'MEMÓRIA',
+  'la distanza espressa in metri che indica la cadenza di rilevamento posizione, più il distance filter è minore piu il consumo della batteria sarà maggiore.':
+    'Distância expressa em metros que indica a frequência de detecção de posição, quanto menor for o filtro de distância, maior será o consumo da bateria.',
+  "Per registrare tracce e poi correttamente, abilita l'autorizzazione alla posizione nelle impostazioni":
+    'Para registar trilhas e pontos de interesse corretamente, ative a permissão de localização nas definições.',
+  'I miei percorsi': 'Minhas rotas',
+  'Sentieri': 'Trilhas',
+  '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
+    '<span class="green">Nível 1: seções não interessadas pela alta altitude (altitude menor que {{orange}} metros)</span>',
+  '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra {{orange}} metri e {{red}} metri)</span>':
+    '<span class="orange">Nível 2: seções parcialmente em alta altitude (altitude entre {{orange}} metros e {{red}} metros)</span>',
+  '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
+    '<span class="red">Nível 3: seções em alta altitude (altitude superior a {{red}} metros)</span>',
 };

@@ -22,8 +22,8 @@
 
   <div *ngIf="flowLineQuoteShow$|async" class="wm-flowline">
     <ion-label
-      *ngIf="flowLineQuoteText$|async as flowLineQuoteText"
-      [innerHTML]="flowLineQuoteText"
+      *ngIf="flowLineQuoteHtml$|async as flowLineQuoteHtml"
+      [innerHTML]="flowLineQuoteHtml"
     ></ion-label>
   </div>
   <wm-slope-chart

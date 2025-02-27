@@ -123,4 +123,34 @@ export const wmEN = {
   'Si è verificato un errore durante il salvataggio della traccia. Riprova':
     'An error occurred while saving the track. Try again',
   'La traccia è stata salvata correttamente': 'The track has been saved correctly',
+  'Scarica il tracciato GPX': 'Download the GPX track',
+  'Scarica il tracciato KML': 'Download the KML track',
+  'Scarica il tracciato GEOJSON': 'Download the GEOJSON track',
+  'Link utili': 'Useful links',
+  'apri pdf': 'Open PDF',
+  'pendenza': 'Slope',
+  'Galleria': 'Gallery',
+  'resetta la memoria': 'Reset memory',
+  'rimani acceso': 'Stay connected',
+  'forza il dispositivo a non spegnersi': 'Force the device to not turn off',
+  'PAGINE': 'PAGES',
+  'I tuoi dati': 'Your data',
+  'pages.profile.projectlink': 'Project',
+  'pages.profile.disclaimerlink': 'Disclaimer',
+  'pages.profile.creditslink': 'Credits',
+  'pages.profile.privacylink': 'Privacy',
+  'pages.profile.title': 'Profile',
+  'MEMORIA': 'MEMORY',
+  'la distanza espressa in metri che indica la cadenza di rilevamento posizione, più il distance filter è minore piu il consumo della batteria sarà maggiore.':
+    'The distance expressed in meters indicates the frequency of position detection, the smaller the distance filter, the greater the battery consumption.',
+  "Per registrare tracce e poi correttamente, abilita l'autorizzazione alla posizione nelle impostazioni":
+    'To register tracks and then correctly, enable the location permission in the settings.',
+  'I miei percorsi': 'My paths',
+  'Sentieri': 'Trails',
+  '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
+    '<span class="green">Level 1: sections not affected by high altitude (altitude less than {{orange}} meters)</span>',
+  '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra {{orange}} metri e {{red}} metri)</span>':
+    '<span class="orange">Level 2: sections partially in high altitude (altitude between {{orange}} meters and {{red}} meters)</span>',
+  '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
+    '<span class="red">Level 3: in high altitude (altitude above {{red}} meters)</span>',
 };
