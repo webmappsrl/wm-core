@@ -180,6 +180,7 @@ export class UgcService {
         );
 
         if (existingPoi) {
+          await removeDeviceUgcPoi(deviceUgcPoi.properties.uuid);
           console.log(
             `POI with UUID ${deviceUgcPoi.properties.uuid} already exists. Skipping save.`,
           );
@@ -218,6 +219,7 @@ export class UgcService {
         );
 
         if (existingTrack) {
+          const res = await this.saveApiTrack(deviceUgcTrack);
           console.log(
             `Track with UUID ${deviceUgcTrack.properties.uuid} already exists. Skipping save.`,
           );
