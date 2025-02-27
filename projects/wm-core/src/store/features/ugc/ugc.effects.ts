@@ -33,22 +33,17 @@ import {
   syncUgcTracks,
   updateUgcPoi,
   updateUgcPoiFailure,
-  updateUgcPois,
   updateUgcPoiSuccess,
   updateUgcTrack,
   updateUgcTrackFailure,
-  updateUgcTracks,
   updateUgcTrackSuccess,
 } from '@wm-core/store/features/ugc/ugc.actions';
 import {UgcService} from '@wm-core/store/features/ugc/ugc.service';
 import {select, Store} from '@ngrx/store';
-import {activableUgc, currentUgcPoi, currentUgcTrack, syncUgcIntervalEnabled} from './ugc.selector';
+import {activableUgc, syncUgcIntervalEnabled} from './ugc.selector';
 import {
   getUgcPoi,
-  getUgcPois,
   getUgcTrack,
-  getUgcTracks,
-  removeDeviceUgcTrack,
   removeUgcPoi,
   removeUgcTrack,
   saveUgcPoi,
@@ -56,8 +51,6 @@ import {
 } from '@wm-core/utils/localForage';
 import {AlertController} from '@ionic/angular';
 import {LangService} from '@wm-core/localization/lang.service';
-import {closeUgc, openUgc} from '@wm-core/store/user-activity/user-activity.action';
-import {track} from '../features.selector';
 const SYNC_INTERVAL = 60000;
 @Injectable({
   providedIn: 'root',
