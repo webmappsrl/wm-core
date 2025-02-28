@@ -148,4 +148,8 @@ export const wmDE = {
     '<span class="orange">Stufe 2: Abschnitte teilweise in großer Höhe (Höhe zwischen {{orange}} und {{red}} Metern)</span>',
   '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
     '<span class="red">Stufe 3: in großer Höhe (Höhe über {{red}} Metern)</span>',
+  'Un utente è già stato registrato con questa email.': 'Ein Benutzer ist bereits mit dieser E-Mail registriert.',
+  'L\'email inserita non è corretta. Per favore, riprova.': 'Die eingegebene E-Mail ist nicht korrekt. Bitte versuchen Sie es erneut.',
+  'La password inserita non è corretta. Per favore, riprova.': 'Das eingegebene Passwort ist nicht korrekt. Bitte versuchen Sie es erneut.',
+  'Errore': 'Fehler',
 };

@@ -111,9 +111,10 @@ export class AuthEffects {
           AuthActions.loadSignUpsFailure,
           AuthActions.loadAuthsFailure,
         ),
-        filter(r => r != null && r.error.error.error != 'Unauthorized'),
+        filter(r => r != null && r.error?.error?.error != 'Unauthorized'),
         switchMap(e => {
-          return this._createErrorAlert(this._langSvc.instant(e.error.error));
+          const errorMessage = e.error?.error?.error ?? 'Errore';
+          return this._createErrorAlert(this._langSvc.instant(errorMessage));
         }),
         switchMap(alert => {
           alert.present();
@@ -160,7 +161,6 @@ export class AuthEffects {
   ) {}
 
   private _createErrorAlert(error: string): Promise<HTMLIonAlertElement> {
-    return null;
     return this._alertCtrl.create({
       mode: 'ios',
       header: this._langSvc.instant('Ops!'),

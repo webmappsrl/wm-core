@@ -144,4 +144,8 @@ export const wmES = {
     '<span class="orange">Nivel 2: tramos parcialmente en alta altitud (altitud entre {{orange}} metros y {{red}} metros)</span>',
   '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
     '<span class="red">Nivel 3: en alta altitud (altitud superior a {{red}} metros)</span>',
+  'Un utente è già stato registrato con questa email.': 'Un usuario ya está registrado con esta dirección de correo electrónico.',
+  'L\'email inserita non è corretta. Per favore, riprova.': 'El correo electrónico introducido no es correcto. Por favor, inténtalo de nuevo.',
+  'La password inserita non è corretta. Per favore, riprova.': 'La contraseña introducida no es correcta. Por favor, inténtalo de nuevo.',
+  'Errore': 'Error',
 };
