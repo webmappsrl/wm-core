@@ -152,4 +152,8 @@ export const wmSQ = {
     '<span class="orange">Niveli 2: seksione që nuk preken nga lartësia e madhe (lartësia midis {{orange}} metra dhe {{red}} metra)</span>',
   '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
     '<span class="red">Niveli 3: seksione që preken nga lartësia e madhe (lartësia më e madhe se {{red}} metra)</span>',
+  'Un utente è già stato registrato con questa email.': 'Një përdorues është tashmë regjistruar me këtë email.',
+  'L\'email inserita non è corretta. Per favore, riprova.': 'Email-i që keni futur nuk është e saktë. Ju lutem provoni përsëri.',
+  'La password inserita non è corretta. Per favore, riprova.': 'Fjalëkalimi që keni futur nuk është i saktë. Ju lutem provoni përsëri.',
+  'Errore': 'Gabim',
 };

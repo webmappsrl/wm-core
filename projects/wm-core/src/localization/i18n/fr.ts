@@ -147,4 +147,8 @@ export const wmFR = {
     '<span class="orange">Niveau 2: sections partiellement en altitude (altitude comprise entre {{orange}} mètres et {{red}} mètres)</span>',
   '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
     '<span class="red">Niveau 3: sections en altitude (altitude supérieure à {{red}} mètres)</span>',
+  'Un utente è già stato registrato con questa email.': 'Un utilisateur a déjà été enregistré avec cet email.',
+  'L\'email inserita non è corretta. Per favore, riprova.': 'L\'email saisie est incorrecte. Veuillez réessayer.',
+  'La password inserita non è corretta. Per favore, riprova.': 'Le mot de passe saisi est incorrect. Veuillez réessayer.',
+  'Errore': 'Erreur',
 };

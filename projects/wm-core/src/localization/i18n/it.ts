@@ -153,4 +153,8 @@ export const wmIT = {
     '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra {{orange}} metri e {{red}} metri)</span>',
   '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
     '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>',
+  'Un utente è già stato registrato con questa email.': 'Un utente è già stato registrato con questa email.',
+  'L\'email inserita non è corretta. Per favore, riprova.': 'L\'email inserita non è corretta. Per favore, riprova.',
+  'La password inserita non è corretta. Per favore, riprova.': 'La password inserita non è corretta. Per favore, riprova.',
+  'Errore': 'Errore',
 };

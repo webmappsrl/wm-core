@@ -145,4 +145,8 @@ export const wmPR = {
     '<span class="orange">Nível 2: seções parcialmente em alta altitude (altitude entre {{orange}} metros e {{red}} metros)</span>',
   '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
     '<span class="red">Nível 3: seções em alta altitude (altitude superior a {{red}} metros)</span>',
+  'Un utente è già stato registrato con questa email.': 'Um usuário já foi registrado com este e-mail.',
+  'L\'email inserita non è corretta. Per favore, riprova.': 'O e-mail inserido está incorreto. Por favor, tente novamente.',
+  'La password inserita non è corretta. Per favore, riprova.': 'A senha inserida está incorreta. Por favor, tente novamente.',
+  'Errore': 'Erro',
 };

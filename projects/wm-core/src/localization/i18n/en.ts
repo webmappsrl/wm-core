@@ -153,4 +153,8 @@ export const wmEN = {
     '<span class="orange">Level 2: sections partially in high altitude (altitude between {{orange}} meters and {{red}} meters)</span>',
   '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
     '<span class="red">Level 3: in high altitude (altitude above {{red}} meters)</span>',
+  'Un utente è già stato registrato con questa email.': 'A user has already been registered with this email.',
+  'L\'email inserita non è corretta. Per favore, riprova.': 'The email entered is incorrect. Please try again.',
+  'La password inserita non è corretta. Per favore, riprova.': 'The password entered is incorrect. Please try again.',
+  'Errore': 'Error',
 };
