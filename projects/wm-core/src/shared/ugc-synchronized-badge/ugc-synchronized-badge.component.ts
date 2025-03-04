@@ -6,10 +6,10 @@ import {WmProperties} from '@wm-types/feature';
   selector: 'wm-ugc-synchronized-badge',
   template: `
     <ng-container *ngIf="properties?.id; else onlyUuid">
-      <ion-icon name="cloud-done-outline" color="primary"></ion-icon>
+      <ion-icon name="cloud-done-outline"></ion-icon>
     </ng-container>
     <ng-template #onlyUuid>
-      <ion-icon name="cloud-offline-outline" color="danger"></ion-icon>
+      <ion-icon name="cloud-offline-outline"></ion-icon>
     </ng-template>
   `,
   styles: [
@@ -18,6 +18,12 @@ import {WmProperties} from '@wm-types/feature';
         ion-icon {
           width: 22px;
           height: 22px;
+          &[name='cloud-done-outline'] {
+            color: #04ae04;
+          }
+          &[name='cloud-offline-outline'] {
+            color: #ed143d;
+          }
         }
       }
     `,
