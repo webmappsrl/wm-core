@@ -30,25 +30,24 @@ export class EnvironmentService {
 
     const wmpackagesRegexMatch = this._hostname.match(this._wmpackagesRegex);
     const _localHostRegex = this._hostname.match(this._localHostRegex);
+    this._redirects = this._environment.redirects;
+    const matchedHost = Object.keys(this._redirects ?? {}).find(host =>
+      this._hostname.includes(host),
+    );
+
     if (_localHostRegex) {
       this._appId = environment.appId;
       this._shardName = environment.shardName;
+    } else if (matchedHost) {
+      this._redirect = this._redirects[matchedHost];
+      this._appId = this._redirect.appId;
+      this._shardName = this._redirect.shardName;
     } else if (wmpackagesRegexMatch && !this._oldSubdomains.includes(wmpackagesRegexMatch[2])) {
       this._appId = +wmpackagesRegexMatch[1];
       this._shardName = wmpackagesRegexMatch[2];
     } else {
-      this._redirects = this._environment.redirects;
-      const matchedHost = Object.keys(this._redirects ?? {}).find(host =>
-        this._hostname.includes(host),
-      );
-      if (matchedHost) {
-        this._redirect = this._redirects[matchedHost];
-        this._appId = this._redirect.appId;
-        this._shardName = this._redirect.shardName;
-      } else {
-        this._appId = parseInt(this._hostname.split('.')[0], 10);
-        this._shardName = 'geohub';
-      }
+      this._appId = parseInt(this._hostname.split('.')[0], 10);
+      this._shardName = 'geohub';
     }
 
     this._assignApi();
