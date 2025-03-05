@@ -106,11 +106,7 @@ export class AuthEffects {
   openAlertOnError$ = createEffect(
     () =>
       this._actions$.pipe(
-        ofType(
-          AuthActions.loadSignInsFailure,
-          AuthActions.loadSignUpsFailure,
-          AuthActions.loadAuthsFailure,
-        ),
+        ofType(AuthActions.loadSignInsFailure, AuthActions.loadSignUpsFailure),
         filter(r => r != null && r.error?.error?.error != 'Unauthorized'),
         switchMap(e => {
           const errorMessage = e.error?.error?.error ?? 'Errore';

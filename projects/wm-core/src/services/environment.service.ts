@@ -21,6 +21,8 @@ export class EnvironmentService {
   private _confUrl: string;
   private _redirects: Redirects;
   private _redirect: Redirect;
+  private _oldShardName: string[] = ['geohub', 'osm2cai', 'carg'];
+  private _oldSubdomains: string[] = ['app', 'geohub', 'mobile'];
 
   init(environment: any) {
     this._environment = environment;
@@ -31,7 +33,7 @@ export class EnvironmentService {
     if (_localHostRegex) {
       this._appId = environment.appId;
       this._shardName = environment.shardName;
-    } else if (wmpackagesRegexMatch && wmpackagesRegexMatch[2] !== 'app') {
+    } else if (wmpackagesRegexMatch && !this._oldSubdomains.includes(wmpackagesRegexMatch[2])) {
       this._appId = +wmpackagesRegexMatch[1];
       this._shardName = wmpackagesRegexMatch[2];
     } else {
@@ -59,15 +61,19 @@ export class EnvironmentService {
     this._graphhopperHost = this._shard.graphhopperHost;
     this._awsApi = this._shard.awsApi;
     this._origin = this._shard.origin;
-    if (this._shardName != 'geohub') {
-      this._awsPoisUrl = `${this._awsApi}/${this._appId}/pois.geojson`;
-      this._confUrl = `${this._awsApi}/${this._appId}/conf.json`;
-      this._awsPbfUrl = `${this._awsApi}/${this._appId}/pbf/{z}/{x}/{y}.pbf`;
-    } else {
+    if (this._isOldShardName(this._shardName)) {
       this._awsPoisUrl = `${this._awsApi}/pois/${this._appId}.geojson`;
       this._confUrl = `${this._awsApi}/conf/${this._appId}.json`;
       this._awsPbfUrl = `https://wmpbf.s3.eu-central-1.amazonaws.com/${this._appId}/{z}/{x}/{y}.pbf`;
+    } else {
+      this._awsPoisUrl = `${this._awsApi}/${this._appId}/pois.geojson`;
+      this._confUrl = `${this._awsApi}/${this._appId}/conf.json`;
+      this._awsPbfUrl = `${this._awsApi}/${this._appId}/pbf/{z}/{x}/{y}.pbf`;
     }
+  }
+
+  private _isOldShardName(shardName: string): boolean {
+    return this._oldShardName.includes(shardName);
   }
 
   get elasticApi(): string {
