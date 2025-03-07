@@ -67,6 +67,7 @@ import {ModalUgcTrackUploaderComponent} from './modal-ugc-track-uploader/modal-u
 import {NetworkEffects} from './store/network/network.effects';
 import {networkReducer} from './store/network/netwotk.reducer';
 import {WmHomeHitMapComponent} from './home/home-hitmap/home-hitmap.component';
+import {MetaComponent} from './meta/meta.component';
 export const declarations = [
   WmTabDetailComponent,
   WmTabDescriptionComponent,
@@ -104,6 +105,7 @@ export const declarations = [
   WmTrackAlertComponent,
   ModalUgcTrackUploaderComponent,
   WmHomeHitMapComponent,
+  MetaComponent,
 ];
 const modules = [
   WmSharedModule,
