@@ -66,7 +66,7 @@ export const calculateLayerPoiCounts = (layers, pois) => {
       const layerTaxonomies = layer.taxonomy_themes;
       let count = 0;
       pois.forEach(poi => {
-          const poiTaxonomies = poi.properties.taxonomy.theme;
+          const poiTaxonomies = poi.properties?.taxonomy?.theme ?? [];
           const hasCommonTaxonomy = layerTaxonomies.some(taxonomy =>
               poiTaxonomies.includes(taxonomy?.id)
           );
