@@ -30,17 +30,28 @@
       (clickEVT)="externalUrlBoxEVT.emit(box.url)"
     >
     </wm-box>
-    <wm-tracks-box
+    <wm-features-box
       *ngIf="box.box_type === 'base'"
       [data]="box"
       (trackIdEVT)="tracksBoxEVT.emit($event)"
+      (poiIdEVT)="poisBoxEVT.emit($event)"
     >
-    </wm-tracks-box>
+    </wm-features-box>
     <wm-layer-box
       *ngIf="box.box_type === 'layer'"
       [data]="box"
       (clickEVT)="layerBoxEVT.emit([box.layer,idx])"
     >
+      <ng-container *ngIf="(countEcTracksByLayer$|async) as countEcTracksByLayer">
+        <ng-container *ngIf="(countEcPoisByLayer$|async) as countEcPoisByLayer">
+          <ng-container *ngIf="countEcTracksByLayer[box.layer?.id] > 0 || countEcPoisByLayer[box.layer?.id] > 0">
+            <wm-features-counter-badge
+              [countEcTracks]="countEcTracksByLayer[box.layer?.id] ?? 0"
+              [countEcPoi]="countEcPoisByLayer[box.layer?.id] ?? 0"
+            ></wm-features-counter-badge>
+          </ng-container>
+        </ng-container>
+      </ng-container>
     </wm-layer-box>
   </ng-container>
 </ng-template>

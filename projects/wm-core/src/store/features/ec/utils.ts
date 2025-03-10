@@ -57,3 +57,26 @@ export const filterFeaturesByInputTyped = (
   });
   return filteredFeaturesByInputTyped;
 };
+
+export const calculateLayerPoiCounts = (layers, pois) => {
+  const layerCounts: {[key: string]: number} = {};
+
+  if(layers?.length > 0 && pois?.length > 0) {
+    layers.forEach(layer => {
+      const layerTaxonomies = layer.taxonomy_themes;
+      let count = 0;
+      pois.forEach(poi => {
+          const poiTaxonomies = poi.properties.taxonomy.theme;
+          const hasCommonTaxonomy = layerTaxonomies.some(taxonomy =>
+              poiTaxonomies.includes(taxonomy?.id)
+          );
+          if (hasCommonTaxonomy) {
+              count++;
+          }
+      });
+      layerCounts[layer.id] = count;
+    });
+  }
+
+  return layerCounts;
+}

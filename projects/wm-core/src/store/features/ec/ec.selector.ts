@@ -1,6 +1,6 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
-import {confFILTERSTRACKS, confPOISFilter, confPoisIcons} from '../../conf/conf.selector';
-import {buildStats, filterFeatures, filterFeaturesByInputTyped} from './utils';
+import {confFILTERSTRACKS, confMAPLayers, confPOISFilter, confPoisIcons} from '../../conf/conf.selector';
+import {buildStats, calculateLayerPoiCounts, filterFeatures, filterFeaturesByInputTyped} from './utils';
 import {IELASTIC} from '../../../types/elastic';
 import {Ec} from './ec.reducer';
 import {
@@ -214,3 +214,23 @@ export const currentPoiProperties = createSelector(
     return res;
   },
 );
+
+export const countEcTracksByLayer = createSelector(ec, (state: Ec) => {
+  const layerCounts: {[key: string]: number} = {};
+
+  state.hits?.forEach(hit => {
+    hit.layers?.forEach(layerId => {
+      if (layerCounts[layerId]) {
+        layerCounts[layerId]++;
+      } else {
+        layerCounts[layerId] = 1;
+      }
+    });
+  });
+
+  return layerCounts;
+});
+
+export const countEcPoisByLayer = createSelector(confMAPLayers, allEcpoiFeatures, (confMAPLayers, allEcpoiFeatures) => {
+  return calculateLayerPoiCounts(confMAPLayers, allEcpoiFeatures);
+});
