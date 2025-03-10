@@ -16,8 +16,7 @@ import {SliderBoxComponent} from './slider-box/slider-box.component';
 import {SlugBoxComponent} from './slug-box/slug-box.component';
 import {TitleComponent} from './title/title.component';
 import {TrackBoxComponent} from './track-box/track-box.component';
-import {ConvertToItemTracksPipe} from './tracks-box/convert-to-base-box.pipe';
-import {TracksBoxComponent} from './tracks-box/tracks-box.component';
+import {FeaturesBoxComponent} from './features-box/features-box.component';
 import {UgcBoxComponent} from './ugc-box/ugc-box.component';
 import {UpdatedAtComponent} from './udpated-at/updated-at.component';
 import {DownloadsEcTrackBox} from './downloads-ec-track-box /downloads-ec-track-box.component';
@@ -37,8 +36,7 @@ const boxComponents = [
   ConvertToHorizontalScrollBoxItemsPipe,
   TitleComponent,
   BoxComponent,
-  TracksBoxComponent,
-  ConvertToItemTracksPipe,
+  FeaturesBoxComponent,
   UpdatedAtComponent,
   DownloadsEcTrackBox,
 ];

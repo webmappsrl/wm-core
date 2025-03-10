@@ -20,6 +20,7 @@
       [ngClass]="{'hidden': showResult$ | async}"
       (slugBoxEVT)="openSlug($event[0], $event[1])"
       (externalUrlBoxEVT)="openExternalUrl($event)"
+      (poisBoxEVT)="setPoi($event)"
       (tracksBoxEVT)="setTrack($event)"
       (layerBoxEVT)="setLayer($event[0], $event[1])"
       (ugcBoxEvt)="setUgc()"
