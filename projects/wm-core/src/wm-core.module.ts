@@ -68,7 +68,6 @@ import {NetworkEffects} from './store/network/network.effects';
 import {networkReducer} from './store/network/netwotk.reducer';
 import {WmHomeHitMapComponent} from './home/home-hitmap/home-hitmap.component';
 import {MetaComponent} from './meta/meta.component';
-import {WmFeaturesCounterBadgeComponent} from './features-counter-badge/feature-counter-badge.component';
 export const declarations = [
   WmTabDetailComponent,
   WmTabDescriptionComponent,
@@ -107,7 +106,6 @@ export const declarations = [
   ModalUgcTrackUploaderComponent,
   WmHomeHitMapComponent,
   MetaComponent,
-  WmFeaturesCounterBadgeComponent,
 ];
 const modules = [
   WmSharedModule,

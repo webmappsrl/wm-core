@@ -1,0 +1,29 @@
+wm-layer-features-counter-badge{
+  background-color: #fff;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border-radius: 15px;
+  >div{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    >div{
+      position: relative;
+      padding: 6px 10px;
+      font-size: 12px;
+      span:first-child{
+        font-weight: bold;
+        margin-right: 4px;
+      }
+    }
+    >div:not(:first-child)::before{
+      position: absolute;
+      left: 0;
+      content: '';
+      width: 1px;
+      height: calc(100% - 12px);
+      background-color: #000;
+    }
+  }
+}

@@ -258,6 +258,8 @@ export interface ILAYER {
   params?: {[id: string]: string};
   style: {[name: string]: string};
   subtitle: string;
+  taxonomy_activities?: any[];
+  taxonomy_themes?: any[];
   title: string;
   tracks?: {[name: string]: IHIT[]};
 }

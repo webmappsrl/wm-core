@@ -42,16 +42,6 @@
       [data]="box"
       (clickEVT)="layerBoxEVT.emit([box.layer,idx])"
     >
-      <ng-container *ngIf="(countEcTracksByLayer$|async) as countEcTracksByLayer">
-        <ng-container *ngIf="(countEcPoisByLayer$|async) as countEcPoisByLayer">
-          <ng-container *ngIf="countEcTracksByLayer[box.layer?.id] > 0 || countEcPoisByLayer[box.layer?.id] > 0">
-            <wm-features-counter-badge
-              [countEcTracks]="countEcTracksByLayer[box.layer?.id] ?? 0"
-              [countEcPoi]="countEcPoisByLayer[box.layer?.id] ?? 0"
-            ></wm-features-counter-badge>
-          </ng-container>
-        </ng-container>
-      </ng-container>
     </wm-layer-box>
   </ng-container>
 </ng-template>

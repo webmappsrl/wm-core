@@ -1,0 +1,20 @@
+<ng-container *ngIf="layerFeaturesCount$ | async as layerFeaturesCount">
+  <div>
+    <ng-container *ngIf="layerFeaturesCount[layerId]?.tracks as countEcTracks">
+      <div
+        *ngIf="countEcTracks > 0"
+      >
+        <span>{{countEcTracks}}</span>
+        <span>{{(countEcTracks > 1 ? 'Percorsi' : 'Percorso')|wmtrans}}</span>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="layerFeaturesCount[layerId]?.pois as countEcPoi">
+      <div
+        *ngIf="countEcPoi > 0"
+      >
+        <span>{{countEcPoi}}</span>
+        <span>{{(countEcPoi > 1 ? 'Luoghi' : 'Luogo')|wmtrans}}</span>
+      </div>
+    </ng-container>
+  </div>
+</ng-container>

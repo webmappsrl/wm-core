@@ -8,7 +8,7 @@ import {
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
-import {confHOME, confShowDrawTrack} from '@wm-core/store/conf/conf.selector';
+import {confHOME} from '@wm-core/store/conf/conf.selector';
 import {IHOME, IHORIZONTALSCROLLBOX} from '@wm-core/types/config';
 import {
   togglePoiFilter,
@@ -16,7 +16,6 @@ import {
 } from '@wm-core/store/user-activity/user-activity.action';
 import {countUgcAll} from '@wm-core/store/features/ugc/ugc.selector';
 import {offline} from '@wm-core/store/network/network.selector';
-import {countEcPoisByLayer, countEcTracksByLayer} from '@wm-core/store/features/ec/ec.selector';
 
 @Component({
   selector: 'wm-home-landing',
@@ -37,8 +36,6 @@ export class WmHomeLandingComponent {
 
   confHOME$: Observable<IHOME[] | undefined> = this._store.select(confHOME);
   countAllUgc$: Observable<number> = this._store.select(countUgcAll);
-  countEcPoisByLayer$: Observable<{[key: string]: number}> = this._store.select(countEcPoisByLayer);
-  countEcTracksByLayer$: Observable<{[key: string]: number}> = this._store.select(countEcTracksByLayer);
   isLogged$: Observable<boolean> = this._store.select(isLogged);
   offline$: Observable<boolean> = this._store.select(offline);
 

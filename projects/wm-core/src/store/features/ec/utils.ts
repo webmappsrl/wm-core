@@ -1,4 +1,6 @@
-import {WmFeature} from '@wm-types/feature';
+import {ILAYER} from '@wm-core/types/config';
+import {IHIT} from '@wm-core/types/elastic';
+import {LayerFeaturesCounts, WmFeature} from '@wm-types/feature';
 import {Feature, Geometry, LineString, Point} from 'geojson';
 
 export const filterFeatures = (
@@ -58,23 +60,34 @@ export const filterFeaturesByInputTyped = (
   return filteredFeaturesByInputTyped;
 };
 
-export const calculateLayerPoiCounts = (layers, pois) => {
-  const layerCounts: {[key: string]: number} = {};
+export const calculateLayerFeaturesCount = (layers: ILAYER[], pois:WmFeature<Point>[], tracks: IHIT[]) => {
+  const layerCounts: LayerFeaturesCounts = {};
 
-  if(layers?.length > 0 && pois?.length > 0) {
+  if(layers?.length > 0 && (pois?.length > 0 || tracks?.length > 0)) {
     layers.forEach(layer => {
+      const layerId = layer.id;
       const layerTaxonomies = layer.taxonomy_themes;
-      let count = 0;
+      layerCounts[layerId] = {
+        pois: 0,
+        tracks: 0,
+      };
+
       pois.forEach(poi => {
-          const poiTaxonomies = poi.properties?.taxonomy?.theme ?? [];
-          const hasCommonTaxonomy = layerTaxonomies.some(taxonomy =>
-              poiTaxonomies.includes(taxonomy?.id)
-          );
-          if (hasCommonTaxonomy) {
-              count++;
-          }
+        const poiTaxonomies = poi.properties?.taxonomy?.theme ?? [];
+        const hasCommonTaxonomy = layerTaxonomies.some(taxonomy =>
+            poiTaxonomies.includes(taxonomy?.id)
+        );
+        if (hasCommonTaxonomy) {
+          layerCounts[layerId].pois++;
+        }
       });
-      layerCounts[layer.id] = count;
+
+      tracks.forEach(track => {
+        if (track.layers.includes(+layerId)) {
+          layerCounts[layerId].tracks++;
+        }
+      });
+
     });
   }
 

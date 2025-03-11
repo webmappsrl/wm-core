@@ -20,6 +20,7 @@ import {FeaturesBoxComponent} from './features-box/features-box.component';
 import {UgcBoxComponent} from './ugc-box/ugc-box.component';
 import {UpdatedAtComponent} from './udpated-at/updated-at.component';
 import {DownloadsEcTrackBox} from './downloads-ec-track-box /downloads-ec-track-box.component';
+import {WmLayerFeaturesCounterBadgeComponent} from '@wm-core/layer-features-counter-badge/layer-features-counter-badge.component';
 
 const boxComponents = [
   LayerBoxComponent,
@@ -39,6 +40,7 @@ const boxComponents = [
   FeaturesBoxComponent,
   UpdatedAtComponent,
   DownloadsEcTrackBox,
+  WmLayerFeaturesCounterBadgeComponent,
 ];
 @NgModule({
   declarations: boxComponents,
