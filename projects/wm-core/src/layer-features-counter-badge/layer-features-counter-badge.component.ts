@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
 import {layerFeaturesCount} from '@wm-core/store/features/ec/ec.selector';
 import {Store} from '@ngrx/store';
-import {LayerFeaturesCounts} from '@wm-types/feature';
+import {LayerFeaturesCount} from '@wm-types/feature';
 import {Observable} from 'rxjs';
 
 @Component({
@@ -14,7 +14,7 @@ import {Observable} from 'rxjs';
 export class WmLayerFeaturesCounterBadgeComponent {
   @Input() layerId: string;
 
-  layerFeaturesCount$: Observable<LayerFeaturesCounts> = this._store.select(layerFeaturesCount);
+  layerFeaturesCount$: Observable<LayerFeaturesCount> = this._store.select(layerFeaturesCount);
 
   constructor(private _store: Store) {}
 }

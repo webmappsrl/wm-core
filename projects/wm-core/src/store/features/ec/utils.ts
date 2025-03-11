@@ -1,6 +1,6 @@
 import {ILAYER} from '@wm-core/types/config';
 import {IHIT} from '@wm-core/types/elastic';
-import {LayerFeaturesCounts, WmFeature} from '@wm-types/feature';
+import {LayerFeaturesCount, WmFeature} from '@wm-types/feature';
 import {Feature, Geometry, LineString, Point} from 'geojson';
 
 export const filterFeatures = (
@@ -61,13 +61,13 @@ export const filterFeaturesByInputTyped = (
 };
 
 export const calculateLayerFeaturesCount = (layers: ILAYER[], pois:WmFeature<Point>[], tracks: IHIT[]) => {
-  const layerCounts: LayerFeaturesCounts = {};
+  const layerFeaturesCount: LayerFeaturesCount = {};
 
   if(layers?.length > 0 && (pois?.length > 0 || tracks?.length > 0)) {
     layers.forEach(layer => {
       const layerId = layer.id;
       const layerTaxonomies = layer.taxonomy_themes;
-      layerCounts[layerId] = {
+      layerFeaturesCount[layerId] = {
         pois: 0,
         tracks: 0,
       };
@@ -78,18 +78,18 @@ export const calculateLayerFeaturesCount = (layers: ILAYER[], pois:WmFeature<Poi
             poiTaxonomies.includes(taxonomy?.id)
         );
         if (hasCommonTaxonomy) {
-          layerCounts[layerId].pois++;
+          layerFeaturesCount[layerId].pois++;
         }
       });
 
       tracks.forEach(track => {
         if (track.layers.includes(+layerId)) {
-          layerCounts[layerId].tracks++;
+          layerFeaturesCount[layerId].tracks++;
         }
       });
 
     });
   }
 
-  return layerCounts;
+  return layerFeaturesCount;
 }
