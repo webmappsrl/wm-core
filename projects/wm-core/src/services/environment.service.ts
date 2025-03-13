@@ -23,6 +23,7 @@ export class EnvironmentService {
   private _redirect: Redirect;
   private _oldShardName: string[] = ['geohub', 'osm2cai', 'carg'];
   private _oldSubdomains: string[] = ['app', 'geohub', 'mobile'];
+  private _shareLink: string;
 
   init(environment: any) {
     this._environment = environment;
@@ -50,6 +51,7 @@ export class EnvironmentService {
       this._shardName = 'geohub';
     }
 
+    this._assignShareLink();
     this._assignApi();
   }
 
@@ -69,6 +71,13 @@ export class EnvironmentService {
       this._confUrl = `${this._awsApi}/${this._appId}/conf.json`;
       this._awsPbfUrl = `${this._awsApi}/${this._appId}/pbf/{z}/{x}/{y}.pbf`;
     }
+  }
+
+  private _assignShareLink() {
+    const host = Object.entries(this._environment.redirects).find(
+      ([key, val]) => val.appId === this._appId,
+    );
+    this._shareLink = host ? host[0] : `${this.appId}.app.webmapp.it`;
   }
 
   private _isOldShardName(shardName: string): boolean {
@@ -107,5 +116,8 @@ export class EnvironmentService {
   }
   get pbfUrl(): string {
     return this._awsPbfUrl;
+  }
+  get shareLink(): string {
+    return this._shareLink;
   }
 }
