@@ -13,6 +13,7 @@ import {filter, take} from 'rxjs/operators';
 import {LangService} from '@wm-core/localization/lang.service';
 import {loadSignIns} from '@wm-core/store/auth/auth.actions';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
+import {EnvironmentService} from '@wm-core/services/environment.service';
 
 @Component({
   selector: 'wm-login-component',
@@ -37,6 +38,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private _formBuilder: UntypedFormBuilder,
     private _modalCtrl: ModalController,
+    private _environmentSvc: EnvironmentService,
     private _store: Store,
   ) {
     this.loginForm = this._formBuilder.group({
@@ -64,8 +66,6 @@ export class LoginComponent implements OnInit {
     this._modalCtrl.dismiss();
   }
 
-  forgotPassword(): void {}
-
   login(): void {
     this.submitted$.next(true);
     if (this.loginForm.valid) {
@@ -73,8 +73,12 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  openUrl(url: string): void {
-    window.open(url, '_blank');
+  resetPassword(): void {
+    const origin = this._environmentSvc.origin;
+    if (origin != null) {
+      const resetPasswordUrl = `${origin}/reset-password`;
+      window.open(resetPasswordUrl, '_blank');
+    }
   }
 
   setFocus(): void {

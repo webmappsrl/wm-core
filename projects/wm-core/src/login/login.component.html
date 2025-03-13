@@ -1,8 +1,4 @@
-<wm-modal-header
-  class="wm-login-header"
-  [title]="'Accedi' | wmtrans"
-  (dismiss)="dismiss()"
->
+<wm-modal-header class="wm-login-header" [title]="'Accedi' | wmtrans" (dismiss)="dismiss()">
 </wm-modal-header>
 <ion-content scrollY="false">
   <form class="wm-login-form" (ngSubmit)="login()" [formGroup]="loginForm">
@@ -60,11 +56,7 @@
           class="wm-login-input"
           formControlName="password"
         ></ion-input>
-        <ion-button
-          class="wm-login-input-button"
-          slot="end"
-          (click)="togglePasswordVisibility()"
-        >
+        <ion-button class="wm-login-input-button" slot="end" (click)="togglePasswordVisibility()">
           <ion-icon [name]="(showPassword$|async) ? 'eye-off-outline' : 'eye-outline'"> </ion-icon>
         </ion-button>
       </ion-item>
@@ -78,11 +70,7 @@
       <button class="wm-login-submit-button">
         {{ "Accedi" | wmtrans }}
       </button>
-      <button
-        type="button"
-        (click)="openUrl('https://geohub.webmapp.it/password/reset')"
-        class="wm-login-forgot-password-button"
-      >
+      <button type="button" (click)="resetPassword()" class="wm-login-forgot-password-button">
         {{ "Hai dimenticato la password?" | wmtrans }}
       </button>
     </div>
