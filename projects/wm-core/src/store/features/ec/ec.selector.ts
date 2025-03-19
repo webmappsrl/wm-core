@@ -1,6 +1,6 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
-import {confFILTERSTRACKS, confPOISFilter, confPoisIcons} from '../../conf/conf.selector';
-import {buildStats, filterFeatures, filterFeaturesByInputTyped} from './utils';
+import {confFILTERSTRACKS, confMAPLayers, confPOISFilter, confPoisIcons} from '../../conf/conf.selector';
+import {buildStats, calculateLayerFeaturesCount, filterFeatures, filterFeaturesByInputTyped} from './utils';
 import {IELASTIC} from '../../../types/elastic';
 import {Ec} from './ec.reducer';
 import {
@@ -215,3 +215,7 @@ export const currentPoiProperties = createSelector(
     return res;
   },
 );
+
+export const layerFeaturesCount = createSelector(confMAPLayers, allEcpoiFeatures, ecTracks, (confMAPLayers, allEcpoiFeatures, ecTracks) => {
+  return calculateLayerFeaturesCount(confMAPLayers, allEcpoiFeatures, ecTracks);
+});
