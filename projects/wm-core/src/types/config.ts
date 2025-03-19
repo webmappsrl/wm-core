@@ -2,7 +2,7 @@ import {IHIT} from './elastic';
 
 export type IBASEBOX = IBOX & {
   box_type: 'base';
-  items: IHOMEITEMTRACK[];
+  items: IHOMEITEMFEATURE[];
   image_url?: string;
 };
 export type IBOX = {
@@ -37,9 +37,10 @@ export type IHOMEBASEITEM = {
   title: iLocalString | string;
   image_url: string;
 };
-export type IHOMEITEM = IHOMEITEMTRACK | IHOMEITEMURL | IHORIZONTALSCROLLBOXITEM;
-export type IHOMEITEMTRACK = IHOMEBASEITEM & {
-  track_id: number;
+export type IHOMEITEM = IHOMEITEMFEATURE | IHOMEITEMURL | IHORIZONTALSCROLLBOXITEM;
+export type IHOMEITEMFEATURE = IHOMEBASEITEM & {
+  track_id?: number;
+  poi_id?: number;
   taxonomy_activities: string[];
   taaxonomy_where: string[];
   distance: string;
@@ -258,6 +259,8 @@ export interface ILAYER {
   params?: {[id: string]: string};
   style: {[name: string]: string};
   subtitle: string;
+  taxonomy_activities?: any[];
+  taxonomy_themes?: any[];
   title: string;
   tracks?: {[name: string]: IHIT[]};
 }
@@ -267,7 +270,6 @@ export interface IMAP {
   alert_poi_show?: boolean;
   bbox: [number, number, number, number];
   center?: [number, number];
-  hitMapUrl?: string;
   controls: ICONTROLS;
   defZoom: number;
   edges?: {[trackId: number]: {prev: number[]; next: number[]}};
@@ -275,6 +277,7 @@ export interface IMAP {
   flow_line_quote_orange?: number;
   flow_line_quote_red?: number;
   flow_line_quote_show?: boolean;
+  hitMapUrl?: string;
   layers?: ILAYER[];
   maxStrokeWidth?: number;
   maxZoom: number;
