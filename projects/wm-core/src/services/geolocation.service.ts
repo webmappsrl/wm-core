@@ -7,7 +7,7 @@ import {
 } from '@capacitor-community/background-geolocation';
 import {registerPlugin} from '@capacitor/core';
 import {App} from '@capacitor/app';
-import {LineString} from 'geojson';
+import {LineString, Position} from 'geojson';
 import {WmFeature} from '@wm-types/feature';
 import {DeviceService} from './device.service';
 import {CStopwatch} from '@wm-core/utils/cstopwatch';
@@ -156,6 +156,15 @@ export class GeolocationService {
     if (!this._deviceService.isBrowser) {
       backgroundGeolocation.openSettings();
     }
+  }
+
+  getDistanceFromCurrentLocation(position: Position): number {
+    if (this._currentLocation == null) return -1;
+    if (!position || position.length < 2) return -1;
+    return getDistance(
+      [this._currentLocation.longitude, this._currentLocation.latitude],
+      [position[0], position[1]],
+    );
   }
 
   private _startWatcher(): void {

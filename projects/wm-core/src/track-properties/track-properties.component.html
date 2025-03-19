@@ -19,7 +19,9 @@
     [alert]="ecTrackProperties?.not_accessible_message"
   ></wm-track-alert>
   <wm-track-edges [properties]="ecTrackProperties" [conf]="currentLayer$|async"></wm-track-edges>
-
+  <ng-container *ngIf="confOPTIONS$|async as confOPTIONS">
+    <wm-travel-mode *ngIf="confOPTIONS.showTravelMode"></wm-travel-mode>
+  </ng-container>
   <div *ngIf="flowLineQuoteShow$|async" class="wm-flowline">
     <ion-label
       *ngIf="flowLineQuoteHtml$|async as flowLineQuoteHtml"
@@ -32,6 +34,9 @@
     id="webmapp-track-details-elevation-chart"
   >
   </wm-slope-chart>
+  <ng-container *ngIf="confOPTIONS$|async as confOPTIONS">
+    <wm-get-directions *ngIf="confOPTIONS.showGetDirections"></wm-get-directions>
+  </ng-container>
   <wm-tab-detail class="webmapp-route-tab" [properties]="ecTrackProperties"></wm-tab-detail>
   <wm-tab-howto
     *ngIf="ecTrackProperties?.taxonomy?.activity"

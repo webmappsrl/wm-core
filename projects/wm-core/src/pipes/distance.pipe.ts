@@ -4,12 +4,16 @@ import {Pipe, PipeTransform} from '@angular/core';
   name: 'distance',
 })
 export class DistancePipe implements PipeTransform {
-  transform(value: number, distance: 'km' | 'm' = 'km', precision: number = 0): string {
+  transform(value: number, distance: 'km' | 'm' = 'km', precision: number = 0, format: 'text' | 'html' = 'text'): string {
     if (value != null && distance === 'km') {
-      return `${(value).toFixed(precision)} km`;
+      return format === 'html'
+        ? `<span class="value">${(value).toFixed(precision)}</span> <span class="unit">km</span>`
+        : `${(value).toFixed(precision)} km`;
     }
     if (value != null && distance === 'm') {
-      return `${(value).toFixed(precision)} m`;
+      return format === 'html'
+        ? `<span class="value">${(value).toFixed(precision)}</span> <span class="unit">m</span>`
+        : `${(value).toFixed(precision)} m`;
     }
     return `${value}`;
   }

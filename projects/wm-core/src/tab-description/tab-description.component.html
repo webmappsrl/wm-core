@@ -1,8 +1,15 @@
-<div *ngIf="description != null">
+<div *ngIf="displayHtml$|async as displayHtml">
   <ion-label class="webmapp-pageroute-tabdescription-title">{{'Descrizione' |
       wmtrans}}</ion-label>
   <div
     class="webmapp-pageroute-tabdescription-description"
-    [innerHTML]="domSanitazer.bypassSecurityTrustHtml(description | wmtrans)"
+    [class.expanded]="isExpanded$|async"
+    [innerHTML]="displayHtml"
   ></div>
+  <div
+    *ngIf="showExpandButton$|async"
+    class="wm-expand-button"
+    (click)="toggleExpand()">
+    {{ (isExpanded$|async) ? ('mostra meno' | wmtrans) : ('mostra altro' | wmtrans) }}
+  </div>
 </div>
