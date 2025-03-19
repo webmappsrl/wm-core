@@ -8,7 +8,7 @@ import {
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
-import {confHOME, confShowDrawTrack} from '@wm-core/store/conf/conf.selector';
+import {confHOME} from '@wm-core/store/conf/conf.selector';
 import {IHOME, IHORIZONTALSCROLLBOX} from '@wm-core/types/config';
 import {
   togglePoiFilter,
@@ -29,13 +29,13 @@ export class WmHomeLandingComponent {
   @Output() horizontalScrollBoxEVT: EventEmitter<any> = new EventEmitter();
   @Output() layerBoxEVT: EventEmitter<[any, number]> = new EventEmitter();
   @Output() poiTypeFilterBoxEVT: EventEmitter<[any, number]> = new EventEmitter();
+  @Output() poisBoxEVT: EventEmitter<number> = new EventEmitter();
   @Output() slugBoxEVT: EventEmitter<[string, number]> = new EventEmitter();
   @Output() tracksBoxEVT: EventEmitter<number> = new EventEmitter();
   @Output() ugcBoxEvt: EventEmitter<boolean> = new EventEmitter();
 
   confHOME$: Observable<IHOME[] | undefined> = this._store.select(confHOME);
   countAllUgc$: Observable<number> = this._store.select(countUgcAll);
-  enableDrawTrack$: Observable<boolean> = this._store.select(confShowDrawTrack);
   isLogged$: Observable<boolean> = this._store.select(isLogged);
   offline$: Observable<boolean> = this._store.select(offline);
 
