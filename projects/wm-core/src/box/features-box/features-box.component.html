@@ -1,0 +1,18 @@
+<webmapp-title *ngIf="data.title as title">
+  {{title}}
+</webmapp-title>
+<div class="wm-features-wrapper">
+  <div class="wm-features-container" #features>
+    <wm-box
+      *ngFor="let feature of data.items"
+      [data]="feature"
+      (clickEVT)="clickFeature(feature)"
+    ></wm-box>
+  </div>
+  <div class="wm-features-arrow left" (click)="scrollLeft()">
+    <i class="icon-outline-arrow-left"></i>
+  </div>
+  <div class="wm-features-arrow right" (click)="scrollRight()">
+    <i class="icon-outline-arrow-right"></i>
+  </div>
+</div>
