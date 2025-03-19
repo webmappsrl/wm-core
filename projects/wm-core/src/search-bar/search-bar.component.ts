@@ -13,7 +13,6 @@ import {FormBuilder, FormGroup, FormControl} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import {debounceTime, filter} from 'rxjs/operators';
 import {inputTyped} from '@wm-core/store/user-activity/user-activity.action';
-import {merge} from 'rxjs';
 
 interface SearchForm {
   search: FormControl<string>;
