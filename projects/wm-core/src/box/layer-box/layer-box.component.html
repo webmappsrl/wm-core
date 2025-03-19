@@ -16,5 +16,8 @@
     size="225x100"
   ></wm-img>
   <div class="wm-box-title">{{data.layer.title??data.title | wmtrans}}</div>
+  <wm-layer-features-counter-badge
+    [layerId]="data.layer?.id"
+  ></wm-layer-features-counter-badge>
   <ng-content></ng-content>
 </div>
