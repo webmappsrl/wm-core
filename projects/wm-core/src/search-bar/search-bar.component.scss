@@ -13,6 +13,9 @@ wm-searchbar {
       border-left: 1px solid var(--wm-color-grey);
       padding: 7px 2px 7px 11px;
     }
+    form {
+      width: 100%;
+    }
   }
   z-index: 400;
 
