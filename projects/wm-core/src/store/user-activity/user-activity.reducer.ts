@@ -29,8 +29,10 @@ import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 
 export const key = 'userActivity';
+export type mapDetailsStatus = 'open' | 'onlyTitle' | 'none' | 'background' | 'toggle';
 export interface UserActivityState {
   ugcOpened: boolean;
+  mapDetailsStatus: mapDetailsStatus;
   downloadsOpened: boolean;
   inputTyped?: string;
   filterTracks: Filter[];
@@ -54,6 +56,7 @@ export interface UserAcitivityRootState {
 
 const initialState: UserActivityState = {
   ugcOpened: false,
+  mapDetailsStatus: 'none',
   downloadsOpened: false,
   inputTyped: null,
   filterTracks: [],

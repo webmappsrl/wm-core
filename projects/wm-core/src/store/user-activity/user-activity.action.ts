@@ -3,9 +3,14 @@ import {Filter, ILAYER} from '@wm-core/types/config';
 import {WmFeature} from '@wm-types/feature';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {Point} from 'geojson';
+import {mapDetailsStatus} from './user-activity.reducer';
 
 export const openUgc = createAction('[User Activity] Open User Generated Content');
 export const closeUgc = createAction('[User Activity] Close User Generated Content');
+export const setMapDetailsStatus = createAction(
+  '[User Activity] Set Map Details Status',
+  props<{status: mapDetailsStatus}>(),
+);
 export const openDownloads = createAction('[User Activity] Open User downloads');
 export const closeDownloads = createAction('[User Activity] Close User downloads');
 export const inputTyped = createAction(

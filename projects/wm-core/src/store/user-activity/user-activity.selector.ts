@@ -6,6 +6,10 @@ import {WmSlopeChartFlowLineQuote} from '@wm-types/slope-chart';
 
 export const userActivity = createFeatureSelector<UserActivityState>('user-activity');
 
+export const mapDetailsStatus = createSelector(
+  userActivity,
+  (state: UserActivityState) => state.mapDetailsStatus,
+);
 export const ugcOpened = createSelector(
   userActivity,
   (state: UserActivityState) => state.ugcOpened,
@@ -137,11 +141,12 @@ export const flowLineQuoteText = createSelector(
 
     const {altitude} = elements.location;
     const {flow_line_quote_orange, flow_line_quote_red} = flowLine;
-    const html = altitude < flow_line_quote_orange
-      ? '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>'
-      : altitude > flow_line_quote_orange && altitude < flow_line_quote_red
-      ? '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra {{orange}} metri e {{red}} metri)</span>'
-      : '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>'
+    const html =
+      altitude < flow_line_quote_orange
+        ? '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>'
+        : altitude > flow_line_quote_orange && altitude < flow_line_quote_red
+        ? '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra {{orange}} metri e {{red}} metri)</span>'
+        : '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>';
 
     const flowLineQuote: WmSlopeChartFlowLineQuote = {
       flow_line_quote_orange,
