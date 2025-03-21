@@ -45,8 +45,8 @@ import {
   goToHome,
   inputTyped,
   openUgc,
-  setCurrentPoi,
   togglePoiFilter,
+  setMapDetailsStatus,
   toggleTrackFilterByIdentifier,
 } from '@wm-core/store/user-activity/user-activity.action';
 import {WmSearchBarComponent} from '@wm-core/search-bar/search-bar.component';
@@ -167,6 +167,7 @@ export class WmHomeComponent implements AfterContentInit {
     this._urlHandlerSvc.updateURL({layer: layer?.id ?? undefined});
     this._store.dispatch(closeUgc());
     this._store.dispatch(closeDownloads());
+    this._store.dispatch(setMapDetailsStatus({status: 'open'}));
   }
 
   setPoi(id: string | number): void {
