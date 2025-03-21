@@ -148,10 +148,6 @@ export class WmHomeComponent implements AfterContentInit {
     }
   }
 
-  removeLayer(_: any): void {
-    this._urlHandlerSvc.updateURL({layer: undefined});
-  }
-
   setFilter(filter: {identifier: string; taxonomy: string}): void {
     if (filter == null) return;
     if (filter.taxonomy === 'poi_types') {

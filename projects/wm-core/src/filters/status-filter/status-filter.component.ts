@@ -42,11 +42,12 @@ export class StatusFilterComponent {
   poiFilters$: Observable<any> = this._store.select(poiFilters);
   trackFilters$: Observable<any[]> = this._store.select(filterTracks);
 
-  constructor(private _store: Store, private urlHandlerSvc: UrlHandlerService) {}
+  constructor(private _store: Store, private _urlHandlerSvc: UrlHandlerService) {}
 
   removeLayer(layer: any): void {
     this._store.dispatch(setLayer(null));
     this._store.dispatch(resetTrackFilters());
+    this._urlHandlerSvc.updateURL({layer: undefined});
     this.removeLayerEVT.emit(layer);
   }
 
