@@ -15,8 +15,8 @@ export class DurationPipe implements PipeTransform {
 
     if (format === 'html') {
       const html = hours > 0
-        ? `<span class="value">${hours}</span> <span class="unit">h</span> ${formattedMinutes} <span class="unit">m</span>`
-        : `${formattedMinutes} <span class="unit">m</span>`;
+        ? `<span class="value">${hours}</span> <span class="unit">h</span> <span class="value">${formattedMinutes}</span> <span class="unit">m</span>`
+        : `<span class="value">${formattedMinutes}</span> <span class="unit">m</span>`;
       return this.sanitizer.bypassSecurityTrustHtml(html);
     }
 
