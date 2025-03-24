@@ -17,15 +17,17 @@ export class DurationPipe implements PipeTransform {
     const minutes: number = Math.round(value % 60);
 
     if (format === 'html') {
-      let html = `<span class="value">${minutes}</span> <span class="unit">${this._units.minutes}</span>`;
+      let durationHtml = `<span class="value">${minutes}</span> <span class="unit">${this._units.minutes}</span>`;
       if(hours > 0) {
-        html = `<span class="value">${hours}</span> <span class="unit">${this._units.hours}</span> ${html}`;
+        durationHtml = `<span class="value">${hours}</span> <span class="unit">${this._units.hours}</span> ${durationHtml}`;
       }
-      return this.sanitizer.bypassSecurityTrustHtml(html);
+      return this.sanitizer.bypassSecurityTrustHtml(durationHtml);
     }
 
-    return hours > 0
-      ? `${hours}${this._units.hours} ${minutes}${this._units.minutes}`
-      : `${minutes}${this._units.minutes}`;
+    let durationString =`${minutes}${this._units.minutes}`;
+    if(hours > 0) {
+      durationString = `${hours}${this._units.hours} ${durationString}`;
+    }
+    return durationString;
   }
 }
