@@ -1,10 +1,11 @@
-<div *ngIf="displayHtml$|async as displayHtml">
+<div *ngIf="htmlDescription$ | async as htmlDescription">
   <ion-label class="webmapp-pageroute-tabdescription-title">{{'Descrizione' |
       wmtrans}}</ion-label>
   <div
+    #descriptionElement
     class="webmapp-pageroute-tabdescription-description"
     [class.expanded]="(isExpanded$|async) || !(showExpandButton$|async)"
-    [innerHTML]="displayHtml"
+    [innerHTML]="htmlDescription"
   ></div>
   <div
     *ngIf="showExpandButton$|async"

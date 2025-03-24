@@ -1,9 +1,17 @@
-import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  ViewEncapsulation,
+  ElementRef,
+  ViewChild,
+  AfterViewChecked,
+} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {LangService} from '@wm-core/localization/lang.service';
-import {BehaviorSubject, combineLatest} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {BehaviorSubject} from 'rxjs';
 
+export const MAX_LINES = 5;
 @Component({
   selector: 'wm-tab-description',
   templateUrl: './tab-description.component.html',
@@ -11,65 +19,55 @@ import {map} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class WmTabDescriptionComponent {
-  private readonly MAX_CHARACTERS = 220;
-
-  private _fullDescription: string;
-  private _truncatedDescription: string;
+export class WmTabDescriptionComponent implements AfterViewChecked{
+  htmlDescription$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
   @Input() set description(value:string) {
     const description = this._langSvc.instant(value);
-    this._fullDescription = description;
-    this._truncatedDescription = this._truncateHtml(description, this.MAX_CHARACTERS);
+    this.htmlDescription$.next(this._addTruncationClass(description))
   }
+  @ViewChild('descriptionElement') descriptionElement: ElementRef;
 
   isExpanded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  showExpandButton$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
-  displayHtml$ = combineLatest([this.isExpanded$, this.showExpandButton$]).pipe(
-    map(([isExpanded, showButton]) => {
-      if (isExpanded || !showButton) {
-        return this.domSanitazer.bypassSecurityTrustHtml(this._fullDescription);
-      }
-      return this.domSanitazer.bypassSecurityTrustHtml(this._truncatedDescription);
-    })
-  );
+  showExpandButton$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  constructor(public domSanitazer: DomSanitizer, private _langSvc: LangService) {}
+  constructor(public domSanitazer: DomSanitizer, private _langSvc: LangService) {
+    document.documentElement.style.setProperty('--wm-max-description-lines', `${MAX_LINES}`);
+  }
+
+  ngAfterViewChecked() {
+    this._checkIfContentIsTruncated();
+  }
 
   toggleExpand() {
     this.isExpanded$.next(!this.isExpanded$.value);
   }
 
-  private _truncateHtml(html: string, maxLength: number): string {
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    let charCount = 0;
-    let wasTruncated = false;
+  private _addTruncationClass(htmlString: string): string {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlString;
 
-    const truncateNode = (node: Node): boolean => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        if (charCount + node.textContent?.length > maxLength) {
-          node.textContent = node.textContent?.substring(0, maxLength - charCount) + '...';
-          wasTruncated = true;
-          return true;
-        }
-        charCount += node.textContent?.length ?? 0;
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        for (let i = 0; i < node.childNodes.length; i++) {
-          if (truncateNode(node.childNodes[i])) {
-            while (node.childNodes.length > i + 1) {
-              node.removeChild(node.childNodes[i + 1]);
-            }
-            wasTruncated = true;
-            return true;
-          }
-        }
+    const allElements = tempDiv.querySelectorAll('*');
+    allElements.forEach(el => {
+      const text = Array.from(el.childNodes)
+        .filter(node => node.nodeType === Node.TEXT_NODE)
+        .map(node => node.textContent.trim())
+        .join('');
+
+      if (text.length > 0) {
+        el.classList.add('truncable');
       }
-      return false;
-    };
+    });
 
-    truncateNode(div);
-    this.showExpandButton$.next(wasTruncated);
-    return div.innerHTML;
+    return tempDiv.innerHTML;
+  }
+
+  private _checkIfContentIsTruncated() {
+    const element = this.descriptionElement.nativeElement;
+    const scrollHeight = element.scrollHeight;
+    const lineHeight = parseInt(window.getComputedStyle(element).lineHeight);
+    const maxHeight = lineHeight * MAX_LINES;
+
+    this.showExpandButton$.next(scrollHeight > maxHeight);
   }
 }

@@ -9,9 +9,13 @@ wm-tab-description{
     overflow: hidden;
     transition: max-height .4s ease-in-out;
     max-height: 160px;
+    display: -webkit-box;
+    -webkit-line-clamp: var(--wm-max-description-lines);
+    -webkit-box-orient: vertical;
 
     &.expanded {
       max-height: 2000px;
+      -webkit-line-clamp: unset;
     }
   }
 
