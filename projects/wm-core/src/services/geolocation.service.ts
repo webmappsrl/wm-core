@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, ReplaySubject} from 'rxjs';
+import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
 import {
   BackgroundGeolocationPlugin,
   Location,
@@ -12,6 +12,7 @@ import {WmFeature} from '@wm-types/feature';
 import {DeviceService} from './device.service';
 import {CStopwatch} from '@wm-core/utils/cstopwatch';
 import {getDistance} from 'ol/sphere';
+import {filter, map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -158,18 +159,22 @@ export class GeolocationService {
     }
   }
 
-  getDistanceFromCurrentLocation(destinationPosition: Position): number | null {
+  getDistanceFromCurrentLocation(destinationPosition: Position): Observable<number | null> {
     if (
-      this._currentLocation == null
-      || this._currentLocation.latitude == null
-      || this._currentLocation.longitude == null
-      || destinationPosition == null
+      destinationPosition == null
       || destinationPosition.length < 2
-    ) return null;
+    ) return of(null);
 
-    return getDistance(
-      [this._currentLocation.longitude, this._currentLocation.latitude],
-      [destinationPosition[0], destinationPosition[1]],
+    return this.onLocationChange.pipe(
+      filter( currentLocation => {
+        return (currentLocation != null
+        && currentLocation.latitude != null
+        && currentLocation.longitude != null)
+      }),
+      map(currentLocation => getDistance(
+        [currentLocation.longitude, currentLocation.latitude],
+        [destinationPosition[0], destinationPosition[1]],
+      )),
     );
   }
 

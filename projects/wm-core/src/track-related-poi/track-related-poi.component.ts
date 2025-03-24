@@ -13,10 +13,10 @@ import {
   currentEcRelatedPois,
   currentEcTrackProperties,
 } from '@wm-core/store/features/ec/ec.selector';
-import {Observable, BehaviorSubject, combineLatest} from 'rxjs';
+import {Observable, BehaviorSubject, combineLatest, of} from 'rxjs';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {GeolocationService} from '@wm-core/services/geolocation.service';
-import {map} from 'rxjs/operators';
+import {map, switchMap} from 'rxjs/operators';
 
 @Component({
   selector: 'wm-track-related-poi',
@@ -36,13 +36,21 @@ export class TrackRelatedPoiComponent {
   defaultPhotoPath = '/assets/icon/no-photo.svg';
   isExpanded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   pois$: Observable<WmFeature<Point>[]> = this._store.select(currentEcRelatedPois).pipe(
-    map(pois => pois.map(poi => ({
-      ...poi,
-      properties: {
-        ...poi.properties,
-        distanceFromCurrentLocation: this._geolocationSvc.getDistanceFromCurrentLocation(poi.geometry?.coordinates)
-      }
-    })))
+    switchMap(pois =>
+      pois.length ? combineLatest([
+        ...pois.map(poi =>
+          this._geolocationSvc.getDistanceFromCurrentLocation(poi.geometry?.coordinates).pipe(
+            map(distance => ({
+              ...poi,
+              properties: {
+                ...poi.properties,
+                distanceFromCurrentLocation: distance
+              }
+            }))
+          )
+        )
+      ]) : of([])
+    )
   );
   showExpandButton$ = this.pois$.pipe(
     map(pois => pois && pois.length > this.MAX_VISIBLE_POIS)
