@@ -44,10 +44,13 @@ export class WmTabDescriptionComponent {
     const div = document.createElement('div');
     div.innerHTML = html;
     let charCount = 0;
+    let wasTruncated = false;
+
     const truncateNode = (node: Node): boolean => {
       if (node.nodeType === Node.TEXT_NODE) {
         if (charCount + node.textContent?.length > maxLength) {
           node.textContent = node.textContent?.substring(0, maxLength - charCount) + '...';
+          wasTruncated = true;
           return true;
         }
         charCount += node.textContent?.length ?? 0;
@@ -57,13 +60,16 @@ export class WmTabDescriptionComponent {
             while (node.childNodes.length > i + 1) {
               node.removeChild(node.childNodes[i + 1]);
             }
+            wasTruncated = true;
             return true;
           }
         }
       }
       return false;
     };
+
     truncateNode(div);
+    this.showExpandButton$.next(wasTruncated);
     return div.innerHTML;
   }
 }
