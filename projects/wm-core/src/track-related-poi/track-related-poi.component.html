@@ -25,7 +25,7 @@
           <div class="webmapp-track-poi-title">
             {{ properties.name | wmtrans }} <!-- | lowercase -->
           </div>
-          <div class="webmapp-track-poi-distance-from-current-location" *ngIf="properties?.distanceFromCurrentLocation >= 0">
+          <div class="webmapp-track-poi-distance-from-current-location" *ngIf="properties?.distanceFromCurrentLocation != null">
             {{ 'Distanza da te' | wmtrans }}
             <span [innerHTML]="properties.distanceFromCurrentLocation | distance:'auto':0:'html'"></span>
           </div>

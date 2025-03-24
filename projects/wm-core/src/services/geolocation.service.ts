@@ -158,12 +158,18 @@ export class GeolocationService {
     }
   }
 
-  getDistanceFromCurrentLocation(position: Position): number {
-    if (this._currentLocation == null) return -1;
-    if (!position || position.length < 2) return -1;
+  getDistanceFromCurrentLocation(destinationPosition: Position): number | null {
+    if (
+      this._currentLocation == null
+      || this._currentLocation.latitude == null
+      || this._currentLocation.longitude == null
+      || destinationPosition == null
+      || destinationPosition.length < 2
+    ) return null;
+
     return getDistance(
       [this._currentLocation.longitude, this._currentLocation.latitude],
-      [position[0], position[1]],
+      [destinationPosition[0], destinationPosition[1]],
     );
   }
 
