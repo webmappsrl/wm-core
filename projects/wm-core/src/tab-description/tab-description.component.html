@@ -3,7 +3,7 @@
       wmtrans}}</ion-label>
   <div
     class="webmapp-pageroute-tabdescription-description"
-    [class.expanded]="isExpanded$|async"
+    [class.expanded]="(isExpanded$|async) || !(showExpandButton$|async)"
     [innerHTML]="displayHtml"
   ></div>
   <div
