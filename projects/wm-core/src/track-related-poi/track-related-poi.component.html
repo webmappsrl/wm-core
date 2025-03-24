@@ -27,7 +27,7 @@
           </div>
           <div class="webmapp-track-poi-distance-from-current-location" *ngIf="properties?.distanceFromCurrentLocation >= 0">
             {{ 'Distanza da te' | wmtrans }}
-            <span>{{ properties.distanceFromCurrentLocation | distance:'auto':0 }}</span>
+            <span [innerHTML]="properties.distanceFromCurrentLocation | distance:'auto':0:'html'"></span>
           </div>
           <div class="webmapp-track-poi-btns">
             <div class="webmapp-poi-popup-btn" *ngIf="properties.address">
