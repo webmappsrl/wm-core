@@ -157,4 +157,11 @@ export const wmEN = {
   'L\'email inserita non è corretta. Per favore, riprova.': 'The email entered is incorrect. Please try again.',
   'La password inserita non è corretta. Per favore, riprova.': 'The password entered is incorrect. Please try again.',
   'Errore': 'Error',
+  'Ottieni indicazioni': 'Get indications',
+  'Mostra altro': 'Show more',
+  'Distanza da te': 'Distance from you',
+  'Mostra meno': 'Show less',
+  'Mostra tutti': 'Show all',
+  'Lunghezza': 'Length',
+  'Orario previsto': 'Expected time',
 };
