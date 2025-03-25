@@ -6,12 +6,24 @@ wm-tab-description{
     padding: 10px;
     margin-bottom: 10px;
     color: var(--wm-feature-details-description-color);
+    overflow: hidden;
+    transition: max-height .4s ease-in-out;
+    max-height: 160px;
+    display: -webkit-box;
+    -webkit-line-clamp: var(--wm-max-description-lines);
+    -webkit-box-orient: vertical;
+
+    &.expanded {
+      max-height: 2000px;
+      -webkit-line-clamp: unset;
+    }
   }
 
   .webmapp-pageroute-tabdescription-title {
     font-weight: var(--wm-feature-details-title-font-weight);
     font-size: var(--wm-feature-details-title-font-size);
     color: var(--wm-feature-details-title-color);
+    font-family: var(--wm-feature-details-title-font-family);
   }
 
   .webmapp-pageroute-tabdescription-photoslider {
@@ -25,5 +37,13 @@ wm-tab-description{
         border-radius: 15px;
       }
     }
+  }
+
+  .wm-expand-button {
+    color: var(--ion-text-color);
+    cursor: pointer;
+    text-decoration: underline;
+    margin-top: 8px;
+    font-weight: bold;
   }
 }
