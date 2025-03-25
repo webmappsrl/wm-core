@@ -1,5 +1,6 @@
 wm-track-properties {
-  display: block;
+  display: flex;
+  flex-direction: column;
   bottom: 0;
   border-radius: 15px;
   background: white;
