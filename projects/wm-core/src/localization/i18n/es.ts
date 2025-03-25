@@ -148,4 +148,11 @@ export const wmES = {
   'L\'email inserita non è corretta. Per favore, riprova.': 'El correo electrónico introducido no es correcto. Por favor, inténtalo de nuevo.',
   'La password inserita non è corretta. Per favore, riprova.': 'La contraseña introducida no es correcta. Por favor, inténtalo de nuevo.',
   'Errore': 'Error',
+  'Ottieni indicazioni': 'Obtener indicaciones',
+  'Mostra altro': 'Mostrar más',
+  'Distanza da te': 'Distancia de ti',
+  'Mostra meno': 'Mostrar menos',
+  'Mostra tutti': 'Mostrar todos',
+  'Lunghezza': 'Longitud',
+  'Orario previsto': 'Tiempo previsto',
 };

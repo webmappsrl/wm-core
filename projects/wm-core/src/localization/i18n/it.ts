@@ -157,4 +157,11 @@ export const wmIT = {
   'L\'email inserita non è corretta. Per favore, riprova.': 'L\'email inserita non è corretta. Per favore, riprova.',
   'La password inserita non è corretta. Per favore, riprova.': 'La password inserita non è corretta. Per favore, riprova.',
   'Errore': 'Errore',
+  'Ottieni indicazioni': 'Ottieni indicazioni',
+  'Mostra altro': 'Mostra altro',
+  'Distanza da te': 'Distanza da te',
+  'Mostra meno': 'Mostra meno',
+  'Mostra tutti': 'Mostra tutti',
+  'Lunghezza': 'Lunghezza',
+  'Orario previsto': 'Orario previsto',
 };

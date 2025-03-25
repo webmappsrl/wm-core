@@ -346,6 +346,7 @@ export interface IOPTIONS {
   showEleMin: boolean;
   showEleTo: boolean;
   showGeojsonDownload: boolean;
+  showGetDirections?: boolean;
   showGpxDownload: boolean;
   showHelp: boolean;
   showKmlDownload: boolean;
@@ -353,6 +354,7 @@ export interface IOPTIONS {
   showPoiListOffline: boolean;
   showShapefileDownload: boolean;
   showTrackRefLabel: boolean;
+  showTravelMode?: boolean;
   show_searchbar?: boolean;
   skipRouteIndexDownload: boolean;
   startFiltersDisabled: boolean;

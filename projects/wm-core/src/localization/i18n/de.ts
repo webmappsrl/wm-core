@@ -152,4 +152,11 @@ export const wmDE = {
   'L\'email inserita non è corretta. Per favore, riprova.': 'Die eingegebene E-Mail ist nicht korrekt. Bitte versuchen Sie es erneut.',
   'La password inserita non è corretta. Per favore, riprova.': 'Das eingegebene Passwort ist nicht korrekt. Bitte versuchen Sie es erneut.',
   'Errore': 'Fehler',
+  'Ottieni indicazioni': 'Indikationen erhalten',
+  'Mostra altro': 'Mehr anzeigen',
+  'Distanza da te': 'Entfernung von Ihnen',
+  'Mostra meno': 'Weniger anzeigen',
+  'Mostra tutti': 'Alle anzeigen',
+  'Lunghezza': 'Länge',
+  'Orario previsto': 'Voraussichtlicher Zeitpunkt',
 };
