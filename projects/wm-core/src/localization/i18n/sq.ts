@@ -156,4 +156,11 @@ export const wmSQ = {
   'L\'email inserita non è corretta. Per favore, riprova.': 'Email-i që keni futur nuk është e saktë. Ju lutem provoni përsëri.',
   'La password inserita non è corretta. Per favore, riprova.': 'Fjalëkalimi që keni futur nuk është i saktë. Ju lutem provoni përsëri.',
   'Errore': 'Gabim',
+  'Ottieni indicazioni': 'Merr hulumtime',
+  'Mostra altro': 'Shfaq më shumë',
+  'Distanza da te': 'Distanca nga ju',
+  'Mostra meno': 'Shfaq më pak',
+  'Mostra tutti': 'Shfaq të gjitha',
+  'Lunghezza': 'Gjatësia',
+  'Orario previsto': 'Koha e pritura',
 };

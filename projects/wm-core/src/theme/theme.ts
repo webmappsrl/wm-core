@@ -147,6 +147,7 @@ export const getCSSVariables = (colors: ITHEME): {[name: string]: any} => {
     '--wm-feature-details-title-color': '#737373',
     '--wm-feature-details-description-color': dark,
     '--wm-feature-details-padding': '10px',
-    '--wm-feature-details-margin': '10px 6px 24px 6px',
+    '--wm-feature-details-margin': '24px 6px 24px 6px',
+    '--wm-feature-details-title-font-family': fontFamilyContent,
   };
 };
