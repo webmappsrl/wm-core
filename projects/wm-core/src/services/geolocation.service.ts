@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, ReplaySubject} from 'rxjs';
+import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
 import {
   BackgroundGeolocationPlugin,
   Location,
@@ -7,11 +7,12 @@ import {
 } from '@capacitor-community/background-geolocation';
 import {registerPlugin} from '@capacitor/core';
 import {App} from '@capacitor/app';
-import {LineString} from 'geojson';
+import {LineString, Position} from 'geojson';
 import {WmFeature} from '@wm-types/feature';
 import {DeviceService} from './device.service';
 import {CStopwatch} from '@wm-core/utils/cstopwatch';
 import {getDistance} from 'ol/sphere';
+import {filter, map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -34,20 +35,13 @@ export class GeolocationService {
   onRecord$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(private _deviceService: DeviceService) {
-    console.log('[GeolocationService] Inizializzato');
 
     if (!this._deviceService.isBrowser) {
       App.addListener('appStateChange', async ({isActive}) => {
-        console.log(
-          `[AppState] Stato: ${isActive ? 'FOREGROUND' : 'BACKGROUND'}, Modalità: ${this._mode}`,
-        );
-
         if (isActive) {
-          console.log('[Navigation] Rientrato in foreground: Avvio watcher');
           this._startWatcher();
         } else {
           if (this._mode != 'recording') {
-            console.log('[Navigation] Andato in background: Stop watcher');
             await this._stopWatcher();
           }
         }
@@ -81,7 +75,6 @@ export class GeolocationService {
 
   startNavigation(): void {
     if (this._mode === 'navigation' || this._mode === 'recording') return;
-    console.log('[Navigation] Avvio modalità');
 
     this._mode = 'navigation';
     this.onModeChange.next(this._mode);
@@ -95,7 +88,6 @@ export class GeolocationService {
 
   startRecording(): void {
     if (this._mode === 'recording') return;
-    console.log('[Recording] Avvio modalità');
 
     this._mode = 'recording';
     this.onModeChange.next(this._mode);
@@ -114,7 +106,6 @@ export class GeolocationService {
 
   async stopRecording(): Promise<WmFeature<LineString> | null> {
     if (this._mode !== 'recording') return null;
-    console.log('[Recording] Stop modalità');
 
     const recordedFeature = this._recordedFeature;
 
@@ -132,7 +123,6 @@ export class GeolocationService {
   }
 
   async stopAll(): Promise<void> {
-    console.log('[GeolocationService] Stop di tutti i watcher');
     await this._stopWatcher();
     this._mode = 'stopped';
     this.onModeChange.next(this._mode);
@@ -140,31 +130,45 @@ export class GeolocationService {
   }
 
   pauseRecording(): void {
-    console.log('[Recording] Pausa registrazione');
     this._recordStopwatch?.pause();
     this._isPaused = true;
   }
 
   resumeRecording(): void {
-    console.log('[Recording] Ripresa registrazione');
     this._recordStopwatch?.resume();
     this._isPaused = false;
   }
 
   openAppSettings(): void {
-    console.log('[GeolocationService] Apertura impostazioni app');
     if (!this._deviceService.isBrowser) {
       backgroundGeolocation.openSettings();
     }
   }
 
+  getDistanceFromCurrentLocation(destinationPosition: Position): Observable<number | null> {
+    if (
+      destinationPosition == null
+      || destinationPosition.length < 2
+    ) return of(null);
+
+    return this.onLocationChange.pipe(
+      filter( currentLocation => {
+        return (currentLocation != null
+        && currentLocation.latitude != null
+        && currentLocation.longitude != null)
+      }),
+      map(currentLocation => getDistance(
+        [currentLocation.longitude, currentLocation.latitude],
+        [destinationPosition[0], destinationPosition[1]],
+      )),
+    );
+  }
+
   private _startWatcher(): void {
     if (this._watcherId != null) return;
-    console.log('[Recording] Attivo watcher con HIGH ACCURACY');
     backgroundGeolocation
       .addWatcher(this._getWatcherOptions('high'), (location, error) => {
         if (error) return;
-        console.log('[Recording] Nuova posizione:', location);
         this._onLocationUpdate(location);
 
         if (this._mode === 'recording' && this._recordedFeature) {
@@ -180,7 +184,6 @@ export class GeolocationService {
   }
 
   private _startWebWatcher(accuracy: 'high' | 'low'): void {
-    console.log(`[WebWatcher] Attivo con accuracy: ${accuracy}`);
     this._webWatcherId = navigator.geolocation.watchPosition(
       res =>
         this._onLocationUpdate({
@@ -197,7 +200,6 @@ export class GeolocationService {
 
   private async _stopWatcher(): Promise<void> {
     if (this._watcherId) {
-      console.log('[Recording] Stop watcher');
       await backgroundGeolocation.removeWatcher({id: this._watcherId});
       this._watcherId = null;
     }
@@ -225,7 +227,6 @@ export class GeolocationService {
 
   private _getWatcherOptions(accuracy: 'high' | 'low'): WatcherOptions {
     const highDistanceFilter = +localStorage.getItem('wm-distance-filter') || 10;
-    console.log('[GeolocationService] DISTANCE FILTER:', highDistanceFilter);
     return {
       backgroundMessage: 'Tracking in background',
       backgroundTitle: 'Tracking Active',

@@ -67,6 +67,8 @@ import {NetworkEffects} from './store/network/network.effects';
 import {networkReducer} from './store/network/netwotk.reducer';
 import {WmHomeHitMapComponent} from './home/home-hitmap/home-hitmap.component';
 import {MetaComponent} from './meta/meta.component';
+import {GetDirectionsComponent} from './get-directions/get-directions.component';
+import {TravelModeComponent} from './travel-mode/travel-mode.component';
 export const declarations = [
   WmTabDetailComponent,
   WmTabDescriptionComponent,
@@ -104,6 +106,8 @@ export const declarations = [
   ModalUgcTrackUploaderComponent,
   WmHomeHitMapComponent,
   MetaComponent,
+  GetDirectionsComponent,
+  TravelModeComponent,
 ];
 const modules = [
   WmSharedModule,
