@@ -171,4 +171,11 @@ export const wmSQ = {
   'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'A jeni të sigurt që dëshironi të fshini këtë gjurmë? Fshirja është e pakthyeshme.',
   'Login effettuato con successo': 'Hyrja u krye me sukses',
   'Logout effettuato con successo': 'Shkëputja u krye me sukses',
+  'Ottieni indicazioni': 'Merr hulumtime',
+  'Mostra altro': 'Shfaq më shumë',
+  'Distanza da te': 'Distanca nga ju',
+  'Mostra meno': 'Shfaq më pak',
+  'Mostra tutti': 'Shfaq të gjitha',
+  'Lunghezza': 'Gjatësia',
+  'Orario previsto': 'Koha e pritura',
 };

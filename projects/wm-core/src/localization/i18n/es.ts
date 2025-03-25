@@ -163,4 +163,11 @@ export const wmES = {
   'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': '¿Está seguro de que desea eliminar esta ruta? La eliminación es irreversible.',
   'Login effettuato con successo': 'Inicio de sesión exitoso',
   'Logout effettuato con successo': 'Cierre de sesión exitoso',
+  'Ottieni indicazioni': 'Obtener indicaciones',
+  'Mostra altro': 'Mostrar más',
+  'Distanza da te': 'Distancia de ti',
+  'Mostra meno': 'Mostrar menos',
+  'Mostra tutti': 'Mostrar todos',
+  'Lunghezza': 'Longitud',
+  'Orario previsto': 'Tiempo previsto',
 };

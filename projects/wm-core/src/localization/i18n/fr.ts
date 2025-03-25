@@ -166,4 +166,11 @@ export const wmFR = {
   'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'Êtes-vous sûr de vouloir supprimer cette piste ? La suppression est irréversible.',
   'Login effettuato con successo': 'Connexion réussie',
   'Logout effettuato con successo': 'Déconnexion réussie',
+  'Ottieni indicazioni': 'Obtenir des indications',
+  'Mostra altro': 'Afficher plus',
+  'Distanza da te': 'Distance de vous',
+  'Mostra meno': 'Afficher moins',
+  'Mostra tutti': 'Afficher tous',
+  'Lunghezza': 'Longueur',
+  'Orario previsto': 'Temps prévu',
 };

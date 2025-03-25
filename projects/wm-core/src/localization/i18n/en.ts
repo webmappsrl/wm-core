@@ -172,4 +172,11 @@ export const wmEN = {
   'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'Are you sure you want to delete this track? The removal is irreversible.',
   'Login effettuato con successo': 'Login successful',
   'Logout effettuato con successo': 'Logout successful',
+  'Ottieni indicazioni': 'Get indications',
+  'Mostra altro': 'Show more',
+  'Distanza da te': 'Distance from you',
+  'Mostra meno': 'Show less',
+  'Mostra tutti': 'Show all',
+  'Lunghezza': 'Length',
+  'Orario previsto': 'Expected time',
 };
