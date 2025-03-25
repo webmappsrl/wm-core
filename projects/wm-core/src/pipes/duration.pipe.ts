@@ -1,15 +1,13 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 
+export const HOUR_UNIT = 'h';
+export const MINUTE_UNIT = 'm';
+
 @Pipe({
   name: 'duration'
 })
 export class DurationPipe implements PipeTransform {
-  private readonly _units = {
-    hours: 'h',
-    minutes: 'm'
-  };
-
   constructor(private sanitizer: DomSanitizer) {}
 
   transform(value: number, format: 'text' | 'html' = 'text'): string | SafeHtml {
@@ -17,16 +15,16 @@ export class DurationPipe implements PipeTransform {
     const minutes: number = Math.round(value % 60);
 
     if (format === 'html') {
-      let durationHtml = `<span class="value">${minutes}</span> <span class="unit">${this._units.minutes}</span>`;
+      let durationHtml = `<span class="value">${minutes}</span> <span class="unit">${MINUTE_UNIT}</span>`;
       if(hours > 0) {
-        durationHtml = `<span class="value">${hours}</span> <span class="unit">${this._units.hours}</span> ${durationHtml}`;
+        durationHtml = `<span class="value">${hours}</span> <span class="unit">${HOUR_UNIT}</span> ${durationHtml}`;
       }
       return this.sanitizer.bypassSecurityTrustHtml(durationHtml);
     }
 
-    let durationString =`${minutes}${this._units.minutes}`;
+    let durationString =`${minutes}${MINUTE_UNIT}`;
     if(hours > 0) {
-      durationString = `${hours}${this._units.hours} ${durationString}`;
+      durationString = `${hours}${HOUR_UNIT} ${durationString}`;
     }
     return durationString;
   }
