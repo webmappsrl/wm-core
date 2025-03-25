@@ -1,7 +1,7 @@
 <ng-container *ngIf="confFILTERS$|async as confFilters">
   <div class="filter-button" (click)="filterBtnClick()">
     {{'Filtri'|wmtrans}}
-    <ion-icon name="funnel-outline"></ion-icon>
+    <ion-icon name="options-outline"></ion-icon>
     <span class="dot" *ngIf="(countSelectedFilters$|async)>0"></span>
   </div>
   <ion-list class="wm-filter-content" lines="none" *ngIf="toggle$|async">
