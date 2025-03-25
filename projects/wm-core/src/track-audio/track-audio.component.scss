@@ -5,6 +5,7 @@ wm-track-audio {
     font-size: var(--wm-feature-details-title-font-size);
     font-weight: var(--wm-feature-details-title-font-weight);
     color: var(--wm-feature-details-title-color);
+    font-family: var(--wm-feature-details-title-font-family);
   }
   audio {
     width: -webkit-fill-available;

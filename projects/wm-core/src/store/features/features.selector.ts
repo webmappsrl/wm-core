@@ -70,3 +70,16 @@ export const poiProperties = createSelector(poi, poi => {
 export const featureOpened = createSelector(track, poi, (track, poi) => {
   return track != null || poi != null;
 });
+export const trackFirstCoordinates = createSelector(
+  track,
+  track => track?.geometry?.coordinates?.[0] ?? null,
+);
+export const poiFirstCoordinates = createSelector(
+  poi,
+  poi => poi?.geometry?.coordinates ?? null,
+);
+export const featureFirstCoordinates = createSelector(
+  trackFirstCoordinates,
+  poiFirstCoordinates,
+  (trackFirstCoordinates, poiFirstCoordinates) => trackFirstCoordinates ?? poiFirstCoordinates,
+);
