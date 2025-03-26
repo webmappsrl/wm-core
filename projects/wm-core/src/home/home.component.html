@@ -28,11 +28,10 @@
     <ng-container *ngIf="showResult$|async">
       <wm-status-filter (resetFiltersEVT)="goToHome()"></wm-status-filter>
       <wm-home-ugc *ngIf="(ugcOpened$|async);else layerView"></wm-home-ugc>
-
       <ng-template #layerView>
         <wm-home-layer></wm-home-layer>
       </ng-template>
-      <wm-home-result (trackEVT)="setTrack($event)" (poiEVT)="setPoi($event)"></wm-home-result>
+      <wm-home-result></wm-home-result>
     </ng-container>
     <wm-home-hitmap></wm-home-hitmap>
   </ng-template>

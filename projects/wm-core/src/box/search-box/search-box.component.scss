@@ -122,6 +122,7 @@ wm-search-box {
       align-content: stretch;
       align-items: flex-start;
       .wm-search-box-property {
+        position: relative;
         order: 0;
         flex: 0 1 auto;
         align-self: center;
@@ -129,6 +130,23 @@ wm-search-box {
         color: var(--wm-color-darkgrey);
         height: var(--wm-font-sm);
         font-size: var(--wm-font-sm) !important;
+
+        &:not(:last-of-type) {
+          padding-right: 22px;
+        }
+        &:not(:last-of-type)::after {
+          content: '';
+          position: absolute;
+          right: 8px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background-color: var(--wm-color-skeleton);
+
+        }
+
       }
     }
     .top-right-content {

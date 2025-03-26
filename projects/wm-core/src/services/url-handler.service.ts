@@ -9,9 +9,10 @@ import {
 } from '@wm-core/store/features/ec/ec.actions';
 import {currentUgcPoiId, currentUgcTrackId} from '@wm-core/store/features/ugc/ugc.actions';
 import {Params} from '@angular/router';
-import {debounceTime, skip} from 'rxjs/operators';
+import {debounceTime, skip, take} from 'rxjs/operators';
 import {closeDownloads, closeUgc, openUgc} from '@wm-core/store/user-activity/user-activity.action';
 import {BehaviorSubject} from 'rxjs';
+import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +28,8 @@ export class UrlHandlerService {
     layer: undefined,
     filter: undefined,
   };
+
+  private _ugcOpened$ = this._store.select(ugcOpened);
 
   constructor(private _route: ActivatedRoute, private _router: Router, private _store: Store) {
     this.initialize();
@@ -98,6 +101,24 @@ export class UrlHandlerService {
       this._checkIfUgcIsOpened(newParams);
       this.navigateTo(routes, newParams);
     }
+  }
+
+  setPoi(id: string | number): void {
+    this._ugcOpened$.pipe(take(1)).subscribe(ugcOpened => {
+      const queryParams = ugcOpened
+        ? {ugc_poi: id ? id : undefined, poi: undefined}
+        : {poi: id ? id : undefined, ugc_poi: undefined};
+      this.updateURL(queryParams, ['map']);
+    });
+  }
+
+  setTrack(id: string | number): void {
+    this._ugcOpened$.pipe(take(1)).subscribe(ugcOpened => {
+      const queryParams = ugcOpened
+        ? {ugc_track: id ? id : undefined}
+        : {track: id ? id : undefined};
+      this.updateURL(queryParams, ['map']);
+    });
   }
 
   private _checkIfUgcIsOpened(queryParams: Params): void {
