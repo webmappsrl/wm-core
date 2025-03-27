@@ -158,4 +158,5 @@ export const wmFR = {
   'Mostra tutti': 'Afficher tous',
   'Lunghezza': 'Longueur',
   'Orario previsto': 'Temps prévu',
+  'Dimensione': 'Taille',
 };
