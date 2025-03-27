@@ -164,4 +164,5 @@ export const wmIT = {
   'Mostra tutti': 'Mostra tutti',
   'Lunghezza': 'Lunghezza',
   'Orario previsto': 'Orario previsto',
+  'Dimensione': 'Dimensione',
 };
