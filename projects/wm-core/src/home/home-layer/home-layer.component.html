@@ -3,9 +3,8 @@
     <div class="wm-box-title" *ngIf="layer?.title as title">{{title | wmtrans}}</div>
   </wm-img>
 
-  <div
-    class="wm-description"
+  <wm-tab-description
     *ngIf="layer?.description as description"
-    [innerHTML]="description|wmtrans"
-  ></div>
+    [description]="description"
+  ></wm-tab-description>
 </ng-container>
