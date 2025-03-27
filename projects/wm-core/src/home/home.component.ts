@@ -112,10 +112,6 @@ export class WmHomeComponent implements AfterContentInit {
     this._store.dispatch(loadEcPois());
   }
 
-  goToHome(): void {
-    this._store.dispatch(goToHome());
-  }
-
   openExternalUrl(url: string): void {
     window.open(url);
   }

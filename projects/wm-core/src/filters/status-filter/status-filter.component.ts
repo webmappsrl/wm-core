@@ -11,8 +11,10 @@ import {poiFilters} from '@wm-core/store/features/ec/ec.selector';
 import {Filter} from '@wm-core/types/config';
 import {Observable} from 'rxjs';
 import {
+  goToHome,
   resetTrackFilters,
   setLayer,
+  setMapDetailsStatus,
   togglePoiFilter,
   toggleTrackFilter,
 } from '@wm-core/store/user-activity/user-activity.action';
@@ -62,6 +64,8 @@ export class StatusFilterComponent {
   }
 
   resetFilters(): void {
+    this._store.dispatch(goToHome());
+    this._store.dispatch(setMapDetailsStatus({status: 'none'}));
     this.resetFiltersEVT.emit();
   }
 }
