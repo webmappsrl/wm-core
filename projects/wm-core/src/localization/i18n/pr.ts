@@ -171,6 +171,7 @@ export const wmPR = {
   'Mostra tutti': 'Mostrar todos',
   'Lunghezza': 'Comprimento',
   'Orario previsto': 'Tempo previsto',
+  'Dimensione': 'Tamanho',
   'questo campo è obbligatorio': 'este campo é obrigatório',
   'Quota': 'Elevação',
   'I miei donwloads': 'Meus downloads',

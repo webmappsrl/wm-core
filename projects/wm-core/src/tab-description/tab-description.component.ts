@@ -5,7 +5,6 @@ import {
   ViewEncapsulation,
   ElementRef,
   ViewChild,
-  AfterViewChecked,
 } from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {LangService} from '@wm-core/localization/lang.service';
@@ -19,7 +18,7 @@ export const MAX_LINES = 5;
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class WmTabDescriptionComponent implements AfterViewChecked{
+export class WmTabDescriptionComponent {
   htmlDescription$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
   @Input() set description(value:string) {
@@ -33,9 +32,6 @@ export class WmTabDescriptionComponent implements AfterViewChecked{
 
   constructor(public domSanitazer: DomSanitizer, private _langSvc: LangService) {
     document.documentElement.style.setProperty('--wm-max-description-lines', `${MAX_LINES}`);
-  }
-
-  ngAfterViewChecked() {
     this._checkIfContentIsTruncated();
   }
 
@@ -63,11 +59,16 @@ export class WmTabDescriptionComponent implements AfterViewChecked{
   }
 
   private _checkIfContentIsTruncated() {
-    const element = this.descriptionElement.nativeElement;
-    const scrollHeight = element.scrollHeight;
-    const lineHeight = parseInt(window.getComputedStyle(element).lineHeight);
-    const maxHeight = lineHeight * MAX_LINES;
+    const interval = setInterval(() => {
+      const element = this.descriptionElement.nativeElement;
+      const scrollHeight = element.scrollHeight;
+      if (scrollHeight && scrollHeight > 0) {
+        clearInterval(interval);
+        const lineHeight = parseInt(window.getComputedStyle(element).lineHeight);
+        const maxHeight = lineHeight * MAX_LINES;
 
-    this.showExpandButton$.next(scrollHeight > maxHeight);
+        this.showExpandButton$.next(scrollHeight > maxHeight);
+      }
+    }, 50);
   }
 }

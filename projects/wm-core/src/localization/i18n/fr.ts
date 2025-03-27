@@ -173,6 +173,7 @@ export const wmFR = {
   'Mostra tutti': 'Afficher tous',
   'Lunghezza': 'Longueur',
   'Orario previsto': 'Temps prévu',
+  'Dimensione': 'Taille',
   'questo campo è obbligatorio': 'ce champ est obligatoire',
   'Quota': 'Élévation',
   'I miei donwloads': 'Mes téléchargements',
