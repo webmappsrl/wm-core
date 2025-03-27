@@ -174,6 +174,7 @@ export const wmDE = {
   'Mostra tutti': 'Alle anzeigen',
   'Lunghezza': 'Länge',
   'Orario previsto': 'Voraussichtlicher Zeitpunkt',
+  'Dimensione': 'Größe',
   'questo campo è obbligatorio': 'Dieses Feld ist erforderlich',
   'Quota': 'Höhe',
   'I miei donwloads': 'Meine Downloads',

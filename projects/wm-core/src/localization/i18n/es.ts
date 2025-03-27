@@ -170,6 +170,7 @@ export const wmES = {
   'Mostra tutti': 'Mostrar todos',
   'Lunghezza': 'Longitud',
   'Orario previsto': 'Tiempo previsto',
+  'Dimensione': 'Tamaño',
   'questo campo è obbligatorio': 'este campo es obligatorio',
   'Quota': 'Elevación',
   'I miei donwloads': 'Mis descargas',

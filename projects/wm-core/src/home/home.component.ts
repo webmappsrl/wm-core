@@ -172,12 +172,7 @@ export class WmHomeComponent implements AfterContentInit {
   }
 
   setPoi(id: string | number): void {
-    this.ugcOpened$.pipe(take(1)).subscribe(ugcOpened => {
-      const queryParams = ugcOpened
-        ? {ugc_poi: id ? id : undefined, poi: undefined}
-        : {poi: id ? id : undefined, ugc_poi: undefined};
-      this._urlHandlerSvc.updateURL(queryParams, ['map']);
-    });
+    this._urlHandlerSvc.setPoi(id);
   }
 
   setSearch(value: string): void {
@@ -185,12 +180,7 @@ export class WmHomeComponent implements AfterContentInit {
   }
 
   setTrack(id: string | number): void {
-    this.ugcOpened$.pipe(take(1)).subscribe(ugcOpened => {
-      const queryParams = ugcOpened
-        ? {ugc_track: id ? id : undefined}
-        : {track: id ? id : undefined};
-      this._urlHandlerSvc.updateURL(queryParams, ['map']);
-    });
+    this._urlHandlerSvc.setTrack(id);
   }
 
   setUgc(): void {
