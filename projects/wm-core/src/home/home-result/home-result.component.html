@@ -11,7 +11,7 @@
         <wm-search-box
           *ngFor="let card of tracks|wmSort:'properties.updatedAt':false|slice:0:200"
           [data]="card"
-          (clickEVT)="trackEVT.emit(card.id)"
+          (clickEVT)="setTrack(card.id)"
         >
           <ng-container top-right>
             <ion-button (click)="removeDownloads($event,card.id)">elimina</ion-button>
@@ -83,7 +83,7 @@
             <wm-search-box
               *ngFor="let card of tracks|wmSort:'properties.updatedAt':false|slice:0:200"
               [data]="card"
-              (clickEVT)="trackEVT.emit(card.id)"
+              (clickEVT)="setTrack(card.id)"
             >
               <ng-container top-right *ngIf="ugcOpened$|async">
                 <wm-ugc-synchronized-badge
