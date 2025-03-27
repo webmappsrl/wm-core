@@ -171,4 +171,5 @@ export const wmPR = {
   'Mostra tutti': 'Mostrar todos',
   'Lunghezza': 'Comprimento',
   'Orario previsto': 'Tempo previsto',
+  'Dimensione': 'Tamanho',
 };

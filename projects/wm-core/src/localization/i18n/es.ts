@@ -170,4 +170,5 @@ export const wmES = {
   'Mostra tutti': 'Mostrar todos',
   'Lunghezza': 'Longitud',
   'Orario previsto': 'Tiempo previsto',
+  'Dimensione': 'Tamaño',
 };

@@ -174,4 +174,5 @@ export const wmDE = {
   'Mostra tutti': 'Alle anzeigen',
   'Lunghezza': 'Länge',
   'Orario previsto': 'Voraussichtlicher Zeitpunkt',
+  'Dimensione': 'Größe',
 };

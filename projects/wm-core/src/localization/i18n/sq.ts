@@ -178,4 +178,5 @@ export const wmSQ = {
   'Mostra tutti': 'Shfaq të gjitha',
   'Lunghezza': 'Gjatësia',
   'Orario previsto': 'Koha e pritura',
+  'Dimensione': 'Madhësia',
 };
