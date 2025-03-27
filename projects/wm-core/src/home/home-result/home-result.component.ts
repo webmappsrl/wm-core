@@ -7,8 +7,8 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {Store} from '@ngrx/store';
-import {BehaviorSubject, Observable, Subscription, combineLatest, from} from 'rxjs';
-import {map, startWith, switchMap} from 'rxjs/operators';
+import {BehaviorSubject, Observable, Subscription, combineLatest, from, of} from 'rxjs';
+import {map, startWith, switchMap, take} from 'rxjs/operators';
 import {ecTracksLoading, poisInitCount} from '@wm-core/store/features/ec/ec.selector';
 
 import {
@@ -31,6 +31,8 @@ import {IHIT} from '@wm-core/types/elastic';
 import {getEcTracks, removeEcTrack} from '@wm-core/utils/localForage';
 import {LangService} from '@wm-core/localization/lang.service';
 import {AlertController} from '@ionic/angular';
+import {UrlHandlerService} from '@wm-core/services/url-handler.service';
+import {GeolocationService} from '@wm-core/services/geolocation.service';
 
 @Component({
   selector: 'wm-home-result',
@@ -71,6 +73,8 @@ export class WmHomeResultComponent implements OnDestroy {
     private _store: Store,
     private _langSvc: LangService,
     private _alertCtrl: AlertController,
+    private _urlHandlerSvc: UrlHandlerService,
+    private _geolocationSvc: GeolocationService,
   ) {
     this.tracks$ = combineLatest([
       this.ectracks$,
@@ -83,6 +87,22 @@ export class WmHomeResultComponent implements OnDestroy {
         }
         return ectracks;
       }),
+      switchMap(tracks =>
+        tracks.length
+          ? combineLatest(
+              tracks.map(track =>
+                this._geolocationSvc
+                  .getDistanceFromCurrentLocation(track.start)
+                  .pipe(
+                    map(distance => ({
+                      ...track,
+                      distanceFromCurrentLocation: distance,
+                    })),
+                  ),
+              ),
+            )
+          : of([]),
+      ),
     );
     this._resultTypeSub$ = combineLatest([
       this.countTracks$,
@@ -142,6 +162,12 @@ export class WmHomeResultComponent implements OnDestroy {
 
   setPoi(f: WmFeature<Point>): void {
     const id = f?.properties?.id ?? f?.properties?.uuid ?? null;
+    this._urlHandlerSvc.setPoi(id);
     this.poiEVT.emit(id);
+  }
+
+  setTrack(id: string | number): void {
+    this._urlHandlerSvc.setTrack(id);
+    this.trackEVT.emit(id);
   }
 }
