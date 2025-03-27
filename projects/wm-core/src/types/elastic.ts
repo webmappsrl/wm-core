@@ -15,6 +15,9 @@ export interface IHIT {
   size?: any;
   taxonomyActivities: any;
   taxonomyWheres: string[];
+  start?: number[];
+  end?: number[];
+  distanceFromCurrentLocation?: number;
 }
 
 export interface IRESPONSE {
