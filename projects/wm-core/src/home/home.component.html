@@ -35,7 +35,7 @@
       (ugcBoxEvt)="setUgc()"
     ></wm-home-landing>
     <ng-container *ngIf="showResult$|async">
-      <wm-status-filter (resetFiltersEVT)="goToHome()"></wm-status-filter>
+      <wm-status-filter></wm-status-filter>
       <wm-home-ugc *ngIf="(ugcOpened$|async);else layerView"></wm-home-ugc>
       <ng-template #layerView>
         <wm-home-layer></wm-home-layer>
