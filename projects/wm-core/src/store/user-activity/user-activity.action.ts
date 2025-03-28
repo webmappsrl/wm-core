@@ -101,3 +101,5 @@ export const wmMapHitMapChangeFeatureById = createAction(
   '[User Activity] hit map change feature by id',
   props<{id: number}>(),
 );
+
+export const backOfMapDetails = createAction('[User Activity] back of map details');

@@ -1,11 +1,13 @@
 import {
   applyWhere,
+  backOfMapDetails,
   closeUgc,
   goToHome,
   inputTyped,
   openUgcUploader,
   resetPoiFilters,
   setLayer,
+  setMapDetailsStatus,
   toggleTrackFilter,
   toggleTrackFilterByIdentifier,
   updateTrackFilter,
@@ -29,8 +31,8 @@ import {
   filterTracks,
   inputTyped as inputTypedSelector,
 } from '@wm-core/store/user-activity/user-activity.selector';
-import {debounceTime, map, mergeMap, skip, switchMap, tap, withLatestFrom} from 'rxjs/operators';
-import {combineLatest, of} from 'rxjs';
+import {debounceTime, map, mergeMap, skip, switchMap, tap, withLatestFrom, filter} from 'rxjs/operators';
+import {combineLatest, of, EMPTY} from 'rxjs';
 import {Filter} from '@wm-core/types/config';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {ModalController} from '@ionic/angular';
@@ -38,6 +40,38 @@ import {ModalUgcTrackUploaderComponent} from '@wm-core/modal-ugc-track-uploader/
 
 @Injectable()
 export class UserActivityEffects {
+  backOfMapDetails$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(backOfMapDetails),
+      map(() => {
+        const queryParams = this._urlHandlerSvc.getCurrentQueryParams();
+        if (queryParams.ec_related_poi != null) {
+          this._urlHandlerSvc.updateURL({ec_related_poi: undefined});
+          return;
+        }
+        if (queryParams.layer != null && (queryParams.poi != null || queryParams.track != null)) {
+          this._urlHandlerSvc.updateURL({
+            poi: undefined,
+            track: undefined
+          });
+          return;
+        }
+        if (queryParams.ugc_poi != null) {
+          this._urlHandlerSvc.updateURL({ugc_poi: undefined});
+          return;
+        }
+        this._urlHandlerSvc.updateURL({
+          track: undefined,
+          ugc_track: undefined,
+          ugc_poi: undefined,
+          poi: undefined,
+          layer: undefined
+        });
+        return setMapDetailsStatus({status: 'background'});
+      }),
+      filter(action => !!action)
+    ),
+  );
   filterTracks$ = createEffect(() =>
     this._store.select(filterTracks).pipe(
       switchMap(filterTracks => {
@@ -58,6 +92,7 @@ export class UserActivityEffects {
           resetTrackFilters(),
           resetPoiFilters(),
           closeUgc(),
+          setMapDetailsStatus({status: 'background'}),
         ),
       ),
       tap(() => this._urlHandlerSvc.resetURL()),

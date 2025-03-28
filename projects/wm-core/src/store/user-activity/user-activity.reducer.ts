@@ -31,7 +31,7 @@ import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {set} from 'ol/transform';
 
 export const key = 'userActivity';
-export type mapDetailsStatus = 'open' | 'onlyTitle' | 'none' | 'background' | 'toggle' | 'full';
+export type mapDetailsStatus = 'open' | 'onlyTitle' | 'background' | 'full';
 export interface UserActivityState {
   ugcOpened: boolean;
   mapDetailsStatus: mapDetailsStatus;
@@ -58,7 +58,7 @@ export interface UserAcitivityRootState {
 
 const initialState: UserActivityState = {
   ugcOpened: false,
-  mapDetailsStatus: 'none',
+  mapDetailsStatus: 'background',
   downloadsOpened: false,
   inputTyped: null,
   filterTracks: [],
