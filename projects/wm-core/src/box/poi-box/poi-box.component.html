@@ -4,6 +4,10 @@
       <wm-img [src]="img.thumbnail" size="225x100"></wm-img>
     </div>
     <div class="wm-box-name">{{properties.name|wmtrans}}</div>
+    <ion-label *ngIf="properties.distanceFromCurrentLocation">
+      {{"Distanza da te" | wmtrans}}
+      <span>{{properties.distanceFromCurrentLocation|distance:'auto':0}}</span>
+    </ion-label>
     <ng-container *ngIf="properties.updatedAt as updatedAt">
       <wm-updated-at [updatedAt]="updatedAt"></wm-updated-at>
     </ng-container>

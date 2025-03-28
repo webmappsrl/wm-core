@@ -62,7 +62,23 @@ export class WmHomeResultComponent implements OnDestroy {
   );
   ectracks$ = this._store.select(tracks);
   lastFilterType$ = this._store.select(lastFilterType);
-  pois$: Observable<WmFeature<Point>[]> = this._store.select(pois);
+  pois$: Observable<WmFeature<Point>[]> = this._store.select(pois).pipe(
+    switchMap(pois =>
+      pois.length ? combineLatest([
+        ...pois.map(poi =>
+          this._geolocationSvc.getDistanceFromCurrentLocation(poi.geometry?.coordinates).pipe(
+            map(distance => ({
+              ...poi,
+              properties: {
+                ...poi.properties,
+                distanceFromCurrentLocation: distance
+              }
+            }))
+          )
+        )
+      ]) : of([])
+    )
+  );
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
   showTracks$ = this._store.select(showTracks);
   tracks$: Observable<IHIT[]>;
