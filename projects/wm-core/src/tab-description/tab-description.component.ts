@@ -60,8 +60,8 @@ export class WmTabDescriptionComponent {
 
   private _checkIfContentIsTruncated() {
     const interval = setInterval(() => {
-      const element = this.descriptionElement.nativeElement;
-      const scrollHeight = element.scrollHeight;
+      const element = this.descriptionElement?.nativeElement;
+      const scrollHeight = element?.scrollHeight;
       if (scrollHeight && scrollHeight > 0) {
         clearInterval(interval);
         const lineHeight = parseInt(window.getComputedStyle(element).lineHeight);
