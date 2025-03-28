@@ -8,7 +8,7 @@ wm-poi-box {
   ion-card {
     overflow: hidden;
     width: 90%;
-    max-height: 210px;
+    max-height: 250px;
     border-radius: 15px;
     padding: 10px;
     margin: auto;
@@ -22,6 +22,14 @@ wm-poi-box {
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
+    }
+    ion-label {
+      color: var(--wm-color-darkgrey);
+      height: var(--wm-font-sm);
+      font-size: var(--wm-font-sm);
+      span {
+        font-weight: var(--wm-font-weight-bold);
+      }
     }
     .wm-box-taxonomies {
       position: absolute;
