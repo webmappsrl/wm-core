@@ -13,6 +13,16 @@
   >
   </wm-searchbar>
   <ng-container *ngIf="(popup$|async) as popup; else mainContent">
+    <ion-row class="ion-justify-content-end">
+      <ion-col size="auto">
+        <ion-chip
+          [outline]="true"
+          (click)="closePopup()"
+        >
+          {{ 'Torna alla home' | wmtrans }}
+        </ion-chip>
+      </ion-col>
+    </ion-row>
     <wm-inner-component-html [html]="popup.html" [enableDismiss]="false"></wm-inner-component-html>
   </ng-container>
   <ng-template #mainContent>

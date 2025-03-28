@@ -116,6 +116,11 @@ export class WmHomeComponent implements AfterContentInit {
     this._store.dispatch(goToHome());
   }
 
+  closePopup(): void {
+    this.popup$.next(null);
+    this.goToHome();
+  }
+
   openExternalUrl(url: string): void {
     window.open(url);
   }
