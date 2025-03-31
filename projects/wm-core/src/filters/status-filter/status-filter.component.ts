@@ -65,9 +65,6 @@ export class StatusFilterComponent {
 
   resetFilters(): void {
     this._store.dispatch(goToHome());
-    //TODO: inserire la chiusura del dettaglio in goToHome; lo faccio dopo aver modificato
-    // la logica degli stati del map details
-    this._store.dispatch(setMapDetailsStatus({status: 'none'}));
     this.resetFiltersEVT.emit();
   }
 }
