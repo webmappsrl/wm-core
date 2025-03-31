@@ -129,10 +129,15 @@ export const userActivityReducer = createReducer(
   }),
   on(setLayer, (state, {layer}) => {
     let poisSelectedFilterIdentifiers = state.poisSelectedFilterIdentifiers ?? [];
-    const filterTaxonomiesPreviousLayer = extractFilterTaxonomies(state.layer);
-    const filterTaxonomies = extractFilterTaxonomies(layer);
+    let filterTaxonomies = [];
 
-    if (filterTaxonomies) {
+    if (layer == null) {
+      const filterTaxonomiesPreviousLayer = extractFilterTaxonomies(state.layer) ?? [];
+      poisSelectedFilterIdentifiers = poisSelectedFilterIdentifiers.filter(
+        i => !filterTaxonomiesPreviousLayer.includes(i)
+      );
+    } else {
+      filterTaxonomies = extractFilterTaxonomies(layer);
       poisSelectedFilterIdentifiers = (state.poisSelectedFilterIdentifiers ?? []).filter(
         i => i.indexOf('poi_') < 0 && i.indexOf('where_') < 0,
       );
@@ -142,11 +147,6 @@ export const userActivityReducer = createReducer(
           ...poisSelectedFilterIdentifiers,
           ...(filterTaxonomies ?? []),
         ]),
-      );
-    }
-    if (layer == null && filterTaxonomiesPreviousLayer) {
-      poisSelectedFilterIdentifiers = poisSelectedFilterIdentifiers.filter(
-        i => !filterTaxonomiesPreviousLayer.includes(i)
       );
     }
 
