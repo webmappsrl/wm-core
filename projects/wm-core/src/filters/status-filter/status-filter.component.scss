@@ -12,9 +12,9 @@ wm-status-filter {
     max-height: 200px;
     overflow: auto;
     .wm-status-filter-icn {
-      height: 55%;
+      height: 17px;
       * {
-        height: 180%;
+        height: 100%;
       }
     }
     ion-chip {
@@ -24,14 +24,10 @@ wm-status-filter {
 
       display: flex;
       flex-direction: row;
-      flex-wrap: wrap;
       justify-content: space-between;
-      align-content: stretch;
-      align-items: stretch;
       ion-label {
         order: 0;
         flex: 1 1 auto;
-        align-self: stretch;
       }
       ion-icon,
       i {
