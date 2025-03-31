@@ -68,6 +68,21 @@ const initialState: UserActivityState = {
   wmMapHitMapChangeFeatureById: null,
 };
 
+function extractFilterTaxonomies(layer) {
+  if (!layer) return null;
+  return [
+    ...(layer.taxonomy_wheres ?? [])
+      .filter(t => t.identifier != null)
+      .map(t => `where_${t.identifier}`),
+    ...(layer.taxonomy_activities || [])
+      .filter(t => t.identifier != null)
+      .map(t => `${t.identifier}`),
+    ...(layer.taxonomy_themes || [])
+      .filter(t => t.identifier != null)
+      .map(t => `${t.identifier}`),
+  ];
+}
+
 export const userActivityReducer = createReducer(
   initialState,
   on(openUgc, state => ({...state, ugcOpened: true})),
@@ -114,19 +129,9 @@ export const userActivityReducer = createReducer(
   }),
   on(setLayer, (state, {layer}) => {
     let poisSelectedFilterIdentifiers = state.poisSelectedFilterIdentifiers ?? [];
-    const filterTaxonomies = layer
-      ? [
-          ...(layer.taxonomy_wheres ?? [])
-            .filter(t => t.identifier != null)
-            .map(t => `where_${t.identifier}`),
-          ...(layer.taxonomy_activities || [])
-            .filter(t => t.identifier != null)
-            .map(t => `${t.identifier}`),
-          ...(layer.taxonomy_themes || [])
-            .filter(t => t.identifier != null)
-            .map(t => `${t.identifier}`),
-        ]
-      : null;
+    const filterTaxonomiesPreviousLayer = extractFilterTaxonomies(state.layer);
+    const filterTaxonomies = extractFilterTaxonomies(layer);
+
     if (filterTaxonomies) {
       poisSelectedFilterIdentifiers = (state.poisSelectedFilterIdentifiers ?? []).filter(
         i => i.indexOf('poi_') < 0 && i.indexOf('where_') < 0,
@@ -139,6 +144,12 @@ export const userActivityReducer = createReducer(
         ]),
       );
     }
+    if (layer == null && filterTaxonomiesPreviousLayer) {
+      poisSelectedFilterIdentifiers = poisSelectedFilterIdentifiers.filter(
+        i => !filterTaxonomiesPreviousLayer.includes(i)
+      );
+    }
+
     const newState: UserActivityState = {
       ...state,
       layer,
