@@ -60,13 +60,7 @@ export class UserActivityEffects {
           this._urlHandlerSvc.updateURL({ugc_poi: undefined});
           return;
         }
-        this._urlHandlerSvc.updateURL({
-          track: undefined,
-          ugc_track: undefined,
-          ugc_poi: undefined,
-          poi: undefined,
-          layer: undefined
-        });
+        this._urlHandlerSvc.resetURL();
         return setMapDetailsStatus({status: 'background'});
       }),
       filter(action => !!action)
