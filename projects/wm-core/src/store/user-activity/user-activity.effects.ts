@@ -31,18 +31,8 @@ import {
   filterTracks,
   inputTyped as inputTypedSelector,
 } from '@wm-core/store/user-activity/user-activity.selector';
-import {
-  debounceTime,
-  map,
-  mergeMap,
-  skip,
-  switchMap,
-  tap,
-  withLatestFrom,
-  filter,
-  startWith
-} from 'rxjs/operators';
-import {combineLatest, of} from 'rxjs';
+import {debounceTime, map, mergeMap, skip, switchMap, tap, withLatestFrom, filter} from 'rxjs/operators';
+import {combineLatest, of, EMPTY} from 'rxjs';
 import {Filter} from '@wm-core/types/config';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {ModalController} from '@ionic/angular';
@@ -58,13 +48,20 @@ export class UserActivityEffects {
         if (queryParams.ec_related_poi != null) {
           this._urlHandlerSvc.updateURL({ec_related_poi: undefined});
           return;
-        } else if (queryParams.ugc_poi != null) {
+        }
+        if (queryParams.layer != null && (queryParams.poi != null || queryParams.track != null)) {
+          this._urlHandlerSvc.updateURL({
+            poi: undefined,
+            track: undefined
+          });
+          return;
+        }
+        if (queryParams.ugc_poi != null) {
           this._urlHandlerSvc.updateURL({ugc_poi: undefined});
           return;
-        } else {
-          this._urlHandlerSvc.updateURL({track: undefined, ugc_track: undefined});
-          return setMapDetailsStatus({status: 'background'});
         }
+        this._urlHandlerSvc.resetURL();
+        return setMapDetailsStatus({status: 'background'});
       }),
       filter(action => !!action)
     ),
@@ -89,6 +86,7 @@ export class UserActivityEffects {
           resetTrackFilters(),
           resetPoiFilters(),
           closeUgc(),
+          setMapDetailsStatus({status: 'background'}),
         ),
       ),
       tap(() => this._urlHandlerSvc.resetURL()),

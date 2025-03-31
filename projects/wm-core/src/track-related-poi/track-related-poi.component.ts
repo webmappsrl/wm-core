@@ -37,7 +37,7 @@ export class TrackRelatedPoiComponent {
   isExpanded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   pois$: Observable<WmFeature<Point>[]> = this._store.select(currentEcRelatedPois).pipe(
     switchMap(pois =>
-      pois.length ? combineLatest([
+      pois?.length ? combineLatest([
         ...pois.map(poi =>
           this._geolocationSvc.getDistanceFromCurrentLocation(poi.geometry?.coordinates).pipe(
             map(distance => ({
