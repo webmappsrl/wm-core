@@ -64,7 +64,7 @@ export class WmHomeResultComponent implements OnDestroy {
   lastFilterType$ = this._store.select(lastFilterType);
   pois$: Observable<WmFeature<Point>[]> = this._store.select(pois).pipe(
     switchMap(pois =>
-      pois.length ? combineLatest([
+      pois?.length ? combineLatest([
         ...pois.map(poi =>
           this._geolocationSvc.getDistanceFromCurrentLocation(poi.geometry?.coordinates).pipe(
             map(distance => ({
@@ -104,7 +104,7 @@ export class WmHomeResultComponent implements OnDestroy {
         return ectracks;
       }),
       switchMap(tracks =>
-        tracks.length
+        tracks?.length
           ? combineLatest(
               tracks.map(track =>
                 this._geolocationSvc
