@@ -132,7 +132,7 @@ export class UserActivityEffects {
       this._store.select(filterTracks),
       this._store.select(ecLayer),
     ]).pipe(
-      debounceTime(300),
+      debounceTime(150),
       map(([inputTyped, filterTracks, layer]) => ({
         inputTyped: inputTyped?.trim(),
         filterTracks,
