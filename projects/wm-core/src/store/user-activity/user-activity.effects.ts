@@ -31,8 +31,18 @@ import {
   filterTracks,
   inputTyped as inputTypedSelector,
 } from '@wm-core/store/user-activity/user-activity.selector';
-import {debounceTime, map, mergeMap, skip, switchMap, tap, withLatestFrom, filter} from 'rxjs/operators';
-import {combineLatest, of, EMPTY} from 'rxjs';
+import {
+  debounceTime,
+  map,
+  mergeMap,
+  skip,
+  switchMap,
+  tap,
+  withLatestFrom,
+  filter,
+  startWith
+} from 'rxjs/operators';
+import {combineLatest, of} from 'rxjs';
 import {Filter} from '@wm-core/types/config';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {ModalController} from '@ionic/angular';
