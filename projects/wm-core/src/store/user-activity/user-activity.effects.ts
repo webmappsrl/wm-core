@@ -29,7 +29,16 @@ import {
   filterTracks,
   inputTyped as inputTypedSelector,
 } from '@wm-core/store/user-activity/user-activity.selector';
-import {debounceTime, map, mergeMap, skip, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {
+  debounceTime,
+  map,
+  mergeMap,
+  skip,
+  startWith,
+  switchMap,
+  tap,
+  withLatestFrom,
+} from 'rxjs/operators';
 import {combineLatest, of} from 'rxjs';
 import {Filter} from '@wm-core/types/config';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
@@ -128,11 +137,10 @@ export class UserActivityEffects {
   );
   triggerQueryOnInput$ = createEffect(() =>
     combineLatest([
-      this._store.select(inputTypedSelector),
+      this._store.select(inputTypedSelector).pipe(debounceTime(300), startWith('')),
       this._store.select(filterTracks),
       this._store.select(ecLayer),
     ]).pipe(
-      debounceTime(300),
       map(([inputTyped, filterTracks, layer]) => ({
         inputTyped: inputTyped?.trim(),
         filterTracks,
