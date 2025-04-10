@@ -1,13 +1,12 @@
 import {Component, ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
-import { UrlHandlerService } from '@wm-core/services/url-handler.service';
+import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {
   currentRelatedPoiIndex,
   currentRelatedPoisCount,
   nextRelatedPoiId,
   prevRelatedPoiId,
 } from '@wm-core/store/features/ec/ec.selector';
-import { setCurrentRelatedPoi } from '@wm-core/store/user-activity/user-activity.action';
 import {filter, map, take} from 'rxjs/operators';
 
 @Component({
