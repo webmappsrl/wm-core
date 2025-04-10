@@ -69,6 +69,7 @@ import {WmHomeHitMapComponent} from './home/home-hitmap/home-hitmap.component';
 import {MetaComponent} from './meta/meta.component';
 import {GetDirectionsComponent} from './get-directions/get-directions.component';
 import {TravelModeComponent} from './travel-mode/travel-mode.component';
+import {PoiTypesBadgesComponent} from './poi-types-badges/poi-types-badges.component';
 export const declarations = [
   WmTabDetailComponent,
   WmTabDescriptionComponent,
@@ -108,6 +109,7 @@ export const declarations = [
   MetaComponent,
   GetDirectionsComponent,
   TravelModeComponent,
+  PoiTypesBadgesComponent,
 ];
 const modules = [
   WmSharedModule,
