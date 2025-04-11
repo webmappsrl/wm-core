@@ -238,3 +238,39 @@ export const currentPoiProperties = createSelector(
 export const layerFeaturesCount = createSelector(confMAPLayers, allEcpoiFeatures, ecTracks, (confMAPLayers, allEcpoiFeatures, ecTracks) => {
   return calculateLayerFeaturesCount(confMAPLayers, allEcpoiFeatures, ecTracks);
 });
+
+export const currentRelatedPoiIndex = createSelector(
+  currentEcRelatedPois,
+  currentEcRelatedPoiId,
+  (relatedPois, relatedPoiId) => {
+    if (relatedPois != null) {
+      return relatedPois.findIndex((p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId);
+    }
+    return null;
+  },
+);
+
+export const currentRelatedPoisCount = createSelector(
+  currentEcRelatedPois,
+  currentEcRelatedPois => {
+    return currentEcRelatedPois?.length ?? 0;
+  },
+);
+
+export const nextRelatedPoiId = createSelector(
+  currentEcRelatedPois,
+  currentEcRelatedPoiId,
+  (relatedPois, relatedPoiId) => {
+    const index = relatedPois.findIndex((p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId);
+    return relatedPois[index + 1]?.properties?.id ?? null;
+  },
+);
+
+export const prevRelatedPoiId = createSelector(
+  currentEcRelatedPois,
+  currentEcRelatedPoiId,
+  (relatedPois, relatedPoiId) => {
+    const index = relatedPois.findIndex((p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId);
+    return relatedPois[index - 1]?.properties?.id ?? null;
+  },
+);
