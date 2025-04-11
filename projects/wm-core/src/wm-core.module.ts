@@ -71,6 +71,7 @@ import {MetaComponent} from './meta/meta.component';
 import {GetDirectionsComponent} from './get-directions/get-directions.component';
 import {TravelModeComponent} from './travel-mode/travel-mode.component';
 import {PoiTypesBadgesComponent} from './poi-types-badges/poi-types-badges.component';
+import {WmRelatedPoisNavigatorComponent} from './releted-pois-navigator/related-pois-navigator.component';
 export const declarations = [
   WmTabDetailComponent,
   WmTabDescriptionComponent,
@@ -112,6 +113,7 @@ export const declarations = [
   GetDirectionsComponent,
   TravelModeComponent,
   PoiTypesBadgesComponent,
+  WmRelatedPoisNavigatorComponent,
 ];
 const modules = [
   WmSharedModule,
