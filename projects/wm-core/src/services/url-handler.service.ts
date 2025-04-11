@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
+  currentEcImageGalleryIndex,
   currentEcLayerId,
   currentEcPoiId,
   currentEcRelatedPoiId,
@@ -27,6 +28,7 @@ export class UrlHandlerService {
     slug: undefined,
     layer: undefined,
     filter: undefined,
+    gallery_index: undefined,
   };
 
   private _ugcOpened$ = this._store.select(ugcOpened);
@@ -65,6 +67,9 @@ export class UrlHandlerService {
       );
       this._store.dispatch(currentUgcTrackId({currentUgcTrackId: params.ugc_track ?? null}));
       this._store.dispatch(currentUgcPoiId({currentUgcPoiId: params.ugc_poi ?? null}));
+      this._store.dispatch(
+        currentEcImageGalleryIndex({currentEcImageGalleryIndex: params.gallery_index ?? null}),
+      );
       this._checkIfUgcIsOpened(params);
       this._currentQueryParams$.next(params);
     });

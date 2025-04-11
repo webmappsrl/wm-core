@@ -59,3 +59,7 @@ export const loadCurrentEcPoiFailure = createAction(
   '[ec] Load Current EcPoi Failure',
   props<{error: any}>(),
 );
+export const currentEcImageGalleryIndex = createAction(
+  '[ec] Set current ec image gallery index',
+  props<{currentEcImageGalleryIndex: number | null}>(),
+);

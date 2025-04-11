@@ -1,0 +1,36 @@
+<ng-container *ngIf="(currentImageGallery$ | async) as imageGallery">
+  <ng-container *ngIf="(currentImageGalleryIndex$|async) as currentIndex">
+    <ion-slides #gallery class="gallery" [options]="slideOptions" (ionSlideTouchEnd)="updateIdx()">
+      <ion-slide *ngFor="let image of imageGallery;" pager="true">
+        <wm-img [src]="image.url"></wm-img>
+        <div
+          class="image-caption"
+          *ngIf="image.caption"
+        >{{image.caption|wmtrans}}</div>
+      </ion-slide>
+    </ion-slides>
+    <ng-container *ngIf="imageGallery.length > 1">
+      <div class="footer">
+        <ion-button
+          (click)="prev()"
+          [class.disabled]="currentIndex == 1"
+          size="small"
+          color="light"
+        >
+          <ion-icon name="arrow-back"></ion-icon>
+        </ion-button>
+        <div class="image-counter">
+          {{currentIndex}} di {{imageGallery.length}}
+        </div>
+        <ion-button
+          (click)="next()"
+          [class.disabled]="currentIndex == imageGallery.length"
+          size="small"
+          color="light"
+        >
+          <ion-icon name="arrow-forward"></ion-icon>
+        </ion-button>
+      </div>
+    </ng-container>
+  </ng-container>
+</ng-container>
