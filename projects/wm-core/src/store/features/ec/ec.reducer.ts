@@ -108,7 +108,7 @@ export const ecReducer = createReducer(
   on(currentEcImageGalleryIndex, (state, {currentEcImageGalleryIndex}) => {
     const newState: Ec = {
       ...state,
-      currentEcImageGalleryIndex: +currentEcImageGalleryIndex,
+      currentEcImageGalleryIndex: currentEcImageGalleryIndex,
     };
     return newState;
   }),

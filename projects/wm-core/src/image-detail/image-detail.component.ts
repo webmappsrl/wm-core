@@ -34,13 +34,14 @@ export class ImageDetailComponent implements AfterViewInit{
 
   ngAfterViewInit(): void {
     this.currentImageGalleryIndex$.pipe(take(1)).subscribe(index => {
-      this.slider.slideTo(index);
+      this.slider.slideTo(index - 1);
     });
   }
 
-  async updateIdx(): Promise<void> {
-    const currentIdx = await this.slider.getActiveIndex();
-    this._urlHandlerSvc.updateURL({gallery_index: currentIdx});
+  updateIdx(): void {
+    from(this.slider.getActiveIndex()).pipe(take(1)).subscribe(async (currentIdx) => {
+      this._urlHandlerSvc.updateURL({gallery_index: currentIdx});
+    });
   }
 
   prev(): void {
