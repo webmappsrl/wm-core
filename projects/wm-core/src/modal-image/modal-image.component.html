@@ -4,31 +4,5 @@
       <i class="icon-outline-close"></i>
     </ion-fab-button>
   </ion-fab>
-  <ion-slides #gallery class="gallery" [options]="slideOptions" (ionSlideTouchEnd)="updateIdx()">
-    <ion-slide *ngFor="let image of imageGallery; let idx = index" pager="true">
-      <wm-img [src]="image.url" class="webmapp-pagepoi-info-body-photo"></wm-img>
-    </ion-slide>
-  </ion-slides>
-  <ng-container *ngIf="imageGallery.length > 1">
-    <ion-fab
-      vertical="bottom"
-      horizontal="start"
-      class="webmapp-pagepoi-top"
-      *ngIf="(idx$|async) > 0"
-    >
-      <ion-fab-button (click)="prev()" size="small" class="webmapp-pagepoi-btntop">
-        <i class="icon-outline-arrow-left"></i>
-      </ion-fab-button>
-    </ion-fab>
-    <ion-fab
-      vertical="bottom"
-      horizontal="end"
-      class="webmapp-pagepoi-top"
-      *ngIf="((idx$|async)+1)< imageGallery.length"
-    >
-      <ion-fab-button (click)="next()" size="small" class="webmapp-pagepoi-btntop">
-        <i class="icon-outline-arrow-right"></i>
-      </ion-fab-button>
-    </ion-fab>
-  </ng-container>
+  <wm-image-detail></wm-image-detail>
 </ion-content>
