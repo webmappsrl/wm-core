@@ -274,3 +274,17 @@ export const prevRelatedPoiId = createSelector(
     return relatedPois[index - 1]?.properties?.id ?? null;
   },
 );
+
+export const currentEcImageGalleryIndex = createSelector(ec, (state: Ec) => state.currentEcImageGalleryIndex);
+
+export const currentEcImageGallery = createSelector(
+  currentEcRelatedPoiProperties,
+  currentEcTrackProperties,
+  currentEcPoiProperties,
+  (currentEcRelatedPoiProperties, currentEcTrackProperties, currentEcPoiProperties) => {
+    return currentEcRelatedPoiProperties?.image_gallery
+      ?? currentEcTrackProperties?.image_gallery
+      ?? currentEcPoiProperties?.image_gallery
+      ?? null;
+  },
+);
