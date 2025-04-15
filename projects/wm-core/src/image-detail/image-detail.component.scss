@@ -1,0 +1,48 @@
+wm-image-detail {
+  --footer-height: 55px;
+
+  .gallery {
+    height: calc(100% - var(--footer-height));
+    ion-slide {
+      width: 100%;
+      background-color: white;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      wm-img {
+        width: -webkit-fill-available;
+        transition: all 1s;
+        img {
+          border-radius: 16px;
+        }
+      }
+      .image-caption {
+        margin-top: 16px;
+        font-size: var(--wm-font-size-base);
+      }
+    }
+  }
+
+  .footer {
+    display: flex;
+    height: var(--footer-height);
+    justify-content: space-between;
+    align-items: center;
+    > * {
+      margin: 0 16px;
+    }
+    ion-button {
+      width: 32px;
+      height: 32px;
+      --border-radius: 50%;
+      --padding-start: 0;
+      --padding-end: 0;
+      --box-shadow: none;
+      border-radius: 50%;
+      &.disabled {
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+  }
+}
