@@ -55,3 +55,7 @@ export const currentEcImageGalleryIndex = createAction(
   '[ec] Set current ec image gallery index',
   props<{currentEcImageGalleryIndex: number | null}>(),
 );
+export const currentEcImageGalleryIndex = createAction(
+  '[ec] Set current ec image gallery index',
+  props<{currentEcImageGalleryIndex: number | null}>(),
+);
