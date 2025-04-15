@@ -55,6 +55,10 @@ export class UserActivityEffects {
       ofType(backOfMapDetails),
       map(() => {
         const queryParams = this._urlHandlerSvc.getCurrentQueryParams();
+        if (queryParams.gallery_index != null) {
+          this._urlHandlerSvc.updateURL({gallery_index: undefined});
+          return;
+        }
         if (queryParams.ec_related_poi != null) {
           this._urlHandlerSvc.updateURL({ec_related_poi: undefined});
           return;

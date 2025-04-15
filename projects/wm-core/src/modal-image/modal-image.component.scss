@@ -6,21 +6,6 @@ wm-modal-image {
   margin-bottom: env(safe-area-inset-bottom);
   height: calc(100% - constant(safe-area-inset-top));
   height: calc(100% - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-
-  .gallery {
-    height: 100%;
-    ion-slide {
-      width: 100%;
-      wm-img {
-        height: -webkit-fill-available;
-        width: -webkit-fill-available;
-        transition: all 1s;
-        img {
-          object-fit: contain;
-        }
-      }
-    }
-  }
 }
 ion-modal {
   --border-radius: 16px;
@@ -29,9 +14,6 @@ ion-modal {
 
 ion-modal::part(backdrop) {
   opacity: 1;
-}
-ion-slide {
-  background-color: white;
 }
 ion-fab-button {
   --background: white;
