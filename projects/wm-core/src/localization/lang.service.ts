@@ -29,7 +29,8 @@ import {wmSQ} from './i18n/sq';
 import {Store} from '@ngrx/store';
 import {confTRANSLATIONS} from '@wm-core/store/conf/conf.selector';
 import {filter, take} from 'rxjs/operators';
-
+import {APP_TRANSLATION} from '@wm-core/store/conf/conf.token';
+import {Translations} from '@wm-types/language';
 @Injectable({
   providedIn: 'root',
 })
@@ -44,6 +45,7 @@ export class LangService extends TranslateService implements TranslateService {
     public override missingTranslationHandler: MissingTranslationHandler,
     @Inject(USE_DEFAULT_LANG) useDefaultLang: boolean = true,
     @Inject(USE_STORE) isolate: boolean = false,
+    @Inject(APP_TRANSLATION) public appTranslation: Translations,
     private _store: Store<any>,
   ) {
     super(
@@ -57,6 +59,10 @@ export class LangService extends TranslateService implements TranslateService {
       true,
       'it',
     );
+    this._init();
+  }
+
+  private _init():void {
     this.setTranslation('it', wmIT);
     this.setTranslation('en', wmEN);
     this.setTranslation('de', wmDE);
@@ -64,6 +70,11 @@ export class LangService extends TranslateService implements TranslateService {
     this.setTranslation('pr', wmPR);
     this.setTranslation('es', wmES);
     this.setTranslation('sq', wmSQ);
+
+    Object.keys(this.appTranslation).forEach(lang => {
+      this.setTranslation(lang, this.appTranslation[lang], true);
+    })
+
     this._confTRANSLATIONS
       .pipe(
         filter(f => f != null),
@@ -71,12 +82,10 @@ export class LangService extends TranslateService implements TranslateService {
       )
       .subscribe((translations: {[lang: string]: {[key: string]: string}}) => {
         if (translations['it'] != null) {
-          const it = {...wmIT, ...translations['it']};
-          this.setTranslation('it', it);
+          this.setTranslation('it', translations['it'], true);
         }
         if (translations['en'] != null) {
-          const en = {...wmIT, ...translations['en']};
-          this.setTranslation('en', en);
+          this.setTranslation('en', translations['en'], true);
         }
       });
   }
