@@ -1,11 +1,13 @@
 import {
   applyWhere,
+  backOfMapDetails,
   closeUgc,
   goToHome,
   inputTyped,
   openUgcUploader,
   resetPoiFilters,
   setLayer,
+  setMapDetailsStatus,
   toggleTrackFilter,
   toggleTrackFilterByIdentifier,
   updateTrackFilter,
@@ -34,10 +36,11 @@ import {
   map,
   mergeMap,
   skip,
-  startWith,
   switchMap,
   tap,
   withLatestFrom,
+  filter,
+  startWith
 } from 'rxjs/operators';
 import {combineLatest, of} from 'rxjs';
 import {Filter} from '@wm-core/types/config';
@@ -47,6 +50,25 @@ import {ModalUgcTrackUploaderComponent} from '@wm-core/modal-ugc-track-uploader/
 
 @Injectable()
 export class UserActivityEffects {
+  backOfMapDetails$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(backOfMapDetails),
+      map(() => {
+        const queryParams = this._urlHandlerSvc.getCurrentQueryParams();
+        if (queryParams.ec_related_poi != null) {
+          this._urlHandlerSvc.updateURL({ec_related_poi: undefined});
+          return;
+        } else if (queryParams.ugc_poi != null) {
+          this._urlHandlerSvc.updateURL({ugc_poi: undefined});
+          return;
+        } else {
+          this._urlHandlerSvc.updateURL({track: undefined, ugc_track: undefined});
+          return setMapDetailsStatus({status: 'background'});
+        }
+      }),
+      filter(action => !!action)
+    ),
+  );
   filterTracks$ = createEffect(() =>
     this._store.select(filterTracks).pipe(
       switchMap(filterTracks => {

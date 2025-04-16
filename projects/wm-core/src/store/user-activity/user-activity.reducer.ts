@@ -24,12 +24,14 @@ import {
   openDownloads,
   closeDownloads,
   wmMapHitMapChangeFeatureById,
+  setMapDetailsStatus,
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
+import {set} from 'ol/transform';
 
 export const key = 'userActivity';
-export type mapDetailsStatus = 'open' | 'onlyTitle' | 'none' | 'background' | 'toggle';
+export type mapDetailsStatus = 'open' | 'onlyTitle' | 'background' | 'full';
 export interface UserActivityState {
   ugcOpened: boolean;
   mapDetailsStatus: mapDetailsStatus;
@@ -56,7 +58,7 @@ export interface UserAcitivityRootState {
 
 const initialState: UserActivityState = {
   ugcOpened: false,
-  mapDetailsStatus: 'none',
+  mapDetailsStatus: 'background',
   downloadsOpened: false,
   inputTyped: null,
   filterTracks: [],
@@ -89,6 +91,12 @@ export const userActivityReducer = createReducer(
   on(closeUgc, state => ({...state, ugcOpened: false})),
   on(openDownloads, state => ({...state, downloadsOpened: true})),
   on(closeDownloads, state => ({...state, downloadsOpened: false})),
+  on(setMapDetailsStatus, (state, {status}) => {
+    return {
+      ...state,
+      mapDetailsStatus: status,
+    };
+  }),
   on(inputTyped, (state, {inputTyped}) => {
     const newState: UserActivityState = {
       ...state,
