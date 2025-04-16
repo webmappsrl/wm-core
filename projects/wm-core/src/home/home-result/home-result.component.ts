@@ -66,8 +66,7 @@ export class WmHomeResultComponent implements OnDestroy {
     switchMap(pois =>
       pois?.length ? combineLatest([
         ...pois.map(poi =>
-          this._geolocationSvc.getDistanceFromCurrentLocation(poi.geometry?.coordinates).pipe(
-            startWith(null),
+          this._geolocationSvc.getDistanceFromCurrentLocation$(poi.geometry?.coordinates).pipe(
             map(distance => ({
               ...poi,
               properties: {
@@ -109,9 +108,8 @@ export class WmHomeResultComponent implements OnDestroy {
           ? combineLatest(
               tracks.map(track =>
                 this._geolocationSvc
-                  .getDistanceFromCurrentLocation(track.start)
+                  .getDistanceFromCurrentLocation$(track.start)
                   .pipe(
-                    startWith(null),
                     map(distance => ({
                       ...track,
                       distanceFromCurrentLocation: distance,

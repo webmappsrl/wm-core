@@ -39,8 +39,7 @@ export class TrackRelatedPoiComponent {
     switchMap(pois =>
       pois?.length ? combineLatest([
         ...pois.map(poi =>
-          this._geolocationSvc.getDistanceFromCurrentLocation(poi.geometry?.coordinates).pipe(
-            startWith(null),
+          this._geolocationSvc.getDistanceFromCurrentLocation$(poi.geometry?.coordinates).pipe(
             map(distance => ({
               ...poi,
               properties: {
