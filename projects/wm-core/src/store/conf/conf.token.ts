@@ -1,4 +1,5 @@
 import {InjectionToken} from '@angular/core';
+import {Translations} from '@wm-types/language';
 export interface EnvironmentConfig {
   api: string;
   awsApi: string;
@@ -9,3 +10,4 @@ export interface EnvironmentConfig {
   shard: string;
 }
 export const APP_VERSION = new InjectionToken<string>('APP_VERSION');
+export const APP_TRANSLATION = new InjectionToken<Translations>('APP_TRANSLATION')
