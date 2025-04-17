@@ -12,7 +12,7 @@ import {WmFeature} from '@wm-types/feature';
 import {DeviceService} from './device.service';
 import {CStopwatch} from '@wm-core/utils/cstopwatch';
 import {getDistance} from 'ol/sphere';
-import {filter, map} from 'rxjs/operators';
+import {filter, map, startWith, defaultIfEmpty} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -145,22 +145,27 @@ export class GeolocationService {
     }
   }
 
-  getDistanceFromCurrentLocation(destinationPosition: Position): Observable<number | null> {
+  getDistanceFromCurrentLocation$(destinationPosition: Position): Observable<number | null> {
     if (
       destinationPosition == null
       || destinationPosition.length < 2
     ) return of(null);
 
     return this.onLocationChange.pipe(
-      filter( currentLocation => {
-        return (currentLocation != null
-        && currentLocation.latitude != null
-        && currentLocation.longitude != null)
+      startWith(null),
+      map(currentLocation => {
+        if (
+          currentLocation != null &&
+          currentLocation.latitude != null &&
+          currentLocation.longitude != null
+        ) {
+          return getDistance(
+            [currentLocation.longitude, currentLocation.latitude],
+            [destinationPosition[0], destinationPosition[1]],
+          );
+        }
+        return null;
       }),
-      map(currentLocation => getDistance(
-        [currentLocation.longitude, currentLocation.latitude],
-        [destinationPosition[0], destinationPosition[1]],
-      )),
     );
   }
 
