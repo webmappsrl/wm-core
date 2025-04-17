@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, Observable, Subscription, combineLatest, from, of} from 'rxjs';
-import {map, startWith, switchMap, take} from 'rxjs/operators';
+import {map, startWith, switchMap} from 'rxjs/operators';
 import {ecTracksLoading, poisInitCount} from '@wm-core/store/features/ec/ec.selector';
 
 import {
@@ -66,7 +66,7 @@ export class WmHomeResultComponent implements OnDestroy {
     switchMap(pois =>
       pois?.length ? combineLatest([
         ...pois.map(poi =>
-          this._geolocationSvc.getDistanceFromCurrentLocation(poi.geometry?.coordinates).pipe(
+          this._geolocationSvc.getDistanceFromCurrentLocation$(poi.geometry?.coordinates).pipe(
             map(distance => ({
               ...poi,
               properties: {
@@ -108,7 +108,7 @@ export class WmHomeResultComponent implements OnDestroy {
           ? combineLatest(
               tracks.map(track =>
                 this._geolocationSvc
-                  .getDistanceFromCurrentLocation(track.start)
+                  .getDistanceFromCurrentLocation$(track.start)
                   .pipe(
                     map(distance => ({
                       ...track,

@@ -16,7 +16,7 @@ import {
 import {Observable, BehaviorSubject, combineLatest, of} from 'rxjs';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {GeolocationService} from '@wm-core/services/geolocation.service';
-import {map, switchMap} from 'rxjs/operators';
+import {map, startWith, switchMap} from 'rxjs/operators';
 
 export const MAX_VISIBLE_POIS = 4;
 @Component({
@@ -39,7 +39,7 @@ export class TrackRelatedPoiComponent {
     switchMap(pois =>
       pois?.length ? combineLatest([
         ...pois.map(poi =>
-          this._geolocationSvc.getDistanceFromCurrentLocation(poi.geometry?.coordinates).pipe(
+          this._geolocationSvc.getDistanceFromCurrentLocation$(poi.geometry?.coordinates).pipe(
             map(distance => ({
               ...poi,
               properties: {
