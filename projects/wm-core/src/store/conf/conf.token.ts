@@ -10,4 +10,4 @@ export interface EnvironmentConfig {
   shard: string;
 }
 export const APP_VERSION = new InjectionToken<string>('APP_VERSION');
-export const APP_TRANSLATION = new InjectionToken<Translations>('APP_TRANSLATION')
+export const APP_TRANSLATION = new InjectionToken<Translations>('APP_TRANSLATION');

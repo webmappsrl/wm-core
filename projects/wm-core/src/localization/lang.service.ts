@@ -62,7 +62,7 @@ export class LangService extends TranslateService implements TranslateService {
     this._init();
   }
 
-  private _init():void {
+  private _init(): void {
     this.setTranslation('it', wmIT);
     this.setTranslation('en', wmEN);
     this.setTranslation('de', wmDE);
@@ -73,7 +73,7 @@ export class LangService extends TranslateService implements TranslateService {
 
     Object.keys(this.appTranslation).forEach(lang => {
       this.setTranslation(lang, this.appTranslation[lang], true);
-    })
+    });
 
     this._confTRANSLATIONS
       .pipe(
