@@ -68,7 +68,7 @@ export class EnvironmentService {
       this._awsPbfUrl = `https://wmpbf.s3.eu-central-1.amazonaws.com/${this._appId}/{z}/{x}/{y}.pbf`;
     } else {
       this._awsPoisUrl = `${this._awsApi}/${this._appId}/pois.geojson`;
-      this._confUrl = `${this._awsApi}/${this._appId}/conf.json`;
+      this._confUrl = `${this._awsApi}/${this._appId}/config.json`;
       this._awsPbfUrl = `${this._awsApi}/${this._appId}/pbf/{z}/{x}/{y}.pbf`;
     }
   }
