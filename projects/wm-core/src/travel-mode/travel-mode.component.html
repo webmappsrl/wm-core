@@ -11,17 +11,19 @@
         </ion-segment-button>
       </ion-segment>
       <ion-grid>
-        <ion-row>
-          <ion-col>
-            <div class="to-delete">●○○</div>
+        <ion-row class="ion-justify-content-center">
+          <ion-col size="4" *ngIf="ecTrackProperties?.difficulty as difficulty">
+            <div>
+              <wm-difficulty [difficulty]="difficulty"></wm-difficulty>
+            </div>
             <div>{{'Difficoltà'|wmtrans}}</div>
           </ion-col>
-          <ion-col>
-            <div [innerHTML]="ecTrackProperties?.distance|distance:'km':1:'html'"></div>
+          <ion-col size="4" *ngIf="ecTrackProperties?.distance as distance">
+            <div [innerHTML]="distance|distance:'km':1:'html'"></div>
             <div>{{'Lunghezza'|wmtrans}}</div>
           </ion-col>
-          <ion-col>
-            <div [innerHTML]="durention$|async|duration:'html'"></div>
+          <ion-col size="4" *ngIf="durention$|async as trackDuration">
+            <div [innerHTML]="trackDuration|duration:'html'"></div>
             <div>{{'Orario previsto'|wmtrans}}</div>
           </ion-col>
         </ion-row>
