@@ -29,7 +29,8 @@ wm-travel-mode {
       ion-col{
         display: flex;
         flex-direction: column;
-        div:first-child{
+        > div:first-child{
+          min-height: 40px;
           font-size: 22px;
           font-weight: 700;
           color: var(--ion-text-color);
@@ -42,7 +43,7 @@ wm-travel-mode {
             line-height: 33px;
           }
         }
-        div:last-child{
+        > div:last-child{
           font-size: 14px;
           font-weight: 400;
           color: var(--ion-text-color);
