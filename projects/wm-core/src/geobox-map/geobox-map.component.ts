@@ -42,6 +42,7 @@ import {
   togglePoiFilter,
   toggleTrackFilter,
   updateTrackFilter,
+  wmMapFeaturesInViewport,
 } from '@wm-core/store/user-activity/user-activity.action';
 import {
   Filter,
@@ -77,11 +78,13 @@ import {
   chartHoverElements,
   drawTrackOpened,
   ecLayer,
+  enableFeaturesInViewport,
   inputTyped,
   loading,
   mapFilters,
   poiFilterIdentifiers,
   ugcOpened,
+  hasFeatureInViewport,
   wmMapHitMapChangeFeatureById,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {WmFeature} from '@wm-types/feature';
@@ -108,6 +111,7 @@ import {DeviceService} from '@wm-core/services/device.service';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {GeolocationService} from '@wm-core/services/geolocation.service';
 import {EnvironmentService} from '@wm-core/services/environment.service';
+import { FeatureLike } from 'ol/Feature';
 
 const initPadding = [10, 10, 10, 10];
 const initMenuOpened = true;
@@ -168,8 +172,10 @@ export class WmGeoboxMapComponent implements OnDestroy {
   currentUgcPoiIDToMap$: Observable<number | string | null>;
   dataLayerUrls$: Observable<IDATALAYER>;
   drawTrackOpened$: Observable<boolean> = this._store.select(drawTrackOpened);
+  enableFeaturesInViewport$: Observable<boolean> = this._store.select(enableFeaturesInViewport);
   geohubId$ = this._store.select(confGeohubId);
   graphhopperHost$: Observable<string> = of(this._environmentSvc.graphhopperHost);
+  hasFeatureInViewport$: Observable<boolean> = this._store.select(hasFeatureInViewport);
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
   isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this._deviceSvc.isMobile);
   langs$ = this._store.select(confLANGUAGES).pipe(
@@ -346,6 +352,15 @@ export class WmGeoboxMapComponent implements OnDestroy {
       this.isLogged$.pipe(startWith(false)),
       this.toggleUgcDirective$.pipe(startWith(true)),
     ]).pipe(map(([isLogged, toggleUgcDirective]) => !(isLogged && toggleUgcDirective)));
+  }
+
+  featuresInViewport(features: FeatureLike[]): void {
+    const featureIds = features
+      .map(feature => feature.getProperties()?.id)
+      .filter(id => id != null);
+
+    this._store.dispatch(wmMapFeaturesInViewport({featureIds}));
+
   }
 
   ngOnDestroy(): void {

@@ -1,0 +1,45 @@
+wm-features-in-viewport {
+  position: absolute;
+  bottom: 16px;
+  left: 0;
+  width: 100%;
+
+  ion-slides {
+    ion-slide {
+      wm-search-box {
+        width: 100%;
+        margin: 0;
+      }
+    }
+
+    &.slide-in {
+      animation: slideIn 0.4s forwards;
+    }
+
+    &.slide-out {
+      animation: slideOut 0.4s forwards;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+    }
+  }
+}

@@ -1,4 +1,7 @@
-<div class="webmapp-pageroute-map-container">
+<div
+  class="webmapp-pageroute-map-container"
+  [class.show-bottom-features]="hasFeatureInViewport$|async"
+>
   <wm-map
     #wmap
     [wmMapConf]="confMap$|async"
@@ -27,8 +30,10 @@
     [wmMapLayerDataLayerUrls]="dataLayerUrls$|async"
     [wmMapLayerLayer]="currentLayer$|async"
     [wmMapLayerRefresh]="refreshLayer$|async"
+    [wmMapEnableFeaturesInViewport]="enableFeaturesInViewport$|async"
     [wmMapLayerDisableLayers]="wmMapEcTracksDisableLayer$|async"
     (colorSelectedFromLayerEVT)="trackColor$.next($event)"
+    (featuresInViewportEVT)="featuresInViewport($event)"
     wmMapPois
     [wmMapInputTyped]="apiSearchInputTyped$|async"
     [wmMapPoisPoi]="currentEcPoiId$|async"
@@ -93,4 +98,5 @@
     ></ion-progress-bar>
   </wm-map>
   <ng-content></ng-content>
+  <wm-features-in-viewport></wm-features-in-viewport>
 </div>

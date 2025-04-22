@@ -3,6 +3,7 @@ import {currentCustomTrack} from '../features/ugc/ugc.selector';
 import {UserActivityState} from './user-activity.reducer';
 import {confFlowLineQuote} from '../conf/conf.selector';
 import {WmSlopeChartFlowLineQuote} from '@wm-types/slope-chart';
+import { featureOpened } from '../features/features.selector';
 
 export const userActivity = createFeatureSelector<UserActivityState>('user-activity');
 
@@ -157,3 +158,10 @@ export const flowLineQuoteText = createSelector(
     return flowLineQuote;
   },
 );
+
+export const featuresInViewport = createSelector(userActivity, state => state.featuresInViewport);
+export const hasFeatureInViewport = createSelector(featuresInViewport, featuresInViewport => featuresInViewport && featuresInViewport.length > 0);
+//TODO: modify enableFeaturesInViewport, use featureSelected and layerSelected
+export const enableFeaturesInViewport = createSelector(mapDetailsStatus, (mapDetailsStatus) => {
+  return !mapDetailsStatus || mapDetailsStatus === 'background';
+});
