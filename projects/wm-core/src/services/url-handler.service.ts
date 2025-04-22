@@ -9,14 +9,15 @@ import {
 } from '@wm-core/store/features/ec/ec.actions';
 import {currentUgcPoiId, currentUgcTrackId} from '@wm-core/store/features/ugc/ugc.actions';
 import {Params} from '@angular/router';
-import {debounceTime, skip} from 'rxjs/operators';
+import {debounceTime, filter, skip, take} from 'rxjs/operators';
 import {closeDownloads, closeUgc, openUgc} from '@wm-core/store/user-activity/user-activity.action';
-import {BehaviorSubject} from 'rxjs';
-
+import {BehaviorSubject, Observable} from 'rxjs';
+import {ecPoisLoaded} from '@wm-core/store/features/ec/ec.selector';
 @Injectable({
   providedIn: 'root',
 })
 export class UrlHandlerService {
+  private _ecPoisLoaded$: Observable<boolean> = this._store.select(ecPoisLoaded);
   private _currentQueryParams$: BehaviorSubject<Params> = new BehaviorSubject<Params>({});
   private _emptyParams: Params = {
     track: undefined,
@@ -56,7 +57,14 @@ export class UrlHandlerService {
     this._route.queryParams.pipe(skip(1), debounceTime(100)).subscribe(params => {
       this._store.dispatch(currentEcLayerId({currentEcLayerId: params.layer ?? null}));
       this._store.dispatch(currentEcTrackId({currentEcTrackId: params.track ?? null}));
-      this._store.dispatch(currentEcPoiId({currentEcPoiId: params.poi ?? null}));
+      this._ecPoisLoaded$
+        .pipe(
+          filter(loaded => loaded),
+          take(1),
+        )
+        .subscribe(() => {
+          this._store.dispatch(currentEcPoiId({currentEcPoiId: params.poi ?? null}));
+        });
       this._store.dispatch(
         currentEcRelatedPoiId({currentRelatedPoiId: params.ec_related_poi ?? null}),
       );

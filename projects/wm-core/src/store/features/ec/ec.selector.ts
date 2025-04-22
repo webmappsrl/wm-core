@@ -214,3 +214,4 @@ export const currentPoiProperties = createSelector(
     return res;
   },
 );
+export const ecPoisLoaded = createSelector(ec, state => state.ecPoisLoaded);
