@@ -186,11 +186,12 @@ export const currentEcRelatedPoi = createSelector(
     return null;
   },
 );
-export const currentEcPoiId = createSelector(
-  ec,
-  state => state.currentEcPoi?.properties?.id ?? null,
+export const currentEcPoiId = createSelector(ec, state => state.currentEcPoiId ?? null);
+export const currentEcPoi = createSelector(
+  currentEcPoiId,
+  ecPois,
+  (ecPoiId, ecPois) => ecPois.find(p => p.properties.id == ecPoiId) ?? null,
 );
-export const currentEcPoi = createSelector(ec, state => state.currentEcPoi);
 
 export const currentEcPoiProperties = createSelector(currentEcPoi, currentEcPoi => {
   const res = currentEcPoi?.properties ?? null;

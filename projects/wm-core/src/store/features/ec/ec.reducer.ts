@@ -9,8 +9,7 @@ import {
   loadCurrentEcTrackFailure,
   ecTracks,
   currentEcRelatedPoiId,
-  loadCurrentEcPoiSuccess,
-  loadCurrentEcPoiFailure,
+  currentEcPoiId,
   currentEcImageGalleryIndex,
 } from '@wm-core/store/features/ec/ec.actions';
 
@@ -24,7 +23,7 @@ export interface Ec {
   ecTracksLoading: boolean;
   aggregations?: any;
   currentEcTrack?: WmFeature<LineString>;
-  currentEcPoiId?: string;
+  currentEcPoiId?: number;
   currentEcPoi?: WmFeature<Point>;
   currentEcRelatedPoiId?: string;
   currentEcImageGalleryIndex?: number;
@@ -91,17 +90,10 @@ export const ecReducer = createReducer(
     };
     return newState;
   }),
-  on(loadCurrentEcPoiSuccess, (state, {ecPoi}) => {
+  on(currentEcPoiId, (state, {currentEcPoiId}) => {
     const newState: Ec = {
       ...state,
-      currentEcPoi: ecPoi,
-    };
-    return newState;
-  }),
-  on(loadCurrentEcPoiFailure, state => {
-    const newState: Ec = {
-      ...state,
-      currentEcPoi: null,
+      currentEcPoiId: +currentEcPoiId,
     };
     return newState;
   }),

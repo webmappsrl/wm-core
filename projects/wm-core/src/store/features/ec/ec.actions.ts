@@ -51,14 +51,6 @@ export const currentEcRelatedPoiId = createAction(
   '[ec] Set current ec related poi id',
   props<{currentRelatedPoiId: string | null}>(),
 );
-export const loadCurrentEcPoiSuccess = createAction(
-  '[ec] Load Current EcPoi Success',
-  props<{ecPoi: WmFeature<Point>}>(),
-);
-export const loadCurrentEcPoiFailure = createAction(
-  '[ec] Load Current EcPoi Failure',
-  props<{error: any}>(),
-);
 export const currentEcImageGalleryIndex = createAction(
   '[ec] Set current ec image gallery index',
   props<{currentEcImageGalleryIndex: number | null}>(),
