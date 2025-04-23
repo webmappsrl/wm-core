@@ -37,7 +37,7 @@ export class ConfEffects {
         const id = +action.currentEcLayerId;
         const layer: ILAYER =
           home
-            .filter((item: IHOME) => item?.box_type === 'layer') // Filtra solo i box_type 'Layer'
+            .filter((item: IHOME) => item?.box_type === 'layer' && item.layer) // Filtra solo i box_type 'Layer'
             .map((item: ILAYERBOX) => item.layer) // Estrae il layer
             .find((layer: ILAYER) => +layer.id === +id) ?? null; // Trova il layer con id corrispondente
 
