@@ -57,7 +57,7 @@ export const poiFilters = createSelector(
   (poisSelectedFilterIdentifiers, poisFilters) => {
     let filters: any = [];
 
-    if (poisSelectedFilterIdentifiers != null && poisFilters.poi_type != null) {
+    if (poisSelectedFilterIdentifiers != null && poisFilters?.poi_type != null) {
       // @ts-ignore
       filters = [
         // @ts-ignore
