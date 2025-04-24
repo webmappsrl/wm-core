@@ -95,11 +95,4 @@ export const ecReducer = createReducer(
     };
     return newState;
   }),
-  on(loadCurrentEcPoiFailure, state => {
-    const newState: Ec = {
-      ...state,
-      currentEcPoi: null,
-    };
-    return newState;
-  }),
 );
