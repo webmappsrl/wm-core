@@ -9,8 +9,7 @@ import {
   loadCurrentEcTrackFailure,
   ecTracks,
   currentEcRelatedPoiId,
-  loadCurrentEcPoiSuccess,
-  loadCurrentEcPoiFailure,
+  currentEcPoiId,
 } from '@wm-core/store/features/ec/ec.actions';
 
 import {IHIT} from '@wm-core/types/elastic';
@@ -23,7 +22,7 @@ export interface Ec {
   ecTracksLoading: boolean;
   aggregations?: any;
   currentEcTrack?: WmFeature<LineString>;
-  currentEcPoiId?: string;
+  currentEcPoiId?: number;
   currentEcPoi?: WmFeature<Point>;
   currentEcRelatedPoiId?: string;
 }
@@ -89,10 +88,10 @@ export const ecReducer = createReducer(
     };
     return newState;
   }),
-  on(loadCurrentEcPoiSuccess, (state, {ecPoi}) => {
+  on(currentEcPoiId, (state, {currentEcPoiId}) => {
     const newState: Ec = {
       ...state,
-      currentEcPoi: ecPoi,
+      currentEcPoiId: +currentEcPoiId,
     };
     return newState;
   }),

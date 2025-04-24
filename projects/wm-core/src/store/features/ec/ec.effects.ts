@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {from, of} from 'rxjs';
-import {catchError, filter, map, switchMap, withLatestFrom} from 'rxjs/operators';
+import {catchError, map, switchMap} from 'rxjs/operators';
 
 import {EcService} from './ec.service';
 import {ApiRootState} from './ec.reducer';
@@ -17,29 +17,12 @@ import {
   ecTracks,
   ecTracksFailure,
   ecTracksSuccess,
-  loadCurrentEcPoiSuccess,
-  loadCurrentEcPoiFailure,
 } from '@wm-core/store/features/ec/ec.actions';
 
-import {currentEcPoiId} from './ec.actions';
-import {pois} from '../features.selector';
 @Injectable({
   providedIn: 'root',
 })
 export class EcEffects {
-  currentEcPoi$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(currentEcPoiId),
-      withLatestFrom(this._store.select(pois).pipe(filter(p => p != null && p.length > 0))),
-      map(([actions, pois]) => {
-        const ecPoi = actions.currentEcPoiId
-          ? pois.find(p => p?.properties?.id == actions.currentEcPoiId)
-          : null;
-        return loadCurrentEcPoiSuccess({ecPoi});
-      }),
-      catchError(error => of(loadCurrentEcPoiFailure({error}))),
-    ),
-  );
   currentEcTrack$ = createEffect(() =>
     this._actions$.pipe(
       ofType(currentEcTrackId),
