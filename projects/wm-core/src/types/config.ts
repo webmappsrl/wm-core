@@ -345,6 +345,7 @@ export interface IOPTIONS {
   showEleMax: boolean;
   showEleMin: boolean;
   showEleTo: boolean;
+  showFeatureInViewport: boolean;
   showGeojsonDownload: boolean;
   showGetDirections?: boolean;
   showGpxDownload: boolean;

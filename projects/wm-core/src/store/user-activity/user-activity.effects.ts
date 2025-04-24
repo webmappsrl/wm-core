@@ -11,9 +11,6 @@ import {
   toggleTrackFilter,
   toggleTrackFilterByIdentifier,
   updateTrackFilter,
-  wmMapFeaturesInViewport,
-  wmMapFeaturesInViewportSuccess,
-  wmMapFeaturesInViewportFailure,
 } from './user-activity.action';
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
@@ -51,7 +48,7 @@ import {Filter} from '@wm-core/types/config';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {ModalController} from '@ionic/angular';
 import {ModalUgcTrackUploaderComponent} from '@wm-core/modal-ugc-track-uploader/modal-ugc-track-uploader.component';
-import { EcService } from '../features/ec/ec.service';
+import {EcService} from '@wm-core/store/features/ec/ec.service';
 
 @Injectable()
 export class UserActivityEffects {
@@ -199,25 +196,11 @@ export class UserActivityEffects {
       }),
     ),
   );
-  featuresInViewport$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(wmMapFeaturesInViewport),
-      switchMap(({featureIds}) => {
-        if (featureIds.length === 0) {
-          return of(null);
-        }
-        return this._ecService.getQuery({trackIds: featureIds});
-      }),
-      map((response) => wmMapFeaturesInViewportSuccess({featuresInViewport: response?.hits ?? []})),
-      catchError(() => of(wmMapFeaturesInViewportFailure())),
-    ),
-  );
 
   constructor(
     private _actions$: Actions,
     private _store: Store,
     private _urlHandlerSvc: UrlHandlerService,
     private _modalCtrl: ModalController,
-    private _ecService: EcService,
   ) {}
 }

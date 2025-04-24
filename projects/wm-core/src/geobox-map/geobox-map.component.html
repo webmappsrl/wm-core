@@ -1,7 +1,4 @@
-<div
-  class="webmapp-pageroute-map-container"
-  [class.show-bottom-features]="hasFeatureInViewport$|async"
->
+<div class="webmapp-pageroute-map-container">
   <wm-map
     #wmap
     [wmMapConf]="confMap$|async"

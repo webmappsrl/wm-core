@@ -1,6 +1,6 @@
 wm-features-in-viewport {
   position: absolute;
-  bottom: 16px;
+  bottom: 38px;
   left: 0;
   width: 100%;
 
@@ -9,6 +9,21 @@ wm-features-in-viewport {
       wm-search-box {
         width: 100%;
         margin: 0;
+        ion-card {
+          display: flex;
+          width: 100%;
+          max-height: 150px;
+          margin: 0;
+          .wm-box-taxonomies{
+            display: none;
+          }
+          ion-card-header{
+            padding-right: 0px;
+            ion-card-title{
+              margin: 5px 0px;
+            }
+          }
+        }
       }
     }
 

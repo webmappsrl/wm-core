@@ -3,7 +3,6 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
-  Inject,
   OnDestroy,
   Output,
   ViewChild,
@@ -60,12 +59,10 @@ import {
   distinctUntilChanged,
   filter,
   map,
-  mergeAll,
   startWith,
   switchMap,
   take,
   tap,
-  withLatestFrom,
 } from 'rxjs/operators';
 import {
   confJIDOUPDATETIME,
@@ -78,13 +75,11 @@ import {
   chartHoverElements,
   drawTrackOpened,
   ecLayer,
-  enableFeaturesInViewport,
   inputTyped,
   loading,
   mapFilters,
   poiFilterIdentifiers,
   ugcOpened,
-  hasFeatureInViewport,
   wmMapHitMapChangeFeatureById,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {WmFeature} from '@wm-types/feature';
@@ -102,7 +97,7 @@ import {WmMapTrackRelatedPoisDirective} from '@map-core/directives';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {WmMapComponent} from '@map-core/components';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
-import {poi, track} from '@wm-core/store/features/features.selector';
+import {enableFeaturesInViewport, poi, track} from '@wm-core/store/features/features.selector';
 import {FiltersComponent} from '@wm-core/filters/filters.component';
 import {ActivatedRoute} from '@angular/router';
 import {Actions, ofType} from '@ngrx/effects';
@@ -111,7 +106,7 @@ import {DeviceService} from '@wm-core/services/device.service';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {GeolocationService} from '@wm-core/services/geolocation.service';
 import {EnvironmentService} from '@wm-core/services/environment.service';
-import { FeatureLike } from 'ol/Feature';
+import {FeatureLike} from 'ol/Feature';
 
 const initPadding = [10, 10, 10, 10];
 const initMenuOpened = true;
@@ -175,7 +170,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
   enableFeaturesInViewport$: Observable<boolean> = this._store.select(enableFeaturesInViewport);
   geohubId$ = this._store.select(confGeohubId);
   graphhopperHost$: Observable<string> = of(this._environmentSvc.graphhopperHost);
-  hasFeatureInViewport$: Observable<boolean> = this._store.select(hasFeatureInViewport);
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
   isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this._deviceSvc.isMobile);
   langs$ = this._store.select(confLANGUAGES).pipe(
