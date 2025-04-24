@@ -7,7 +7,7 @@ import {AuthService} from './auth.service';
 import {Injectable} from '@angular/core';
 import {AlertController} from '@ionic/angular';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {Store} from '@ngrx/store';
+import {Action, Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
 import {clearUgcData, getAuth, removeAuth, saveAuth} from '@wm-core/utils/localForage';
 import {catchError, filter, map, switchMap} from 'rxjs/operators';
@@ -90,14 +90,10 @@ export class AuthEffects {
       switchMap(action =>
         this._authSvc.logout().pipe(
           switchMap(async () => {
-            this._store.dispatch(closeUgc());
-            await clearUgcData();
-            await removeAuth();
-            this._store.dispatch(syncUgc());
-            return AuthActions.loadSignOutsSuccess();
+            return this._logout();
           }),
           catchError(error => {
-            return of(AuthActions.loadSignOutsFailure({error}));
+            return this._logout();
           }),
         ),
       ),
@@ -179,5 +175,13 @@ export class AuthEffects {
         },
       ],
     });
+  }
+
+  private async _logout(): Promise<Action> {
+    this._store.dispatch(closeUgc());
+    await clearUgcData();
+    await removeAuth();
+    this._store.dispatch(syncUgc());
+    return AuthActions.loadSignOutsSuccess();
   }
 }

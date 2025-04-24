@@ -44,7 +44,3 @@ export const deleteUserFailure = createAction(
 
 export const loadSignOuts = createAction('[Auth] Load SignOut');
 export const loadSignOutsSuccess = createAction('[Auth] Load SignOut Success');
-export const loadSignOutsFailure = createAction(
-  '[Auth] Load SignOut Failure',
-  props<{error: HttpErrorResponse}>(),
-);
