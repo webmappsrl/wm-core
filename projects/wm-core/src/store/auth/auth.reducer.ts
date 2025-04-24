@@ -81,13 +81,6 @@ export const authReducer = createReducer(
       error: undefined,
     };
   }),
-  on(AuthActions.loadSignOutsFailure, (state, {error}) => {
-    localStorage.removeItem('access_token');
-    return {
-      ...state,
-      error,
-    };
-  }),
   on(AuthActions.deleteUserSuccess, state => {
     localStorage.removeItem('access_token');
     return {
