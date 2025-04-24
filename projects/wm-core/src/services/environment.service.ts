@@ -75,9 +75,14 @@ export class EnvironmentService {
 
   private _assignShareLink() {
     const host = Object.entries(this._environment.redirects).find(
-      ([key, val]) => val.appId === this._appId,
+      ([_, val]) => val.appId === this._appId && val.shardName === this._shardName,
     );
-    this._shareLink = host ? host[0] : `${this.appId}.app.webmapp.it`;
+    if(host){
+      this._shareLink = host[0];
+    } else {
+      const subdomain = this._shardName == 'geohub' ? 'app' : this._shardName;
+      this._shareLink = `${this._appId}.${subdomain}.webmapp.it`;
+    }
   }
 
   private _isOldShardName(shardName: string): boolean {
