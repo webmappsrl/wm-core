@@ -157,3 +157,6 @@ export const flowLineQuoteText = createSelector(
     return flowLineQuote;
   },
 );
+
+export const featuresInViewport = createSelector(userActivity, state => state.featuresInViewport);
+export const hasFeatureInViewport = createSelector(featuresInViewport, featuresInViewport => featuresInViewport && featuresInViewport.length > 0);

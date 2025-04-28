@@ -16,6 +16,11 @@ import {
   ecTracksFailure,
   ecTracksSuccess,
 } from '@wm-core/store/features/ec/ec.actions';
+import {
+  wmMapFeaturesInViewport,
+  wmMapFeaturesInViewportFailure,
+  wmMapFeaturesInViewportSuccess,
+} from '@wm-core/store/user-activity/user-activity.action';
 
 @Injectable({
   providedIn: 'root',
@@ -64,6 +69,19 @@ export class EcEffects {
           catchError(e => of(ecTracksFailure())),
         );
       }),
+    ),
+  );
+  featuresInViewport$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(wmMapFeaturesInViewport),
+      switchMap(({featureIds}) => {
+        if (featureIds.length === 0) {
+          return of(null);
+        }
+        return this._ecSvc.getQuery({trackIds: featureIds});
+      }),
+      map((response) => wmMapFeaturesInViewportSuccess({featuresInViewport: response?.hits ?? []})),
+      catchError(() => of(wmMapFeaturesInViewportFailure())),
     ),
   );
 
