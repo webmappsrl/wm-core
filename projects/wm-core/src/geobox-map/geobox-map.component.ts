@@ -68,6 +68,7 @@ import {
   confJIDOUPDATETIME,
   confShowDrawTrack,
   confAUTHEnable,
+  confOPTIONFEATURESINVIEWPORT,
 } from '@wm-core/store/conf/conf.selector';
 import {currentCustomTrack as currentCustomTrackAction} from '@wm-core/store/features/ugc/ugc.actions';
 import {IDATALAYER} from '@map-core/types/layer';
@@ -97,7 +98,7 @@ import {WmMapTrackRelatedPoisDirective} from '@map-core/directives';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {WmMapComponent} from '@map-core/components';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
-import {enableFeaturesInViewport, poi, track} from '@wm-core/store/features/features.selector';
+import {poi, showFeaturesInViewport, track} from '@wm-core/store/features/features.selector';
 import {FiltersComponent} from '@wm-core/filters/filters.component';
 import {ActivatedRoute} from '@angular/router';
 import {Actions, ofType} from '@ngrx/effects';
@@ -154,6 +155,9 @@ export class WmGeoboxMapComponent implements OnDestroy {
   confJIDOUPDATETIME$: Observable<any> = this._store.select(confJIDOUPDATETIME);
   confMap$: Observable<any> = this._store.select(confMAP);
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
+  confOPTIONFEATURESINVIEWPORT$: Observable<boolean> = this._store.select(
+    confOPTIONFEATURESINVIEWPORT,
+  );
   currentCustomTrack$: Observable<WmFeature<LineString>> = this._store.select(currentCustomTrack);
   currentEcPoiId$ = this._store.select(currentEcPoiId);
   currentLayer$ = this._store.select(ecLayer);
@@ -167,7 +171,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   currentUgcPoiIDToMap$: Observable<number | string | null>;
   dataLayerUrls$: Observable<IDATALAYER>;
   drawTrackOpened$: Observable<boolean> = this._store.select(drawTrackOpened);
-  enableFeaturesInViewport$: Observable<boolean> = this._store.select(enableFeaturesInViewport);
+  showFeaturesInViewport$: Observable<boolean> = this._store.select(showFeaturesInViewport);
   geohubId$ = this._store.select(confGeohubId);
   graphhopperHost$: Observable<string> = of(this._environmentSvc.graphhopperHost);
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));

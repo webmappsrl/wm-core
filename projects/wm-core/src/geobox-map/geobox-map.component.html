@@ -27,7 +27,8 @@
     [wmMapLayerDataLayerUrls]="dataLayerUrls$|async"
     [wmMapLayerLayer]="currentLayer$|async"
     [wmMapLayerRefresh]="refreshLayer$|async"
-    [wmMapEnableFeaturesInViewport]="enableFeaturesInViewport$|async"
+    [wmMapLayerEnableFeaturesInViewport]="confOPTIONFEATURESINVIEWPORT$|async"
+    [wmMapLayerShowFeaturesInViewport]="showFeaturesInViewport$|async"
     [wmMapLayerDisableLayers]="wmMapEcTracksDisableLayer$|async"
     (colorSelectedFromLayerEVT)="trackColor$.next($event)"
     (featuresInViewportEVT)="featuresInViewport($event)"
@@ -95,5 +96,5 @@
     ></ion-progress-bar>
   </wm-map>
   <ng-content></ng-content>
-  <wm-features-in-viewport></wm-features-in-viewport>
+  <wm-features-in-viewport *ngIf="showFeaturesInViewport$|async"></wm-features-in-viewport>
 </div>

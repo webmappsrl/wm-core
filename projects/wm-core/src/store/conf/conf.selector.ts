@@ -140,6 +140,10 @@ export const confHOME = createSelector(confFeature, confFILTERS, (state, filters
 
   return state.HOME;
 });
+export const confOPTIONFEATURESINVIEWPORT = createSelector(
+  confOPTIONS,
+  state => state.enableFeatureInViewport,
+);
 
 const getLayers = (layersID: number[], layers: ILAYER[], tracks: IHIT[]): ILAYER[] => {
   return layers

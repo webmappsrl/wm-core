@@ -82,7 +82,7 @@ export const featureFirstCoordinates = createSelector(
   poiFirstCoordinates,
   (trackFirstCoordinates, poiFirstCoordinates) => trackFirstCoordinates ?? poiFirstCoordinates,
 );
-export const enableFeaturesInViewport = createSelector(
+export const showFeaturesInViewport = createSelector(
   featureOpened,
   ecLayer,
   (featureOpened, ecLayer) => {
