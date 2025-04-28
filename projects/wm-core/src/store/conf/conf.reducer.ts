@@ -121,6 +121,7 @@ const initialConfState: ICONF = {
     showShapefileDownload: false,
     showTravelMode: true, // TODO: set to false
     showGetDirections: true, // TODO: set to false
+    enableFeatureInViewport: true, // TODO: set to false
   },
   THEME: {
     primary: '#3880ff',
