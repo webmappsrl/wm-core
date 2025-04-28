@@ -3,7 +3,6 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
-  Inject,
   OnDestroy,
   Output,
   ViewChild,
@@ -43,6 +42,7 @@ import {
   togglePoiFilter,
   toggleTrackFilter,
   updateTrackFilter,
+  wmMapFeaturesInViewport,
 } from '@wm-core/store/user-activity/user-activity.action';
 import {
   Filter,
@@ -60,17 +60,16 @@ import {
   distinctUntilChanged,
   filter,
   map,
-  mergeAll,
   startWith,
   switchMap,
   take,
   tap,
-  withLatestFrom,
 } from 'rxjs/operators';
 import {
   confJIDOUPDATETIME,
   confShowDrawTrack,
   confAUTHEnable,
+  confOPTIONFEATURESINVIEWPORT,
 } from '@wm-core/store/conf/conf.selector';
 import {currentCustomTrack as currentCustomTrackAction} from '@wm-core/store/features/ugc/ugc.actions';
 import {IDATALAYER} from '@map-core/types/layer';
@@ -100,7 +99,7 @@ import {WmMapTrackRelatedPoisDirective} from '@map-core/directives';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {WmMapComponent} from '@map-core/components';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
-import {poi, track} from '@wm-core/store/features/features.selector';
+import {poi, showFeaturesInViewport, track} from '@wm-core/store/features/features.selector';
 import {FiltersComponent} from '@wm-core/filters/filters.component';
 import {ActivatedRoute} from '@angular/router';
 import {Actions, ofType} from '@ngrx/effects';
@@ -109,6 +108,7 @@ import {DeviceService} from '@wm-core/services/device.service';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {GeolocationService} from '@wm-core/services/geolocation.service';
 import {EnvironmentService} from '@wm-core/services/environment.service';
+import {FeatureLike} from 'ol/Feature';
 
 const initPadding = [10, 10, 10, 10];
 const initMenuOpened = true;
@@ -156,6 +156,9 @@ export class WmGeoboxMapComponent implements OnDestroy {
   confJIDOUPDATETIME$: Observable<any> = this._store.select(confJIDOUPDATETIME);
   confMap$: Observable<any> = this._store.select(confMAP);
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
+  confOPTIONFEATURESINVIEWPORT$: Observable<boolean> = this._store.select(
+    confOPTIONFEATURESINVIEWPORT,
+  );
   currentCustomTrack$: Observable<WmFeature<LineString>> = this._store.select(currentCustomTrack);
   currentEcPoiId$ = this._store.select(currentEcPoiId);
   currentLayer$ = this._store.select(ecLayer);
@@ -169,6 +172,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   currentUgcPoiIDToMap$: Observable<number | string | null>;
   dataLayerUrls$: Observable<IDATALAYER>;
   drawTrackOpened$: Observable<boolean> = this._store.select(drawTrackOpened);
+  showFeaturesInViewport$: Observable<boolean> = this._store.select(showFeaturesInViewport);
   geohubId$ = this._store.select(confGeohubId);
   graphhopperHost$: Observable<string> = of(this._environmentSvc.graphhopperHost);
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
@@ -348,6 +352,15 @@ export class WmGeoboxMapComponent implements OnDestroy {
       this.isLogged$.pipe(startWith(false)),
       this.toggleUgcDirective$.pipe(startWith(true)),
     ]).pipe(map(([isLogged, toggleUgcDirective]) => !(isLogged && toggleUgcDirective)));
+  }
+
+  featuresInViewport(features: FeatureLike[]): void {
+    const featureIds = features
+      .map(feature => feature.getProperties()?.id)
+      .filter(id => id != null);
+
+    this._store.dispatch(wmMapFeaturesInViewport({featureIds}));
+
   }
 
   ngOnDestroy(): void {

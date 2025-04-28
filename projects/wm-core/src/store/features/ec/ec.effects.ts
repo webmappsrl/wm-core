@@ -4,8 +4,6 @@ import {from, of} from 'rxjs';
 import {catchError, map, switchMap} from 'rxjs/operators';
 
 import {EcService} from './ec.service';
-import {ApiRootState} from './ec.reducer';
-import {Store} from '@ngrx/store';
 import {IRESPONSE} from '@wm-core/types/elastic';
 import {
   currentEcTrackId,
@@ -18,6 +16,11 @@ import {
   ecTracksFailure,
   ecTracksSuccess,
 } from '@wm-core/store/features/ec/ec.actions';
+import {
+  wmMapFeaturesInViewport,
+  wmMapFeaturesInViewportFailure,
+  wmMapFeaturesInViewportSuccess,
+} from '@wm-core/store/user-activity/user-activity.action';
 
 @Injectable({
   providedIn: 'root',
@@ -71,10 +74,22 @@ export class EcEffects {
       }),
     ),
   );
+  featuresInViewport$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(wmMapFeaturesInViewport),
+      switchMap(({featureIds}) => {
+        if (featureIds.length === 0) {
+          return of(null);
+        }
+        return this._ecSvc.getQuery({trackIds: featureIds});
+      }),
+      map((response) => wmMapFeaturesInViewportSuccess({featuresInViewport: response?.hits ?? []})),
+      catchError(() => of(wmMapFeaturesInViewportFailure())),
+    ),
+  );
 
   constructor(
     private _ecSvc: EcService,
     private _actions$: Actions,
-    private _store: Store<ApiRootState>,
   ) {}
 }

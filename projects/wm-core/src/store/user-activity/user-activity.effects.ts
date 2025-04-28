@@ -40,13 +40,15 @@ import {
   tap,
   withLatestFrom,
   filter,
-  startWith
+  startWith,
+  catchError,
 } from 'rxjs/operators';
 import {combineLatest, of} from 'rxjs';
 import {Filter} from '@wm-core/types/config';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {ModalController} from '@ionic/angular';
 import {ModalUgcTrackUploaderComponent} from '@wm-core/modal-ugc-track-uploader/modal-ugc-track-uploader.component';
+import {EcService} from '@wm-core/store/features/ec/ec.service';
 
 @Injectable()
 export class UserActivityEffects {

@@ -104,4 +104,11 @@ export const ecReducer = createReducer(
     };
     return newState;
   }),
+  on(currentEcImageGalleryIndex, (state, {currentEcImageGalleryIndex}) => {
+    const newState: Ec = {
+      ...state,
+      currentEcImageGalleryIndex: currentEcImageGalleryIndex,
+    };
+    return newState;
+  }),
 );

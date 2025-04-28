@@ -1,0 +1,14 @@
+<ng-container *ngIf="featuresInViewport$ | async as featuresInViewport">
+  <ion-slides
+    [options]="sliderOptions"
+    [ngClass]="{'slide-in': featuresInViewport.length > 0}"
+    #slider
+  >
+    <ion-slide *ngFor="let feature of featuresInViewport">
+      <wm-search-box
+        [data]="feature"
+        (clickEVT)="setTrack(feature?.id)"
+      ></wm-search-box>
+    </ion-slide>
+  </ion-slides>
+</ng-container>

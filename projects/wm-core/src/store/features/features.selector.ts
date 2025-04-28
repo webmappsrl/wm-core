@@ -1,7 +1,7 @@
 import {createSelector} from '@ngrx/store';
 import {WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
-import {ugcOpened} from '../user-activity/user-activity.selector';
+import {ecLayer, ugcOpened} from '../user-activity/user-activity.selector';
 import {
   countEcAll,
   countEcPois,
@@ -9,7 +9,6 @@ import {
   currentEcPoi,
   currentEcRelatedPoi,
   currentEcTrack,
-  ec,
   ecPois,
   ecTracks,
 } from './ec/ec.selector';
@@ -82,4 +81,11 @@ export const featureFirstCoordinates = createSelector(
   trackFirstCoordinates,
   poiFirstCoordinates,
   (trackFirstCoordinates, poiFirstCoordinates) => trackFirstCoordinates ?? poiFirstCoordinates,
+);
+export const showFeaturesInViewport = createSelector(
+  featureOpened,
+  ecLayer,
+  (featureOpened, ecLayer) => {
+    return featureOpened == false && ecLayer == null;
+  },
 );
