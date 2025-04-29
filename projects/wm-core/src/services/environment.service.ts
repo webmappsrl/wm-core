@@ -7,7 +7,7 @@ import {Environment, Redirect, Redirects, Shard} from '@wm-types/environment';
 export class EnvironmentService {
   private _environment: Environment;
   private _hostname: string;
-  private _wmpackagesRegex = /^(\d+)\.([a-zA-Z0-9-]+)\.[^.]+(?:\.[^.]+)?$/;
+  private _wmpackagesRegex = /^(\d+)\.([a-zA-Z0-9-]+)(?:\.mobile)?\.[^.]+(?:\.[^.]+)?$/;
   private _localHostRegex = /^localhost/;
   private _appId: number;
   private _shardName: string;
@@ -22,13 +22,12 @@ export class EnvironmentService {
   private _redirects: Redirects;
   private _redirect: Redirect;
   private _oldShardName: string[] = ['geohub', 'osm2cai', 'carg'];
-  private _oldSubdomains: string[] = ['app', 'geohub'];
+  private _oldSubdomains: string[] = ['app', 'geohub', 'mobile'];
   private _shareLink: string;
 
   init(environment: any) {
     this._environment = environment;
     this._hostname = window.location.hostname;
-    this._hostname = this._hostname.replace('.mobile.', '.');
 
     const wmpackagesRegexMatch = this._hostname.match(this._wmpackagesRegex);
     const _localHostRegex = this._hostname.match(this._localHostRegex);
