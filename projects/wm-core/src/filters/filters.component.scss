@@ -1,6 +1,6 @@
 wm-filters {
   div[appBuildSvg] {
-    height: 55%;
+    height: -webkit-fill-available;
   }
   .filter-button {
     display: flex;
@@ -59,16 +59,13 @@ wm-filters {
 
       display: flex;
       flex-direction: row;
-      flex-wrap: wrap;
       justify-content: space-between;
-      align-content: stretch;
-      align-items: stretch;
+      align-items: center;
       min-width: fit-content;
 
       ion-label {
         order: 0;
         flex: 1 1 auto;
-        align-self: stretch;
         margin: 2px;
       }
       ion-icon,

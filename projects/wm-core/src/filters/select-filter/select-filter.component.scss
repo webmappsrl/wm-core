@@ -19,12 +19,11 @@ wm-select-filter {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      align-content: stretch;
-      align-items: stretch;
+      align-items: center;
+
       ion-label {
         order: 0;
         flex: 1 1 auto;
-        align-self: stretch;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -48,7 +47,7 @@ wm-select-filter {
 
 div {
   svg {
-    height: 200%;
+    height: 100%;
   }
 }
 ion-chip {
