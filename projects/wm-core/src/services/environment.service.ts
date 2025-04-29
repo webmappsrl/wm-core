@@ -22,12 +22,13 @@ export class EnvironmentService {
   private _redirects: Redirects;
   private _redirect: Redirect;
   private _oldShardName: string[] = ['geohub', 'osm2cai', 'carg'];
-  private _oldSubdomains: string[] = ['app', 'geohub', 'mobile'];
+  private _oldSubdomains: string[] = ['app', 'geohub'];
   private _shareLink: string;
 
   init(environment: any) {
     this._environment = environment;
     this._hostname = window.location.hostname;
+    this._hostname = this._hostname.replace('.mobile.', '.');
 
     const wmpackagesRegexMatch = this._hostname.match(this._wmpackagesRegex);
     const _localHostRegex = this._hostname.match(this._localHostRegex);
@@ -77,7 +78,7 @@ export class EnvironmentService {
     const host = Object.entries(this._environment.redirects).find(
       ([_, val]) => val.appId === this._appId && val.shardName === this._shardName,
     );
-    if(host){
+    if (host) {
       this._shareLink = host[0];
     } else {
       const subdomain = this._shardName == 'geohub' ? 'app' : this._shardName;
