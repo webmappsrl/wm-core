@@ -11,6 +11,7 @@ import {currentEcLayerId} from '../features/ec/ec.actions';
 import {confHOME} from '@wm-core/store/conf/conf.selector';
 import {IHOME, ILAYER, ILAYERBOX} from '@wm-core/types/config';
 import {setLayer} from '../user-activity/user-activity.action';
+import {DeviceService} from '@wm-core/services/device.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -21,7 +22,10 @@ export class ConfEffects {
       switchMap(() =>
         this._configSVC.getConf().pipe(
           filter(conf => conf != null),
-          map(conf => loadConfSuccess({conf})),
+          map(conf => {
+            conf = {...conf, isMobile: this._deviceService.isMobile};
+            return loadConfSuccess({conf});
+          }),
           catchError((_: any) => of(loadConfFail())),
         ),
       ),
@@ -54,5 +58,10 @@ export class ConfEffects {
     ),
   );
 
-  constructor(private _configSVC: ConfService, private _actions$: Actions, private _store: Store) {}
+  constructor(
+    private _configSVC: ConfService,
+    private _actions$: Actions,
+    private _store: Store,
+    private _deviceService: DeviceService,
+  ) {}
 }
