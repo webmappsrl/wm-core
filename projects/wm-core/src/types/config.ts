@@ -352,6 +352,7 @@ export interface IOPTIONS {
   showHelp: boolean;
   showKmlDownload: boolean;
   showMapViewfinder: boolean;
+  showMediaName: boolean;
   showPoiListOffline: boolean;
   showShapefileDownload: boolean;
   showTrackRefLabel: boolean;
