@@ -12,7 +12,7 @@
         {{ data.properties?.name?? data.name  | wmtrans }}
       </ion-card-title>
       <div class="wm-search-box-properties">
-        <ion-label *ngIf="data?.distance" class="wm-search-box-property">
+        <ion-label *ngIf="data?.distance" class="wm-search-box-property property-distance">
           {{"Lunghezza" | wmtrans}}
           <span>{{data.distance}} Km</span>
         </ion-label>
