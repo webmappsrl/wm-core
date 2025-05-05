@@ -15,6 +15,7 @@ import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 })
 export class WmInnerHtmlComponent {
   @Input() enableDismiss = true;
+  @Input() title: string | iLocalString;
   @Input() html: string | iLocalString;
 
   constructor(

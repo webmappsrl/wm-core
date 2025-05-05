@@ -15,6 +15,13 @@ wm-inner-component-html {
     font-size: 40px;
     cursor: pointer;
   }
+  .title {
+    font-weight: var(--wm-feature-details-title-font-weight);
+    font-size: var(--wm-feature-details-title-font-size);
+    font-family: var(--wm-feature-details-title-font-family);
+    color: var(--wm-feature-details-title-color);
+    margin-bottom: 16px;
+  }
   .content {
     overflow-y: auto;
     -ms-flex: 1 1 auto;
