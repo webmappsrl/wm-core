@@ -22,6 +22,17 @@ wm-features-in-viewport {
             ion-card-title{
               margin: 5px 0px;
             }
+            .wm-search-box-property.property-distance {
+              padding-left: 28px;
+            }
+            .wm-search-box-property.property-distance::before {
+              content: '\e9a3';
+              font-size: 23px;
+              font-family: 'webmapp';
+              position: absolute;
+              left: 0;
+              top: 0;
+            }
           }
         }
       }
