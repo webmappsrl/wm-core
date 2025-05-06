@@ -5,7 +5,7 @@
         <wm-img [src]="image.url"></wm-img>
         <ion-text
           class="image-name"
-          *ngIf="image.name && (confOPTIONS$|async)?.showMediaName"
+          *ngIf="image.name && (confOPTIONSShowMediaName$|async)"
         >{{image.name|wmtrans}}</ion-text>
         <ion-text
           class="image-caption"

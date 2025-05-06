@@ -6,8 +6,7 @@ import {UrlHandlerService} from "@wm-core/services/url-handler.service";
 import {currentEcImageGallery, currentEcImageGalleryIndex} from "@wm-core/store/features/ec/ec.selector";
 import {from, Observable} from "rxjs";
 import {map, take} from "rxjs/operators";
-import {confOPTIONS} from "@wm-core/store/conf/conf.selector";
-import {IOPTIONS} from "@wm-core/types/config";
+import {confOPTIONSShowMediaName} from "@wm-core/store/conf/conf.selector";
 
 @Component({
   selector: 'wm-image-detail',
@@ -19,7 +18,7 @@ import {IOPTIONS} from "@wm-core/types/config";
 export class ImageDetailComponent implements AfterViewInit{
   @ViewChild('gallery') slider: IonSlides;
 
-  confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
+  confOPTIONSShowMediaName$: Observable<boolean> = this._store.select(confOPTIONSShowMediaName);
   currentImageGallery$: Observable<any[]> = this._store.select(currentEcImageGallery);
   currentImageGalleryIndex$: Observable<number> = this._store.select(currentEcImageGalleryIndex).pipe(
     map(index => index + 1)
