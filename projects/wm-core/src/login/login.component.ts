@@ -76,7 +76,7 @@ export class LoginComponent implements OnInit {
   resetPassword(): void {
     const origin = this._environmentSvc.origin;
     if (origin != null) {
-      const resetPasswordUrl = `${origin}/reset-password`;
+      const resetPasswordUrl = `${origin}/password/reset`;
       window.open(resetPasswordUrl, '_blank');
     }
   }
