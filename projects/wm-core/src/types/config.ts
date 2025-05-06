@@ -98,6 +98,7 @@ export interface IAPP {
   geohubId?: number;
   googlePlayUrl?: string;
   id?: string;
+  sku?: string;
   name: string;
   poi_acquisition_form?: any;
   track_acquisition_form?: any;

@@ -1,21 +1,38 @@
 import {HttpClient} from '@angular/common/http';
-import {Inject, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 import {Observable} from 'rxjs';
 import {IUser} from './auth.model';
+import {Store} from '@ngrx/store';
+import {IAPP} from '@wm-core/types/config';
+import {confAPP} from '@wm-core/store/conf/conf.selector';
+import {switchMap, take} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private _http: HttpClient, private _environmentSvc: EnvironmentService) {}
+  confAPP$: Observable<IAPP> = this._store.select(confAPP);
+  constructor(
+    private _http: HttpClient,
+    private _environmentSvc: EnvironmentService,
+    private _store: Store,
+  ) {}
 
   login(email: string, password: string, referrer?: string): Observable<IUser> {
-    return this._http.post(`${this._environmentSvc.origin}/api/auth/login`, {
-      email,
-      password,
-      referrer,
-    }) as Observable<IUser>;
+    return this.confAPP$.pipe(
+      take(1),
+      switchMap(confApp => {
+        const referrer = confApp.sku;
+        const appId = confApp.id ?? confApp.geohubId;
+        return this._http.post(`${this._environmentSvc.origin}/api/auth/login`, {
+          email,
+          password,
+          referrer,
+          appId,
+        }) as Observable<IUser>;
+      }),
+    );
   }
 
   getUser(): Observable<IUser> {
@@ -26,13 +43,21 @@ export class AuthService {
     return this._http.post(`${this._environmentSvc.origin}/api/auth/logout`, {}) as Observable<any>;
   }
 
-  signUp(name: string, email: string, password: string, referrer?: string): Observable<IUser> {
-    return this._http.post(`${this._environmentSvc.origin}/api/auth/signup`, {
-      name,
-      email,
-      password,
-      referrer,
-    }) as Observable<IUser>;
+  signUp(name: string, email: string, password: string): Observable<IUser> {
+    return this.confAPP$.pipe(
+      take(1),
+      switchMap(confApp => {
+        const referrer = confApp.sku;
+        const appId = confApp.id ?? confApp.geohubId;
+        return this._http.post(`${this._environmentSvc.origin}/api/auth/signup`, {
+          name,
+          email,
+          password,
+          referrer,
+          appId,
+        }) as Observable<IUser>;
+      }),
+    );
   }
 
   delete(): Observable<any> {
