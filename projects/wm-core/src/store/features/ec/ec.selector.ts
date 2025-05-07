@@ -211,27 +211,7 @@ export const currentPoiProperties = createSelector(
     if (JSON.stringify(currentEcPoiProperties) === JSON.stringify({related: false})) {
       currentEcPoiProperties = null;
     }
-    let res = currentEcPoiProperties ?? currentEcRelatedPoiProperties ?? null;
-    //TODO: remove this arcoded info
-    if (res) {
-      return {
-        ...res,
-        info: `
-          <h2>Orari ed info</h2>
-          <p>Punti d'Informazione Turistica del Comune di Pietrasanta</p>
-          <p><strong>Orari di apertura:</strong></p>
-          <p>martedì – mercoledì – giovedì ore 10/12.30<br>
-          venerdì – sabato – domenica ore 10/12.30 e 15.30/18;<br>
-          lunedì chiuso</p>
-          <p><strong>Telefono:</strong><br>
-          0584283375</p>
-          <p><strong>Email:</strong><br>
-          infocentro@comune.pietrasanta.lu.it</p>
-        `,
-      };
-    }
-
-    return null;
+    return currentEcPoiProperties ?? currentEcRelatedPoiProperties ?? null;
   },
 );
 
