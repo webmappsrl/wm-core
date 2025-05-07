@@ -3,10 +3,14 @@
     <ion-slides #gallery class="gallery" [options]="slideOptions" (ionSlideTouchEnd)="updateIdx()">
       <ion-slide *ngFor="let image of currentImageGallery;" pager="true">
         <wm-img [src]="image.url"></wm-img>
-        <div
+        <ion-text
+          class="image-name"
+          *ngIf="image.name && (confOPTIONSShowMediaName$|async)"
+        >{{image.name|wmtrans}}</ion-text>
+        <ion-text
           class="image-caption"
           *ngIf="image.caption"
-        >{{image.caption|wmtrans}}</div>
+        >{{image.caption|wmtrans}}</ion-text>
       </ion-slide>
     </ion-slides>
     <ng-container *ngIf="currentImageGallery.length > 1">
