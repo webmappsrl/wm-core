@@ -30,7 +30,7 @@ import {Store} from '@ngrx/store';
 import {confTRANSLATIONS} from '@wm-core/store/conf/conf.selector';
 import {filter, take} from 'rxjs/operators';
 import {APP_TRANSLATION} from '@wm-core/store/conf/conf.token';
-import {Translations} from '@wm-types/language';
+import {WmTranslations} from '@wm-types/language';
 @Injectable({
   providedIn: 'root',
 })
@@ -45,7 +45,7 @@ export class LangService extends TranslateService implements TranslateService {
     public override missingTranslationHandler: MissingTranslationHandler,
     @Inject(USE_DEFAULT_LANG) useDefaultLang: boolean = true,
     @Inject(USE_STORE) isolate: boolean = false,
-    @Inject(APP_TRANSLATION) public appTranslation: Translations,
+    @Inject(APP_TRANSLATION) public appTranslation: WmTranslations,
     private _store: Store<any>,
   ) {
     super(
