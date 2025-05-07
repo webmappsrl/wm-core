@@ -2,9 +2,18 @@ wm-image-gallery {
   position: relative;
   .webmapp-pagepoi-info-body-photoslider {
     padding: 10px 0;
+    ion-slide {
+      width: 250px;
+      flex-direction: column;
+      align-items: flex-start;
+
+      ion-text {
+        font-size: 14px;
+        margin-top: 8px;
+        color: var(--ion-text-color);
+      }
+    }
     .webmapp-pagepoi-info-body-photo {
-      height: 150px !important;
-      width: 250px !important;
       img {
         height: 150px !important;
         width: 250px !important;

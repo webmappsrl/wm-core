@@ -12,6 +12,7 @@ import {confIsMobile} from '@wm-core/store/conf/conf.selector';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {DeviceService} from '@wm-core/services/device.service';
+import {confOPTIONSShowMediaName} from '@wm-core/store/conf/conf.selector';
 @Component({
   selector: 'wm-image-gallery',
   templateUrl: './image-gallery.component.html',
@@ -27,9 +28,8 @@ export class ImageGalleryComponent {
       });
     } else {
       this.sliderOptions$.next({
-        slidesPerView: 1.3,
-        centeredSlides: true,
-        spaceBetween: 10,
+        slidesPerView: 'auto',
+        spaceBetween: 12,
       });
     }
     this.imageGallery$.next(imgGallery);
@@ -39,6 +39,7 @@ export class ImageGalleryComponent {
   @ViewChild('slider') slider: IonSlides;
 
   imageGallery$: BehaviorSubject<null | any[]> = new BehaviorSubject<null | any[]>(null);
+  confOPTIONSShowMediaName$: Observable<boolean> = this._store.select(confOPTIONSShowMediaName);
   isMobile$: Observable<boolean> = this._store.select(confIsMobile);
   sliderOptions$: BehaviorSubject<any> = new BehaviorSubject<any>({
     slidesPerView: 1.3,

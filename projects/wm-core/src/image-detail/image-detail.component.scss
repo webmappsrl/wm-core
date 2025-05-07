@@ -8,6 +8,7 @@ wm-image-detail {
       background-color: white;
       display: flex;
       flex-direction: column;
+      align-items: flex-start;
       padding: 16px;
       wm-img {
         width: -webkit-fill-available;
@@ -16,9 +17,16 @@ wm-image-detail {
           border-radius: 16px;
         }
       }
-      .image-caption {
-        margin-top: 16px;
+      .image-name {
         font-size: var(--wm-font-size-base);
+        font-weight: 700;
+        margin-top: 24px;
+        margin-left: 4px;
+        color: var(--ion-text-color);
+      }
+      .image-caption {
+        margin-top: 12px;
+        font-size: var(--wm-font-size-sm);
       }
     }
   }
