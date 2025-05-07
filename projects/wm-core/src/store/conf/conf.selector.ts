@@ -144,6 +144,7 @@ export const confOPTIONFEATURESINVIEWPORT = createSelector(
   confOPTIONS,
   state => state.enableFeatureInViewport,
 );
+export const confOPTIONSShowMediaName = createSelector(confOPTIONS, state => state.showMediaName);
 
 const getLayers = (layersID: number[], layers: ILAYER[], tracks: IHIT[]): ILAYER[] => {
   return layers

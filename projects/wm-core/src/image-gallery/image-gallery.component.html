@@ -11,6 +11,9 @@
         class="webmapp-pagepoi-info-body-photo"
         (click)="showPhoto(idx)"
       ></wm-img>
+      <ion-text *ngIf="image?.name && confOPTIONSShowMediaName$|async">
+        {{image.name|wmtrans}}
+      </ion-text>
     </ion-slide>
   </ion-slides>
   <ng-container *ngIf="!(isMobile$|async) && imageGallery.length > 1">
