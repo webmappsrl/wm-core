@@ -16,9 +16,6 @@ import {
 } from '@wm-core/store/user-activity/user-activity.action';
 import {countUgcAll} from '@wm-core/store/features/ugc/ugc.selector';
 import {offline} from '@wm-core/store/network/network.selector';
-import {WmFeature} from '@wm-types/feature';
-import {MultiPolygon} from 'geojson';
-import {getHitmapFeatures} from '@map-core/utils';
 
 @Component({
   selector: 'wm-home-landing',
@@ -41,7 +38,6 @@ export class WmHomeLandingComponent {
   enableDrawTrack$: Observable<boolean> = this._store.select(confShowDrawTrack);
   isLogged$: Observable<boolean> = this._store.select(isLogged);
   offline$: Observable<boolean> = this._store.select(offline);
-  hitmapFeatures$: Observable<WmFeature<MultiPolygon>[]> = from(getHitmapFeatures());
 
   constructor(private _store: Store) {}
 

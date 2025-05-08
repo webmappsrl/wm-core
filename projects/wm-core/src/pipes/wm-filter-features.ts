@@ -6,7 +6,8 @@ import {Feature} from 'geojson';
   pure: false, // opzionale, se vuoi che il filtro si aggiorni dinamicamente
 })
 export class WmFilterFeaturesPipe implements PipeTransform {
-  transform(features: Feature[], filter: string): any[] {
+  transform(features: Feature[], filter: string): Feature[] {
+    if (features == null) return [];
     if (!features || !filter) {
       return features.sort(this._sortFeatures);
     }
