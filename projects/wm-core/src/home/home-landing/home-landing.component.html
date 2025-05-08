@@ -2,9 +2,7 @@
 </wm-ugc-box>
 <ng-container *ngIf="offline$|async;else online">
   <wm-downloads-ec-track-box> </wm-downloads-ec-track-box>
-  <ng-container *ngIf="hitmapFeatures$|async as hitmapFeatures">
-    <wm-home-hitmap [hitmapFeatures]="hitmapFeatures"></wm-home-hitmap>
-  </ng-container>
+  <wm-home-hitmap [downloads]="true"></wm-home-hitmap>
 </ng-container>
 
 <ng-template #online>

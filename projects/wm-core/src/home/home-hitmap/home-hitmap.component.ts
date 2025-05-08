@@ -7,20 +7,21 @@ import {
   OnInit,
   ViewEncapsulation,
 } from '@angular/core';
+import {ToastController} from '@ionic/angular';
+import {removeHitmapFeature, getHitmapFeatures} from '@map-core/utils';
 import {Store} from '@ngrx/store';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {confMAP} from '@wm-core/store/conf/conf.selector';
 import {wmMapHitMapChangeFeatureById} from '@wm-core/store/user-activity/user-activity.action';
 import {WmFeature} from '@wm-types/feature';
 import {Feature, FeatureCollection, MultiPolygon} from 'geojson';
-import {Observable, of} from 'rxjs';
+import {from, Observable, of} from 'rxjs';
 import {catchError, filter, map, switchMap, take} from 'rxjs/operators';
 
 @Component({
   selector: 'wm-home-hitmap',
   templateUrl: './home-hitmap.component.html',
   styleUrls: ['./home-hitmap.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
 export class WmHomeHitMapComponent implements OnInit {
@@ -28,9 +29,11 @@ export class WmHomeHitMapComponent implements OnInit {
   searchTerm: string = '';
 
   @Input()
-  hitmapFeatures: WmFeature<MultiPolygon>[] = [];
+  downloads: boolean = false;
 
-  wmMapHitMap$: Observable<WmFeature<MultiPolygon>[]> = this.confMAP$.pipe(
+  downloadedHitmapFeatures$: Observable<WmFeature<MultiPolygon>[]> = from(getHitmapFeatures());
+
+  hitmapFeatures$: Observable<WmFeature<MultiPolygon>[]> = this.confMAP$.pipe(
     filter(conf => conf != null),
     map(conf => conf?.hitMapUrl),
     switchMap((url: string) => {
@@ -40,6 +43,8 @@ export class WmHomeHitMapComponent implements OnInit {
     catchError(err => of(null)),
   );
 
+  features$: Observable<WmFeature<MultiPolygon>[]>;
+
   onClick(feature: Feature): void {
     const properties = feature.properties;
     this._store.dispatch(wmMapHitMapChangeFeatureById({id: properties.id}));
@@ -47,12 +52,7 @@ export class WmHomeHitMapComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.hitmapFeatures == null || this.hitmapFeatures.length === 0) {
-      this.wmMapHitMap$.pipe(take(1)).subscribe(features => {
-        this.hitmapFeatures = features;
-        this._cdr.detectChanges();
-      });
-    }
+    this.refresh();
   }
 
   constructor(
@@ -60,5 +60,22 @@ export class WmHomeHitMapComponent implements OnInit {
     private _http: HttpClient,
     private _urlHandlerSvc: UrlHandlerService,
     private _cdr: ChangeDetectorRef,
+    private _toastCtrl: ToastController,
   ) {}
+
+  async deleteSheet(feature: Feature): Promise<void> {
+    // Da implementare
+    await removeHitmapFeature(feature.properties.id);
+    this.refresh();
+    const toast = await this._toastCtrl.create({
+      message: 'Dati eliminati con successo',
+      duration: 2000,
+    });
+    await toast.present();
+  }
+
+  refresh(): void {
+    this.features$ = this.downloads ? from(getHitmapFeatures()) : this.hitmapFeatures$;
+    this._cdr.detectChanges();
+  }
 }
