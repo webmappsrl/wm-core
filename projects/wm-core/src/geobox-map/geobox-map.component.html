@@ -50,6 +50,7 @@
     wmMapHitMapCollection
     [wmMapHitMapUrl]="wmMapHitMapUrl$|async"
     [wmMapHitMapChangeFeatureById]="wmMapHitMapChangeFeatureById$|async"
+    (wmMapHitMapfeatureClicked)="updateCurrentHitmapFeatureID($event)"
     [wmMapUgcTracks]="ugcTracks$|async"
     [wmMapUgcTrackDisableLayer]="wmMapUgcDisableLayers$|async"
     (ugcTrackSelectedFromMapEVT)="updateUgcTrack($event)"

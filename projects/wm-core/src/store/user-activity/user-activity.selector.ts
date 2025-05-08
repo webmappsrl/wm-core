@@ -18,7 +18,7 @@ export const downloadsOpened = createSelector(
   userActivity,
   (state: UserActivityState) => state.downloadsOpened,
 );
-export const wmMapHitMapChangeFeatureById = createSelector(
+export const wmMapHitMapChangeFeatureId = createSelector(
   userActivity,
   (state: UserActivityState) => state.wmMapHitMapChangeFeatureById,
 );
@@ -155,5 +155,13 @@ export const flowLineQuoteText = createSelector(
     };
 
     return flowLineQuote;
+  },
+);
+export const wmMapHitmapFeatures = createSelector(userActivity, state => state.wmMapHitmapFeatures);
+export const currentHitmapFeature = createSelector(
+  wmMapHitMapChangeFeatureId,
+  wmMapHitmapFeatures,
+  (id, features) => {
+    return features.find(f => f.properties.id == id);
   },
 );
