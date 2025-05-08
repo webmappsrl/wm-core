@@ -42,6 +42,7 @@ import {
   togglePoiFilter,
   toggleTrackFilter,
   updateTrackFilter,
+  wmMapHitMapChangeFeatureById,
 } from '@wm-core/store/user-activity/user-activity.action';
 import {
   Filter,
@@ -82,7 +83,7 @@ import {
   mapFilters,
   poiFilterIdentifiers,
   ugcOpened,
-  wmMapHitMapChangeFeatureById,
+  wmMapHitMapChangeFeatureId,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {WmFeature} from '@wm-types/feature';
 import {LineString, Point} from 'geojson';
@@ -249,7 +250,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   wmMapPositionfocus$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   wmMapUgcDisableLayers$: Observable<boolean>;
   wmMapHitMapChangeFeatureById$: Observable<number> = this._store.select(
-    wmMapHitMapChangeFeatureById,
+    wmMapHitMapChangeFeatureId,
   );
   constructor(
     private _route: ActivatedRoute,
@@ -367,6 +368,10 @@ export class WmGeoboxMapComponent implements OnDestroy {
     if (popup == null) {
       this.resetSelectedOvelayFeatureEVT$.next();
     }
+  }
+
+  updateCurrentHitmapFeatureID(id: string): void {
+    this._store.dispatch(wmMapHitMapChangeFeatureById({id: +id}));
   }
 
   prev(): void {

@@ -15,10 +15,7 @@
   <ng-container *ngIf="(popup$|async) as popup; else mainContent">
     <ion-row class="ion-justify-content-end">
       <ion-col size="auto">
-        <ion-chip
-          [outline]="true"
-          (click)="closePopup()"
-        >
+        <ion-chip [outline]="true" (click)="closePopup()">
           {{ 'Torna alla home' | wmtrans }}
         </ion-chip>
       </ion-col>
@@ -43,6 +40,5 @@
       </ng-template>
       <wm-home-result (trackEVT)="setTrack($event)" (poiEVT)="setPoi($event)"></wm-home-result>
     </ng-container>
-    <wm-home-hitmap></wm-home-hitmap>
   </ng-template>
 </div>

@@ -10,7 +10,6 @@ import {IonInput, ModalController} from '@ionic/angular';
 import {select, Store} from '@ngrx/store';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
-import {LangService} from '@wm-core/localization/lang.service';
 import {loadSignIns} from '@wm-core/store/auth/auth.actions';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {EnvironmentService} from '@wm-core/services/environment.service';

@@ -4,6 +4,9 @@ import {
   closeUgc,
   goToHome,
   inputTyped,
+  loadHitmapFeatures,
+  loadHitmapFeaturesFail,
+  loadHitmapFeaturesSuccess,
   openUgcUploader,
   resetPoiFilters,
   setLayer,
@@ -40,13 +43,17 @@ import {
   tap,
   withLatestFrom,
   filter,
-  startWith
+  startWith,
+  catchError,
 } from 'rxjs/operators';
 import {combineLatest, of} from 'rxjs';
 import {Filter} from '@wm-core/types/config';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {ModalController} from '@ionic/angular';
 import {ModalUgcTrackUploaderComponent} from '@wm-core/modal-ugc-track-uploader/modal-ugc-track-uploader.component';
+import {HttpClient} from '@angular/common/http';
+import {WmFeature, WmFeatureCollection} from '@wm-types/feature';
+import {MultiPolygon} from 'geojson';
 
 @Injectable()
 export class UserActivityEffects {
@@ -66,7 +73,7 @@ export class UserActivityEffects {
           return setMapDetailsStatus({status: 'background'});
         }
       }),
-      filter(action => !!action)
+      filter(action => !!action),
     ),
   );
   filterTracks$ = createEffect(() =>
@@ -183,10 +190,28 @@ export class UserActivityEffects {
     ),
   );
 
+  loadHitmap$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(loadHitmapFeatures),
+      switchMap(action =>
+        this._http.get(action.url).pipe(
+          filter(hitmapFeatures => hitmapFeatures != null),
+          map((hitmapFeatureCollection: WmFeatureCollection) => {
+            const wmMapHitmapFeatures =
+              hitmapFeatureCollection.features as WmFeature<MultiPolygon>[];
+            return loadHitmapFeaturesSuccess({wmMapHitmapFeatures});
+          }),
+          catchError((_: any) => of(loadHitmapFeaturesFail())),
+        ),
+      ),
+    ),
+  );
+
   constructor(
     private _actions$: Actions,
     private _store: Store,
     private _urlHandlerSvc: UrlHandlerService,
     private _modalCtrl: ModalController,
+    private _http: HttpClient,
   ) {}
 }
