@@ -18,7 +18,6 @@ wm-select-filter {
 
       display: flex;
       flex-direction: row;
-      flex-wrap: wrap;
       justify-content: space-between;
       align-content: stretch;
       align-items: stretch;
@@ -26,6 +25,9 @@ wm-select-filter {
         order: 0;
         flex: 1 1 auto;
         align-self: stretch;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       ion-icon,
       i {
