@@ -484,14 +484,20 @@ export class WmGeoboxMapComponent implements OnDestroy {
   setWmMapFeatureCollection(overlay: any): void {
     this._store.dispatch(setLayer(null));
     this.wmMapFeatureCollectionOverlay$.next(overlay);
-    this.overlayFeatureCollections$.pipe(take(1)).subscribe(feature => {
-      if (overlay['featureType'] != null && feature[overlay['featureType']] != null) {
-        this.wmMapFeatureCollectionOverlay$.next({
-          ...overlay,
-          ...{url: feature[overlay['featureType']]},
-        });
-      }
-    });
+    if (overlay != null) {
+      this.overlayFeatureCollections$.pipe(take(1)).subscribe(feature => {
+        if (overlay['featureType'] != null) {
+          if (feature[overlay['featureType']] != null) {
+            this.wmMapFeatureCollectionOverlay$.next({
+              ...overlay,
+              ...{url: feature[overlay['featureType']]},
+            });
+          } else {
+            this.wmMapFeatureCollectionOverlay$.next(null);
+          }
+        }
+      });
+    }
   }
 
   toggleDirective(data: {type: 'layers' | 'pois' | 'ugc'; toggle: boolean}): void {
