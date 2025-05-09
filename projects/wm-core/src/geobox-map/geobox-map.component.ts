@@ -3,7 +3,6 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
-  Inject,
   OnDestroy,
   Output,
   ViewChild,
@@ -33,6 +32,7 @@ import {
   drawTrackOpened as ActiondrawTrackOpened,
   goToHome,
   openUgc,
+  resetMap,
   resetPoiFilters,
   resetTrackFilters,
   setLastFilterType,
@@ -60,12 +60,10 @@ import {
   distinctUntilChanged,
   filter,
   map,
-  mergeAll,
   startWith,
   switchMap,
   take,
   tap,
-  withLatestFrom,
 } from 'rxjs/operators';
 import {
   confJIDOUPDATETIME,
@@ -264,6 +262,11 @@ export class WmGeoboxMapComponent implements OnDestroy {
     private _geolocationSvc: GeolocationService,
     private _environmentSvc: EnvironmentService,
   ) {
+    this._actions$.pipe(ofType(resetMap)).subscribe(() => {
+      this.mapCmp?.resetView();
+      this.mapCmp?.wmMapControls?.reset();
+      this._store.dispatch(wmMapHitMapChangeFeatureById({id: null}));
+    });
     this.currentPosition$ = this._geolocationSvc.onLocationChange;
     this.currentMapPaddings$ = combineLatest([
       this.showMenu$,
@@ -394,6 +397,10 @@ export class WmGeoboxMapComponent implements OnDestroy {
       printer.focus();
       printer.print();
     }
+  }
+
+  resetMap(): void {
+    this.mapCmp.resetView();
   }
 
   reloadCustomTrack(): void {
