@@ -1,6 +1,6 @@
 <form [formGroup]="formIdGroup" *ngIf="disabled === false">
   <ion-item class="wm-form-field">
-    <ion-label class="wm-form-field-label" position="stacked">seleziona il tipo di form</ion-label>
+    <ion-label class="wm-form-field-label" position="stacked">{{"Seleziona il tipo di form" | wmtrans}}</ion-label>
     <ion-select class="wm-form-field-select" formControlName="id">
       <ion-select-option
         *ngFor="let form of (forms$|async);let idx = index"

@@ -157,4 +157,11 @@ export const wmIT = {
   'L\'email inserita non è corretta. Per favore, riprova.': 'L\'email inserita non è corretta. Per favore, riprova.',
   'La password inserita non è corretta. Per favore, riprova.': 'La password inserita non è corretta. Per favore, riprova.',
   'Errore': 'Errore',
+  'Tempo': 'Tempo',
+  'Velocità media': 'Velocità media',
+  'Velocità massima': 'Velocità massima',
+  'Tipologia di form': 'Tipologia di form',
+  'Seleziona il tipo di form': 'Seleziona il tipo di form',
+  'File selezionato': 'File selezionato',
+  'Carica': 'Carica',
 };

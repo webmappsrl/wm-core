@@ -148,4 +148,11 @@ export const wmES = {
   'L\'email inserita non è corretta. Per favore, riprova.': 'El correo electrónico introducido no es correcto. Por favor, inténtalo de nuevo.',
   'La password inserita non è corretta. Per favore, riprova.': 'La contraseña introducida no es correcta. Por favor, inténtalo de nuevo.',
   'Errore': 'Error',
+  'Tempo': 'Tiempo',
+  'Velocità media': 'Velocidad media',
+  'Velocità massima': 'Velocidad máxima',
+  'Tipologia di form': 'Tipo de formulario',
+  'Seleziona il tipo di form': 'Selecciona el tipo de formulario',
+  'File selezionato': 'Archivo seleccionado',
+  'Carica': 'Cargar',
 };

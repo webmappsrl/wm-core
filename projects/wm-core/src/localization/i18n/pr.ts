@@ -149,4 +149,11 @@ export const wmPR = {
   'L\'email inserita non è corretta. Per favore, riprova.': 'O e-mail inserido está incorreto. Por favor, tente novamente.',
   'La password inserita non è corretta. Per favore, riprova.': 'A senha inserida está incorreta. Por favor, tente novamente.',
   'Errore': 'Erro',
+  'Tempo': ' Tempo',
+  'Velocità media': 'Velocidade média',
+  'Velocità massima': 'Velocidade máxima',
+  'Tipologia di form': 'Tipo de formulário',
+  'Seleziona il tipo di form': 'Selecione o tipo de formulário',
+  'File selezionato': 'File selezionato',
+  'Carica': 'Carregar',
 };

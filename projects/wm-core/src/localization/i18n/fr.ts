@@ -151,4 +151,11 @@ export const wmFR = {
   'L\'email inserita non è corretta. Per favore, riprova.': 'L\'email saisie est incorrecte. Veuillez réessayer.',
   'La password inserita non è corretta. Per favore, riprova.': 'Le mot de passe saisi est incorrect. Veuillez réessayer.',
   'Errore': 'Erreur',
+  'Tempo': 'Temps',
+  'Velocità media': 'Analyse de la vitesse',
+  'Velocità massima': 'Vitesse maximale',
+  'Tipologia di form': 'Type de formulaire',
+  'Seleziona il tipo di form': 'Sélectionnez le type de formulaire',
+  'File selezionato': 'Fichier sélectionné',
+  'Carica': 'Télécharger',
 };

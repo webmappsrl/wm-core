@@ -157,4 +157,11 @@ export const wmEN = {
   'L\'email inserita non è corretta. Per favore, riprova.': 'The email entered is incorrect. Please try again.',
   'La password inserita non è corretta. Per favore, riprova.': 'The password entered is incorrect. Please try again.',
   'Errore': 'Error',
+  'Tempo': 'Time',
+  'Velocità media': 'Average speed',
+  'Velocità massima': 'Minimum speed',
+  'Tipologia di form': 'Form type',
+  'Seleziona il tipo di form': 'Select the type of form',
+  'File selezionato': 'Selected file',
+  'Carica': 'Upload',
 };

@@ -152,4 +152,11 @@ export const wmDE = {
   'L\'email inserita non è corretta. Per favore, riprova.': 'Die eingegebene E-Mail ist nicht korrekt. Bitte versuchen Sie es erneut.',
   'La password inserita non è corretta. Per favore, riprova.': 'Das eingegebene Passwort ist nicht korrekt. Bitte versuchen Sie es erneut.',
   'Errore': 'Fehler',
+  'Tempo': 'Zeit',
+  'Velocità media': 'Durchschnittsgeschwindigkeit',
+  'Velocità massima': 'Maximale Geschwindigkeit',
+  'Tipologia di form': 'Formularart',
+  'Seleziona il tipo di form': 'Formularart auswählen',
+  'File selezionato': 'Ausgewählte Datei',
+  'Carica': 'Hochladen',
 };
