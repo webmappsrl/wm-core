@@ -20,6 +20,7 @@ export class AuthEffects {
       switchMap(action =>
         this._authSvc.delete().pipe(
           map(user => {
+            this._clearUserData();
             return AuthActions.deleteUserSuccess();
           }),
           catchError(error => {
@@ -178,10 +179,14 @@ export class AuthEffects {
   }
 
   private async _logout(): Promise<Action> {
+    await this._clearUserData();
+    return AuthActions.loadSignOutsSuccess();
+  }
+
+  private async _clearUserData(): Promise<void> {
     this._store.dispatch(closeUgc());
     await clearUgcData();
     await removeAuth();
     this._store.dispatch(syncUgc());
-    return AuthActions.loadSignOutsSuccess();
   }
 }
