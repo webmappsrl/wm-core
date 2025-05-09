@@ -98,7 +98,7 @@ export class UgcTrackPropertiesComponent {
         buttons: [
           {text: this._langSvc.instant('Annulla'), role: 'cancel'},
           {
-            text: this._langSvc.instant('Elimina'),
+            text: this._langSvc.instant('elimina'),
             handler: () => this._store.dispatch(deleteUgcTrack({track: this.track})),
           },
         ],

@@ -71,7 +71,7 @@ export class UgcPoiPropertiesComponent {
               buttons: [
                 {text: this._langSvc.instant('Annulla'), role: 'cancel'},
                 {
-                  text: this._langSvc.instant('Elimina'),
+                  text: this._langSvc.instant('elimina'),
                   handler: () => this._store.dispatch(deleteUgcPoi({poi})),
                 },
               ],
