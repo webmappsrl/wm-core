@@ -211,7 +211,7 @@ export const confReducer = createReducer(
     let updatedControlsData = null;
     // Crea una copia immutabile di MAP.controls.data
     try {
-      const updatedControlsData = activableUgc
+      updatedControlsData = activableUgc
         ? [...state.MAP.controls.data, ugc] // Aggiungi il pulsante UGC
         : state.MAP.controls.data.filter(d => (d as ICONTROLSBUTTON).url !== 'ugc'); // Rimuovi il pulsante UGC
     } catch (_) {
