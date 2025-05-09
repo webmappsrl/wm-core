@@ -1,4 +1,4 @@
-<div class="wm-ugc-category-title">{{"Dettagli" | wmtrans}}</div>
+<div class="wm-ugc-category-title">{{"Dettagli tecnici" | wmtrans}}</div>
 <ion-list>
   <ion-item class="wm-ugc-track-data-item" *ngIf="(time$|async) as time">
     <ion-label class="wm-ugc-track-data-label">
@@ -10,7 +10,7 @@
   </ion-item>
   <ion-item class="wm-ugc-track-data-item" *ngIf="(trackLength$|async) as trackLength">
     <ion-label class="wm-ugc-track-data-label">
-      {{'Distanza percorsa' | wmtrans}}
+      {{'distance' | wmtrans}}
     </ion-label>
     <ion-label slot="end" class="wm-ugc-track-data-value">
       {{trackLength | distance:'km':1 }}
@@ -18,7 +18,7 @@
   </ion-item>
   <ion-item class="wm-ugc-track-data-item">
     <ion-label class="wm-ugc-track-data-label">
-      {{'Dislivello' | wmtrans}}
+      {{'ascent' | wmtrans}}
     </ion-label>
     <ion-label slot="end" class="wm-ugc-track-data-value">
       {{slope$ | async | distance:'m':1 }}
