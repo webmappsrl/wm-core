@@ -158,4 +158,12 @@ export const wmFR = {
   'Seleziona il tipo di form': 'Sélectionnez le type de formulaire',
   'File selezionato': 'Fichier sélectionné',
   'Carica': 'Télécharger',
+  'Aggiornamento effettuato con successo': 'Mise à jour réussie',
+  'Ops!': 'Ops !',
+  'Non è stato possibile aggiornare, riprova più tardi': 'Il n\'a pas été possible de mettre à jour, essayez à nouveau plus tard',
+  'Eliminazione effettuata con successo': 'Suppression réussie',
+  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.': 'Êtes-vous sûr de vouloir supprimer ce POI ? La suppression est irréversible.',
+  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'Êtes-vous sûr de vouloir supprimer cette piste ? La suppression est irréversible.',
+  'Login effettuato con successo': 'Connexion réussie',
+  'Logout effettuato con successo': 'Déconnexion réussie',
 };

@@ -159,4 +159,12 @@ export const wmDE = {
   'Seleziona il tipo di form': 'Formularart auswählen',
   'File selezionato': 'Ausgewählte Datei',
   'Carica': 'Hochladen',
+  'Aggiornamento effettuato con successo': 'Aktualisierung erfolgreich durchgeführt',
+  'Ops!': 'Ups!',
+  'Non è stato possibile aggiornare, riprova più tardi': 'Aktualisierung nicht möglich, versuchen Sie es später erneut',
+  'Eliminazione effettuata con successo': 'Löschung erfolgreich durchgeführt',
+  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.': 'Sind Sie sicher, dass Sie diesen POI löschen möchten? Die Löschung ist irreversibel.',
+  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'Sind Sie sicher, dass Sie diese Strecke löschen möchten? Die Löschung ist irreversibel.',
+  'Login effettuato con successo': 'Login erfolgreich',
+  'Logout effettuato con successo': 'Logout erfolgreich',
 };

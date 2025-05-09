@@ -164,4 +164,12 @@ export const wmEN = {
   'Seleziona il tipo di form': 'Select the type of form',
   'File selezionato': 'Selected file',
   'Carica': 'Upload',
+  'Aggiornamento effettuato con successo': 'Application updated successfully',
+  'Ops!': 'Ops!',
+  'Non è stato possibile aggiornare, riprova più tardi': 'It was not possible to update, try again later',
+  'Eliminazione effettuata con successo': 'Deletion successful',
+  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.': 'Are you sure you want to delete this POI? The removal is irreversible.',
+  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'Are you sure you want to delete this track? The removal is irreversible.',
+  'Login effettuato con successo': 'Login successful',
+  'Logout effettuato con successo': 'Logout successful',
 };

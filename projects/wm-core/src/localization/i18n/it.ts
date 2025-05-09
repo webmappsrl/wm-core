@@ -164,4 +164,12 @@ export const wmIT = {
   'Seleziona il tipo di form': 'Seleziona il tipo di form',
   'File selezionato': 'File selezionato',
   'Carica': 'Carica',
+  'Aggiornamento effettuato con successo': 'Aggiornamento effettuato con successo',
+  'Ops!': 'Ops!',
+  'Non è stato possibile aggiornare, riprova più tardi': 'Non è stato possibile aggiornare, riprova più tardi',
+  'Eliminazione effettuata con successo': 'Eliminazione effettuata con successo',
+  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.': 'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.',
+  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.',
+  'Login effettuato con successo': 'Login effettuato con successo',
+  'Logout effettuato con successo': 'Logout effettuato con successo',
 };

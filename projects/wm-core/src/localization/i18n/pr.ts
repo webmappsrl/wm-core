@@ -156,4 +156,12 @@ export const wmPR = {
   'Seleziona il tipo di form': 'Selecione o tipo de formulário',
   'File selezionato': 'File selezionato',
   'Carica': 'Carregar',
+  'Aggiornamento effettuato con successo': 'Atualização realizada com sucesso',
+  'Ops!': 'Ops!',
+  'Non è stato possibile aggiornare, riprova più tardi': 'It was not possible to update, try again later',
+  'Eliminazione effettuata con successo': 'Eliminação realizada com sucesso',
+  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.': 'Are you sure you want to delete this POI? The removal is irreversible.',
+  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'Are you sure you want to delete this track? The removal is irreversible.',
+  'Login effettuato con successo': 'Login realizado com sucesso',
+  'Logout effettuato con successo': 'Logout realizado com sucesso',
 };

@@ -155,4 +155,12 @@ export const wmES = {
   'Seleziona il tipo di form': 'Selecciona el tipo de formulario',
   'File selezionato': 'Archivo seleccionado',
   'Carica': 'Cargar',
+  'Aggiornamento effettuato con successo': 'Actualización realizada con éxito',
+  'Ops!': '¡Ups!',
+  'Non è stato possibile aggiornare, riprova più tardi': 'No fue posible actualizar, inténtalo de nuevo más tarde',
+  'Eliminazione effettuata con successo': 'Eliminación realizada con éxito',
+  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.': '¿Está seguro de que desea eliminar este POI? La eliminación es irreversible.',
+  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': '¿Está seguro de que desea eliminar esta ruta? La eliminación es irreversible.',
+  'Login effettuato con successo': 'Inicio de sesión exitoso',
+  'Logout effettuato con successo': 'Cierre de sesión exitoso',
 };
