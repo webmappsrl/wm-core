@@ -309,7 +309,6 @@ export interface IOPTIONS {
   downloadFullGemoetryRouteIndex: boolean;
   downloadRoutesInWebapp: boolean;
   download_track_enable?: boolean;
-  enableFeatureInViewport: boolean;
   enableTrackAdoption: boolean;
   forceDefaultFeatureColor: boolean;
   forceWelcomePagePopup: boolean;
@@ -347,6 +346,8 @@ export interface IOPTIONS {
   showEleMax: boolean;
   showEleMin: boolean;
   showEleTo: boolean;
+  showEmbeddedHtml: boolean;
+  showFeaturesInViewport: boolean;
   showGeojsonDownload: boolean;
   showGetDirections?: boolean;
   showGpxDownload: boolean;

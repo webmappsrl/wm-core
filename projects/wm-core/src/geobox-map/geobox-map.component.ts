@@ -69,7 +69,7 @@ import {
   confJIDOUPDATETIME,
   confShowDrawTrack,
   confAUTHEnable,
-  confOPTIONFEATURESINVIEWPORT,
+  confOPTIONSShowFeaturesInViewport,
 } from '@wm-core/store/conf/conf.selector';
 import {currentCustomTrack as currentCustomTrackAction} from '@wm-core/store/features/ugc/ugc.actions';
 import {IDATALAYER} from '@map-core/types/layer';
@@ -156,8 +156,8 @@ export class WmGeoboxMapComponent implements OnDestroy {
   confJIDOUPDATETIME$: Observable<any> = this._store.select(confJIDOUPDATETIME);
   confMap$: Observable<any> = this._store.select(confMAP);
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
-  confOPTIONFEATURESINVIEWPORT$: Observable<boolean> = this._store.select(
-    confOPTIONFEATURESINVIEWPORT,
+  confOPTIONSShowFeaturesInViewport$: Observable<boolean> = this._store.select(
+    confOPTIONSShowFeaturesInViewport,
   );
   currentCustomTrack$: Observable<WmFeature<LineString>> = this._store.select(currentCustomTrack);
   currentEcPoiId$ = this._store.select(currentEcPoiId);

@@ -1,4 +1,3 @@
-import {Router, ActivatedRoute} from '@angular/router';
 import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
 
 import {DomSanitizer} from '@angular/platform-browser';
@@ -15,7 +14,6 @@ import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 })
 export class WmInnerHtmlComponent {
   @Input() enableDismiss = true;
-  @Input() title: string | iLocalString;
   @Input() html: string | iLocalString;
 
   constructor(
