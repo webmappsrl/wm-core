@@ -166,4 +166,5 @@ export const wmFR = {
   'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'Êtes-vous sûr de vouloir supprimer cette piste ? La suppression est irréversible.',
   'Login effettuato con successo': 'Connexion réussie',
   'Logout effettuato con successo': 'Déconnexion réussie',
+  'questo campo è obbligatorio': 'ce champ est obligatoire',
 };

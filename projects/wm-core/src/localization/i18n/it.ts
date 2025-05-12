@@ -83,7 +83,7 @@ export const wmIT = {
   'Registrazioni': 'Registrazioni',
   'Photos': 'Foto',
   'Waypoint': 'Waypoint',
-  'elimina': 'elimina',
+  'elimina': 'Elimina',
   'Nome': 'Nome',
   'inserisci il tuo nome': 'inserisci il tuo nome',
   "E' necessario inserire un nome": "E' necessario inserire un nome",
@@ -172,4 +172,5 @@ export const wmIT = {
   'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.',
   'Login effettuato con successo': 'Login effettuato con successo',
   'Logout effettuato con successo': 'Logout effettuato con successo',
+  'questo campo è obbligatorio': 'questo campo è obbligatorio',
 };
