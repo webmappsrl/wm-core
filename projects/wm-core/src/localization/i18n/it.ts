@@ -83,7 +83,7 @@ export const wmIT = {
   'Registrazioni': 'Registrazioni',
   'Photos': 'Foto',
   'Waypoint': 'Waypoint',
-  'elimina': 'Elimina',
+  'elimina': 'elimina',
   'Nome': 'Nome',
   'inserisci il tuo nome': 'inserisci il tuo nome',
   "E' necessario inserire un nome": "E' necessario inserire un nome",
