@@ -31,6 +31,7 @@ import {
 } from '@wm-core/store/features/ec/ec.selector';
 import {
   drawTrackOpened as ActiondrawTrackOpened,
+  backOfMapDetails,
   goToHome,
   openUgc,
   resetPoiFilters,
@@ -251,6 +252,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   wmMapHitMapChangeFeatureById$: Observable<number> = this._store.select(
     wmMapHitMapChangeFeatureById,
   );
+  wmBackOfMapDetails$: Observable<boolean> = this._actions$.pipe(ofType(backOfMapDetails));
   constructor(
     private _route: ActivatedRoute,
     private _cdr: ChangeDetectorRef,
