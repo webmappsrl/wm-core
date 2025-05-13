@@ -168,5 +168,6 @@ export const wmDE = {
   'Login effettuato con successo': 'Login erfolgreich',
   'Logout effettuato con successo': 'Logout erfolgreich',
   'questo campo è obbligatorio': 'Dieses Feld ist erforderlich',
-
+  'Quota': 'Höhe',
+  'I miei donwloads': 'Meine Downloads',
 };

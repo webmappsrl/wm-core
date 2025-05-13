@@ -129,7 +129,7 @@ export class WmHomeResultComponent implements OnDestroy {
       buttons: [
         this._langSvc.instant('Annulla'),
         {
-          text: this._langSvc.instant('Elimina'),
+          text: this._langSvc.instant('elimina'),
           handler: async () => {
             await removeEcTrack(`${id}`);
             this.refreshDownloads.emit();

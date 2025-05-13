@@ -164,4 +164,6 @@ export const wmES = {
   'Login effettuato con successo': 'Inicio de sesión exitoso',
   'Logout effettuato con successo': 'Cierre de sesión exitoso',
   'questo campo è obbligatorio': 'este campo es obligatorio',
+  'Quota': 'Elevación',
+  'I miei donwloads': 'Mis descargas',
 };

@@ -165,4 +165,6 @@ export const wmPR = {
   'Login effettuato con successo': 'Login realizado com sucesso',
   'Logout effettuato con successo': 'Logout realizado com sucesso',
   'questo campo è obbligatorio': 'este campo é obrigatório',
+  'Quota': 'Elevação',
+  'I miei donwloads': 'Meus downloads',
 };

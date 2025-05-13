@@ -173,4 +173,7 @@ export const wmEN = {
   'Login effettuato con successo': 'Login successful',
   'Logout effettuato con successo': 'Logout successful',
   'questo campo è obbligatorio': 'this field is required',
+  'Quota': 'Elevation',
+  'I miei donwloads': 'My downloads',
+  'Sei sicuro di voler eliminare la traccia?': 'Are you sure you want to delete the track?',
 };

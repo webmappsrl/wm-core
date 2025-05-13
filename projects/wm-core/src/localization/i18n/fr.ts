@@ -167,4 +167,6 @@ export const wmFR = {
   'Login effettuato con successo': 'Connexion réussie',
   'Logout effettuato con successo': 'Déconnexion réussie',
   'questo campo è obbligatorio': 'ce champ est obligatoire',
+  'Quota': 'Élévation',
+  'I miei donwloads': 'Mes téléchargements',
 };
