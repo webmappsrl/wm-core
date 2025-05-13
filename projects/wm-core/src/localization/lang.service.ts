@@ -27,15 +27,18 @@ import {wmPR} from './i18n/pr';
 import {wmES} from './i18n/es';
 import {wmSQ} from './i18n/sq';
 import {Store} from '@ngrx/store';
-import {confTRANSLATIONS} from '@wm-core/store/conf/conf.selector';
+import {confLANGUAGES, confTRANSLATIONS} from '@wm-core/store/conf/conf.selector';
 import {filter, take} from 'rxjs/operators';
 import {APP_TRANSLATION} from '@wm-core/store/conf/conf.token';
-import {WmTranslations} from '@wm-types/language';
+import {Translations} from '@wm-types/language';
+import {BehaviorSubject} from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
 export class LangService extends TranslateService implements TranslateService {
   private _confTRANSLATIONS = this._store.select(confTRANSLATIONS);
+  private _confLANGUAGES$ = this._store.select(confLANGUAGES);
+  isInit$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(
     public override store: TranslateStore,
@@ -81,27 +84,41 @@ export class LangService extends TranslateService implements TranslateService {
         take(1),
       )
       .subscribe((translations: {[lang: string]: {[key: string]: string}}) => {
-        if (translations['it'] != null) {
-          this.setTranslation('it', translations['it'], true);
-        }
-        if (translations['en'] != null) {
-          this.setTranslation('en', translations['en'], true);
-        }
+        const langs = Object.keys(translations);
+        langs.forEach(l => {
+          if (translations[l] != null) {
+            this.setTranslation(l, translations[l], true);
+          }
+        });
+        this._confLANGUAGES$
+          .pipe(
+            filter(l => l != null),
+            take(1),
+          )
+          .subscribe(l => {
+            if (l && l.available) {
+              this.addLangs(l.available);
+            }
+            if (l && l.default) {
+              this.setDefaultLang(l.default);
+            }
+            this.useSavedLang();
+            this.isInit$.next(true);
+          });
       });
   }
 
-  initLang(defLang: string): void {
-    if (defLang) {
-      this.setDefaultLang(defLang);
-    }
-
+  useSavedLang(): string {
     const savedLang = localStorage.getItem('wm-lang');
     if (savedLang) {
       this.use(savedLang);
-    } else {
-      localStorage.setItem('wm-lang', defLang);
-      this.use(defLang);
     }
+    return savedLang;
+  }
+
+  override use(lang: string): any {
+    localStorage.setItem('wm-lang', lang);
+    super.use(lang);
   }
 
   override instant(

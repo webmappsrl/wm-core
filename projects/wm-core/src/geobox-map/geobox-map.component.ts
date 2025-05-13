@@ -3,7 +3,6 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
-  Inject,
   OnDestroy,
   Output,
   ViewChild,
@@ -16,7 +15,6 @@ import {LangService} from '@wm-core/localization/lang.service';
 import {
   confGeohubId,
   confHOME,
-  confLANGUAGES,
   confMAP,
   confMAPLAYERS,
   confOPTIONS,
@@ -60,12 +58,10 @@ import {
   distinctUntilChanged,
   filter,
   map,
-  mergeAll,
   startWith,
   switchMap,
   take,
   tap,
-  withLatestFrom,
 } from 'rxjs/operators';
 import {
   confJIDOUPDATETIME,
@@ -173,13 +169,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
   graphhopperHost$: Observable<string> = of(this._environmentSvc.graphhopperHost);
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
   isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this._deviceSvc.isMobile);
-  langs$ = this._store.select(confLANGUAGES).pipe(
-    tap(l => {
-      if (l && l.default) {
-        this._langService.initLang(l.default);
-      }
-    }),
-  );
   leftPadding$: Observable<number> = this._store.select(leftPadding);
   loading$: Observable<boolean> = this._store.select(loading);
   mapPadding$ = this._store.select(padding);

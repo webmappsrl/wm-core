@@ -1,6 +1,10 @@
-import {Component, ChangeDetectionStrategy, Input, ViewEncapsulation} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
+import {Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
+import {confLANGUAGES} from '@wm-core/store/conf/conf.selector';
+import {BehaviorSubject} from 'rxjs';
+import {filter, take} from 'rxjs/operators';
 @Component({
   selector: 'wm-lang-selector',
   templateUrl: './lang-selector.component.html',
@@ -9,38 +13,41 @@ import {LangService} from '@wm-core/localization/lang.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class WmLangSelectorComponent {
-  private _langs: string[] = [];
-
-  @Input() set defaultLang(lang: string) {
-    if (lang != null) {
-      this._langSvc.setDefaultLang(lang);
-    }
-  }
-
-  @Input() set langs(langs: string[]) {
-    if (langs != null && langs.length > 0) {
-      this._langSvc.addLangs(langs);
-      this._langs = langs;
-    }
-  }
-
-  get langs() {
-    return this._langs;
-  }
-
+  langs$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+  languages$ = this._store.select(confLANGUAGES);
   langForm: UntypedFormGroup;
 
-  constructor(private _fb: UntypedFormBuilder, private _langSvc: LangService) {
-    const lang = this._langSvc.currentLang || this._langSvc.defaultLang;
+  constructor(
+    private _fb: UntypedFormBuilder,
+    private _langSvc: LangService,
+    private _store: Store,
+  ) {
+    const lang = this._langSvc.useSavedLang() || this._langSvc.defaultLang;
     this.langForm = this._fb.group({
       lang,
     });
+    this._langSvc.isInit$
+      .pipe(
+        filter(f => f == true),
+        take(1),
+      )
+      .subscribe(() => {
+        const lang = this._langSvc.useSavedLang() || this._langSvc.defaultLang;
+        this.langForm.setValue({lang});
+      });
+    this.languages$
+      .pipe(
+        filter(l => l != null),
+        take(1),
+      )
+      .subscribe(l => {
+        if (l && l.available) {
+          this.langs$.next(l.available);
+        }
+      });
+
     this.langForm.valueChanges.subscribe(lang => {
       this._langSvc.use(lang.lang);
-      localStorage.setItem('wm-lang', lang.lang);
-    });
-    this._langSvc.onLangChange.subscribe(lang => {
-      this.langForm.controls['lang'].setValue(lang.lang);
     });
   }
 }
