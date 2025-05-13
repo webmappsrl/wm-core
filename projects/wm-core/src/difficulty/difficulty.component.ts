@@ -26,9 +26,10 @@ export const MIN_DIFFICULTY = 1;
     `
       wm-difficulty {
         > div {
+          height: 100%;
           display: flex;
           align-items: center;
-          gap: 3px;
+          gap: 8px;
           font-size: 20px;
           font-weight: 700;
           color: var(--ion-text-color);
