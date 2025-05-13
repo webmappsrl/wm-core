@@ -64,16 +64,7 @@ export class UserActivityEffects {
       filter(action => !!action),
     ),
   );
-  filterTracks$ = createEffect(() =>
-    this._store.select(filterTracks).pipe(
-      switchMap(filterTracks => {
-        if (filterTracks == null || filterTracks.length == 0) {
-          return [ecTracks({init: true})];
-        }
-        return [];
-      }),
-    ),
-  );
+
   goToHome$ = createEffect(() =>
     this._actions$.pipe(
       ofType(goToHome),
@@ -102,18 +93,7 @@ export class UserActivityEffects {
       ),
     {dispatch: false},
   );
-  removeTrackFilters$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(removeTrackFilters),
-      map(() => ecTracks({})),
-    ),
-  );
-  resetTrackFilters$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(resetTrackFilters),
-      map(() => ecTracks({init: true})),
-    ),
-  );
+
   setECLayerId$ = createEffect(() => this._actions$.pipe(ofType(currentEcLayerId)), {
     dispatch: false,
   });
@@ -163,7 +143,6 @@ export class UserActivityEffects {
         filterTracks,
         layer,
       })),
-      skip(1),
       switchMap(({inputTyped, filterTracks, layer}) => {
         let query = {init: false};
         if (inputTyped != null && inputTyped !== '') {

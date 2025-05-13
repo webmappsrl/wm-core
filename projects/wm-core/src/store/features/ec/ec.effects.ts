@@ -4,8 +4,6 @@ import {from, of} from 'rxjs';
 import {catchError, map, switchMap} from 'rxjs/operators';
 
 import {EcService} from './ec.service';
-import {ApiRootState} from './ec.reducer';
-import {Store} from '@ngrx/store';
 import {IRESPONSE} from '@wm-core/types/elastic';
 import {
   currentEcTrackId,
@@ -48,7 +46,6 @@ export class EcEffects {
   queryApi$ = createEffect(() =>
     this._actions$.pipe(
       ofType(ecTracks),
-
       switchMap(action => {
         if (action.init) {
           return from(this._ecSvc.getQuery({})).pipe(
@@ -56,9 +53,7 @@ export class EcEffects {
             catchError(e => of(ecTracksFailure())),
           );
         }
-        if (action?.filterTracks == null && action?.layer == null && action?.inputTyped == null) {
-          return of(ecTracksFailure());
-        }
+
         const newAction = {
           filterTracks: action.filterTracks,
           layer: action.layer,
@@ -72,9 +67,5 @@ export class EcEffects {
     ),
   );
 
-  constructor(
-    private _ecSvc: EcService,
-    private _actions$: Actions,
-    private _store: Store<ApiRootState>,
-  ) {}
+  constructor(private _ecSvc: EcService, private _actions$: Actions) {}
 }
