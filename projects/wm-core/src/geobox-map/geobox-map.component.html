@@ -28,7 +28,7 @@
     [wmMapLayerDataLayerUrls]="dataLayerUrls$|async"
     [wmMapLayerLayer]="currentLayer$|async"
     [wmMapLayerRefresh]="refreshLayer$|async"
-    [wmMapLayerEnableFeaturesInViewport]="confOPTIONFEATURESINVIEWPORT$|async"
+    [wmMapLayerEnableFeaturesInViewport]="confOPTIONSShowFeaturesInViewport$|async"
     [wmMapLayerShowFeaturesInViewport]="showFeaturesInViewport$|async"
     [wmMapLayerDisableLayers]="wmMapEcTracksDisableLayer$|async"
     (colorSelectedFromLayerEVT)="trackColor$.next($event)"
