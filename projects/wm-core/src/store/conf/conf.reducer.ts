@@ -119,10 +119,11 @@ const initialConfState: ICONF = {
     showEleTo: true,
     showGeojsonDownload: false,
     showShapefileDownload: false,
-    showTravelMode: true, // TODO: set to false
-    showGetDirections: true, // TODO: set to false
-    enableFeatureInViewport: true, // TODO: set to false
-    showMediaName: true, // TODO: set to false
+    showTravelMode: false,
+    showGetDirections: false,
+    showMediaName: false,
+    showEmbeddedHtml: false,
+    showFeaturesInViewport: false,
   },
   THEME: {
     primary: '#3880ff',

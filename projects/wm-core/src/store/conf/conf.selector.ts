@@ -140,11 +140,12 @@ export const confHOME = createSelector(confFeature, confFILTERS, (state, filters
 
   return state.HOME;
 });
-export const confOPTIONFEATURESINVIEWPORT = createSelector(
+export const confOPTIONSShowFeaturesInViewport = createSelector(
   confOPTIONS,
-  state => state.enableFeatureInViewport,
+  state => state.showFeaturesInViewport,
 );
 export const confOPTIONSShowMediaName = createSelector(confOPTIONS, state => state.showMediaName);
+export const confOPTIONSShowEmbeddedHtml = createSelector(confOPTIONS, state => state.showEmbeddedHtml);
 
 const getLayers = (layersID: number[], layers: ILAYER[], tracks: IHIT[]): ILAYER[] => {
   return layers
