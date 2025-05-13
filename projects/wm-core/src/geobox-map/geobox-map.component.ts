@@ -4,6 +4,7 @@ import {
   Component,
   EventEmitter,
   OnDestroy,
+  OnInit,
   Output,
   ViewChild,
   ViewEncapsulation,
@@ -105,6 +106,8 @@ import {DeviceService} from '@wm-core/services/device.service';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {GeolocationService} from '@wm-core/services/geolocation.service';
 import {EnvironmentService} from '@wm-core/services/environment.service';
+import TileLayer from 'ol/layer/Tile';
+import {TileDebug} from 'ol/source';
 
 const initPadding = [10, 10, 10, 10];
 const initMenuOpened = true;
@@ -116,7 +119,7 @@ const maxWidth = 600;
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class WmGeoboxMapComponent implements OnDestroy {
+export class WmGeoboxMapComponent implements OnDestroy, OnInit {
   private _confMAPLAYERS$: Observable<ILAYER[]> = this._store.select(confMAPLAYERS);
 
   readonly ecTrack$: Observable<WmFeature<LineString> | null>;
@@ -560,5 +563,16 @@ export class WmGeoboxMapComponent implements OnDestroy {
   updateUgcTrack(ugc_track = undefined): void {
     this._store.dispatch(openUgc());
     this._urlHandlerSvc.updateURL({track: undefined, ugc_track});
+  }
+  ngOnInit(): void {
+    if (this._environmentSvc.debug) {
+      setTimeout(() => {
+        this.mapCmp.map.addLayer(
+          new TileLayer({
+            source: new TileDebug(),
+          }),
+        );
+      }, 1000);
+    }
   }
 }

@@ -107,6 +107,9 @@ export class EnvironmentService {
   get production(): boolean {
     return this._environment.production;
   }
+  get debug(): boolean {
+    return this._environment.debug;
+  }
   get confUrl(): string {
     return this._confUrl;
   }
