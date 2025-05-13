@@ -40,7 +40,7 @@ import {
   tap,
   withLatestFrom,
   filter,
-  startWith
+  startWith,
 } from 'rxjs/operators';
 import {combineLatest, of} from 'rxjs';
 import {Filter} from '@wm-core/types/config';
@@ -54,19 +54,14 @@ export class UserActivityEffects {
     this._actions$.pipe(
       ofType(backOfMapDetails),
       map(() => {
-        const queryParams = this._urlHandlerSvc.getCurrentQueryParams();
-        if (queryParams.ec_related_poi != null) {
-          this._urlHandlerSvc.updateURL({ec_related_poi: undefined});
-          return;
-        } else if (queryParams.ugc_poi != null) {
-          this._urlHandlerSvc.updateURL({ugc_poi: undefined});
-          return;
-        } else {
-          this._urlHandlerSvc.updateURL({track: undefined, ugc_track: undefined});
+        const removeLatest = this._urlHandlerSvc.removeLatest();
+        if (removeLatest) {
           return setMapDetailsStatus({status: 'background'});
+        } else {
+          return;
         }
       }),
-      filter(action => !!action)
+      filter(action => !!action),
     ),
   );
   filterTracks$ = createEffect(() =>
