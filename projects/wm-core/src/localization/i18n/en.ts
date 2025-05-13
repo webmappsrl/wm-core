@@ -172,4 +172,5 @@ export const wmEN = {
   'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'Are you sure you want to delete this track? The removal is irreversible.',
   'Login effettuato con successo': 'Login successful',
   'Logout effettuato con successo': 'Logout successful',
+  'questo campo è obbligatorio': 'this field is required',
 };

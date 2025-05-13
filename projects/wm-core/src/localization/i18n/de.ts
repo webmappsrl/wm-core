@@ -167,4 +167,6 @@ export const wmDE = {
   'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'Sind Sie sicher, dass Sie diese Strecke löschen möchten? Die Löschung ist irreversibel.',
   'Login effettuato con successo': 'Login erfolgreich',
   'Logout effettuato con successo': 'Logout erfolgreich',
+  'questo campo è obbligatorio': 'Dieses Feld ist erforderlich',
+
 };
