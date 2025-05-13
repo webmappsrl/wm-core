@@ -61,8 +61,6 @@ export class UserActivityEffects {
         } else {
           return;
         }
-        this._urlHandlerSvc.resetURL();
-        return setMapDetailsStatus({status: 'background'});
       }),
       filter(action => !!action),
     ),

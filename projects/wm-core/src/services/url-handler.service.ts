@@ -149,11 +149,17 @@ export class UrlHandlerService {
   }
   removeLatest(): boolean {
     const queryParams = this.getCurrentQueryParams();
-    if (queryParams.ec_related_poi != null) {
+    if (queryParams.gallery_index != null) {
+      this.updateURL({gallery_index: undefined});
+      return false;
+    } else if (queryParams.ec_related_poi != null) {
       this.updateURL({ec_related_poi: undefined});
       return false;
+    } else if (queryParams.layer != null && (queryParams.poi != null || queryParams.track != null)) {
+      this.updateURL({poi: undefined, track: undefined});
+      return false;
     } else {
-      this.updateURL({track: undefined, ugc_track: undefined, poi: undefined, ugc_poi: undefined});
+      this.updateURL({layer: undefined, track: undefined, ugc_track: undefined, poi: undefined, ugc_poi: undefined});
       return true;
     }
   }
