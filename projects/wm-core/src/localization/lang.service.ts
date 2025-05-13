@@ -30,7 +30,7 @@ import {Store} from '@ngrx/store';
 import {confLANGUAGES, confTRANSLATIONS} from '@wm-core/store/conf/conf.selector';
 import {filter, take} from 'rxjs/operators';
 import {APP_TRANSLATION} from '@wm-core/store/conf/conf.token';
-import {Translations} from '@wm-types/language';
+import {WmTranslations} from '@wm-types/language';
 import {BehaviorSubject} from 'rxjs';
 @Injectable({
   providedIn: 'root',
