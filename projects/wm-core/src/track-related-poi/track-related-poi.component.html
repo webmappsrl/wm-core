@@ -6,7 +6,11 @@
   >
     <ng-container *ngIf="poi.properties as properties">
       <ng-container *ngIf="properties.feature_image !=null as featureImage;else svgTemplate">
-        <img class="webmapp-track-poi-img" [src]="properties.feature_image.sizes['108x148']" />
+        <img
+          class="webmapp-track-poi-img"
+          *ngIf="properties?.feature_image?.sizes!= null"
+          [src]="properties.feature_image.sizes['108x148']"
+        />
       </ng-container>
       <ng-template #svgTemplate>
         <ng-container *ngIf="properties.taxonomy?.poi_type?.icon != null;else noImage">
