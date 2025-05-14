@@ -158,8 +158,11 @@ export class UrlHandlerService {
     } else if (queryParams.layer != null && (queryParams.poi != null || queryParams.track != null)) {
       this.updateURL({poi: undefined, track: undefined});
       return false;
-    } else {
-      this.updateURL({layer: undefined, track: undefined, ugc_track: undefined, poi: undefined, ugc_poi: undefined});
+    } else if (queryParams.ugc_track != null || queryParams.ugc_poi != null) {
+      this.updateURL({ugc_track: undefined, ugc_poi: undefined});
+      return false;
+    }else {
+      this.resetURL();
       return true;
     }
   }
