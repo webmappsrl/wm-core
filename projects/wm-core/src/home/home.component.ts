@@ -185,6 +185,7 @@ export class WmHomeComponent implements AfterContentInit {
 
   setUgc(): void {
     this._store.dispatch(openUgc());
+    this._store.dispatch(setMapDetailsStatus({status: 'open'}));
   }
 
   togglePoiFilter(filterIdentifier: string, idx?: number): void {
