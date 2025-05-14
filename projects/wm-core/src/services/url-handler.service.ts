@@ -161,7 +161,7 @@ export class UrlHandlerService {
     } else if (queryParams.ugc_track != null || queryParams.ugc_poi != null) {
       this.updateURL({ugc_track: undefined, ugc_poi: undefined});
       return false;
-    }else {
+    } else {
       this.resetURL();
       return true;
     }
