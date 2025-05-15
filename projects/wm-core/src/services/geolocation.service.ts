@@ -214,7 +214,6 @@ export class GeolocationService {
     return 0;
   }
   private _onLocationUpdate(location: Location): void {
-    console.log('[GeolocationService] Aggiornamento posizione:', location);
     location.time = location.time || Date.now();
     location.speed =
       location.speed != null
