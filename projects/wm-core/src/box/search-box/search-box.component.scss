@@ -128,8 +128,7 @@ wm-search-box {
         align-self: center;
 
         color: var(--wm-color-darkgrey);
-        height: var(--wm-font-sm);
-        font-size: var(--wm-font-sm);
+        font-size: var(--wm-font-xsm);
 
         &:not(:last-of-type) {
           padding-right: 22px;

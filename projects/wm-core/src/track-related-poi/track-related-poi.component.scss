@@ -113,7 +113,7 @@ wm-track-related-poi {
       align-self: auto;
     }
     .wm-filter-icon {
-      height: 32px;
+      height: 100%;
       svg {
         height: 100%;
         padding: 4px;
@@ -125,8 +125,10 @@ wm-track-related-poi {
     }
   }
   > ion-button {
+    height: 36px;
+    font-size: var(--wm-font-sm);
+    margin-top: 16px;
     --box-shadow: none;
     --border-radius: 30px;
-    margin-top: 16px;
   }
 }
