@@ -15,7 +15,6 @@ import {LangService} from '@wm-core/localization/lang.service';
 import {
   confGeohubId,
   confHOME,
-  confLANGUAGES,
   confMAP,
   confMAPLAYERS,
   confOPTIONS,
@@ -30,6 +29,7 @@ import {
 } from '@wm-core/store/features/ec/ec.selector';
 import {
   drawTrackOpened as ActiondrawTrackOpened,
+  backOfMapDetails,
   goToHome,
   openUgc,
   resetMap,
@@ -171,13 +171,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
   graphhopperHost$: Observable<string> = of(this._environmentSvc.graphhopperHost);
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
   isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this._deviceSvc.isMobile);
-  langs$ = this._store.select(confLANGUAGES).pipe(
-    tap(l => {
-      if (l && l.default) {
-        this._langService.initLang(l.default);
-      }
-    }),
-  );
   leftPadding$: Observable<number> = this._store.select(leftPadding);
   loading$: Observable<boolean> = this._store.select(loading);
   mapPadding$ = this._store.select(padding);
@@ -250,6 +243,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   wmMapHitMapChangeFeatureById$: Observable<number> = this._store.select(
     wmMapHitMapChangeFeatureId,
   );
+  wmBackOfMapDetails$: Observable<boolean> = this._actions$.pipe(ofType(backOfMapDetails));
   constructor(
     private _route: ActivatedRoute,
     private _cdr: ChangeDetectorRef,
@@ -281,14 +275,16 @@ export class WmGeoboxMapComponent implements OnDestroy {
         }
       }),
     );
-    this.refreshLayer$ = this._actions$.pipe(ofType(updateTrackFilter, toggleTrackFilter));
+    this.refreshLayer$ = this._actions$.pipe(
+      ofType(updateTrackFilter, toggleTrackFilter, resetTrackFilters),
+    );
     if (window.innerWidth < maxWidth) {
       this._store.dispatch(actionPadding({padding: initPadding}));
       this.resizeEVT.next(!this.resizeEVT.value);
     }
     this.dataLayerUrls$ = this.geohubId$.pipe(
       filter(g => g != null),
-      map(geohubId => {
+      map(_ => {
         return {
           low: this._environmentSvc.pbfUrl,
           high: this._environmentSvc.pbfUrl,

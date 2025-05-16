@@ -164,4 +164,7 @@ export const wmPR = {
   'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'Are you sure you want to delete this track? The removal is irreversible.',
   'Login effettuato con successo': 'Login realizado com sucesso',
   'Logout effettuato con successo': 'Logout realizado com sucesso',
+  'questo campo è obbligatorio': 'este campo é obrigatório',
+  'Quota': 'Elevação',
+  'I miei donwloads': 'Meus downloads',
 };

@@ -1,5 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Environment, Redirect, Redirects, Shard} from '@wm-types/environment';
+import {BehaviorSubject} from 'rxjs';
+import {filter, take} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +26,15 @@ export class EnvironmentService {
   private _oldShardName: string[] = ['geohub', 'osm2cai', 'carg'];
   private _oldSubdomains: string[] = ['app', 'geohub', 'mobile'];
   private _shareLink: string;
-
+  init$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  get readyPromise(): Promise<boolean> {
+    return this.init$
+      .pipe(
+        filter(v => v === true),
+        take(1),
+      )
+      .toPromise();
+  }
   init(environment: any) {
     this._environment = environment;
     this._hostname = window.location.hostname;
@@ -53,6 +63,7 @@ export class EnvironmentService {
 
     this._assignShareLink();
     this._assignApi();
+    this.init$.next(true);
   }
 
   private _assignApi() {

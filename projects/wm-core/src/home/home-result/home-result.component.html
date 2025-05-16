@@ -14,7 +14,7 @@
           (clickEVT)="trackEVT.emit(card.id)"
         >
           <ng-container top-right>
-            <ion-button (click)="removeDownloads($event,card.id)">elimina</ion-button>
+            <ion-button (click)="removeDownloads($event,card.id)">{{'elimina'|wmtrans}}</ion-button>
           </ng-container>
         </wm-search-box>
       </ng-container>

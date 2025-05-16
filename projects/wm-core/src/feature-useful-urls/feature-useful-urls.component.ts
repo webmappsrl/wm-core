@@ -21,7 +21,7 @@ export class WmFeatureUsefulUrlsComponent implements OnInit {
   constructor(private _deviceSvc: DeviceService) {}
 
   ngOnInit(): void {
-    this.osm = this.track.properties?.osm_url;
+    this.osm = this.track?.properties?.osm_url;
   }
 
   export(to: string): void {

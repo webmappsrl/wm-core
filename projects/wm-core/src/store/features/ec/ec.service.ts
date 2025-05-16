@@ -119,6 +119,7 @@ export class EcService {
     layer?: any;
     filterTracks?: Filter[];
   }): Promise<IRESPONSE> {
+    await this._environmentSvc.readyPromise;
     let query = this._baseUrl;
 
     if (options.inputTyped) {

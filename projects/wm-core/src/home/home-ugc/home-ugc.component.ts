@@ -4,7 +4,6 @@ import {
   Component,
   ViewEncapsulation,
 } from '@angular/core';
-import {Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
 
 @Component({
@@ -17,11 +16,7 @@ import {LangService} from '@wm-core/localization/lang.service';
 export class WmHomeUgcComponent {
   img = 'assets/images/profile/my-path.webp';
 
-  constructor(
-    private _store: Store,
-    private _langSvc: LangService,
-    private _cdr: ChangeDetectorRef,
-  ) {
+  constructor(private _langSvc: LangService, private _cdr: ChangeDetectorRef) {
     this._langSvc.onLangChange.subscribe(() => {
       this._cdr.markForCheck();
     });

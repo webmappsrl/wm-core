@@ -61,31 +61,17 @@ export class UserActivityEffects {
     this._actions$.pipe(
       ofType(backOfMapDetails),
       map(() => {
-        const queryParams = this._urlHandlerSvc.getCurrentQueryParams();
-        if (queryParams.ec_related_poi != null) {
-          this._urlHandlerSvc.updateURL({ec_related_poi: undefined});
-          return;
-        } else if (queryParams.ugc_poi != null) {
-          this._urlHandlerSvc.updateURL({ugc_poi: undefined});
-          return;
-        } else {
-          this._urlHandlerSvc.updateURL({track: undefined, ugc_track: undefined});
+        const removeLatest = this._urlHandlerSvc.removeLatest();
+        if (removeLatest) {
           return setMapDetailsStatus({status: 'background'});
+        } else {
+          return;
         }
       }),
       filter(action => !!action),
     ),
   );
-  filterTracks$ = createEffect(() =>
-    this._store.select(filterTracks).pipe(
-      switchMap(filterTracks => {
-        if (filterTracks == null || filterTracks.length == 0) {
-          return [ecTracks({init: true})];
-        }
-        return [];
-      }),
-    ),
-  );
+
   goToHome$ = createEffect(() =>
     this._actions$.pipe(
       ofType(goToHome),
@@ -114,18 +100,7 @@ export class UserActivityEffects {
       ),
     {dispatch: false},
   );
-  removeTrackFilters$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(removeTrackFilters),
-      map(() => ecTracks({})),
-    ),
-  );
-  resetTrackFilters$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(resetTrackFilters),
-      map(() => ecTracks({init: true})),
-    ),
-  );
+
   setECLayerId$ = createEffect(() => this._actions$.pipe(ofType(currentEcLayerId)), {
     dispatch: false,
   });
@@ -175,7 +150,6 @@ export class UserActivityEffects {
         filterTracks,
         layer,
       })),
-      skip(1),
       switchMap(({inputTyped, filterTracks, layer}) => {
         let query = {init: false};
         if (inputTyped != null && inputTyped !== '') {

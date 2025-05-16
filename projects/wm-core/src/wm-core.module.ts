@@ -32,7 +32,6 @@ import {WmTrackAudioComponent} from './track-audio/track-audio.component';
 import {WmTrackEdgesComponent} from './track-edges/track-edges.component';
 import {WmInnerHtmlComponent} from './inner-html/inner-html.component';
 import {ButtonsModule} from './buttons/export-to/buttons.module';
-import {WmExcerptComponent} from './excerpt/excerpt.component';
 import {WmFeatureUsefulUrlsComponent} from './feature-useful-urls/feature-useful-urls.component';
 import {AuthInterceptor} from './store/auth/auth.interceptor';
 import {AuthEffects} from './store/auth/auth.effects';
@@ -89,7 +88,6 @@ export const declarations = [
   RegisterComponent,
   GenericPopoverComponent,
   ModalHeaderComponent,
-  WmExcerptComponent,
   WmFormComponent,
   WmSearchBarComponent,
   WmGeoboxMapComponent,

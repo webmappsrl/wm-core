@@ -91,9 +91,19 @@ export class UrlHandlerService {
    * Perform navigation only if query params differ.
    */
   updateURL(queryParams: Params, routes = []): void {
+    const excluseField = ['track', 'poi', 'ugc_track', 'ugc_poi'];
     const oldParams = {...this._emptyParams, ...this.getCurrentQueryParams()};
     const newParams = {...oldParams, ...queryParams};
 
+    for (let i = 0; i < excluseField.length; i++) {
+      const field = excluseField[i];
+      if (queryParams[field] != null) {
+        const fieldsToRemove = excluseField.filter(f => f != field);
+        fieldsToRemove.forEach(fieldsToRemove => {
+          newParams[fieldsToRemove] = undefined;
+        });
+      }
+    }
     if (JSON.stringify(newParams) !== JSON.stringify(oldParams)) {
       this._checkIfUgcIsOpened(newParams);
       this.navigateTo(routes, newParams);
@@ -107,6 +117,16 @@ export class UrlHandlerService {
     }
     if (queryParams.ugc_track != null || queryParams.ugc_poi != null) {
       this._store.dispatch(openUgc());
+    }
+  }
+  removeLatest(): boolean {
+    const queryParams = this.getCurrentQueryParams();
+    if (queryParams.ec_related_poi != null) {
+      this.updateURL({ec_related_poi: undefined});
+      return false;
+    } else {
+      this.updateURL({track: undefined, ugc_track: undefined, poi: undefined, ugc_poi: undefined});
+      return true;
     }
   }
 }

@@ -21,6 +21,11 @@ import {confFILTERS} from '../store/conf/conf.selector';
 import {SelectFilterOption, SliderFilter, Filter} from '../types/config';
 import {countPois, countTracks} from '@wm-core/store/features/features.selector';
 import {filterTracks} from '@wm-core/store/user-activity/user-activity.selector';
+import {
+  resetPoiFilters,
+  resetTrackFilters,
+  toggleTrackFilter,
+} from '@wm-core/store/user-activity/user-activity.action';
 
 @Component({
   selector: 'wm-filters',
@@ -98,10 +103,11 @@ export class FiltersComponent implements OnChanges {
   }
 
   removeTrackFilter(filter: Filter): void {
-    this.removefilterTracksEvt.emit(filter);
+    this._store.dispatch(toggleTrackFilter({filter}));
   }
 
   resetFilters(): void {
-    this.resetFiltersEvt.emit();
+    this._store.dispatch(resetTrackFilters());
+    this._store.dispatch(resetPoiFilters());
   }
 }
