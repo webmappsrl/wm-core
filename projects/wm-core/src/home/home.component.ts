@@ -2,12 +2,9 @@ import {
   AfterContentInit,
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Output,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
 import {ModalController, NavController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
@@ -45,7 +42,6 @@ import {
   goToHome,
   inputTyped,
   openUgc,
-  setCurrentPoi,
   togglePoiFilter,
   toggleTrackFilterByIdentifier,
 } from '@wm-core/store/user-activity/user-activity.action';
@@ -82,7 +78,6 @@ export class WmHomeComponent implements AfterContentInit {
     private _modalCtrl: ModalController,
     private _navCtrl: NavController,
     private _urlHandlerSvc: UrlHandlerService,
-    public sanitizer: DomSanitizer,
   ) {
     this.countAll$ = combineLatest([this.countEcAll$, this.countUgcAll$, this.ugcOpened$]).pipe(
       map(([ec, ugc, ugcOpened]) => (ugcOpened ? ugc : ec)),

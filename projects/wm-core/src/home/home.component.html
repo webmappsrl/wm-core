@@ -1,9 +1,11 @@
 <div class="root">
   <ng-content></ng-content>
-
   <ng-container *ngIf="(confAPP$|async) as confAPP">
     <div class="wm-home-header-container" *ngIf="confAPP.welcome as welcome">
-      <ion-label [innerHTML]="sanitizer.bypassSecurityTrustHtml(welcome | wmtrans)"></ion-label>
+      <wm-inner-component-html
+        [html]="welcome | wmtrans"
+        [enableDismiss]="false"
+      ></wm-inner-component-html>
     </div>
   </ng-container>
   <wm-searchbar
@@ -15,10 +17,7 @@
   <ng-container *ngIf="(popup$|async) as popup; else mainContent">
     <ion-row class="ion-justify-content-end">
       <ion-col size="auto">
-        <ion-chip
-          [outline]="true"
-          (click)="closePopup()"
-        >
+        <ion-chip [outline]="true" (click)="closePopup()">
           {{ 'Torna alla home' | wmtrans }}
         </ion-chip>
       </ion-col>
