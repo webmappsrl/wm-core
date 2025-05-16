@@ -34,6 +34,9 @@ wm-travel-mode {
           font-size: 22px;
           font-weight: 700;
           color: var(--ion-text-color);
+          display: flex;
+          gap: 6px;
+          align-items: baseline;
           .unit{
             font-size: 14px;
           }
