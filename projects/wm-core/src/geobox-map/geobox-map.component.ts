@@ -268,14 +268,16 @@ export class WmGeoboxMapComponent implements OnDestroy {
         }
       }),
     );
-    this.refreshLayer$ = this._actions$.pipe(ofType(updateTrackFilter, toggleTrackFilter));
+    this.refreshLayer$ = this._actions$.pipe(
+      ofType(updateTrackFilter, toggleTrackFilter, resetTrackFilters),
+    );
     if (window.innerWidth < maxWidth) {
       this._store.dispatch(actionPadding({padding: initPadding}));
       this.resizeEVT.next(!this.resizeEVT.value);
     }
     this.dataLayerUrls$ = this.geohubId$.pipe(
       filter(g => g != null),
-      map(geohubId => {
+      map(_ => {
         return {
           low: this._environmentSvc.pbfUrl,
           high: this._environmentSvc.pbfUrl,
