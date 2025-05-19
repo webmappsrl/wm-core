@@ -32,6 +32,7 @@ import {
   backOfMapDetails,
   goToHome,
   openUgc,
+  resetMap,
   resetPoiFilters,
   resetTrackFilters,
   setLastFilterType,
@@ -41,6 +42,7 @@ import {
   togglePoiFilter,
   toggleTrackFilter,
   updateTrackFilter,
+  wmMapHitMapChangeFeatureById,
 } from '@wm-core/store/user-activity/user-activity.action';
 import {
   Filter,
@@ -79,7 +81,7 @@ import {
   mapFilters,
   poiFilterIdentifiers,
   ugcOpened,
-  wmMapHitMapChangeFeatureById,
+  wmMapHitMapChangeFeatureId,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {WmFeature} from '@wm-types/feature';
 import {LineString, Point} from 'geojson';
@@ -239,7 +241,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   wmMapPositionfocus$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   wmMapUgcDisableLayers$: Observable<boolean>;
   wmMapHitMapChangeFeatureById$: Observable<number> = this._store.select(
-    wmMapHitMapChangeFeatureById,
+    wmMapHitMapChangeFeatureId,
   );
   wmBackOfMapDetails$: Observable<boolean> = this._actions$.pipe(ofType(backOfMapDetails));
   constructor(
@@ -254,6 +256,11 @@ export class WmGeoboxMapComponent implements OnDestroy {
     private _geolocationSvc: GeolocationService,
     private _environmentSvc: EnvironmentService,
   ) {
+    this._actions$.pipe(ofType(resetMap)).subscribe(() => {
+      this.mapCmp?.resetView();
+      this.mapCmp?.wmMapControls?.reset();
+      this._store.dispatch(wmMapHitMapChangeFeatureById({id: null}));
+    });
     this.currentPosition$ = this._geolocationSvc.onLocationChange;
     this.currentMapPaddings$ = combineLatest([
       this.showMenu$,
@@ -362,6 +369,10 @@ export class WmGeoboxMapComponent implements OnDestroy {
     }
   }
 
+  updateCurrentHitmapFeatureID(id: string): void {
+    this._store.dispatch(wmMapHitMapChangeFeatureById({id: +id}));
+  }
+
   prev(): void {
     this.WmMapTrackRelatedPoisDirective.poiPrev();
   }
@@ -382,6 +393,10 @@ export class WmGeoboxMapComponent implements OnDestroy {
       printer.focus();
       printer.print();
     }
+  }
+
+  resetMap(): void {
+    this.mapCmp.resetView();
   }
 
   reloadCustomTrack(): void {
@@ -472,14 +487,20 @@ export class WmGeoboxMapComponent implements OnDestroy {
   setWmMapFeatureCollection(overlay: any): void {
     this._store.dispatch(setLayer(null));
     this.wmMapFeatureCollectionOverlay$.next(overlay);
-    this.overlayFeatureCollections$.pipe(take(1)).subscribe(feature => {
-      if (overlay['featureType'] != null && feature[overlay['featureType']] != null) {
-        this.wmMapFeatureCollectionOverlay$.next({
-          ...overlay,
-          ...{url: feature[overlay['featureType']]},
-        });
-      }
-    });
+    if (overlay != null) {
+      this.overlayFeatureCollections$.pipe(take(1)).subscribe(feature => {
+        if (overlay['featureType'] != null) {
+          if (feature[overlay['featureType']] != null) {
+            this.wmMapFeatureCollectionOverlay$.next({
+              ...overlay,
+              ...{url: feature[overlay['featureType']]},
+            });
+          } else {
+            this.wmMapFeatureCollectionOverlay$.next(null);
+          }
+        }
+      });
+    }
   }
 
   toggleDirective(data: {type: 'layers' | 'pois' | 'ugc'; toggle: boolean}): void {
