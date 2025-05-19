@@ -58,7 +58,7 @@ export class UrlHandlerService {
   }
 
   initialize(): void {
-    this._route.queryParams.pipe(skip(1), debounceTime(100)).subscribe(params => {
+    this._route.queryParams.subscribe(params => {
       this._store.dispatch(currentEcLayerId({currentEcLayerId: params.layer ?? null}));
       this._store.dispatch(currentEcTrackId({currentEcTrackId: params.track ?? null}));
       this._store.dispatch(currentEcPoiId({currentEcPoiId: params.poi ?? null}));
@@ -155,7 +155,10 @@ export class UrlHandlerService {
     } else if (queryParams.ec_related_poi != null) {
       this.updateURL({ec_related_poi: undefined});
       return false;
-    } else if (queryParams.layer != null && (queryParams.poi != null || queryParams.track != null)) {
+    } else if (
+      queryParams.layer != null &&
+      (queryParams.poi != null || queryParams.track != null)
+    ) {
       this.updateURL({poi: undefined, track: undefined});
       return false;
     } else if (queryParams.ugc_track != null || queryParams.ugc_poi != null) {
