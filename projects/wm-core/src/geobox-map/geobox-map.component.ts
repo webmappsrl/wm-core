@@ -42,6 +42,7 @@ import {
   togglePoiFilter,
   toggleTrackFilter,
   updateTrackFilter,
+  wmMapFeaturesInViewport,
   wmMapHitMapChangeFeatureById,
 } from '@wm-core/store/user-activity/user-activity.action';
 import {
@@ -360,7 +361,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
       .filter(id => id != null);
 
     this._store.dispatch(wmMapFeaturesInViewport({featureIds}));
-
   }
 
   ngOnDestroy(): void {
