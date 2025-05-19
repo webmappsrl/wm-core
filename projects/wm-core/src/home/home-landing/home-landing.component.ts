@@ -6,7 +6,7 @@ import {
   EventEmitter,
 } from '@angular/core';
 import {Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
+import {from, Observable} from 'rxjs';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {confHOME} from '@wm-core/store/conf/conf.selector';
 import {IHOME, IHORIZONTALSCROLLBOX} from '@wm-core/types/config';

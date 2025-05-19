@@ -75,7 +75,12 @@
       <ion-button (click)="cancel()" color="medium">{{'Annulla'|wmtrans}}</ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button (click)="upload()" [disabled]="isUploadDisabled$|async" color="primary">
+      <ion-button
+        (click)="upload()"
+        [disabled]="isUploadDisabled$|async"
+        color="primary"
+        e2e-upload-button
+      >
         {{'Carica'|wmtrans}}
       </ion-button>
     </ion-buttons>

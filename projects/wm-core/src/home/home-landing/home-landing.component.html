@@ -1,6 +1,10 @@
 <wm-ugc-box *ngIf="(isLogged$|async)||(countAllUgc$|async)>0" (clickEVT)="ugcBoxEvt.emit()">
 </wm-ugc-box>
-<wm-downloads-ec-track-box *ngIf="offline$|async;else online"></wm-downloads-ec-track-box>
+<ng-container *ngIf="offline$|async;else online">
+  <wm-downloads-ec-track-box> </wm-downloads-ec-track-box>
+  <wm-home-hitmap [downloads]="true"></wm-home-hitmap>
+</ng-container>
+
 <ng-template #online>
   <ng-container *ngFor="let box of confHOME$|async;let idx = index">
     <webmapp-title *ngIf="box.box_type === 'title'">
@@ -44,4 +48,5 @@
     >
     </wm-layer-box>
   </ng-container>
+  <wm-home-hitmap></wm-home-hitmap>
 </ng-template>

@@ -22,12 +22,10 @@ export async function downloadEcTrack(
   callBackStatusFn = updateStatus,
 ): Promise<number> {
   let totalSize = 0;
-  const status = {finish: false, map: 0, media: 0, data: 0};
   const tiles = getTilesByGeometry(track.geometry);
   totalSize += await downloadTiles(tiles, trackid, callBackStatusFn);
-  totalSize += await saveEcTrack(trackid, track, callBackStatusFn);
-  track.properties.size = totalSize;
-  await saveEcTrack(trackid, track, callBackStatusFn);
+  totalSize += await saveEcTrack(trackid, track, callBackStatusFn, totalSize);
+
   return Promise.resolve(totalSize);
 }
 
@@ -335,10 +333,18 @@ export async function saveEcTrack(
   trackId: string,
   track: WmFeature<LineString>,
   callBackStatusFn = updateStatus,
+  totalSize: number = 0,
 ): Promise<number> {
-  let totalSize = await saveImgInsideTrack(track, callBackStatusFn);
+  totalSize += await saveImgInsideTrack(track, callBackStatusFn);
+  const trackCopy = {
+    ...track,
+    properties: {
+      ...track.properties,
+      size: totalSize,
+    },
+  };
   await handleAsync(
-    synchronizedEctrack.setItem(trackId, track),
+    synchronizedEctrack.setItem(trackId, trackCopy),
     'saveEcTrack: Failed to save track',
   );
   return totalSize;

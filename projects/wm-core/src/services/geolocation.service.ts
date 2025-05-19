@@ -35,7 +35,6 @@ export class GeolocationService {
   onRecord$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(private _deviceService: DeviceService) {
-
     if (!this._deviceService.isBrowser) {
       App.addListener('appStateChange', async ({isActive}) => {
         if (isActive) {

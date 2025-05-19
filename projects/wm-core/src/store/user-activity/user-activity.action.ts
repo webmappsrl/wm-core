@@ -2,7 +2,7 @@ import {createAction, props} from '@ngrx/store';
 import {Filter, ILAYER} from '@wm-core/types/config';
 import {WmFeature} from '@wm-types/feature';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
-import {Point} from 'geojson';
+import {MultiPolygon, Point} from 'geojson';
 import {mapDetailsStatus} from './user-activity.reducer';
 import { IHIT } from '@wm-core/types/elastic';
 
@@ -104,6 +104,16 @@ export const wmMapHitMapChangeFeatureById = createAction(
 );
 
 export const backOfMapDetails = createAction('[User Activity] back of map details');
+
+export const loadHitmapFeatures = createAction(
+  '[User Activity] load hitmap features',
+  props<{url: string}>(),
+);
+export const loadHitmapFeaturesSuccess = createAction(
+  '[User Activity] Load configuration Success',
+  props<{wmMapHitmapFeatures: WmFeature<MultiPolygon>[]}>(),
+);
+export const loadHitmapFeaturesFail = createAction('[User Activity] Load configuration Fail');
 
 export const wmMapFeaturesInViewport = createAction('[User Activity] wm map features in viewport', props<{featureIds: number[]}>());
 export const wmMapFeaturesInViewportSuccess = createAction('[User Activity] wm map features in viewport success', props<{featuresInViewport: IHIT[]}>());

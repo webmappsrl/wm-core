@@ -1,7 +1,7 @@
 import {createReducer, on} from '@ngrx/store';
 import {ILAYER, Filter} from '@wm-core/types/config';
 import {WmFeature} from '@wm-types/feature';
-import {Point} from 'geojson';
+import {MultiPolygon, Point} from 'geojson';
 import {
   applyWhere,
   closeUgc,
@@ -25,6 +25,7 @@ import {
   closeDownloads,
   wmMapHitMapChangeFeatureById,
   setMapDetailsStatus,
+  loadHitmapFeaturesSuccess,
   wmMapFeaturesInViewportSuccess,
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
@@ -53,6 +54,7 @@ export interface UserActivityState {
   currentEcPoiId?: any;
   wmMapHitMapChangeFeatureById?: number;
   featuresInViewport: IHIT[];
+  wmMapHitmapFeatures: WmFeature<MultiPolygon>[];
 }
 
 export interface UserAcitivityRootState {
@@ -71,6 +73,7 @@ const initialState: UserActivityState = {
   loading: {pois: false, layer: false},
   chartHoverElements: null,
   wmMapHitMapChangeFeatureById: null,
+  wmMapHitmapFeatures: [],
   featuresInViewport: [],
 };
 
@@ -83,9 +86,7 @@ function extractFilterTaxonomies(layer) {
     ...(layer.taxonomy_activities || [])
       .filter(t => t.identifier != null)
       .map(t => `${t.identifier}`),
-    ...(layer.taxonomy_themes || [])
-      .filter(t => t.identifier != null)
-      .map(t => `${t.identifier}`),
+    ...(layer.taxonomy_themes || []).filter(t => t.identifier != null).map(t => `${t.identifier}`),
   ];
 }
 
@@ -146,7 +147,7 @@ export const userActivityReducer = createReducer(
     if (layer == null) {
       const filterTaxonomiesPreviousLayer = extractFilterTaxonomies(state.layer) ?? [];
       poisSelectedFilterIdentifiers = poisSelectedFilterIdentifiers.filter(
-        i => !filterTaxonomiesPreviousLayer.includes(i)
+        i => !filterTaxonomiesPreviousLayer.includes(i),
       );
     } else {
       filterTaxonomies = extractFilterTaxonomies(layer);
@@ -272,6 +273,12 @@ export const userActivityReducer = createReducer(
       wmMapHitMapChangeFeatureById: id,
     };
     return newState;
+  }),
+  on(loadHitmapFeaturesSuccess, (state, {wmMapHitmapFeatures}) => {
+    return {
+      ...state,
+      wmMapHitmapFeatures,
+    };
   }),
 
   on(wmMapFeaturesInViewportSuccess, (state, {featuresInViewport}) => {
