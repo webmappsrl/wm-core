@@ -11,7 +11,7 @@ import {ToastController} from '@ionic/angular';
 import {removeHitmapFeature, getHitmapFeatures} from '@map-core/utils';
 import {Store} from '@ngrx/store';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
-import {confMAP} from '@wm-core/store/conf/conf.selector';
+import {confMAP, confMAPHitMapUrl} from '@wm-core/store/conf/conf.selector';
 import {wmMapHitMapChangeFeatureById} from '@wm-core/store/user-activity/user-activity.action';
 import {WmFeature} from '@wm-types/feature';
 import {Feature, FeatureCollection, MultiPolygon} from 'geojson';
@@ -26,6 +26,7 @@ import {catchError, filter, map, switchMap, take} from 'rxjs/operators';
 })
 export class WmHomeHitMapComponent implements OnInit {
   confMAP$: Observable<any> = this._store.select(confMAP);
+  confMAPHitMapUrl$: Observable<string | null> = this._store.select(confMAPHitMapUrl);
   searchTerm: string = '';
 
   @Input()

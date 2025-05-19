@@ -1,24 +1,29 @@
-<ng-container *ngIf="features$ | async  as features; else nofeatures">
-  <ng-container *ngIf="features.length> 0; else nofeatures">
-    <ion-searchbar [(ngModel)]="searchTerm" placeholder="{{'placeholder'|wmtrans}}"></ion-searchbar>
-    <ion-list>
-      <ng-container *ngFor="let feature of features| wmFilterFeatures:searchTerm">
-        <ion-item *ngIf="feature.properties as properties" (click)="onClick(feature)">
-          <ion-label>
-            {{properties.carg_code}}
-          </ion-label>
-          <ion-icon
-            *ngIf="downloads"
-            name="trash"
-            slot="end"
-            (click)="$event.stopPropagation(); deleteSheet(feature)"
-          ></ion-icon>
-        </ion-item>
-      </ng-container>
-    </ion-list>
+<ng-container *ngIf="confMAPHitMapUrl$|async">
+  <ng-container *ngIf="features$ | async  as features; else nofeatures">
+    <ng-container *ngIf="features.length> 0; else nofeatures">
+      <ion-searchbar
+        [(ngModel)]="searchTerm"
+        placeholder="{{'placeholder'|wmtrans}}"
+      ></ion-searchbar>
+      <ion-list>
+        <ng-container *ngFor="let feature of features| wmFilterFeatures:searchTerm">
+          <ion-item *ngIf="feature.properties as properties" (click)="onClick(feature)">
+            <ion-label>
+              {{properties.carg_code}}
+            </ion-label>
+            <ion-icon
+              *ngIf="downloads"
+              name="trash"
+              slot="end"
+              (click)="$event.stopPropagation(); deleteSheet(feature)"
+            ></ion-icon>
+          </ion-item>
+        </ng-container>
+      </ion-list>
+    </ng-container>
   </ng-container>
-</ng-container>
 
-<ng-template #nofeatures>
-  <ion-label>{{'Non ci sono dati scaricati'|wmtrans}}</ion-label>
-</ng-template>
+  <ng-template #nofeatures>
+    <ion-label>{{'Non ci sono dati scaricati'|wmtrans}}</ion-label>
+  </ng-template>
+</ng-container>
