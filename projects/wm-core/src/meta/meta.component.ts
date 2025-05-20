@@ -40,7 +40,6 @@ export class MetaComponent {
     @Inject(DOCUMENT) private _document: Document,
     private _renderer: Renderer2,
   ) {
-    console.log('MetaComponent');
     this.confGeohubId$
       .pipe(
         filter(p => p != null),
