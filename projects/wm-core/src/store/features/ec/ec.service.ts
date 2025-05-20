@@ -118,6 +118,7 @@ export class EcService {
     inputTyped?: string;
     layer?: any;
     filterTracks?: Filter[];
+    trackIds?: number[];
   }): Promise<IRESPONSE> {
     await this._environmentSvc.readyPromise;
     let query = this._baseUrl;
@@ -128,6 +129,10 @@ export class EcService {
 
     if (options.layer && options.layer.id != null) {
       query += `&layer=${options.layer.id}`;
+    }
+
+    if (options.trackIds) {
+      query += `&ids=[${options.trackIds.join(',')}]`;
     }
 
     if (options.filterTracks != null && options.filterTracks.length > 0) {

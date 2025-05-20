@@ -10,6 +10,7 @@ import {
   ecTracks,
   currentEcRelatedPoiId,
   currentEcPoiId,
+  currentEcImageGalleryIndex,
 } from '@wm-core/store/features/ec/ec.actions';
 
 import {IHIT} from '@wm-core/types/elastic';
@@ -25,6 +26,7 @@ export interface Ec {
   currentEcPoiId?: number;
   currentEcPoi?: WmFeature<Point>;
   currentEcRelatedPoiId?: string;
+  currentEcImageGalleryIndex?: number;
 }
 export interface ApiRootState {
   [searchKey]: Ec;
@@ -92,6 +94,20 @@ export const ecReducer = createReducer(
     const newState: Ec = {
       ...state,
       currentEcPoiId: +currentEcPoiId,
+    };
+    return newState;
+  }),
+  on(currentEcImageGalleryIndex, (state, {currentEcImageGalleryIndex}) => {
+    const newState: Ec = {
+      ...state,
+      currentEcImageGalleryIndex: currentEcImageGalleryIndex,
+    };
+    return newState;
+  }),
+  on(currentEcImageGalleryIndex, (state, {currentEcImageGalleryIndex}) => {
+    const newState: Ec = {
+      ...state,
+      currentEcImageGalleryIndex: currentEcImageGalleryIndex,
     };
     return newState;
   }),

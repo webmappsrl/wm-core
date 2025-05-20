@@ -10,7 +10,9 @@ import {Store} from '@ngrx/store';
 import {ModalImageComponent} from '@wm-core/modal-image/modal-image.component';
 import {confIsMobile} from '@wm-core/store/conf/conf.selector';
 import {BehaviorSubject, Observable} from 'rxjs';
-
+import {UrlHandlerService} from '@wm-core/services/url-handler.service';
+import {DeviceService} from '@wm-core/services/device.service';
+import {confOPTIONSShowMediaName} from '@wm-core/store/conf/conf.selector';
 @Component({
   selector: 'wm-image-gallery',
   templateUrl: './image-gallery.component.html',
@@ -26,9 +28,8 @@ export class ImageGalleryComponent {
       });
     } else {
       this.sliderOptions$.next({
-        slidesPerView: 1.3,
-        centeredSlides: true,
-        spaceBetween: 10,
+        slidesPerView: 'auto',
+        spaceBetween: 12,
       });
     }
     this.imageGallery$.next(imgGallery);
@@ -38,6 +39,7 @@ export class ImageGalleryComponent {
   @ViewChild('slider') slider: IonSlides;
 
   imageGallery$: BehaviorSubject<null | any[]> = new BehaviorSubject<null | any[]>(null);
+  confOPTIONSShowMediaName$: Observable<boolean> = this._store.select(confOPTIONSShowMediaName);
   isMobile$: Observable<boolean> = this._store.select(confIsMobile);
   sliderOptions$: BehaviorSubject<any> = new BehaviorSubject<any>({
     slidesPerView: 1.3,
@@ -45,7 +47,12 @@ export class ImageGalleryComponent {
     spaceBetween: 10,
   });
 
-  constructor(private _modalCtrl: ModalController, private _store: Store) {}
+  constructor(
+    private _modalCtrl: ModalController,
+    private _store: Store,
+    private _urlHandlerSvc: UrlHandlerService,
+    private _deviceSvc: DeviceService
+  ) {}
 
   next(): void {
     this.slider.slideNext();
@@ -56,10 +63,12 @@ export class ImageGalleryComponent {
   }
 
   async showPhoto(idx) {
-    const modal = await this._modalCtrl.create({
-      component: ModalImageComponent,
-      componentProps: {idx, imageGallery: this.imageGallery$.value},
-    });
-    modal.present();
+    this._urlHandlerSvc.updateURL({gallery_index: idx});
+    if (!this._deviceSvc.isMobile) {
+      const modal = await this._modalCtrl.create({
+        component: ModalImageComponent
+      });
+      modal.present();
+    }
   }
 }

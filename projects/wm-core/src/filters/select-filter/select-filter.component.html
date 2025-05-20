@@ -18,7 +18,7 @@
                 color="{{option.identifier|isSelected:(poiFilters)}}"
               >
                 <ng-container *ngIf="option.icon != null;else imgT">
-                  <div appBuildSvg style="height:55%" [svg]="option.icon"></div>
+                  <div appBuildSvg [svg]="option.icon"></div>
                 </ng-container>
                 <ng-template #imgT>
                   <img [src]="option.identifier" />

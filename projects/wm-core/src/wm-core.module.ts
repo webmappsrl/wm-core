@@ -66,6 +66,14 @@ import {ModalUgcTrackUploaderComponent} from './modal-ugc-track-uploader/modal-u
 import {NetworkEffects} from './store/network/network.effects';
 import {networkReducer} from './store/network/netwotk.reducer';
 import {WmHomeHitMapComponent} from './home/home-hitmap/home-hitmap.component';
+import {MetaComponent} from './meta/meta.component';
+import {GetDirectionsComponent} from './get-directions/get-directions.component';
+import {TravelModeComponent} from './travel-mode/travel-mode.component';
+import {PoiTypesBadgesComponent} from './poi-types-badges/poi-types-badges.component';
+import {WmRelatedPoisNavigatorComponent} from './releted-pois-navigator/related-pois-navigator.component';
+import {ImageDetailComponent} from './image-detail/image-detail.component';
+import {WmFeaturesInViewportComponent} from './features-in-viewport/features-in-viewport.component';
+import {WmDifficultyComponent} from './difficulty/difficulty.component';
 export const declarations = [
   WmTabDetailComponent,
   WmTabDescriptionComponent,
@@ -102,6 +110,14 @@ export const declarations = [
   WmTrackAlertComponent,
   ModalUgcTrackUploaderComponent,
   WmHomeHitMapComponent,
+  MetaComponent,
+  GetDirectionsComponent,
+  TravelModeComponent,
+  PoiTypesBadgesComponent,
+  WmRelatedPoisNavigatorComponent,
+  ImageDetailComponent,
+  WmFeaturesInViewportComponent,
+  WmDifficultyComponent,
 ];
 const modules = [
   WmSharedModule,

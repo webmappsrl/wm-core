@@ -1,6 +1,6 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
-import {confFILTERSTRACKS, confPOISFilter, confPoisIcons} from '../../conf/conf.selector';
-import {buildStats, filterFeatures, filterFeaturesByInputTyped} from './utils';
+import {confFILTERSTRACKS, confMAPLayers, confPOISFilter, confPoisIcons} from '../../conf/conf.selector';
+import {buildStats, calculateLayerFeaturesCount, filterFeatures, filterFeaturesByInputTyped} from './utils';
 import {IELASTIC} from '../../../types/elastic';
 import {Ec} from './ec.reducer';
 import {
@@ -211,7 +211,60 @@ export const currentPoiProperties = createSelector(
     if (JSON.stringify(currentEcPoiProperties) === JSON.stringify({related: false})) {
       currentEcPoiProperties = null;
     }
-    const res = currentEcPoiProperties ?? currentEcRelatedPoiProperties ?? null;
-    return res;
+    return currentEcPoiProperties ?? currentEcRelatedPoiProperties ?? null;
+  },
+);
+
+export const layerFeaturesCount = createSelector(confMAPLayers, allEcpoiFeatures, ecTracks, (confMAPLayers, allEcpoiFeatures, ecTracks) => {
+  return calculateLayerFeaturesCount(confMAPLayers, allEcpoiFeatures, ecTracks);
+});
+
+export const currentRelatedPoiIndex = createSelector(
+  currentEcRelatedPois,
+  currentEcRelatedPoiId,
+  (relatedPois, relatedPoiId) => {
+    if (relatedPois != null) {
+      return relatedPois.findIndex((p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId);
+    }
+    return null;
+  },
+);
+
+export const currentRelatedPoisCount = createSelector(
+  currentEcRelatedPois,
+  currentEcRelatedPois => {
+    return currentEcRelatedPois?.length ?? 0;
+  },
+);
+
+export const nextRelatedPoiId = createSelector(
+  currentEcRelatedPois,
+  currentEcRelatedPoiId,
+  (relatedPois, relatedPoiId) => {
+    const index = relatedPois.findIndex((p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId);
+    return relatedPois[index + 1]?.properties?.id ?? null;
+  },
+);
+
+export const prevRelatedPoiId = createSelector(
+  currentEcRelatedPois,
+  currentEcRelatedPoiId,
+  (relatedPois, relatedPoiId) => {
+    const index = relatedPois.findIndex((p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId);
+    return relatedPois[index - 1]?.properties?.id ?? null;
+  },
+);
+
+export const currentEcImageGalleryIndex = createSelector(ec, (state: Ec) => state.currentEcImageGalleryIndex);
+
+export const currentEcImageGallery = createSelector(
+  currentEcRelatedPoiProperties,
+  currentEcTrackProperties,
+  currentEcPoiProperties,
+  (currentEcRelatedPoiProperties, currentEcTrackProperties, currentEcPoiProperties) => {
+    return currentEcRelatedPoiProperties?.image_gallery
+      ?? currentEcTrackProperties?.image_gallery
+      ?? currentEcPoiProperties?.image_gallery
+      ?? null;
   },
 );

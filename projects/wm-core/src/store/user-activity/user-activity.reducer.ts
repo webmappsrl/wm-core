@@ -26,10 +26,12 @@ import {
   wmMapHitMapChangeFeatureById,
   setMapDetailsStatus,
   loadHitmapFeaturesSuccess,
+  wmMapFeaturesInViewportSuccess,
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {set} from 'ol/transform';
+import { IHIT } from '@wm-core/types/elastic';
 
 export const key = 'userActivity';
 export type mapDetailsStatus = 'open' | 'onlyTitle' | 'background' | 'full';
@@ -51,6 +53,7 @@ export interface UserActivityState {
   chartHoverElements: WmSlopeChartHoverElements;
   currentEcPoiId?: any;
   wmMapHitMapChangeFeatureById?: number;
+  featuresInViewport: IHIT[];
   wmMapHitmapFeatures: WmFeature<MultiPolygon>[];
 }
 
@@ -71,6 +74,7 @@ const initialState: UserActivityState = {
   chartHoverElements: null,
   wmMapHitMapChangeFeatureById: null,
   wmMapHitmapFeatures: [],
+  featuresInViewport: [],
 };
 
 function extractFilterTaxonomies(layer) {
@@ -275,5 +279,13 @@ export const userActivityReducer = createReducer(
       ...state,
       wmMapHitmapFeatures,
     };
+  }),
+
+  on(wmMapFeaturesInViewportSuccess, (state, {featuresInViewport}) => {
+    const newState: UserActivityState = {
+      ...state,
+      featuresInViewport,
+    };
+    return newState;
   }),
 );

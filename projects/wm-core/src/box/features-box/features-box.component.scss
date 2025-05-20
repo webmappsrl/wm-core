@@ -1,11 +1,11 @@
-wm-tracks-box {
-  .wm-tracks-wrapper {
+wm-features-box {
+  .wm-features-wrapper {
     position: relative;
     display: flex;
     align-items: center;
     margin: 0;
     padding: 0;
-    .wm-track-arrow {
+    .wm-features-arrow {
       background: white;
       position: absolute;
       border-radius: 100%;
@@ -30,10 +30,10 @@ wm-tracks-box {
       right: 0;
     }
 
-    .wm-tracks-container::-webkit-scrollbar {
+    .wm-features-container::-webkit-scrollbar {
       display: none;
     }
-    .wm-tracks-container {
+    .wm-features-container {
       display: flex;
       overflow: auto;
       wm-box {

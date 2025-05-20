@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, ReplaySubject} from 'rxjs';
+import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
 import {
   BackgroundGeolocationPlugin,
   Location,
@@ -7,11 +7,12 @@ import {
 } from '@capacitor-community/background-geolocation';
 import {registerPlugin} from '@capacitor/core';
 import {App} from '@capacitor/app';
-import {LineString} from 'geojson';
+import {LineString, Position} from 'geojson';
 import {WmFeature} from '@wm-types/feature';
 import {DeviceService} from './device.service';
 import {CStopwatch} from '@wm-core/utils/cstopwatch';
 import {getDistance} from 'ol/sphere';
+import {filter, map, startWith, defaultIfEmpty} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -141,6 +142,30 @@ export class GeolocationService {
     if (!this._deviceService.isBrowser) {
       backgroundGeolocation.openSettings();
     }
+  }
+
+  getDistanceFromCurrentLocation$(destinationPosition: Position): Observable<number | null> {
+    if (
+      destinationPosition == null
+      || destinationPosition.length < 2
+    ) return of(null);
+
+    return this.onLocationChange.pipe(
+      startWith(null),
+      map(currentLocation => {
+        if (
+          currentLocation != null &&
+          currentLocation.latitude != null &&
+          currentLocation.longitude != null
+        ) {
+          return getDistance(
+            [currentLocation.longitude, currentLocation.latitude],
+            [destinationPosition[0], destinationPosition[1]],
+          );
+        }
+        return null;
+      }),
+    );
   }
 
   private _startWatcher(): void {

@@ -34,12 +34,13 @@
       (clickEVT)="externalUrlBoxEVT.emit(box.url)"
     >
     </wm-box>
-    <wm-tracks-box
+    <wm-features-box
       *ngIf="box.box_type === 'base'"
       [data]="box"
       (trackIdEVT)="tracksBoxEVT.emit($event)"
+      (poiIdEVT)="poisBoxEVT.emit($event)"
     >
-    </wm-tracks-box>
+    </wm-features-box>
     <wm-layer-box
       *ngIf="box.box_type === 'layer'"
       [data]="box"

@@ -82,6 +82,7 @@ export class UserActivityEffects {
           resetTrackFilters(),
           resetPoiFilters(),
           closeUgc(),
+          setMapDetailsStatus({status: 'background'}),
         ),
       ),
       tap(() => this._urlHandlerSvc.resetURL()),

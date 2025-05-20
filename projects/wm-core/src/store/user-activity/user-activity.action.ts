@@ -4,6 +4,7 @@ import {WmFeature} from '@wm-types/feature';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {MultiPolygon, Point} from 'geojson';
 import {mapDetailsStatus} from './user-activity.reducer';
+import { IHIT } from '@wm-core/types/elastic';
 
 export const openUgc = createAction('[User Activity] Open User Generated Content');
 export const closeUgc = createAction('[User Activity] Close User Generated Content');
@@ -113,3 +114,7 @@ export const loadHitmapFeaturesSuccess = createAction(
   props<{wmMapHitmapFeatures: WmFeature<MultiPolygon>[]}>(),
 );
 export const loadHitmapFeaturesFail = createAction('[User Activity] Load configuration Fail');
+
+export const wmMapFeaturesInViewport = createAction('[User Activity] wm map features in viewport', props<{featureIds: number[]}>());
+export const wmMapFeaturesInViewportSuccess = createAction('[User Activity] wm map features in viewport success', props<{featuresInViewport: IHIT[]}>());
+export const wmMapFeaturesInViewportFailure = createAction('[User Activity] wm map features in viewport failure');

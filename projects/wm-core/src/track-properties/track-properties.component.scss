@@ -1,10 +1,15 @@
 wm-track-properties {
-  display: block;
+  display: flex;
+  flex-direction: column;
   bottom: 0;
   border-radius: 15px;
   background: white;
   width: 100%;
   z-index: 2;
+
+  > *:empty {
+    display: none;
+  }
 
   .wm-track-details-header {
     font-size: var(--font-md);

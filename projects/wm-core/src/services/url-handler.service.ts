@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
+  currentEcImageGalleryIndex,
   currentEcLayerId,
   currentEcPoiId,
   currentEcRelatedPoiId,
@@ -9,9 +10,10 @@ import {
 } from '@wm-core/store/features/ec/ec.actions';
 import {currentUgcPoiId, currentUgcTrackId} from '@wm-core/store/features/ugc/ugc.actions';
 import {Params} from '@angular/router';
-import {debounceTime, skip} from 'rxjs/operators';
+import {debounceTime, skip, take} from 'rxjs/operators';
 import {closeDownloads, closeUgc, openUgc} from '@wm-core/store/user-activity/user-activity.action';
 import {BehaviorSubject} from 'rxjs';
+import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
 
 @Injectable({
   providedIn: 'root',
@@ -26,7 +28,10 @@ export class UrlHandlerService {
     slug: undefined,
     layer: undefined,
     filter: undefined,
+    gallery_index: undefined,
   };
+
+  private _ugcOpened$ = this._store.select(ugcOpened);
 
   constructor(private _route: ActivatedRoute, private _router: Router, private _store: Store) {
     this.initialize();
@@ -53,7 +58,7 @@ export class UrlHandlerService {
   }
 
   initialize(): void {
-    this._route.queryParams.pipe(skip(1), debounceTime(100)).subscribe(params => {
+    this._route.queryParams.subscribe(params => {
       this._store.dispatch(currentEcLayerId({currentEcLayerId: params.layer ?? null}));
       this._store.dispatch(currentEcTrackId({currentEcTrackId: params.track ?? null}));
       this._store.dispatch(currentEcPoiId({currentEcPoiId: params.poi ?? null}));
@@ -62,6 +67,11 @@ export class UrlHandlerService {
       );
       this._store.dispatch(currentUgcTrackId({currentUgcTrackId: params.ugc_track ?? null}));
       this._store.dispatch(currentUgcPoiId({currentUgcPoiId: params.ugc_poi ?? null}));
+      this._store.dispatch(
+        currentEcImageGalleryIndex({
+          currentEcImageGalleryIndex: params.gallery_index ? +params.gallery_index : null,
+        }),
+      );
       this._checkIfUgcIsOpened(params);
       this._currentQueryParams$.next(params);
     });
@@ -110,6 +120,24 @@ export class UrlHandlerService {
     }
   }
 
+  setPoi(id: string | number): void {
+    this._ugcOpened$.pipe(take(1)).subscribe(ugcOpened => {
+      const queryParams = ugcOpened
+        ? {ugc_poi: id ? id : undefined, poi: undefined}
+        : {poi: id ? id : undefined, ugc_poi: undefined};
+      this.updateURL(queryParams, ['map']);
+    });
+  }
+
+  setTrack(id: string | number): void {
+    this._ugcOpened$.pipe(take(1)).subscribe(ugcOpened => {
+      const queryParams = ugcOpened
+        ? {ugc_track: id ? id : undefined}
+        : {track: id ? id : undefined};
+      this.updateURL(queryParams, ['map']);
+    });
+  }
+
   private _checkIfUgcIsOpened(queryParams: Params): void {
     if (queryParams.track != null || queryParams.poi != null) {
       this._store.dispatch(closeUgc());
@@ -121,11 +149,23 @@ export class UrlHandlerService {
   }
   removeLatest(): boolean {
     const queryParams = this.getCurrentQueryParams();
-    if (queryParams.ec_related_poi != null) {
+    if (queryParams.gallery_index != null) {
+      this.updateURL({gallery_index: undefined});
+      return false;
+    } else if (queryParams.ec_related_poi != null) {
       this.updateURL({ec_related_poi: undefined});
       return false;
+    } else if (
+      queryParams.layer != null &&
+      (queryParams.poi != null || queryParams.track != null)
+    ) {
+      this.updateURL({poi: undefined, track: undefined});
+      return false;
+    } else if (queryParams.ugc_track != null || queryParams.ugc_poi != null) {
+      this.updateURL({ugc_track: undefined, ugc_poi: undefined});
+      return false;
     } else {
-      this.updateURL({track: undefined, ugc_track: undefined, poi: undefined, ugc_poi: undefined});
+      this.resetURL();
       return true;
     }
   }

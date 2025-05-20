@@ -29,18 +29,18 @@
       [ngClass]="{'hidden': showResult$ | async}"
       (slugBoxEVT)="openSlug($event[0], $event[1])"
       (externalUrlBoxEVT)="openExternalUrl($event)"
+      (poisBoxEVT)="setPoi($event)"
       (tracksBoxEVT)="setTrack($event)"
       (layerBoxEVT)="setLayer($event[0], $event[1])"
       (ugcBoxEvt)="setUgc()"
     ></wm-home-landing>
     <ng-container *ngIf="showResult$|async">
-      <wm-status-filter (resetFiltersEVT)="goToHome()"></wm-status-filter>
+      <wm-status-filter></wm-status-filter>
       <wm-home-ugc *ngIf="(ugcOpened$|async);else layerView"></wm-home-ugc>
-
       <ng-template #layerView>
         <wm-home-layer></wm-home-layer>
       </ng-template>
-      <wm-home-result (trackEVT)="setTrack($event)" (poiEVT)="setPoi($event)"></wm-home-result>
+      <wm-home-result></wm-home-result>
     </ng-container>
   </ng-template>
 </div>

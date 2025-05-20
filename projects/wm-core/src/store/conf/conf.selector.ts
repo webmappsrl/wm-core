@@ -30,6 +30,7 @@ export const confAUTHEnable = createSelector(
 );
 export const confMAP = createSelector(confFeature, state => state.MAP);
 export const confMAPHitMapUrl = createSelector(confMAP, state => state?.hitMapUrl ?? null);
+export const confMAPLayers = createSelector(confMAP, state => state.layers);
 export const flowLineQuoteShow = createSelector(confMAP, state => state.flow_line_quote_show);
 export const confFlowLineQuote = createSelector(confMAP, state =>
   state.flow_line_quote_show
@@ -140,6 +141,12 @@ export const confHOME = createSelector(confFeature, confFILTERS, (state, filters
 
   return state.HOME;
 });
+export const confOPTIONSShowFeaturesInViewport = createSelector(
+  confOPTIONS,
+  state => state.showFeaturesInViewport,
+);
+export const confOPTIONSShowMediaName = createSelector(confOPTIONS, state => state.showMediaName);
+export const confOPTIONSShowEmbeddedHtml = createSelector(confOPTIONS, state => state.showEmbeddedHtml);
 
 const getLayers = (layersID: number[], layers: ILAYER[], tracks: IHIT[]): ILAYER[] => {
   return layers

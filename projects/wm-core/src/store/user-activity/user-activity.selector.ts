@@ -165,3 +165,6 @@ export const currentHitmapFeature = createSelector(
     return features.find(f => f.properties.id == id);
   },
 );
+
+export const featuresInViewport = createSelector(userActivity, state => state.featuresInViewport);
+export const hasFeatureInViewport = createSelector(featuresInViewport, featuresInViewport => featuresInViewport && featuresInViewport.length > 0);

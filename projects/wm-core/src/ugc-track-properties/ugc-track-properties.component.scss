@@ -10,6 +10,7 @@ wm-ugc-track-properties {
   overflow: scroll;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+
   .wm-ugc-track-form-readonly {
     ion-card {
       box-shadow: none;
@@ -42,6 +43,9 @@ wm-ugc-track-properties {
     flex-direction: column;
     flex-wrap: inherit;
     align-self: flex-start;
+    > *:empty {
+      display: none;
+    }
     .wm-ugc-track-title:first-letter {
       text-transform: uppercase;
     }
@@ -49,6 +53,7 @@ wm-ugc-track-properties {
       font-weight: var(--wm-feature-details-title-font-weight);
       font-size: var(--wm-feature-details-title-font-size);
       color: var(--wm-feature-details-title-color);
+      font-family: var(--wm-feature-details-title-font-family);
     }
     .wm-ugc-track-activity-content {
       display: flex;

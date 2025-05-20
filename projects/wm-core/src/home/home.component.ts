@@ -43,6 +43,7 @@ import {
   inputTyped,
   openUgc,
   togglePoiFilter,
+  setMapDetailsStatus,
   toggleTrackFilterByIdentifier,
 } from '@wm-core/store/user-activity/user-activity.action';
 import {WmSearchBarComponent} from '@wm-core/search-bar/search-bar.component';
@@ -167,15 +168,11 @@ export class WmHomeComponent implements AfterContentInit {
     this._urlHandlerSvc.updateURL({layer: layer?.id ?? undefined});
     this._store.dispatch(closeUgc());
     this._store.dispatch(closeDownloads());
+    this._store.dispatch(setMapDetailsStatus({status: 'open'}));
   }
 
   setPoi(id: string | number): void {
-    this.ugcOpened$.pipe(take(1)).subscribe(ugcOpened => {
-      const queryParams = ugcOpened
-        ? {ugc_poi: id ? id : undefined, poi: undefined}
-        : {poi: id ? id : undefined, ugc_poi: undefined};
-      this._urlHandlerSvc.updateURL(queryParams, ['map']);
-    });
+    this._urlHandlerSvc.setPoi(id);
   }
 
   setSearch(value: string): void {
@@ -183,16 +180,12 @@ export class WmHomeComponent implements AfterContentInit {
   }
 
   setTrack(id: string | number): void {
-    this.ugcOpened$.pipe(take(1)).subscribe(ugcOpened => {
-      const queryParams = ugcOpened
-        ? {ugc_track: id ? id : undefined}
-        : {track: id ? id : undefined};
-      this._urlHandlerSvc.updateURL(queryParams, ['map']);
-    });
+    this._urlHandlerSvc.setTrack(id);
   }
 
   setUgc(): void {
     this._store.dispatch(openUgc());
+    this._store.dispatch(setMapDetailsStatus({status: 'open'}));
   }
 
   togglePoiFilter(filterIdentifier: string, idx?: number): void {

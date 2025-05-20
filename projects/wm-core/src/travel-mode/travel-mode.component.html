@@ -1,0 +1,33 @@
+<ng-container *ngIf="confOPTIONS$|async as confOPTIONS">
+  <ng-container *ngIf="confOPTIONS.showTravelMode">
+    <ng-container *ngIf="ecTrackProperties$|async as ecTrackProperties">
+      <ion-label>Modalità di percorrenza</ion-label>
+      <ion-segment value="walk" mode="ios" (ionChange)="onTravelModeChange($event)">
+        <ion-segment-button value="walk">
+          <ion-icon name="walk-outline"></ion-icon>
+        </ion-segment-button>
+        <ion-segment-button value="bike">
+          <ion-icon name="bicycle-outline"></ion-icon>
+        </ion-segment-button>
+      </ion-segment>
+      <ion-grid>
+        <ion-row class="ion-justify-content-center">
+          <ion-col size="4" *ngIf="ecTrackProperties?.difficulty as difficulty">
+            <div>
+              <wm-difficulty [difficulty]="difficulty"></wm-difficulty>
+            </div>
+            <div>{{'Difficoltà'|wmtrans}}</div>
+          </ion-col>
+          <ion-col size="4" *ngIf="ecTrackProperties?.distance as distance">
+            <div [innerHTML]="distance|distance:'km':1:'html'"></div>
+            <div>{{'Lunghezza'|wmtrans}}</div>
+          </ion-col>
+          <ion-col size="4" *ngIf="durention$|async as trackDuration">
+            <div [innerHTML]="trackDuration|duration:'html'"></div>
+            <div>{{'Orario previsto'|wmtrans}}</div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ng-container>
+  </ng-container>
+</ng-container>
