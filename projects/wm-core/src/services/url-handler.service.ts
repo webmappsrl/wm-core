@@ -58,7 +58,7 @@ export class UrlHandlerService {
   }
 
   initialize(): void {
-    this._route.queryParams.subscribe(params => {
+    this._route.queryParams.pipe(skip(1), debounceTime(100)).subscribe(params => {
       this._store.dispatch(currentEcLayerId({currentEcLayerId: params.layer ?? null}));
       this._store.dispatch(currentEcTrackId({currentEcTrackId: params.track ?? null}));
       this._store.dispatch(currentEcPoiId({currentEcPoiId: params.poi ?? null}));
