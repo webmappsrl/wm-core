@@ -219,9 +219,7 @@ export class UgcService {
 
         if (existingTrack) {
           const res = await this.saveApiTrack(deviceUgcTrack);
-          console.log(
-            `Track with UUID ${deviceUgcTrack.properties.uuid} already exists. Skipping save.`,
-          );
+          // console.log(`Track with UUID ${deviceUgcTrack.properties.uuid} already exists. Skipping save.`,);
           continue;
         }
 
