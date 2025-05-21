@@ -74,6 +74,7 @@ import {WmRelatedPoisNavigatorComponent} from './releted-pois-navigator/related-
 import {ImageDetailComponent} from './image-detail/image-detail.component';
 import {WmFeaturesInViewportComponent} from './features-in-viewport/features-in-viewport.component';
 import {WmDifficultyComponent} from './difficulty/difficulty.component';
+import {WmImagePickerComponent} from './image-picker/image-picker.component';
 export const declarations = [
   WmTabDetailComponent,
   WmTabDescriptionComponent,
@@ -118,6 +119,7 @@ export const declarations = [
   ImageDetailComponent,
   WmFeaturesInViewportComponent,
   WmDifficultyComponent,
+  WmImagePickerComponent,
 ];
 const modules = [
   WmSharedModule,

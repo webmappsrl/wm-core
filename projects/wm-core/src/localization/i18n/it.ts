@@ -83,7 +83,7 @@ export const wmIT = {
   'Registrazioni': 'Registrazioni',
   'Photos': 'Foto',
   'Waypoint': 'Waypoint',
-  'elimina': 'elimina', 
+  'elimina': 'elimina',
   'Nome': 'Nome',
   'inserisci il tuo nome': 'inserisci il tuo nome',
   "E' necessario inserire un nome": "E' necessario inserire un nome",
@@ -183,4 +183,9 @@ export const wmIT = {
   'questo campo è obbligatorio': 'questo campo è obbligatorio',
   'Quota': 'Quota',
   'I miei donwloads': 'I miei donwloads',
+  'foto dalla galleria': 'foto dalla galleria',
+  'Dimensione massime: 3 photo': 'Dimensione massime: 3 photo',
+  'Aggiungi': 'Aggiungi',
+  'Foto': 'Foto',
+  '(max 3 photo)': '(max 3 photo)',
 };
