@@ -235,7 +235,6 @@ export class UgcService {
           );
         }
       }
-
       // console.log('Track synchronization completed successfully');
     } catch (error) {
       console.error('Error during track synchronization:', error);
