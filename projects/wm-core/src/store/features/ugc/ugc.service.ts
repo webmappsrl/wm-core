@@ -180,9 +180,7 @@ export class UgcService {
 
         if (existingPoi) {
           await removeDeviceUgcPoi(deviceUgcPoi.properties.uuid);
-          console.log(
-            `POI with UUID ${deviceUgcPoi.properties.uuid} already exists. Skipping save.`,
-          );
+          // console.log(  `POI with UUID ${deviceUgcPoi.properties.uuid} already exists. Skipping save.` );
           continue;
         }
 
