@@ -198,7 +198,6 @@ export class UgcService {
           );
         }
       }
-
       // console.log('POI synchronization completed successfully');
     } catch (error) {
       console.error('Error during POI synchronization:', error);
