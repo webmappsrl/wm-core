@@ -38,7 +38,7 @@ export class UrlHandlerService {
   }
 
   changeURL(route, queryParams: Params = this.getCurrentQueryParams()): void {
-    if (route != null) {
+    if (route != null && route != this.getCurrentPath()) {
       setTimeout(() => {
         this.navigateTo([route], queryParams);
       }, 0);
