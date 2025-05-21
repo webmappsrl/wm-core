@@ -23,12 +23,12 @@ export class AuthService {
     return this.confAPP$.pipe(
       take(1),
       switchMap(confApp => {
-        const referrer = confApp.sku;
+        const sku = confApp.sku;
         const appId = confApp.id ?? confApp.geohubId;
         return this._http.post(`${this._environmentSvc.origin}/api/auth/login`, {
           email,
           password,
-          referrer,
+          sku,
           appId,
         }) as Observable<IUser>;
       }),
@@ -47,13 +47,13 @@ export class AuthService {
     return this.confAPP$.pipe(
       take(1),
       switchMap(confApp => {
-        const referrer = confApp.sku;
+        const sku = confApp.sku;
         const appId = confApp.id ?? confApp.geohubId;
         return this._http.post(`${this._environmentSvc.origin}/api/auth/signup`, {
           name,
           email,
           password,
-          referrer,
+          sku,
           appId,
         }) as Observable<IUser>;
       }),
