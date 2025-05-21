@@ -184,4 +184,9 @@ export const wmEN = {
   'Quota': 'Elevation',
   'I miei donwloads': 'My downloads',
   'Sei sicuro di voler eliminare la traccia?': 'Are you sure you want to delete the track?',
+  'foto dalla galleria': 'photo from the phone gallery',
+  'Dimensione massime: 3 photo': 'Maximum 3 photo',
+  'Aggiungi': 'Add',
+  'Foto': 'Photo',
+  '(max 3 photo)': '(max 3 photo)',
 };

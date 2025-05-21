@@ -174,4 +174,9 @@ export const wmES = {
   'questo campo è obbligatorio': 'este campo es obligatorio',
   'Quota': 'Elevación',
   'I miei donwloads': 'Mis descargas',
+  'foto dalla galleria': 'foto de la galería',
+  'Dimensione massime: 3 photo': 'Tamaño máximo: 3 fotos',
+  'Aggiungi': 'Agregar',
+  'Foto': 'Foto',
+  '(max 3 photo)': '(máx 3 fotos)',
 };

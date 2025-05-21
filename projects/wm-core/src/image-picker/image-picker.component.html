@@ -1,0 +1,56 @@
+<ion-grid>
+  <ion-row *ngIf="!(photos|async)?.length">
+    <ion-col size="12">
+      <div class="wm-image-picker-loadphoto" (click)="addPhotos()">
+        <div class="wm-image-picker-loadphoto-text">
+          <div class="wm-image-picker-loadphoto-action">
+            {{ "Carica" | wmtrans }}
+          </div>
+          {{ "foto dalla galleria" | wmtrans }}
+        </div>
+        <div class="wm-image-picker-loadphoto-advice">
+          {{ "Dimensione massime: 3 photo" | wmtrans }}
+        </div>
+      </div>
+    </ion-col>
+  </ion-row>
+
+  <ion-row *ngIf="(photos|async) as photos">
+    <ion-col size="4" *ngIf="photos?.length && photos.length < maxPhotos">
+      <div
+        class="
+        wm-image-picker-imagecontainer
+        wm-image-picker-addimagecontainer
+        wm-image-picker-loadphoto
+      "
+        (click)="addPhotos()"
+      >
+        <div class="wm-image-picker-loadphoto-text">
+          <div class="wm-image-picker-loadphoto-action">
+            {{ "Aggiungi" | wmtrans }}
+          </div>
+          {{ "Foto" | wmtrans }}
+        </div>
+        <div class="wm-image-picker-loadphoto-advice">
+          {{ "(max 3 photo)" | wmtrans }}
+        </div>
+      </div>
+    </ion-col>
+    <ion-col size="4" *ngFor="let image of photos;let idx = index">
+      <div class="wm-image-picker-imagecontainer">
+        <ion-icon
+          name="close-outline"
+          class="wm-image-picker-remove"
+          (click)="remove(idx)"
+        >
+        </ion-icon>
+        <ng-container *ngIf="image as photoProp">
+          <wm-img
+            class="wm-image-picker-image"
+            [src]="photoProp?.webPath"
+          ></wm-img>
+        </ng-container>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-grid>

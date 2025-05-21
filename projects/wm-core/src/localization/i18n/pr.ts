@@ -175,4 +175,9 @@ export const wmPR = {
   'questo campo è obbligatorio': 'este campo é obrigatório',
   'Quota': 'Elevação',
   'I miei donwloads': 'Meus downloads',
+  'foto dalla galleria': 'foto da galeria',
+  'Dimensione massime: 3 photo': 'Tamanho máximo: 3 fotos',
+  'Aggiungi': 'Adicionar',
+  'Foto': 'Foto',
+  '(max 3 photo)': '(máx 3 fotos)',
 };

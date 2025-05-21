@@ -164,44 +164,25 @@ export class CameraService {
     return String(input);
   }
   async getPhotos(dateLimit: Date = null): Promise<Photo[]> {
-    let filePath = null;
-    const location = this._geoLocationSvc.location;
-    const device = await this._deviceSvc.getInfo();
-    if (!this._deviceSvc.isBrowser) {
-      if (!(await Camera.checkPermissions())) {
-        await Camera.requestPermissions();
-        if (!(await Camera.checkPermissions())) return [];
-      }
-      const options: GalleryImageOptions = {
-        quality: 100, //	number	The quality of image to return as JPEG, from 0-100		1.2.0
-        // width:	10000, //number	The width of the saved image		1.2.0
-        // height:10000,	//number	The height of the saved image		1.2.0
-        // correctOrientation: false, // 	boolean	Whether to automatically rotate the image “up” to correct for orientation in portrait mode	: true	1.2.0
-        // presentationStyle:	'fullscreen' | 'popover'	// iOS only: The presentation style of the Camera.	: 'fullscreen'	1.2.0
-        // limit : 100 //	number	iOS only: Maximum number of pictures the user will be able to choose.	0 (unlimited)	1.2.0
-      };
-      const gallery: GalleryPhotos = await Camera.pickImages(options);
-      const photos = (gallery.photos as Photo[]).map(photo => {
-        photo.exif = this._sanitizeObjectValues(photo.exif);
-        return photo;
-      });
-
-      return photos;
-    } else {
-      const max = 1 + Math.random() * 8;
-      const res = [];
-      for (let i = 0; i < max; i++) {
-        const dateNow = new Date();
-        const fakePhoto: Photo = {
-          webPath: `https://picsum.photos/50${i}/75${i}`,
-          saved: false,
-          format: 'image/jpeg',
-        };
-        saveImg(fakePhoto.webPath);
-        res.push(fakePhoto);
-      }
-      return res;
+    if (!(await Camera.checkPermissions())) {
+      await Camera.requestPermissions();
+      if (!(await Camera.checkPermissions())) return [];
     }
+    const options: GalleryImageOptions = {
+      quality: 100, //	number	The quality of image to return as JPEG, from 0-100		1.2.0
+      // width:	10000, //number	The width of the saved image		1.2.0
+      // height:10000,	//number	The height of the saved image		1.2.0
+      // correctOrientation: false, // 	boolean	Whether to automatically rotate the image “up” to correct for orientation in portrait mode	: true	1.2.0
+      // presentationStyle:	'fullscreen' | 'popover'	// iOS only: The presentation style of the Camera.	: 'fullscreen'	1.2.0
+      // limit : 100 //	number	iOS only: Maximum number of pictures the user will be able to choose.	0 (unlimited)	1.2.0
+    };
+    const gallery: GalleryPhotos = await Camera.pickImages(options);
+    const photos = (gallery.photos as Photo[]).map(photo => {
+      photo.exif = this._sanitizeObjectValues(photo.exif);
+      return photo;
+    });
+
+    return photos;
   }
 
   /**
