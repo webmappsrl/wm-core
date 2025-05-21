@@ -191,7 +191,7 @@ export class UgcService {
           if (res) {
             await removeDeviceUgcPoi(deviceUgcPoi.properties.uuid);
             synchronizedUgcPois.push(deviceUgcPoi); // Aggiorna la lista dei POI sincronizzati
-            console.log(`POI with UUID ${deviceUgcPoi.properties.uuid} synchronized and removed.`);
+            //  console.log(`POI with UUID ${deviceUgcPoi.properties.uuid} synchronized and removed.`);
           }
         } catch (poiError) {
           console.error(
