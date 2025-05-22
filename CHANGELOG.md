@@ -21,7 +21,6 @@
 ## 1.0.0 (2023-10-03)
 
 ### Features
-
 - **facet:** add facet Activities ([fb37135](https://github.com/webmappsrl/wm-core/commit/fb3713559d067644f8161ed4d938db2484c53b29))
 - **filter:** add filter close ([439b76b](https://github.com/webmappsrl/wm-core/commit/439b76b59d1aa79008163b67b96515815b6dfd90))
 - **filters:** ... ([94f4fae](https://github.com/webmappsrl/wm-core/commit/94f4fae8e7169757f3431bb4b7baf784a9fc4faf))
