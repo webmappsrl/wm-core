@@ -21,7 +21,7 @@
     wmMapCustomTracks
     [wmMapCustomTrackDrawTrack]="drawTrackOpened$|async"
     [wmMapCustomTrackDrawTrackHost]="graphhopperHost$|async"
-    [reloadCustomTracks]="reloadCustomTracks$|async"
+    [reloadCustomTracks]="(currentCustomTrack$|async) == null"
     (currentCustomTrack)="saveCurrentCustomTrack($event)"
     wmMapLayer
     [jidoUpdateTime]="confJIDOUPDATETIME$|async"
