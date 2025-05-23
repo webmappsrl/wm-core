@@ -62,7 +62,7 @@ import {ImageGalleryComponent} from './image-gallery/image-gallery.component';
 import {TrackRelatedPoiComponent} from './track-related-poi/track-related-poi.component';
 import {UgcPoiPropertiesComponent} from './ugc-poi-properties/ugc-poi-properties.component';
 import {WmTrackAlertComponent} from './track-alert/track-alert.component';
-import {ModalUgcTrackUploaderComponent} from './modal-ugc-track-uploader/modal-ugc-track-uploader.component';
+import {ModalUgcUploaderComponent} from './modal-ugc-uploader/modal-ugc-uploader.component';
 import {NetworkEffects} from './store/network/network.effects';
 import {networkReducer} from './store/network/netwotk.reducer';
 import {WmHomeHitMapComponent} from './home/home-hitmap/home-hitmap.component';
@@ -109,7 +109,7 @@ export const declarations = [
   TrackRelatedPoiComponent,
   UgcPoiPropertiesComponent,
   WmTrackAlertComponent,
-  ModalUgcTrackUploaderComponent,
+  ModalUgcUploaderComponent,
   WmHomeHitMapComponent,
   MetaComponent,
   GetDirectionsComponent,

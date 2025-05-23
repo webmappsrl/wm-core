@@ -21,18 +21,24 @@
         <ion-icon name="trash"></ion-icon>
       </ion-button>
     </ion-item>
-    <ng-container *ngIf="(ugcTrack$|async) as ugcTrack">
+    <ng-container *ngIf="(ugcFeature$|async) as ugcFeature">
       <wm-map
         [wmMapConf]="confMap$|async"
         [wmMapOnly]="true"
-        [wmMapGeojson]="ugcTrack$|async"
+        [wmMapGeojson]="ugcFeature$|async"
       ></wm-map>
       <wm-form
-        [confPOIFORMS]="confTRACKFORMS$|async"
-        [init]="ugcTrack.properties?.form"
+        [confPOIFORMS]="confFORMS$|async"
+        [init]="ugcFeature.properties?.form"
         (formGroupEvt)="setForm($event)"
         (isInvalidEvt)="isIvalidForm$.next($event)"
-      ></wm-form>
+      >
+        <wm-image-picker
+          (startAddPhotos)="startAddPhotos()"
+          (endAddPhotos)="endAddPhotos()"
+          (photosChanged)="photosChanged($event)"
+        ></wm-image-picker>
+      </wm-form>
     </ng-container>
   </ng-container>
   <ng-template #noFileSelected>

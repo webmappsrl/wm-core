@@ -5,7 +5,7 @@ wm-image-picker {
       padding: 20px 10px;
     }
     border-radius: 15px;
-    border: 2px var(--ion-color-light-shade) dashed;
+    border: 2px var(--ion-color-light-shade, var(--wm-color-light-shade)) dashed;
     text-align: center;
     width: 100%;
 
@@ -34,7 +34,7 @@ wm-image-picker {
     overflow: hidden;
 
     &.wm-image-picker-addimagecontainer {
-      border: dashed var(--wm-color-grey) 2px;
+      border: dashed var(--wm-color-grey, var(--wm-color-light-shade)) 2px;
     }
 
     .wm-image-picker-image {

@@ -50,7 +50,7 @@ import {combineLatest, of} from 'rxjs';
 import {Filter} from '@wm-core/types/config';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {ModalController} from '@ionic/angular';
-import {ModalUgcTrackUploaderComponent} from '@wm-core/modal-ugc-track-uploader/modal-ugc-track-uploader.component';
+import {ModalUgcUploaderComponent} from '@wm-core/modal-ugc-uploader/modal-ugc-uploader.component';
 import {HttpClient} from '@angular/common/http';
 import {WmFeature, WmFeatureCollection} from '@wm-types/feature';
 import {MultiPolygon} from 'geojson';
@@ -94,7 +94,7 @@ export class UserActivityEffects {
         ofType(openUgcUploader),
         switchMap(() =>
           this._modalCtrl.create({
-            component: ModalUgcTrackUploaderComponent,
+            component: ModalUgcUploaderComponent,
           }),
         ),
         switchMap(modal => modal.present()),
