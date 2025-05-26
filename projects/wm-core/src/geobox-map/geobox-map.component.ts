@@ -220,7 +220,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<WmFeature<Point>[]> = this._store.select(ecPois);
   refreshLayer$: Observable<any>;
-  reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   resetSelectedOvelayFeatureEVT$ = new Subject<void>();
   resetSelectedPoi$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   resetSelectedUgcPoi$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -412,10 +411,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
 
   resetMap(): void {
     this.mapCmp.resetView();
-  }
-
-  reloadCustomTrack(): void {
-    this._store.dispatch(currentCustomTrackAction({currentCustomTrack: null}));
   }
 
   removeActivityFilter(activity: string): void {}
