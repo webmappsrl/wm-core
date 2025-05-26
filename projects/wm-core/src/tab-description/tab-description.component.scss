@@ -10,13 +10,13 @@ wm-tab-description{
     color: var(--wm-feature-details-description-color);
     overflow: hidden;
     transition: max-height .4s ease-in-out;
-    max-height: 160px;
+    max-height: calc(var(--wm-max-description-lines) * 16.8px);
     display: -webkit-box;
     -webkit-line-clamp: var(--wm-max-description-lines);
     -webkit-box-orient: vertical;
 
     &.expanded {
-      max-height: 2000px;
+      max-height: 2000px !important;
       -webkit-line-clamp: unset;
     }
   }
