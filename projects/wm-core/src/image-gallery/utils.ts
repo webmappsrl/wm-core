@@ -26,9 +26,8 @@ export function setTranslate(): void {
       ty = tx;
       tx = 0;
     }
-    const slideOpacity = swiper.params.fadeEffect.crossFade
-      ? Math.max(1 - Math.abs($slideEl[0].progress), 0)
-      : 1 + Math.min(Math.max($slideEl[0].progress, -1), 0);
+    const progress = $slideEl[0].progress;
+    const slideOpacity = Math.max(1 - Math.abs(progress), 0);
     $slideEl
       .css({
         opacity: slideOpacity,
