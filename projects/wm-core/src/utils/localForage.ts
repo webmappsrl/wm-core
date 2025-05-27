@@ -409,6 +409,15 @@ export async function saveUgcTrack(feature: WmFeature<LineString>): Promise<void
   await handleAsync(storage.setItem(`${featureId}`, feature), 'saveUgcTrack: Failed');
 }
 
+export async function saveUgc(feature: WmFeature<LineString | Point>): Promise<void> {
+  if (!feature || !feature.geometry) return;
+  if (feature.geometry.type == 'LineString') {
+    await saveUgcTrack(feature as WmFeature<LineString>);
+  } else {
+    await saveUgcPoi(feature as WmFeature<Point>);
+  }
+}
+
 export function updateStatus(status: {
   finish: boolean;
   map?: number;

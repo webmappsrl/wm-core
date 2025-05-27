@@ -15,16 +15,17 @@ import {
   confTRACKFORMS,
 } from '@wm-core/store/conf/conf.selector';
 import {WmFeature, WmProperties} from '@wm-types/feature';
-import {Feature, Geometry, LineString, Point} from 'geojson';
+import {Feature, LineString, Point} from 'geojson';
 import {BehaviorSubject, combineLatest, EMPTY, from, Observable} from 'rxjs';
 import * as toGeoJSON from '@tmcw/togeojson';
 import {catchError, map, startWith, switchMap, take} from 'rxjs/operators';
 import {DeviceService} from '@wm-core/services/device.service';
 import {LangService} from '@wm-core/localization/lang.service';
-import {saveUgcPoi, saveUgcTrack} from '@wm-core/utils/localForage';
+import {saveUgc} from '@wm-core/utils/localForage';
 import {generateUUID} from '@wm-core/utils/localForage';
 import {syncUgc} from '@wm-core/store/features/ugc/ugc.actions';
 import {Photo} from '@capacitor/camera';
+import {addFormError, removeFormError} from '@wm-core/utils/form';
 
 @Component({
   selector: 'wm-modal-ugc-uploader',
@@ -109,11 +110,11 @@ export class ModalUgcUploaderComponent {
   }
 
   startAddPhotos(): void {
-    this._addFormError({photo: true});
+    addFormError(this.formGroup$.value, {photo: true});
   }
 
   endAddPhotos(): void {
-    this._removeFormError('photo');
+    removeFormError(this.formGroup$.value, 'photo');
   }
 
   photosChanged(photos: Photo[]): void {
@@ -152,11 +153,7 @@ export class ModalUgcUploaderComponent {
               }),
             ),
           ),
-          switchMap(feature =>
-            feature.geometry.type === 'LineString'
-              ? saveUgcTrack(feature as WmFeature<LineString>)
-              : saveUgcPoi(feature as WmFeature<Point>),
-          ),
+          switchMap(feature => saveUgc(feature)),
           switchMap(_ => {
             this.cancel();
             return this._alertCtrl.create({
@@ -178,15 +175,13 @@ export class ModalUgcUploaderComponent {
     }
   }
 
-  private _addFormError(error): void {
-    this.formGroup$.value.setErrors({...(this.formGroup$.value.errors || {}), error});
-  }
-
-  private _checkGeometryType(geometry: LineString | Point): void {
+  private _handleGeometryType(geometry: LineString | Point): void {
     if (geometry.type === 'LineString') {
       this.confFORMS$ = this._store.select(confTRACKFORMS);
     } else if (geometry.type === 'Point') {
       this.confFORMS$ = this._store.select(confPOIFORMS);
+      /*TODO: Necessario perchè nel backend la tabella ugc_pois accetta solo geometrie 2D
+              capire se sarebbe meglio avere una tabella ugc_pois che accetti anche geometrie 3D*/
       this._force2DGeometry(geometry);
     }
   }
@@ -202,7 +197,7 @@ export class ModalUgcUploaderComponent {
     return feature;
   }
 
-  private _deserializeProperties(feature: Feature): Feature {
+  private _deserializeProperties(feature: WmFeature<LineString | Point>): WmFeature<LineString | Point> {
     const isValidJSON = (value: string): boolean => {
       try {
         JSON.parse(value);
@@ -279,7 +274,7 @@ export class ModalUgcUploaderComponent {
     });
   }
 
-  private _isValidGeoJsonFeature(data: any): boolean {
+  private _isValidGeoJsonFeature(data: WmFeature<LineString | Point>): boolean {
     return (
       data &&
       data.type === 'Feature' &&
@@ -312,22 +307,6 @@ export class ModalUgcUploaderComponent {
     });
   }
 
-  private _removeFormError(errorKey: string): void {
-    if (!this.formGroup$.value.errors || !this.formGroup$.value.errors.error) return;
-
-    const currentErrors = {...this.formGroup$.value.errors.error};
-    delete currentErrors[errorKey];
-
-    // Se non ci sono più errori, rimuove l'oggetto `error`, altrimenti lo aggiorna
-    if (Object.keys(currentErrors).length === 0) {
-      const newErrors = {...this.formGroup$.value.errors};
-      delete newErrors.error;
-      this.formGroup$.value.setErrors(Object.keys(newErrors).length ? newErrors : null);
-    } else {
-      this.formGroup$.value.setErrors({...this.formGroup$.value.errors, error: currentErrors});
-    }
-  }
-
   private _showErrorAlert(message: string): void {
     from(
       this._alertCtrl.create({
@@ -338,6 +317,17 @@ export class ModalUgcUploaderComponent {
     )
       .pipe(switchMap(alert => alert.present()))
       .subscribe();
+  }
+
+  private _getGeojsonFeature(features: Feature[]): WmFeature<LineString | Point> | null {
+    const lineStringGpx = features?.find(
+      feature => feature.geometry?.type === 'LineString',
+    ) as WmFeature<LineString>;
+    const pointGpx = features?.find(
+      feature => feature.geometry?.type === 'Point',
+    ) as WmFeature<Point>;
+
+    return lineStringGpx ?? pointGpx ?? null;
   }
 
   private _validateAndConvertToWmFeature(
@@ -352,18 +342,9 @@ export class ModalUgcUploaderComponent {
         case 'gpx':
           const gpxDoc = new DOMParser().parseFromString(content, 'text/xml');
           const gpxConverted = toGeoJSON.gpx(gpxDoc);
+          geojsonFeature = this._getGeojsonFeature(gpxConverted?.features);
 
-          const lineStringGpx = gpxConverted?.features?.find(
-            feature => feature.geometry?.type === 'LineString',
-          );
-          const pointGpx = gpxConverted?.features?.find(
-            feature => feature.geometry?.type === 'Point',
-          );
-          if (lineStringGpx) {
-            geojsonFeature = lineStringGpx as WmFeature<LineString>;
-          } else if (pointGpx) {
-            geojsonFeature = pointGpx as WmFeature<Point>;
-          } else {
+          if (!geojsonFeature) {
             return null;
           }
           break;
@@ -371,20 +352,12 @@ export class ModalUgcUploaderComponent {
         case 'kml':
           const kmlDoc = new DOMParser().parseFromString(content, 'text/xml');
           const kmlConverted = toGeoJSON.kml(kmlDoc);
-          const lineStringKml = kmlConverted?.features?.find(
-            feature => feature.geometry?.type === 'LineString',
-          );
-          const pointKml = kmlConverted?.features?.find(
-            feature => feature.geometry?.type === 'Point',
-          );
-          if (lineStringKml) {
-            geojsonFeature = this._deserializeProperties(lineStringKml) as WmFeature<LineString>;
-          } else if (pointKml) {
-            geojsonFeature = this._deserializeProperties(pointKml) as WmFeature<Point>;
-          } else {
+          geojsonFeature = this._deserializeProperties(this._getGeojsonFeature(kmlConverted?.features));
+          if (!geojsonFeature) {
             return null;
           }
           break;
+
         case 'geojson':
           const geojsonParsed = JSON.parse(content);
           geojsonFeature = geojsonParsed;
@@ -397,7 +370,7 @@ export class ModalUgcUploaderComponent {
       if (!this._isValidGeoJsonFeature(geojsonFeature)) {
         return null;
       }
-      this._checkGeometryType(geojsonFeature.geometry);
+      this._handleGeometryType(geojsonFeature.geometry);
 
       return this._deleteUnnecessaryProperties(geojsonFeature);
     } catch (error) {
