@@ -9,7 +9,7 @@ import {AlertController} from '@ionic/angular';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Action, Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
-import {clearUgcData, getAuth, removeAuth, saveAuth} from '@wm-core/utils/localForage';
+import {clearUgcDeviceData, clearUgcSynchronizedData, getAuth, removeAuth, saveAuth} from '@wm-core/utils/localForage';
 import {catchError, filter, map, switchMap} from 'rxjs/operators';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class AuthEffects {
       switchMap(action =>
         this._authSvc.delete().pipe(
           map(user => {
-            this._clearUserData();
+            this._clearUserData(true);
             return AuthActions.deleteUserSuccess();
           }),
           catchError(error => {
@@ -183,9 +183,12 @@ export class AuthEffects {
     return AuthActions.loadSignOutsSuccess();
   }
 
-  private async _clearUserData(): Promise<void> {
+  private async _clearUserData(clearDeviceData: boolean = false): Promise<void> {
     this._store.dispatch(closeUgc());
-    await clearUgcData();
+    await clearUgcSynchronizedData();
+    if (clearDeviceData) {
+      await clearUgcDeviceData();
+    }
     await removeAuth();
     this._store.dispatch(syncUgc());
   }

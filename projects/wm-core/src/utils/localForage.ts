@@ -4,18 +4,22 @@ import * as localforage from 'localforage';
 import {downloadTiles, getTilesByGeometry, removeTiles} from '../../../../../map-core/src/utils';
 import {IUser} from '@wm-core/store/auth/auth.model';
 
-export async function clearUgcData(): Promise<void> {
+export async function clearUgcSynchronizedData(): Promise<void> {
   await Promise.all([
     synchronizedEctrack.clear(),
     synchronizedImg.clear(),
     synchronizedUgcTrack.clear(),
     synchronizedUgcPoi.clear(),
+  ]);
+}
+
+export async function clearUgcDeviceData(): Promise<void> {
+  await Promise.all([
     deviceUgcTrack.clear(),
     deviceUgcPoi.clear(),
     deviceImg.clear(),
   ]);
 }
-
 export async function downloadEcTrack(
   trackid: string,
   track: WmFeature<LineString>,
