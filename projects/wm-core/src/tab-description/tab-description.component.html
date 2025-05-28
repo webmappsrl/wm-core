@@ -4,12 +4,9 @@
     #descriptionElement
     class="webmapp-pageroute-tabdescription-description"
     [class.expanded]="(isExpanded$ | async) || !(showExpandButton$ | async)"
-    [innerHTML]="htmlDescription"
+    [innerHTML]="htmlDescription|wmtrans"
   ></div>
-  <div
-    *ngIf="showExpandButton$ | async"
-    class="wm-expand-button"
-    (click)="toggleExpand()"
-  >{{ (isExpanded$ | async) ? ('Mostra meno' | wmtrans | lowercase) : ('Mostra altro' | wmtrans | lowercase) }}
+  <div *ngIf="showExpandButton$ | async" class="wm-expand-button" (click)="toggleExpand()">
+    {{ (isExpanded$ | async) ? ('Mostra meno' | wmtrans | lowercase) : ('Mostra altro' | wmtrans | lowercase) }}
   </div>
 </div>

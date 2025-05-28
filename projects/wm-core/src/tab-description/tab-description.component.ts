@@ -11,6 +11,9 @@ import {LangService} from '@wm-core/localization/lang.service';
 import {BehaviorSubject} from 'rxjs';
 
 export const MAX_LINES = 5;
+
+type TranslationValue = string | Record<string, string | null> | null | undefined;
+
 @Component({
   selector: 'wm-tab-description',
   templateUrl: './tab-description.component.html',
@@ -21,9 +24,10 @@ export const MAX_LINES = 5;
 export class WmTabDescriptionComponent {
   htmlDescription$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
-  @Input() set description(value:string) {
-    const description = this._langSvc.instant(value);
-    this.htmlDescription$.next(this._addTruncationClass(description))
+  @Input() set description(value: TranslationValue) {
+    const processedValue = this._cleanTranslationObject(value);
+    const description = this._langSvc.instant(processedValue);
+    this.htmlDescription$.next(this._addTruncationClass(description));
   }
   @ViewChild('descriptionElement') descriptionElement: ElementRef;
 
@@ -70,5 +74,22 @@ export class WmTabDescriptionComponent {
         this.showExpandButton$.next(scrollHeight > maxHeight);
       }
     }, 50);
+  }
+
+  private _cleanTranslationObject(value: TranslationValue): TranslationValue {
+    // Se value è un oggetto (dizionario), rimuovi le chiavi con valori null
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      const cleanedObject = Object.keys(value).reduce((acc, key) => {
+        if (value[key] !== null) {
+          acc[key] = value[key];
+        }
+        return acc;
+      }, {} as Record<string, string>);
+
+      // Se l'oggetto è vuoto dopo la pulizia, assegna undefined
+      return Object.keys(cleanedObject).length === 0 ? undefined : cleanedObject;
+    }
+
+    return value;
   }
 }
