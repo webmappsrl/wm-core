@@ -32,8 +32,7 @@ import {isValidWmFeature} from '@wm-core/utils/features';
   selector: 'wm-modal-ugc-uploader',
   templateUrl: './modal-ugc-uploader.component.html',
   styleUrls: ['./modal-ugc-uploader.component.scss'],
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None, //TODO do not use change detection strategy
 })
 export class ModalUgcUploaderComponent {
   @ViewChild('fileInput') fileInput!: ElementRef;
