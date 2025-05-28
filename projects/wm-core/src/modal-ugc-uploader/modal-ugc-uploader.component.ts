@@ -1,39 +1,57 @@
-import {Component, ElementRef, ViewChild, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
 import {UntypedFormGroup} from '@angular/forms';
 import {AlertController, ModalController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
-import {confGeohubId, confMAP, confTRACKFORMS} from '@wm-core/store/conf/conf.selector';
+import {
+  confGeohubId,
+  confMAP,
+  confPOIFORMS,
+  confTRACKFORMS,
+} from '@wm-core/store/conf/conf.selector';
 import {WmFeature, WmProperties} from '@wm-types/feature';
-import {Feature, LineString} from 'geojson';
+import {FeatureCollection, LineString, Point} from 'geojson';
 import {BehaviorSubject, combineLatest, EMPTY, from, Observable} from 'rxjs';
 import * as toGeoJSON from '@tmcw/togeojson';
 import {catchError, map, startWith, switchMap, take} from 'rxjs/operators';
 import {DeviceService} from '@wm-core/services/device.service';
 import {LangService} from '@wm-core/localization/lang.service';
-import {saveUgcTrack} from '@wm-core/utils/localForage';
+import {saveUgc} from '@wm-core/utils/localForage';
 import {generateUUID} from '@wm-core/utils/localForage';
-import {syncUgcTracks} from '@wm-core/store/features/ugc/ugc.actions';
+import {syncUgc} from '@wm-core/store/features/ugc/ugc.actions';
+import {Photo} from '@capacitor/camera';
+import {addFormError, removeFormError} from '@wm-core/utils/form';
+import {isValidWmFeature} from '@wm-core/utils/features';
 
 @Component({
-  selector: 'wm-modal-ugc-track-uploader',
-  templateUrl: './modal-ugc-track-uploader.component.html',
-  styleUrls: ['./modal-ugc-track-uploader.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+  selector: 'wm-modal-ugc-uploader',
+  templateUrl: './modal-ugc-uploader.component.html',
+  styleUrls: ['./modal-ugc-uploader.component.scss'],
+  encapsulation: ViewEncapsulation.None, //TODO do not use change detection strategy
 })
-export class ModalUgcTrackUploaderComponent {
+export class ModalUgcUploaderComponent {
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   acceptedFileTypes: string = '.gpx,.kml,.geojson,application/gpx+xml,application/octet-stream';
   confMap$: Observable<any> = this._store.select(confMAP);
-  confTRACKFORMS$: Observable<any[]> = this._store.select(confTRACKFORMS);
+  confFORMS$: Observable<any[]>;
   formGroup$: BehaviorSubject<UntypedFormGroup> = new BehaviorSubject<UntypedFormGroup>(null);
   geohubId$: Observable<number> = this._store.select(confGeohubId);
   isDragging$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   selectedFile$: BehaviorSubject<File | null> = new BehaviorSubject<File | null>(null);
-  ugcTrack$: BehaviorSubject<WmFeature<LineString> | null> =
-    new BehaviorSubject<WmFeature<LineString> | null>(null);
+  ugcFeature$: BehaviorSubject<WmFeature<LineString | Point> | null> =
+    new BehaviorSubject<WmFeature<LineString | Point> | null>(null);
+  ugcType$: BehaviorSubject<'track' | 'poi'> = new BehaviorSubject<'track' | 'poi'>(null);
   isUploadDisabled$: Observable<boolean>;
   isIvalidForm$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+
+  _photos: Photo[] = [];
+
   constructor(
     private _store: Store,
     private _modalCtrl: ModalController,
@@ -85,10 +103,22 @@ export class ModalUgcTrackUploaderComponent {
 
   removeFile(): void {
     this.selectedFile$.next(null);
-    this.ugcTrack$.next(null);
+    this.ugcFeature$.next(null);
   }
   setForm(form: UntypedFormGroup): void {
     this.formGroup$.next(form);
+  }
+
+  startAddPhotos(): void {
+    addFormError(this.formGroup$.value, {photo: true});
+  }
+
+  endAddPhotos(): void {
+    removeFormError(this.formGroup$.value, 'photo');
+  }
+
+  photosChanged(photos: Photo[]): void {
+    this._photos = photos;
   }
 
   upload(): void {
@@ -109,20 +139,21 @@ export class ModalUgcTrackUploaderComponent {
                   app_id: `${geohubId}`,
                   createdAt: dateNow,
                   updatedAt: dateNow,
+                  media: this._photos,
                   device,
                 };
-                this.ugcTrack$.next({
-                  ...this.ugcTrack$.value,
+                this.ugcFeature$.next({
+                  ...this.ugcFeature$.value,
                   properties: {
-                    ...this.ugcTrack$.value?.properties,
+                    ...this.ugcFeature$.value?.properties,
                     ...properties,
                   },
                 });
-                return this.ugcTrack$.value;
+                return this.ugcFeature$.value;
               }),
             ),
           ),
-          switchMap(feature => saveUgcTrack(feature)),
+          switchMap(feature => saveUgc(feature)),
           switchMap(_ => {
             this.cancel();
             return this._alertCtrl.create({
@@ -140,20 +171,37 @@ export class ModalUgcTrackUploaderComponent {
             return EMPTY;
           }),
         )
-        .subscribe(() => this._store.dispatch(syncUgcTracks()));
+        .subscribe(() => this._store.dispatch(syncUgc()));
     }
   }
 
-  private _deleteUnnecessaryProperties(feature: WmFeature<LineString>): WmFeature<LineString> {
-    if (feature.properties) {
+  private _handleGeometryType(geometry: LineString | Point): void {
+    if (geometry.type === 'LineString') {
+      this.confFORMS$ = this._store.select(confTRACKFORMS);
+    } else if (geometry.type === 'Point') {
+      this.confFORMS$ = this._store.select(confPOIFORMS);
+      /*TODO: Necessario perchè nel backend la tabella ugc_pois accetta solo geometrie 2D
+              capire se sarebbe meglio avere una tabella ugc_pois che accetti anche geometrie 3D*/
+      this._force2DGeometry(geometry);
+    }
+  }
+
+  private _deleteUnnecessaryProperties(
+    feature: WmFeature<LineString | Point>,
+  ): WmFeature<LineString | Point> {
+    if (feature?.properties) {
+      const id = feature.properties.id;
       delete feature.properties.id;
       delete feature.properties.uuid;
       delete feature.properties.image_gallery;
+      if(id) {
+        feature.properties.onwer_id ??= id;
+      }
     }
     return feature;
   }
 
-  private _deserializeProperties(feature: Feature): Feature {
+  private _deserializeKmlProperties(feature: WmFeature<LineString | Point>): WmFeature<LineString | Point> {
     const isValidJSON = (value: string): boolean => {
       try {
         JSON.parse(value);
@@ -172,6 +220,10 @@ export class ModalUgcTrackUploaderComponent {
     };
   }
 
+  private _force2DGeometry(geometry: Point): void {
+    geometry.coordinates = [geometry.coordinates[0], geometry.coordinates[1]];
+  }
+
   private _handleFile(file: File): void {
     if (!this._isFileTypeAccepted(file)) {
       this.selectedFile$.next(null);
@@ -185,7 +237,7 @@ export class ModalUgcTrackUploaderComponent {
         map(fileContent => {
           const result = this._validateAndConvertToWmFeature(fileContent, file.name);
           if (result) {
-            this.ugcTrack$.next(result);
+            this.ugcFeature$.next(result);
             this.selectedFile$.next(file);
           } else {
             this.selectedFile$.next(null);
@@ -226,17 +278,6 @@ export class ModalUgcTrackUploaderComponent {
     });
   }
 
-  private _isValidGeoJsonFeature(data: any): boolean {
-    return (
-      data &&
-      data.type === 'Feature' &&
-      data.geometry &&
-      data.geometry.type === 'LineString' &&
-      Array.isArray(data.geometry.coordinates) &&
-      data.geometry.coordinates.length > 0
-    );
-  }
-
   private _readFileContent(file: File): Observable<string> {
     return new Observable(observer => {
       const reader = new FileReader();
@@ -271,25 +312,32 @@ export class ModalUgcTrackUploaderComponent {
       .subscribe();
   }
 
+  private _extractWmFeatureFromFeatureCollection(featureCollection: FeatureCollection): WmFeature<LineString | Point> | null {
+    const lineStringGpx = featureCollection?.features?.find(
+      feature => feature.geometry?.type === 'LineString',
+    ) as WmFeature<LineString>;
+    const pointGpx = featureCollection?.features?.find(
+      feature => feature.geometry?.type === 'Point',
+    ) as WmFeature<Point>;
+
+    return lineStringGpx ?? pointGpx ?? null;
+  }
+
   private _validateAndConvertToWmFeature(
     content: string,
     fileName: string,
-  ): WmFeature<LineString> | null {
+  ): WmFeature<LineString | Point> | null {
     const extension = fileName.split('.').pop()?.toLowerCase();
-    let geojsonFeature: WmFeature<LineString>;
+    let geojsonFeature: WmFeature<LineString | Point>;
 
     try {
       switch (extension) {
         case 'gpx':
           const gpxDoc = new DOMParser().parseFromString(content, 'text/xml');
           const gpxConverted = toGeoJSON.gpx(gpxDoc);
-          // Cerca la prima feature con geometria LineString
-          const lineStringGpx = gpxConverted?.features?.find(
-            feature => feature.geometry?.type === 'LineString',
-          );
-          if (lineStringGpx) {
-            geojsonFeature = lineStringGpx as WmFeature<LineString>;
-          } else {
+          geojsonFeature = this._extractWmFeatureFromFeatureCollection(gpxConverted);
+
+          if (!geojsonFeature) {
             return null;
           }
           break;
@@ -297,15 +345,12 @@ export class ModalUgcTrackUploaderComponent {
         case 'kml':
           const kmlDoc = new DOMParser().parseFromString(content, 'text/xml');
           const kmlConverted = toGeoJSON.kml(kmlDoc);
-          const lineStringKml = kmlConverted?.features?.find(
-            feature => feature.geometry?.type === 'LineString',
-          );
-          if (lineStringKml) {
-            geojsonFeature = this._deserializeProperties(lineStringKml) as WmFeature<LineString>;
-          } else {
+          geojsonFeature = this._deserializeKmlProperties(this._extractWmFeatureFromFeatureCollection(kmlConverted));
+          if (!geojsonFeature) {
             return null;
           }
           break;
+
         case 'geojson':
           const geojsonParsed = JSON.parse(content);
           geojsonFeature = geojsonParsed;
@@ -315,9 +360,10 @@ export class ModalUgcTrackUploaderComponent {
           return null;
       }
 
-      if (!this._isValidGeoJsonFeature(geojsonFeature)) {
+      if (!isValidWmFeature(geojsonFeature)) {
         return null;
       }
+      this._handleGeometryType(geojsonFeature.geometry);
 
       return this._deleteUnnecessaryProperties(geojsonFeature);
     } catch (error) {
