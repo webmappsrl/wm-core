@@ -3,6 +3,7 @@ import {GeoJsonProperties, LineString, Point} from 'geojson';
 import * as localforage from 'localforage';
 import {downloadTiles, getTilesByGeometry, removeTiles} from '../../../../../map-core/src/utils';
 import {IUser} from '@wm-core/store/auth/auth.model';
+import {isValidWmFeature} from '@wm-core/utils/features';
 
 export async function clearUgcSynchronizedData(): Promise<void> {
   await Promise.all([
@@ -410,7 +411,8 @@ export async function saveUgcTrack(feature: WmFeature<LineString>): Promise<void
 }
 
 export async function saveUgc(feature: WmFeature<LineString | Point>): Promise<void> {
-  if (!feature || !feature.geometry) return;
+  if (!isValidWmFeature(feature)) return;
+
   if (feature.geometry.type == 'LineString') {
     await saveUgcTrack(feature as WmFeature<LineString>);
   } else {

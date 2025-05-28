@@ -15,7 +15,7 @@ import {
   confTRACKFORMS,
 } from '@wm-core/store/conf/conf.selector';
 import {WmFeature, WmProperties} from '@wm-types/feature';
-import {Feature, LineString, Point} from 'geojson';
+import {FeatureCollection, LineString, Point} from 'geojson';
 import {BehaviorSubject, combineLatest, EMPTY, from, Observable} from 'rxjs';
 import * as toGeoJSON from '@tmcw/togeojson';
 import {catchError, map, startWith, switchMap, take} from 'rxjs/operators';
@@ -26,6 +26,7 @@ import {generateUUID} from '@wm-core/utils/localForage';
 import {syncUgc} from '@wm-core/store/features/ugc/ugc.actions';
 import {Photo} from '@capacitor/camera';
 import {addFormError, removeFormError} from '@wm-core/utils/form';
+import {isValidWmFeature} from '@wm-core/utils/features';
 
 @Component({
   selector: 'wm-modal-ugc-uploader',
@@ -189,15 +190,19 @@ export class ModalUgcUploaderComponent {
   private _deleteUnnecessaryProperties(
     feature: WmFeature<LineString | Point>,
   ): WmFeature<LineString | Point> {
-    if (feature.properties) {
+    if (feature?.properties) {
+      const id = feature.properties.id;
       delete feature.properties.id;
       delete feature.properties.uuid;
       delete feature.properties.image_gallery;
+      if(id) {
+        feature.properties.onwer_id ??= id;
+      }
     }
     return feature;
   }
 
-  private _deserializeProperties(feature: WmFeature<LineString | Point>): WmFeature<LineString | Point> {
+  private _deserializeKmlProperties(feature: WmFeature<LineString | Point>): WmFeature<LineString | Point> {
     const isValidJSON = (value: string): boolean => {
       try {
         JSON.parse(value);
@@ -274,17 +279,6 @@ export class ModalUgcUploaderComponent {
     });
   }
 
-  private _isValidGeoJsonFeature(data: WmFeature<LineString | Point>): boolean {
-    return (
-      data &&
-      data.type === 'Feature' &&
-      data.geometry &&
-      (data.geometry.type === 'LineString' || data.geometry.type === 'Point') &&
-      Array.isArray(data.geometry.coordinates) &&
-      data.geometry.coordinates.length > 0
-    );
-  }
-
   private _readFileContent(file: File): Observable<string> {
     return new Observable(observer => {
       const reader = new FileReader();
@@ -319,11 +313,11 @@ export class ModalUgcUploaderComponent {
       .subscribe();
   }
 
-  private _getGeojsonFeature(features: Feature[]): WmFeature<LineString | Point> | null {
-    const lineStringGpx = features?.find(
+  private _extractWmFeatureFromFeatureCollection(featureCollection: FeatureCollection): WmFeature<LineString | Point> | null {
+    const lineStringGpx = featureCollection?.features?.find(
       feature => feature.geometry?.type === 'LineString',
     ) as WmFeature<LineString>;
-    const pointGpx = features?.find(
+    const pointGpx = featureCollection?.features?.find(
       feature => feature.geometry?.type === 'Point',
     ) as WmFeature<Point>;
 
@@ -342,7 +336,7 @@ export class ModalUgcUploaderComponent {
         case 'gpx':
           const gpxDoc = new DOMParser().parseFromString(content, 'text/xml');
           const gpxConverted = toGeoJSON.gpx(gpxDoc);
-          geojsonFeature = this._getGeojsonFeature(gpxConverted?.features);
+          geojsonFeature = this._extractWmFeatureFromFeatureCollection(gpxConverted);
 
           if (!geojsonFeature) {
             return null;
@@ -352,7 +346,7 @@ export class ModalUgcUploaderComponent {
         case 'kml':
           const kmlDoc = new DOMParser().parseFromString(content, 'text/xml');
           const kmlConverted = toGeoJSON.kml(kmlDoc);
-          geojsonFeature = this._deserializeProperties(this._getGeojsonFeature(kmlConverted?.features));
+          geojsonFeature = this._deserializeKmlProperties(this._extractWmFeatureFromFeatureCollection(kmlConverted));
           if (!geojsonFeature) {
             return null;
           }
@@ -367,7 +361,7 @@ export class ModalUgcUploaderComponent {
           return null;
       }
 
-      if (!this._isValidGeoJsonFeature(geojsonFeature)) {
+      if (!isValidWmFeature(geojsonFeature)) {
         return null;
       }
       this._handleGeometryType(geojsonFeature.geometry);
