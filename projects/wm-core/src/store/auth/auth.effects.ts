@@ -9,7 +9,13 @@ import {AlertController} from '@ionic/angular';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Action, Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
-import {clearUgcDeviceData, clearUgcSynchronizedData, getAuth, removeAuth, saveAuth} from '@wm-core/utils/localForage';
+import {
+  clearUgcDeviceData,
+  clearUgcSynchronizedData,
+  getAuth,
+  removeAuth,
+  saveAuth,
+} from '@wm-core/utils/localForage';
 import {catchError, filter, map, switchMap} from 'rxjs/operators';
 
 @Injectable()
@@ -39,16 +45,20 @@ export class AuthEffects {
             saveAuth(user);
             return AuthActions.loadAuthsSuccess({user});
           }),
-          catchError(error =>
-            from(getAuth()).pipe(
+          catchError(error => {
+            console.log('error', error);
+            if (error?.status === 401) {
+              return of(AuthActions.loadAuthsFailure({error}));
+            }
+            return from(getAuth()).pipe(
               map(user => {
                 if (user) {
                   return AuthActions.loadAuthsSuccess({user});
                 }
                 return AuthActions.loadAuthsFailure({error});
               }),
-            ),
-          ),
+            );
+          }),
         ),
       ),
     );
@@ -85,6 +95,15 @@ export class AuthEffects {
       ),
     );
   });
+  logoutByError$ = createEffect(
+    () => {
+      return this._actions$.pipe(
+        ofType(AuthActions.loadAuthsFailure),
+        switchMap(async action => await this._clearUserData()),
+      );
+    },
+    {dispatch: false},
+  );
   logout$ = createEffect(() => {
     return this._actions$.pipe(
       ofType(AuthActions.loadSignOuts),
