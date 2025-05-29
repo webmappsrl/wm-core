@@ -18,7 +18,7 @@ export const initialState: AuthState = {
 export const authReducer = createReducer(
   initialState,
   on(AuthActions.loadSignUpsSuccess, (state, {user}) => {
-    localStorage.setItem('access_token', user.access_token);
+    setAccessToken(user);
     return {
       ...state,
       isLogged: true,
@@ -36,7 +36,7 @@ export const authReducer = createReducer(
     };
   }),
   on(AuthActions.loadSignInsSuccess, (state, {user}) => {
-    localStorage.setItem('access_token', user.access_token);
+    setAccessToken(user);
     return {
       ...state,
       isLogged: true,
@@ -55,6 +55,7 @@ export const authReducer = createReducer(
     };
   }),
   on(AuthActions.loadAuthsSuccess, (state, {user}) => {
+    setAccessToken(user);
     return {
       ...state,
       isLogged: true,
@@ -98,3 +99,9 @@ export const authReducer = createReducer(
     };
   }),
 );
+
+export function setAccessToken(user: IUser) {
+  if (user?.access_token) {
+    localStorage.setItem('access_token', user.access_token);
+  }
+}
