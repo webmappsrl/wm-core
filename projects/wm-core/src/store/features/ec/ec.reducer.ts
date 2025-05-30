@@ -15,13 +15,14 @@ import {
 
 import {IHIT} from '@wm-core/types/elastic';
 import {LineString} from 'geojson';
+import {Aggregations} from '@wm-types/elastic';
 
 export const searchKey = 'search';
 export interface Ec {
   ecPoiFeatures?: WmFeature<Point>[];
   hits?: IHIT[];
   ecTracksLoading: boolean;
-  aggregations?: any;
+  aggregations?: Aggregations;
   currentEcTrack?: WmFeature<LineString>;
   currentEcPoiId?: number;
   currentEcPoi?: WmFeature<Point>;

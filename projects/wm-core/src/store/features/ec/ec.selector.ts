@@ -41,6 +41,9 @@ export const statsApi = createSelector(aggregations, aggregations => {
     return res;
   }
 });
+export const aggregationBucketsLayers = createSelector(aggregations, aggregations => {
+  return aggregations?.layers?.count?.buckets ?? [];
+});
 export const ecTracksLoading = createSelector(ec, state => {
   return state.ecTracksLoading;
 });
@@ -215,8 +218,8 @@ export const currentPoiProperties = createSelector(
   },
 );
 
-export const layerFeaturesCount = createSelector(confMAPLayers, allEcpoiFeatures, ecTracks, (confMAPLayers, allEcpoiFeatures, ecTracks) => {
-  return calculateLayerFeaturesCount(confMAPLayers, allEcpoiFeatures, ecTracks);
+export const layerFeaturesCount = createSelector(confMAPLayers, allEcpoiFeatures, aggregationBucketsLayers, (confMAPLayers, allEcpoiFeatures, aggregationBucketsLayers) => {
+  return calculateLayerFeaturesCount(confMAPLayers, allEcpoiFeatures, aggregationBucketsLayers);
 });
 
 export const currentRelatedPoiIndex = createSelector(

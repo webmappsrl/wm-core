@@ -1,3 +1,4 @@
+import {Aggregations} from "@wm-types/elastic";
 
 export interface IELASTIC {
   [name: string]: any;
@@ -21,6 +22,6 @@ export interface IHIT {
 }
 
 export interface IRESPONSE {
-  aggregations:any;
+  aggregations: Aggregations;
   hits:IHIT[];
 }
