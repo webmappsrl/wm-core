@@ -13,7 +13,7 @@ import {
   currentEcImageGalleryIndex,
 } from '@wm-core/store/features/ec/ec.actions';
 
-import {IHIT} from '@wm-core/types/elastic';
+import {IHIT, IAggregations} from '@wm-core/types/elastic';
 import {LineString} from 'geojson';
 
 export const searchKey = 'search';
@@ -21,7 +21,7 @@ export interface Ec {
   ecPoiFeatures?: WmFeature<Point>[];
   hits?: IHIT[];
   ecTracksLoading: boolean;
-  aggregations?: any;
+  aggregations?: IAggregations;
   currentEcTrack?: WmFeature<LineString>;
   currentEcPoiId?: number;
   currentEcPoi?: WmFeature<Point>;

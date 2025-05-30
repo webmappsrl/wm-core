@@ -1,5 +1,5 @@
 import {ILAYER} from '@wm-core/types/config';
-import {IHIT} from '@wm-core/types/elastic';
+import {IBucket} from '@wm-core/types/elastic';
 import {LayerFeaturesCount, WmFeature} from '@wm-types/feature';
 import {Feature, Geometry, LineString, Point} from 'geojson';
 
@@ -60,10 +60,10 @@ export const filterFeaturesByInputTyped = (
   return filteredFeaturesByInputTyped;
 };
 
-export const calculateLayerFeaturesCount = (layers: ILAYER[], pois:WmFeature<Point>[], tracks: IHIT[]) => {
+export const calculateLayerFeaturesCount = (layers: ILAYER[], pois:WmFeature<Point>[], aggregationBucketsLayers: IBucket[]) => {
   const layerFeaturesCount: LayerFeaturesCount = {};
 
-  if(layers?.length > 0 && (pois?.length > 0 || tracks?.length > 0)) {
+  if(layers?.length > 0 && (pois?.length > 0 || aggregationBucketsLayers?.length > 0)) {
     layers.forEach(layer => {
       const layerId = layer.id;
       const layerTaxonomies = layer.taxonomy_themes;
@@ -82,12 +82,10 @@ export const calculateLayerFeaturesCount = (layers: ILAYER[], pois:WmFeature<Poi
         }
       });
 
-      tracks.forEach(track => {
-        if (track.layers.includes(+layerId)) {
-          layerFeaturesCount[layerId].tracks++;
-        }
-      });
-
+      const layerBucket = aggregationBucketsLayers.find(bucket => bucket.key == layerId);
+      if (layerBucket) {
+        layerFeaturesCount[layerId].tracks = layerBucket.doc_count;
+      }
     });
   }
 

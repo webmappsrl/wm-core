@@ -1,4 +1,3 @@
-
 export interface IELASTIC {
   [name: string]: any;
 }
@@ -20,7 +19,29 @@ export interface IHIT {
   distanceFromCurrentLocation?: number;
 }
 
+export interface IBucket {
+  key: string | number;
+  doc_count: number;
+}
+
+export interface ICount {
+  doc_count_error_upper_bound: number;
+  sum_other_doc_count: number;
+  buckets: IBucket[];
+}
+
+export interface IAggregationDetail {
+  doc_count: number;
+  count: ICount;
+}
+
+export interface IAggregations {
+  themes: IAggregationDetail;
+  activities: IAggregationDetail;
+  layers: IAggregationDetail;
+}
+
 export interface IRESPONSE {
-  aggregations:any;
+  aggregations: IAggregations;
   hits:IHIT[];
 }
