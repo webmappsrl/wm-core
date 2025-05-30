@@ -18,7 +18,7 @@ declare global {
   }
 }
 
-export function initializeConsoleOverride(environment: Environment): void {
+export function initializeConsoleOverride(environment: any): void {
   // Inizializza wmDebug con il valore dell'environment
   window.wmDebug = environment.debug || false;
 
