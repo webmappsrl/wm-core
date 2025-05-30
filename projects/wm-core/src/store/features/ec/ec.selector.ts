@@ -1,7 +1,7 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {confFILTERSTRACKS, confMAPLayers, confPOISFilter, confPoisIcons} from '../../conf/conf.selector';
 import {buildStats, calculateLayerFeaturesCount, filterFeatures, filterFeaturesByInputTyped} from './utils';
-import {IELASTIC} from '../../../types/elastic';
+import {Elastic} from '@wm-types/elastic';
 import {Ec} from './ec.reducer';
 import {
   inputTyped,
@@ -13,7 +13,7 @@ import {
 import {WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
 
-export const ec = createFeatureSelector<IELASTIC>('ec');
+export const ec = createFeatureSelector<Elastic>('ec');
 
 export const ecTracks = createSelector(ec, (state: Ec) => state.hits ?? []);
 export const countEcTracks = createSelector(ec, (state: Ec) => state.hits.length ?? undefined);

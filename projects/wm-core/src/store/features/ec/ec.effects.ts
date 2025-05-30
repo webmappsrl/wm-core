@@ -2,9 +2,8 @@ import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {from, of} from 'rxjs';
 import {catchError, map, switchMap} from 'rxjs/operators';
-
+import {Response} from '@wm-types/elastic';
 import {EcService} from './ec.service';
-import {IRESPONSE} from '@wm-core/types/elastic';
 import {
   currentEcTrackId,
   loadCurrentEcTrackFailure,
@@ -54,7 +53,7 @@ export class EcEffects {
       switchMap(action => {
         if (action.init) {
           return from(this._ecSvc.getQuery({})).pipe(
-            map((response: IRESPONSE) => ecTracksSuccess({response})),
+            map((response: Response) => ecTracksSuccess({response})),
             catchError(e => of(ecTracksFailure())),
           );
         }
@@ -65,7 +64,7 @@ export class EcEffects {
           inputTyped: action.inputTyped,
         };
         return from(this._ecSvc.getQuery(newAction)).pipe(
-          map((response: IRESPONSE) => ecTracksSuccess({response})),
+          map((response: Response) => ecTracksSuccess({response})),
           catchError(e => of(ecTracksFailure())),
         );
       }),

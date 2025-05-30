@@ -20,15 +20,15 @@ import {
   deleteUgcPoiSuccess,
 } from '@wm-core/store/features/ugc/ugc.actions';
 import {WmFeature} from '@wm-types/feature';
-import {IHIT} from '@wm-core/types/elastic';
+import {Hit} from '@wm-types/elastic';
 export const searchKey = 'search';
 export interface UgcState {
   syncing: boolean;
   syncable: boolean;
   ugcPoiFeatures?: WmFeature<Point>[];
   ugcTrackFeatures?: WmFeature<LineString>[];
-  ugcTracks: IHIT[];
-  ugcPois: IHIT[];
+  ugcTracks: Hit[];
+  ugcPois: Hit[];
   currentUgcTrack?: WmFeature<LineString>;
   currentUgcPoi?: WmFeature<Point>;
   syncUgcIntervalEnabled: boolean;
@@ -120,12 +120,12 @@ export const UgcReducer = createReducer(
     currentCustomTrack,
   })),
 );
-export function wmFeatureToHits(features: WmFeature<LineString | Point>[]): IHIT[] {
-  const hits: IHIT[] = [];
+export function wmFeatureToHits(features: WmFeature<LineString | Point>[]): Hit[] {
+  const hits: Hit[] = [];
 
   features.forEach(feature => {
     const activity = feature.properties?.form?.activity;
-    const hit: IHIT = {
+    const hit: Hit = {
       id: `${feature.properties.id ?? feature.properties.uuid}`,
       taxonomyActivities: activity ? [activity] : [],
       taxonomyWheres: [],

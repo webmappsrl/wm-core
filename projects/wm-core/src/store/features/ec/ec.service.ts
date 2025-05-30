@@ -6,7 +6,7 @@ import {FeatureCollection, LineString} from 'geojson';
 import {Observable, of} from 'rxjs';
 // @ts-ignore
 import {distinctUntilChanged, shareReplay, take} from 'rxjs/operators';
-import {IRESPONSE} from '@wm-core/types/elastic';
+import {Response} from '@wm-types/elastic';
 import {Filter, SliderFilter} from '../../../types/config';
 import {synchronizedApi} from '@wm-core/utils/localForage';
 import {WmFeature} from '@wm-types/feature';
@@ -119,7 +119,7 @@ export class EcService {
     layer?: any;
     filterTracks?: Filter[];
     trackIds?: number[];
-  }): Promise<IRESPONSE> {
+  }): Promise<Response> {
     await this._environmentSvc.readyPromise;
     let query = this._baseUrl;
 

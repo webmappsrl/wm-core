@@ -27,7 +27,7 @@ import {
 } from '@wm-core/store/features/features.selector';
 import {WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
-import {IHIT} from '@wm-core/types/elastic';
+import {Hit} from '@wm-types/elastic';
 import {getEcTracks, removeEcTrack} from '@wm-core/utils/localForage';
 import {LangService} from '@wm-core/localization/lang.service';
 import {AlertController} from '@ionic/angular';
@@ -57,7 +57,7 @@ export class WmHomeResultComponent implements OnDestroy {
   downloadsTracks$ = this.refreshDownloads.pipe(
     startWith(undefined), // Emetti un valore iniziale per avviare il flusso
     switchMap(() =>
-      from(getEcTracks()).pipe(map(t => t.map(track => track.properties as unknown as IHIT))),
+      from(getEcTracks()).pipe(map(t => t.map(track => track.properties as unknown as Hit))),
     ),
   );
   ectracks$ = this._store.select(tracks);
@@ -81,7 +81,7 @@ export class WmHomeResultComponent implements OnDestroy {
   );
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
   showTracks$ = this._store.select(showTracks);
-  tracks$: Observable<IHIT[]>;
+  tracks$: Observable<Hit[]>;
   tracksLoading$: Observable<boolean> = this._store.select(ecTracksLoading);
   ugcOpened$: Observable<boolean> = this._store.select(ugcOpened);
 

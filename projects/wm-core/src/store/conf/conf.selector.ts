@@ -2,7 +2,7 @@ import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {getCSSVariables} from '../../theme/theme';
 
 import {confFeatureKey} from './conf.reducer';
-import {IHIT} from '../../types/elastic';
+import {Hit} from '@wm-types/elastic';
 import {ICONF, IHOME, ILAYER, ITHEME} from '../../types/config';
 
 const confFeature = createFeatureSelector<ICONF>(confFeatureKey);
@@ -148,12 +148,12 @@ export const confOPTIONSShowFeaturesInViewport = createSelector(
 export const confOPTIONSShowMediaName = createSelector(confOPTIONS, state => state.showMediaName);
 export const confOPTIONSShowEmbeddedHtml = createSelector(confOPTIONS, state => state.showEmbeddedHtml);
 
-const getLayers = (layersID: number[], layers: ILAYER[], tracks: IHIT[]): ILAYER[] => {
+const getLayers = (layersID: number[], layers: ILAYER[], tracks: Hit[]): ILAYER[] => {
   return layers
     .filter(l => layersID.indexOf(+l.id) > -1)
     .map(el => {
       if (tracks != null) {
-        const tracksObj: {[layerID: number]: IHIT[]} = {};
+        const tracksObj: {[layerID: number]: Hit[]} = {};
         tracks.forEach(track => {
           track.layers.forEach(l => {
             if (layersID.indexOf(l) > -1) {

@@ -1,4 +1,4 @@
-import {IHIT} from './elastic';
+import {Hit} from '@wm-types/elastic';
 
 export type IBASEBOX = IBOX & {
   box_type: 'base';
@@ -262,7 +262,7 @@ export interface ILAYER {
   taxonomy_activities?: any[];
   taxonomy_themes?: any[];
   title: string;
-  tracks?: {[name: string]: IHIT[]};
+  tracks?: {[name: string]: Hit[]};
 }
 
 export interface IMAP {

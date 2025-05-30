@@ -1,6 +1,6 @@
 import {createAction, props} from '@ngrx/store';
 import {FeatureCollection, LineString, Point} from 'geojson';
-import {IRESPONSE} from '@wm-core/types/elastic';
+import {Response} from '@wm-types/elastic';
 import {Filter} from '../../../types/config';
 import {WmFeature} from '@wm-types/feature';
 
@@ -16,7 +16,7 @@ export const ecTracks = createAction(
 );
 export const ecTracksSuccess = createAction(
   '[ec] Load ec tracks success',
-  props<{response: IRESPONSE}>(),
+  props<{response: Response}>(),
 );
 export const ecTracksFailure = createAction('[ec] Load ec tracks fail');
 

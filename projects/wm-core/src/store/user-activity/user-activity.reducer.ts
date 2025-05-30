@@ -31,7 +31,7 @@ import {
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {set} from 'ol/transform';
-import { IHIT } from '@wm-core/types/elastic';
+import {Hit} from '@wm-types/elastic';
 
 export const key = 'userActivity';
 export type mapDetailsStatus = 'open' | 'onlyTitle' | 'background' | 'full';
@@ -53,7 +53,7 @@ export interface UserActivityState {
   chartHoverElements: WmSlopeChartHoverElements;
   currentEcPoiId?: any;
   wmMapHitMapChangeFeatureById?: number;
-  featuresInViewport: IHIT[];
+  featuresInViewport: Hit[];
   wmMapHitmapFeatures: WmFeature<MultiPolygon>[];
 }
 
