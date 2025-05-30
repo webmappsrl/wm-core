@@ -1,5 +1,5 @@
 import {ILAYER} from '@wm-core/types/config';
-import {IBucket} from '@wm-core/types/elastic';
+import {Bucket} from '@wm-types/elastic';
 import {LayerFeaturesCount, WmFeature} from '@wm-types/feature';
 import {Feature, Geometry, LineString, Point} from 'geojson';
 
@@ -60,7 +60,7 @@ export const filterFeaturesByInputTyped = (
   return filteredFeaturesByInputTyped;
 };
 
-export const calculateLayerFeaturesCount = (layers: ILAYER[], pois:WmFeature<Point>[], aggregationBucketsLayers: IBucket[]) => {
+export const calculateLayerFeaturesCount = (layers: ILAYER[], pois:WmFeature<Point>[], aggregationBucketsLayers: Bucket[]) => {
   const layerFeaturesCount: LayerFeaturesCount = {};
 
   if(layers?.length > 0 && (pois?.length > 0 || aggregationBucketsLayers?.length > 0)) {
