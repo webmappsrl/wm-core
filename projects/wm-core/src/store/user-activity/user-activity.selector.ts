@@ -43,6 +43,10 @@ export const drawTrackOpened = createSelector(userActivity, state =>
   state && state.drawTrackOpened ? state.drawTrackOpened : false,
 );
 
+export const drawPoiOpened = createSelector(userActivity, state =>
+  state && state.drawPoiOpened ? state.drawPoiOpened : false,
+);
+
 export const filterTracks = createSelector(userActivity, state => {
   return state.filterTracks;
 });
@@ -167,4 +171,7 @@ export const currentHitmapFeature = createSelector(
 );
 
 export const featuresInViewport = createSelector(userActivity, state => state.featuresInViewport);
-export const hasFeatureInViewport = createSelector(featuresInViewport, featuresInViewport => featuresInViewport && featuresInViewport.length > 0);
+export const hasFeatureInViewport = createSelector(
+  featuresInViewport,
+  featuresInViewport => featuresInViewport && featuresInViewport.length > 0,
+);

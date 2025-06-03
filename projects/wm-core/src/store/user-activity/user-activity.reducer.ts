@@ -27,6 +27,7 @@ import {
   setMapDetailsStatus,
   loadHitmapFeaturesSuccess,
   wmMapFeaturesInViewportSuccess,
+  drawPoiOpened,
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
@@ -50,6 +51,7 @@ export interface UserActivityState {
   lastFilterType?: 'tracks' | 'pois' | null;
   loading: {pois: boolean; layer: boolean};
   drawTrackOpened: boolean;
+  drawPoiOpened: boolean;
   chartHoverElements: WmSlopeChartHoverElements;
   currentEcPoiId?: any;
   wmMapHitMapChangeFeatureById?: number;
@@ -68,6 +70,7 @@ const initialState: UserActivityState = {
   inputTyped: null,
   filterTracks: [],
   drawTrackOpened: false,
+  drawPoiOpened: false,
   filterTaxonomies: [],
   lastFilterType: null,
   loading: {pois: false, layer: false},
@@ -138,6 +141,12 @@ export const userActivityReducer = createReducer(
     return {
       ...state,
       ...{drawTrackOpened},
+    };
+  }),
+  on(drawPoiOpened, (state, {drawPoiOpened}) => {
+    return {
+      ...state,
+      ...{drawPoiOpened},
     };
   }),
   on(setLayer, (state, {layer}) => {

@@ -49,3 +49,10 @@ export const currentCustomTrack = createSelector(
   ugc,
   (state: UgcState) => state.currentCustomTrack ?? null,
 );
+export const currentUgcPoiDrawn = createSelector(
+  ugc,
+  (state: UgcState) => state.currentUgcPoiDrawn ?? null,
+);
+export const currentUgcPoiDrawnGeometry = createSelector(currentUgcPoiDrawn, currentUgcPoiDrawn => {
+  return currentUgcPoiDrawn?.geometry ?? null;
+});
