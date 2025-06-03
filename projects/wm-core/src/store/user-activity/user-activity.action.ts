@@ -118,3 +118,4 @@ export const loadHitmapFeaturesFail = createAction('[User Activity] Load configu
 export const wmMapFeaturesInViewport = createAction('[User Activity] wm map features in viewport', props<{featureIds: number[]}>());
 export const wmMapFeaturesInViewportSuccess = createAction('[User Activity] wm map features in viewport success', props<{featuresInViewport: Hit[]}>());
 export const wmMapFeaturesInViewportFailure = createAction('[User Activity] wm map features in viewport failure');
+export const setHomeResultTabSelected = createAction('[User Activity] set home result tab selected', props<{tab: 'tracks' | 'pois' | null}>());

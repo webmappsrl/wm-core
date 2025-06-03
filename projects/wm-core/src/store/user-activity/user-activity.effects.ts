@@ -9,6 +9,7 @@ import {
   loadHitmapFeaturesSuccess,
   openUgcUploader,
   resetPoiFilters,
+  setHomeResultTabSelected,
   setLayer,
   setMapDetailsStatus,
   toggleTrackFilter,
@@ -60,10 +61,10 @@ export class UserActivityEffects {
   backOfMapDetails$ = createEffect(() =>
     this._actions$.pipe(
       ofType(backOfMapDetails),
-      map(() => {
+      mergeMap(() => {
         const removeLatest = this._urlHandlerSvc.removeLatest();
         if (removeLatest) {
-          return setMapDetailsStatus({status: 'background'});
+          return [setHomeResultTabSelected({tab: null}), setMapDetailsStatus({status: 'background'})];
         } else {
           return;
         }
@@ -82,6 +83,7 @@ export class UserActivityEffects {
           resetTrackFilters(),
           resetPoiFilters(),
           closeUgc(),
+          setHomeResultTabSelected({tab: null}),
           setMapDetailsStatus({status: 'background'}),
         ),
       ),

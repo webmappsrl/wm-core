@@ -8,12 +8,13 @@ import {
 } from '@angular/core';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, Observable, Subscription, combineLatest, from, of} from 'rxjs';
-import {map, startWith, switchMap} from 'rxjs/operators';
+import {debounceTime, filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {ecTracksLoading, poisInitCount} from '@wm-core/store/features/ec/ec.selector';
 
 import {
   downloadsOpened,
   ecLayer,
+  homeResultTabSelected,
   lastFilterType,
   showTracks,
   ugcOpened,
@@ -33,6 +34,7 @@ import {LangService} from '@wm-core/localization/lang.service';
 import {AlertController} from '@ionic/angular';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {GeolocationService} from '@wm-core/services/geolocation.service';
+import {setHomeResultTabSelected} from '@wm-core/store/user-activity/user-activity.action';
 
 @Component({
   selector: 'wm-home-result',
@@ -42,7 +44,7 @@ import {GeolocationService} from '@wm-core/services/geolocation.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class WmHomeResultComponent implements OnDestroy {
-  private _resultTypeSub$: Subscription = Subscription.EMPTY;
+  private _homeResultTabSelectedSub$: Subscription = Subscription.EMPTY;
 
   @Output() poiEVT: EventEmitter<number | string> = new EventEmitter();
   @Output() refreshDownloads: EventEmitter<void> = new EventEmitter<void>();
@@ -79,11 +81,11 @@ export class WmHomeResultComponent implements OnDestroy {
       ]) : of([])
     )
   );
-  showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
   showTracks$ = this._store.select(showTracks);
   tracks$: Observable<Hit[]>;
   tracksLoading$: Observable<boolean> = this._store.select(ecTracksLoading);
   ugcOpened$: Observable<boolean> = this._store.select(ugcOpened);
+  homeResultTabSelected$ = this._store.select(homeResultTabSelected);
 
   constructor(
     private _store: Store,
@@ -120,41 +122,49 @@ export class WmHomeResultComponent implements OnDestroy {
           : of([]),
       ),
     );
-    this._resultTypeSub$ = combineLatest([
-      this.countTracks$,
-      this.countPois$,
-      this.countInitPois$,
-      this.lastFilterType$,
-    ])
-      .pipe(
-        map(([tracks, pois, initPois, lastFilterType]) => {
-          if (
-            lastFilterType != null &&
-            lastFilterType === 'pois' &&
-            pois != null &&
-            pois > 0 &&
-            pois != null &&
-            pois < initPois
-          ) {
-            return 'pois';
-          } else if (tracks != null && tracks > 0) {
-            return 'tracks';
-          } else {
-            return 'pois';
-          }
-        }),
-      )
-      .subscribe(value => {
-        this.showResultType$.next(value);
-      });
+    this._homeResultTabSelectedSub$ = this.homeResultTabSelected$.pipe(
+      take(1),
+      switchMap(tab => {
+        if (tab !== null) {
+          return of(null);
+        }
+
+        return combineLatest([
+          this.countTracks$,
+          this.countPois$,
+          this.countInitPois$,
+          this.lastFilterType$,
+        ]).pipe(
+          debounceTime(150),
+          take(1),
+          map(([tracks, pois, initPois, lastFilterType]) => {
+            if (
+              lastFilterType === 'pois' &&
+              pois != null &&
+              pois > 0 &&
+              pois < initPois
+            ) {
+              return 'pois';
+            } else if (tracks != null && tracks > 0) {
+              return 'tracks';
+            } else {
+              return 'pois';
+            }
+          })
+        );
+      }),
+      filter((tab): tab is 'pois' | 'tracks' => tab !== null)
+    ).subscribe(tab => {
+      this._store.dispatch(setHomeResultTabSelected({ tab }));
+    });
   }
 
   ngOnDestroy(): void {
-    this._resultTypeSub$.unsubscribe();
+    this._homeResultTabSelectedSub$.unsubscribe();
   }
 
   changeResultType(event): void {
-    this.showResultType$.next(event.target.value);
+    this._store.dispatch(setHomeResultTabSelected({tab: event.target.value}));
   }
 
   async removeDownloads(event: Event, id: string): Promise<void> {

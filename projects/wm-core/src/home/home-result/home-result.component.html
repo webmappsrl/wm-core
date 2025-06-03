@@ -23,7 +23,7 @@
 </ng-container>
 <ng-template #noDownload>
   <ng-container *ngIf="(countAll$|async)>0;">
-    <ion-segment [value]="showResultType$|async" (ionChange)="changeResultType($event)">
+    <ion-segment [value]="homeResultTabSelected$|async" (ionChange)="changeResultType($event)">
       <ng-container *ngIf="tracks$|async as tracks">
         <ion-segment-button value="tracks" *ngIf="tracks.length > 0 &&  showTracks$|async">
           <ion-label>
@@ -53,8 +53,8 @@
   </ng-container>
 
   <div class="wm-home-content">
-    <ng-container *ngIf="showResultType$|async as showResulType;">
-      <ng-container *ngIf="showResulType === 'tracks'|| showResulType == null">
+    <ng-container *ngIf="homeResultTabSelected$|async as homeResultTabSelected;">
+      <ng-container *ngIf="homeResultTabSelected === 'tracks'|| homeResultTabSelected == null">
         <ng-container *ngIf="tracksLoading$|async">
           <ion-list *ngFor="let idx of [1,1,1,1,1,1,1]">
             <ion-list-header>
@@ -94,7 +94,7 @@
           </ng-container>
         </ng-container>
       </ng-container>
-      <div class="pois" *ngIf="showResulType === 'pois'|| showResulType === 'all'">
+      <div class="pois" *ngIf="homeResultTabSelected === 'pois'">
         <wm-poi-box
           *ngFor="let c of pois$|async|wmSort:'properties.updatedAt':false"
           [data]="c"
