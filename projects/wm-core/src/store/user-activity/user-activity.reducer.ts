@@ -27,10 +27,10 @@ import {
   setMapDetailsStatus,
   loadHitmapFeaturesSuccess,
   wmMapFeaturesInViewportSuccess,
+  setHomeResultTabSelected,
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
-import {set} from 'ol/transform';
 import {Hit} from '@wm-types/elastic';
 
 export const key = 'userActivity';
@@ -55,6 +55,7 @@ export interface UserActivityState {
   wmMapHitMapChangeFeatureById?: number;
   featuresInViewport: Hit[];
   wmMapHitmapFeatures: WmFeature<MultiPolygon>[];
+  homeResultTabSelected: 'tracks' | 'pois' | null;
 }
 
 export interface UserAcitivityRootState {
@@ -75,6 +76,7 @@ const initialState: UserActivityState = {
   wmMapHitMapChangeFeatureById: null,
   wmMapHitmapFeatures: [],
   featuresInViewport: [],
+  homeResultTabSelected: 'tracks',
 };
 
 function extractFilterTaxonomies(layer) {
@@ -287,5 +289,11 @@ export const userActivityReducer = createReducer(
       featuresInViewport,
     };
     return newState;
+  }),
+  on(setHomeResultTabSelected, (state, {tab}) => {
+    return {
+      ...state,
+      homeResultTabSelected: tab,
+    };
   }),
 );

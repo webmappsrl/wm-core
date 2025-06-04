@@ -45,6 +45,7 @@ import {
   togglePoiFilter,
   setMapDetailsStatus,
   toggleTrackFilterByIdentifier,
+  setHomeResultTabSelected,
 } from '@wm-core/store/user-activity/user-activity.action';
 import {WmSearchBarComponent} from '@wm-core/search-bar/search-bar.component';
 import {loadEcPois} from '@wm-core/store/features/ec/ec.actions';
@@ -169,6 +170,7 @@ export class WmHomeComponent implements AfterContentInit {
     this._store.dispatch(closeUgc());
     this._store.dispatch(closeDownloads());
     this._store.dispatch(setMapDetailsStatus({status: 'open'}));
+    this._store.dispatch(setHomeResultTabSelected({tab: 'tracks'}));
   }
 
   setPoi(id: string | number): void {

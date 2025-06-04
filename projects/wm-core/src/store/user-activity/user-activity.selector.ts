@@ -167,4 +167,11 @@ export const currentHitmapFeature = createSelector(
 );
 
 export const featuresInViewport = createSelector(userActivity, state => state.featuresInViewport);
-export const hasFeatureInViewport = createSelector(featuresInViewport, featuresInViewport => featuresInViewport && featuresInViewport.length > 0);
+export const hasFeatureInViewport = createSelector(
+  featuresInViewport,
+  featuresInViewport => featuresInViewport && featuresInViewport.length > 0,
+);
+export const homeResultTabSelected = createSelector(
+  userActivity,
+  state => state.homeResultTabSelected,
+);

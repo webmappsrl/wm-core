@@ -7,6 +7,7 @@ import {
   loadHitmapFeatures,
   loadHitmapFeaturesFail,
   loadHitmapFeaturesSuccess,
+  openDownloads,
   openUgcUploader,
   resetPoiFilters,
   setLayer,
@@ -14,6 +15,7 @@ import {
   toggleTrackFilter,
   toggleTrackFilterByIdentifier,
   updateTrackFilter,
+  setHomeResultTabSelected,
 } from './user-activity.action';
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
@@ -24,15 +26,12 @@ import {
   ecTracks,
   currentEcLayerId,
 } from '@wm-core/store/features/ec/ec.actions';
-import {
-  removeTrackFilters,
-  resetTrackFilters,
-  setLoading,
-} from '@wm-core/store/user-activity/user-activity.action';
+import {resetTrackFilters, setLoading} from '@wm-core/store/user-activity/user-activity.action';
 import {
   ecLayer,
   filterTracks,
   inputTyped as inputTypedSelector,
+  lastFilterType,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {
   debounceTime,
@@ -54,6 +53,7 @@ import {ModalUgcUploaderComponent} from '@wm-core/modal-ugc-uploader/modal-ugc-u
 import {HttpClient} from '@angular/common/http';
 import {WmFeature, WmFeatureCollection} from '@wm-types/feature';
 import {MultiPolygon} from 'geojson';
+import {countTracks} from '@wm-core/store/features/features.selector';
 
 @Injectable()
 export class UserActivityEffects {
@@ -179,6 +179,27 @@ export class UserActivityEffects {
           catchError((_: any) => of(loadHitmapFeaturesFail())),
         ),
       ),
+    ),
+  );
+
+  setHomeResultTabWhenLastFilterTypePois$ = createEffect(() =>
+    this._store.select(lastFilterType).pipe(
+      filter(lastFilterType => lastFilterType === 'pois'),
+      map(() => setHomeResultTabSelected({tab: 'pois'})),
+    ),
+  );
+
+  setHomeResultTabWhenTracksCountIsZero$ = createEffect(() =>
+    this._store.select(countTracks).pipe(
+      filter(trackCount => trackCount === 0),
+      map(() => setHomeResultTabSelected({tab: 'pois'})),
+    ),
+  );
+
+  setHomeResultTabToTracksWhenOpenDownloads$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(openDownloads),
+      map(() => setHomeResultTabSelected({tab: 'tracks'})),
     ),
   );
 
