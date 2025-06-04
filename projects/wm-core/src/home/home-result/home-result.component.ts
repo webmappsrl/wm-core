@@ -64,20 +64,22 @@ export class WmHomeResultComponent implements OnDestroy {
   lastFilterType$ = this._store.select(lastFilterType);
   pois$: Observable<WmFeature<Point>[]> = this._store.select(pois).pipe(
     switchMap(pois =>
-      pois?.length ? combineLatest([
-        ...pois.map(poi =>
-          this._geolocationSvc.getDistanceFromCurrentLocation$(poi.geometry?.coordinates).pipe(
-            map(distance => ({
-              ...poi,
-              properties: {
-                ...poi.properties,
-                distanceFromCurrentLocation: distance
-              }
-            }))
-          )
-        )
-      ]) : of([])
-    )
+      pois?.length
+        ? combineLatest([
+            ...pois.map(poi =>
+              this._geolocationSvc.getDistanceFromCurrentLocation$(poi.geometry?.coordinates).pipe(
+                map(distance => ({
+                  ...poi,
+                  properties: {
+                    ...poi.properties,
+                    distanceFromCurrentLocation: distance,
+                  },
+                })),
+              ),
+            ),
+          ])
+        : of([]),
+    ),
   );
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
   showTracks$ = this._store.select(showTracks);
@@ -107,14 +109,12 @@ export class WmHomeResultComponent implements OnDestroy {
         tracks?.length
           ? combineLatest(
               tracks.map(track =>
-                this._geolocationSvc
-                  .getDistanceFromCurrentLocation$(track.start)
-                  .pipe(
-                    map(distance => ({
-                      ...track,
-                      distanceFromCurrentLocation: distance,
-                    })),
-                  ),
+                this._geolocationSvc.getDistanceFromCurrentLocation$(track.start).pipe(
+                  map(distance => ({
+                    ...track,
+                    distanceFromCurrentLocation: distance,
+                  })),
+                ),
               ),
             )
           : of([]),
