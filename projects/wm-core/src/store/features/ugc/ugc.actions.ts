@@ -97,3 +97,8 @@ export const currentCustomTrack = createAction(
   '[Ugc] Set current Custom Track',
   props<{currentCustomTrack: WmFeature<LineString> | null}>(),
 );
+
+export const setCurrentUgcPoiDrawn = createAction(
+  '[Ugc] Set current Ugc Poi Drawn',
+  props<{currentUgcPoiDrawn: WmFeature<Point> | null}>(),
+);

@@ -60,9 +60,13 @@
     (ugcTrackSelectedFromMapEVT)="updateUgcTrack($event)"
     [wmMapUgcPois]="ugcPois$|async"
     [wmMapUgcPoiDisableClusterLayer]="wmMapUgcDisableLayers$|async"
-    [wmMapUgcPoi]="currentUgcPoiIDToMap$|async"
+    [wmMapUgcPoi]="currentUgcPoi$|async"
     [wmMapUgcUnselectedPoi]="resetSelectedUgcPoi$|async"
     (currentUgcPoiEvt)="setUgcPoi($event)"
+    wmMapDrawUgcPoi
+    [wmMapDrawUgcPoiEnabled]="drawPoiOpened$|async"
+    [wmMapDrawUgcPoiPoi]="currentUgcPoiDrawn$|async"
+    (ugcPoiDrawnEvt)="updateUgcPoiDrawn($event)"
   >
     <wm-filters
       top-right
