@@ -91,6 +91,10 @@ export const drawTrackOpened = createAction(
   '[User Activity] draw track opened',
   props<{drawTrackOpened: boolean}>(),
 );
+export const drawPoiOpened = createAction(
+  '[User Activity] draw poi opened',
+  props<{drawPoiOpened: boolean}>(),
+);
 
 export const trackElevationChartHoverElemenents = createAction(
   '[User Activity] track elevation chart hover elements',
@@ -116,9 +120,24 @@ export const loadHitmapFeaturesSuccess = createAction(
 );
 export const loadHitmapFeaturesFail = createAction('[User Activity] Load configuration Fail');
 
-export const wmMapFeaturesInViewport = createAction('[User Activity] wm map features in viewport', props<{featureIds: number[]}>());
-export const wmMapFeaturesInViewportSuccess = createAction('[User Activity] wm map features in viewport success', props<{featuresInViewport: Hit[]}>());
-export const wmMapFeaturesInViewportFailure = createAction('[User Activity] wm map features in viewport failure');
+export const wmMapFeaturesInViewport = createAction(
+  '[User Activity] wm map features in viewport',
+  props<{featureIds: number[]}>(),
+);
+export const wmMapFeaturesInViewportSuccess = createAction(
+  '[User Activity] wm map features in viewport success',
+  props<{featuresInViewport: Hit[]}>(),
+);
+export const wmMapFeaturesInViewportFailure = createAction(
+  '[User Activity] wm map features in viewport failure',
+);
+
+export const startEditUgcPoi = createAction(
+  '[User Activity] start edit ugc poi',
+  props<{ugcPoi: WmFeature<Point>}>(),
+);
+export const stopEditUgcPoi = createAction('[User Activity] stop edit ugc poi');
+
 export const setHomeResultTabSelected = createAction('[User Activity] set home result tab selected', props<{tab: 'tracks' | 'pois' | null}>());
 
 export const setCurrentLocation = createAction('[User Activity] set current location', props<{location: Location}>());

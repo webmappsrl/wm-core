@@ -43,6 +43,10 @@ export const drawTrackOpened = createSelector(userActivity, state =>
   state && state.drawTrackOpened ? state.drawTrackOpened : false,
 );
 
+export const drawPoiOpened = createSelector(userActivity, state =>
+  state && state.drawPoiOpened ? state.drawPoiOpened : false,
+);
+
 export const filterTracks = createSelector(userActivity, state => {
   return state.filterTracks;
 });

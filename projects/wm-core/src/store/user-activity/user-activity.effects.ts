@@ -2,6 +2,7 @@ import {
   applyWhere,
   backOfMapDetails,
   closeUgc,
+  drawPoiOpened,
   goToHome,
   inputTyped,
   loadHitmapFeatures,
@@ -12,6 +13,8 @@ import {
   resetPoiFilters,
   setLayer,
   setMapDetailsStatus,
+  startEditUgcPoi,
+  stopEditUgcPoi,
   toggleTrackFilter,
   toggleTrackFilterByIdentifier,
   updateTrackFilter,
@@ -56,6 +59,7 @@ import {ModalUgcUploaderComponent} from '@wm-core/modal-ugc-uploader/modal-ugc-u
 import {HttpClient} from '@angular/common/http';
 import {WmFeature, WmFeatureCollection} from '@wm-types/feature';
 import {MultiPolygon} from 'geojson';
+import {setCurrentUgcPoiDrawn} from '../features/ugc/ugc.actions';
 import {countTracks, poiFirstCoordinates, trackFirstCoordinates, trackNearestCoordinates} from '@wm-core/store/features/features.selector';
 import {ModalGetDirectionsComponent} from '@wm-core/modal-get-directions/modal-get-directions.component';
 
@@ -183,6 +187,26 @@ export class UserActivityEffects {
           catchError((_: any) => of(loadHitmapFeaturesFail())),
         ),
       ),
+    ),
+  );
+
+  startEditUgcPoi$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(startEditUgcPoi),
+      mergeMap(({ugcPoi}) => [
+        setCurrentUgcPoiDrawn({currentUgcPoiDrawn: ugcPoi}),
+        drawPoiOpened({drawPoiOpened: true}),
+      ]),
+    ),
+  );
+
+  stopEditUgcPoi$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(stopEditUgcPoi),
+      mergeMap(() => [
+        setCurrentUgcPoiDrawn({currentUgcPoiDrawn: null}),
+        drawPoiOpened({drawPoiOpened: false}),
+      ]),
     ),
   );
 

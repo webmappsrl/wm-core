@@ -104,3 +104,8 @@ export const deleteUgcMediaFailure = createAction(
   '[Ugc] Delete Ugc Media Failure',
   props<{error: string}>(),
 );
+
+export const setCurrentUgcPoiDrawn = createAction(
+  '[Ugc] Set current Ugc Poi Drawn',
+  props<{currentUgcPoiDrawn: WmFeature<Point> | null}>(),
+);

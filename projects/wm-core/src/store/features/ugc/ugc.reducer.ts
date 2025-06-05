@@ -19,6 +19,7 @@ import {
   updateUgcPoiSuccess,
   deleteUgcPoiSuccess,
   deleteUgcMediaSuccess,
+  setCurrentUgcPoiDrawn,
 } from '@wm-core/store/features/ugc/ugc.actions';
 import {WmFeature} from '@wm-types/feature';
 import {Hit} from '@wm-types/elastic';
@@ -34,6 +35,7 @@ export interface UgcState {
   currentUgcPoi?: WmFeature<Point>;
   syncUgcIntervalEnabled: boolean;
   currentCustomTrack?: WmFeature<LineString>;
+  currentUgcPoiDrawn?: WmFeature<Point>;
 }
 export interface ApiRootState {
   [searchKey]: UgcState;
@@ -48,6 +50,7 @@ const initialState: UgcState = {
   ugcPois: [],
   syncUgcIntervalEnabled: true,
   currentCustomTrack: null,
+  currentUgcPoiDrawn: null,
 };
 
 export const UgcReducer = createReducer(
@@ -148,6 +151,10 @@ export const UgcReducer = createReducer(
     }
     return state;
   }),
+  on(setCurrentUgcPoiDrawn, (state, {currentUgcPoiDrawn}) => ({
+    ...state,
+    currentUgcPoiDrawn,
+  })),
 );
 export function wmFeatureToHits(features: WmFeature<LineString | Point>[]): Hit[] {
   const hits: Hit[] = [];

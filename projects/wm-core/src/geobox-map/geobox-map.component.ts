@@ -73,10 +73,14 @@ import {
   confAUTHEnable,
   confOPTIONSShowFeaturesInViewport,
 } from '@wm-core/store/conf/conf.selector';
-import {currentCustomTrack as currentCustomTrackAction} from '@wm-core/store/features/ugc/ugc.actions';
+import {
+  currentCustomTrack as currentCustomTrackAction,
+  setCurrentUgcPoiDrawn,
+} from '@wm-core/store/features/ugc/ugc.actions';
 import {IDATALAYER} from '@map-core/types/layer';
 import {
   chartHoverElements,
+  drawPoiOpened,
   drawTrackOpened,
   ecLayer,
   inputTyped,
@@ -91,6 +95,7 @@ import {LineString, Point} from 'geojson';
 import {
   currentCustomTrack,
   currentUgcPoi,
+  currentUgcPoiDrawn,
   currentUgcTrack,
   ugcPoiFeatures,
   ugcTracksFeatures,
@@ -173,8 +178,11 @@ export class WmGeoboxMapComponent implements OnDestroy {
   currentRelatedPoi$ = this._store.select(currentEcRelatedPoi);
   currentRelatedPoiID$ = this._store.select(currentEcRelatedPoiId);
   currentUgcPoiIDToMap$: Observable<number | string | null>;
+  currentUgcPoi$: Observable<WmFeature<Point>> = this._store.select(currentUgcPoi);
+  currentUgcPoiDrawn$: Observable<WmFeature<Point>> = this._store.select(currentUgcPoiDrawn);
   dataLayerUrls$: Observable<IDATALAYER>;
   drawTrackOpened$: Observable<boolean> = this._store.select(drawTrackOpened);
+  drawPoiOpened$: Observable<boolean> = this._store.select(drawPoiOpened);
   showFeaturesInViewport$: Observable<boolean> = this._store.select(showFeaturesInViewport);
   geohubId$ = this._store.select(confGeohubId);
   graphhopperHost$: Observable<string> = of(this._environmentSvc.graphhopperHost);
@@ -495,6 +503,10 @@ export class WmGeoboxMapComponent implements OnDestroy {
     const id = poi?.properties?.id ?? poi?.properties?.uuid ?? null;
     this._urlHandlerSvc.updateURL({ugc_poi: id ? id : undefined});
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
+  }
+
+  updateUgcPoiDrawn(currentUgcPoiDrawn: WmFeature<Point>): void {
+    this._store.dispatch(setCurrentUgcPoiDrawn({currentUgcPoiDrawn}));
   }
 
   setWmMapFeatureCollection(overlay: any): void {
