@@ -68,7 +68,7 @@
     wmMapDrawUgcPoi
     [wmMapDrawUgcPoiEnabled]="drawPoiOpened$|async"
     [wmMapDrawUgcPoiPoi]="currentUgcPoiDrawn$|async"
-    (ugcPoiDrawnEvt)="updateUgcPoiDrawn($event)"
+    (wmMapDrawUgcPoiEvt)="updateUgcPoiDrawn($event)"
   >
     <wm-filters
       top-right
