@@ -192,7 +192,7 @@ export class UserActivityEffects {
 
   setHomeResultTabWhenTracksCountIsZero$ = createEffect(() =>
     this._store.select(countTracks).pipe(
-      skip(1),
+      skip(1), // Utilizzato per evitare di tener conto del primo valore emesso da countTracks che sarà sempre 0 all'avvio dell'app
       filter(trackCount => trackCount === 0),
       map(() => setHomeResultTabSelected({tab: 'pois'})),
     ),
