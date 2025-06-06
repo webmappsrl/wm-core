@@ -38,6 +38,7 @@ export class SliderFilterComponent implements OnDestroy {
 
   onIonChange(ev: Event): void {
     this.currentValue = (ev as RangeCustomEvent).detail.value as SliderFilter;
+    this.parent.lastFilterTypeEvt.emit('tracks');
     if (typeof this.currentValue === 'number') {
       this.parent.filterTracksEvt.emit({...this.filter, ...{min: this.currentValue}});
     } else {

@@ -16,6 +16,7 @@ import {
   toggleTrackFilterByIdentifier,
   updateTrackFilter,
   setHomeResultTabSelected,
+  openUgc,
 } from './user-activity.action';
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
@@ -182,15 +183,16 @@ export class UserActivityEffects {
     ),
   );
 
-  setHomeResultTabWhenLastFilterTypePois$ = createEffect(() =>
+  setHomeResultTabWhenLastFilterTypeChanged$ = createEffect(() =>
     this._store.select(lastFilterType).pipe(
-      filter(lastFilterType => lastFilterType === 'pois'),
-      map(() => setHomeResultTabSelected({tab: 'pois'})),
+      filter(lastFilterType => lastFilterType != null),
+      map((lastFilterType) => setHomeResultTabSelected({tab: lastFilterType})),
     ),
   );
 
   setHomeResultTabWhenTracksCountIsZero$ = createEffect(() =>
     this._store.select(countTracks).pipe(
+      skip(1), // Utilizzato per evitare di tener conto del primo valore emesso da countTracks che sarà sempre 0 all'avvio dell'app
       filter(trackCount => trackCount === 0),
       map(() => setHomeResultTabSelected({tab: 'pois'})),
     ),
@@ -199,6 +201,13 @@ export class UserActivityEffects {
   setHomeResultTabToTracksWhenOpenDownloads$ = createEffect(() =>
     this._actions$.pipe(
       ofType(openDownloads),
+      map(() => setHomeResultTabSelected({tab: 'tracks'})),
+    ),
+  );
+
+  setHomeResultTabToTrackWhenOpenUgc$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(openUgc),
       map(() => setHomeResultTabSelected({tab: 'tracks'})),
     ),
   );
