@@ -40,11 +40,7 @@ import {
 } from '@wm-core/store/features/ugc/ugc.actions';
 import {UgcService} from '@wm-core/store/features/ugc/ugc.service';
 import {select, Store} from '@ngrx/store';
-import {
-  activableUgc,
-  syncUgcIntervalEnabled,
-  currentUgcPoiDrawnGeometry,
-} from '@wm-core/store/features/ugc/ugc.selector';
+import {activableUgc, syncUgcIntervalEnabled} from './ugc.selector';
 import {
   getUgcPoi,
   getUgcTrack,
@@ -248,19 +244,14 @@ export class UgcEffects {
   updateUgcPoi$ = createEffect(() =>
     this._actions$.pipe(
       ofType(updateUgcPoi),
-      withLatestFrom(this._store.pipe(select(currentUgcPoiDrawnGeometry))),
-      mergeMap(([action, poiDrawnGeometry]) =>
+      mergeMap(action =>
         of(disableSyncInterval()).pipe(
           mergeMap(() => {
             const poiId = action.poi?.properties?.id;
             if (poiId) {
-              const updatedPoi = {
-                ...action.poi,
-                geometry: poiDrawnGeometry ?? action.poi?.geometry,
-              };
-              return from(this._ugcSvc.updateApiPoi(updatedPoi)).pipe(
+              return from(this._ugcSvc.updateApiPoi(action.poi)).pipe(
                 mergeMap(() => [
-                  updateUgcPoiSuccess({poi: updatedPoi}),
+                  updateUgcPoiSuccess({poi: action.poi}),
                   syncUgcPois(),
                   enableSyncInterval(),
                 ]),
