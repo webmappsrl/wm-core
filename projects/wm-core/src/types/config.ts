@@ -439,6 +439,7 @@ export interface ITHEME {
 }
 
 export interface IWEBAPP {
+  draw_poi_show: boolean;
   draw_track_show: boolean;
   editing_inline_show: boolean;
   splash_screen_show: boolean;

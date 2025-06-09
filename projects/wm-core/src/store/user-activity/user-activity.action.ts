@@ -131,8 +131,10 @@ export const wmMapFeaturesInViewportFailure = createAction(
   '[User Activity] wm map features in viewport failure',
 );
 
-export const startEditUgcPoi = createAction(
-  '[User Activity] start edit ugc poi',
+export const startDrawUgcPoi = createAction(
+  '[User Activity] start draw ugc poi',
   props<{ugcPoi: WmFeature<Point>}>(),
 );
-export const stopEditUgcPoi = createAction('[User Activity] stop edit ugc poi');
+export const stopDrawUgcPoi = createAction('[User Activity] stop edit ugc poi');
+
+export const openLoginModal = createAction('[User Activity] open login modal');

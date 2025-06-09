@@ -75,6 +75,8 @@ import {ImageDetailComponent} from './image-detail/image-detail.component';
 import {WmFeaturesInViewportComponent} from './features-in-viewport/features-in-viewport.component';
 import {WmDifficultyComponent} from './difficulty/difficulty.component';
 import {WmImagePickerComponent} from './image-picker/image-picker.component';
+import {WmDrawUgcComponent} from './draw-ugc/draw-ugc.component';
+import {WmDrawUgcButtonComponent} from './draw-ugc-button/draw-ugc-button.component';
 export const declarations = [
   WmTabDetailComponent,
   WmTabDescriptionComponent,
@@ -120,6 +122,8 @@ export const declarations = [
   WmFeaturesInViewportComponent,
   WmDifficultyComponent,
   WmImagePickerComponent,
+  WmDrawUgcComponent,
+  WmDrawUgcButtonComponent,
 ];
 const modules = [
   WmSharedModule,

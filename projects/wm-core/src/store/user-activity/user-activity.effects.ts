@@ -3,17 +3,19 @@ import {
   backOfMapDetails,
   closeUgc,
   drawPoiOpened,
+  drawTrackOpened,
   goToHome,
   inputTyped,
   loadHitmapFeatures,
   loadHitmapFeaturesFail,
   loadHitmapFeaturesSuccess,
+  openLoginModal,
   openUgcUploader,
   resetPoiFilters,
   setLayer,
   setMapDetailsStatus,
-  startEditUgcPoi,
-  stopEditUgcPoi,
+  startDrawUgcPoi,
+  stopDrawUgcPoi,
   toggleTrackFilter,
   toggleTrackFilterByIdentifier,
   updateTrackFilter,
@@ -48,8 +50,9 @@ import {
   filter,
   startWith,
   catchError,
+  concatMap,
 } from 'rxjs/operators';
-import {combineLatest, of} from 'rxjs';
+import {combineLatest, from, of} from 'rxjs';
 import {Filter} from '@wm-core/types/config';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {ModalController} from '@ionic/angular';
@@ -58,6 +61,8 @@ import {HttpClient} from '@angular/common/http';
 import {WmFeature, WmFeatureCollection} from '@wm-types/feature';
 import {MultiPolygon} from 'geojson';
 import {setCurrentUgcPoiDrawn} from '../features/ugc/ugc.actions';
+import {ProfileAuthComponent} from '@wm-core/profile/profile-auth/profile-auth.component';
+import {currentCustomTrack} from '@wm-core/store/features/ugc/ugc.actions';
 
 @Injectable()
 export class UserActivityEffects {
@@ -186,24 +191,57 @@ export class UserActivityEffects {
     ),
   );
 
-  startEditUgcPoi$ = createEffect(() =>
+  drawTrackOpened$ = createEffect(() =>
     this._actions$.pipe(
-      ofType(startEditUgcPoi),
-      mergeMap(({ugcPoi}) => [
-        setCurrentUgcPoiDrawn({currentUgcPoiDrawn: ugcPoi}),
-        drawPoiOpened({drawPoiOpened: true}),
+      ofType(drawTrackOpened),
+      mergeMap(_ => [
+        currentCustomTrack({currentCustomTrack: null}),
+        setLayer(null),
+        resetPoiFilters(),
+        resetTrackFilters(),
       ]),
     ),
   );
 
-  stopEditUgcPoi$ = createEffect(() =>
+  startDrawUgcPoi$ = createEffect(() =>
     this._actions$.pipe(
-      ofType(stopEditUgcPoi),
+      ofType(startDrawUgcPoi),
+      mergeMap(({ugcPoi}) => [
+        setCurrentUgcPoiDrawn({currentUgcPoiDrawn: ugcPoi}),
+        drawPoiOpened({drawPoiOpened: true}),
+        ...(ugcPoi === null ? [setLayer(null), resetPoiFilters(), resetTrackFilters()] : []),
+      ]),
+    ),
+  );
+
+  stopDrawUgcPoi$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(stopDrawUgcPoi),
       mergeMap(() => [
         setCurrentUgcPoiDrawn({currentUgcPoiDrawn: null}),
         drawPoiOpened({drawPoiOpened: false}),
       ]),
     ),
+  );
+
+  openLoginModal$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(openLoginModal),
+        mergeMap(() =>
+          from(
+            this._modalCtrl.create({
+              component: ProfileAuthComponent,
+              componentProps: {
+                slide1: 'assets/images/profile/logged_out_slide_1.svg',
+                slide2: 'assets/images/profile/logged_out_slide_2.svg',
+              },
+              id: 'wm-profile-auth-modal',
+            }),
+          ).pipe(concatMap(modal => from(modal.present()))),
+        ),
+      ),
+    {dispatch: false},
   );
 
   constructor(

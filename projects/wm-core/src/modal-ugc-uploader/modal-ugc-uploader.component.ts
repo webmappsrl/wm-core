@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   ElementRef,
   ViewChild,
@@ -122,6 +121,7 @@ export class ModalUgcUploaderComponent {
   }
 
   upload(): void {
+    // TODO: Logica duplicata in draw-track.component.ts
     if (this.selectedFile$.value) {
       this.geohubId$
         .pipe(
@@ -194,14 +194,16 @@ export class ModalUgcUploaderComponent {
       delete feature.properties.id;
       delete feature.properties.uuid;
       delete feature.properties.image_gallery;
-      if(id) {
+      if (id) {
         feature.properties.onwer_id ??= id;
       }
     }
     return feature;
   }
 
-  private _deserializeKmlProperties(feature: WmFeature<LineString | Point>): WmFeature<LineString | Point> {
+  private _deserializeKmlProperties(
+    feature: WmFeature<LineString | Point>,
+  ): WmFeature<LineString | Point> {
     const isValidJSON = (value: string): boolean => {
       try {
         JSON.parse(value);
@@ -312,7 +314,9 @@ export class ModalUgcUploaderComponent {
       .subscribe();
   }
 
-  private _extractWmFeatureFromFeatureCollection(featureCollection: FeatureCollection): WmFeature<LineString | Point> | null {
+  private _extractWmFeatureFromFeatureCollection(
+    featureCollection: FeatureCollection,
+  ): WmFeature<LineString | Point> | null {
     const lineStringGpx = featureCollection?.features?.find(
       feature => feature.geometry?.type === 'LineString',
     ) as WmFeature<LineString>;
@@ -345,7 +349,9 @@ export class ModalUgcUploaderComponent {
         case 'kml':
           const kmlDoc = new DOMParser().parseFromString(content, 'text/xml');
           const kmlConverted = toGeoJSON.kml(kmlDoc);
-          geojsonFeature = this._deserializeKmlProperties(this._extractWmFeatureFromFeatureCollection(kmlConverted));
+          geojsonFeature = this._deserializeKmlProperties(
+            this._extractWmFeatureFromFeatureCollection(kmlConverted),
+          );
           if (!geojsonFeature) {
             return null;
           }

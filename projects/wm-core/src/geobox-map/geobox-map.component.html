@@ -81,15 +81,10 @@
       (click)="wmap.wmMapCloseTopRightBtns = 'wm-filters'"
     ></wm-filters>
     <wm-profile-popup top-right></wm-profile-popup>
-    <div
+    <wm-draw-ugc-button
+      *ngIf="(confShowDraw$|async) && !(isMobile$|async)"
       top-right
-      class="top-right-button"
-      expand="full"
-      *ngIf="(showDrawTrackButton$|async) && !(isMobile$|async)"
-      (click)="toggleDrawTrackEnabled();wmap.wmMapCloseTopRightBtns = 'my-paths'"
-    >
-      {{ (drawTrackOpened$|async)?'esci':'i miei percorsi'|wmtrans}}
-    </div>
+    ></wm-draw-ugc-button>
     <div class="bottom-right" bottom-right>
       <ng-content select="[bottom-right]"></ng-content>
     </div>

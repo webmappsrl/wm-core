@@ -1,0 +1,26 @@
+<ng-container *ngIf="!(homeOpened$|async)">
+  <wm-form
+    [confPOIFORMS]="confFORMS$|async"
+    (formGroupEvt)="formGroup$.next($event)"
+    (isInvalidEvt)="isIvalidForm$.next($event)"
+  >
+    <wm-image-picker
+      (startAddPhotos)="startAddPhotos()"
+      (endAddPhotos)="endAddPhotos()"
+      (photosChanged)="photosChanged($event)"
+    ></wm-image-picker>
+  </wm-form>
+  <ng-container *ngIf="hasCustomTrack$|async;">
+    <ng-container *ngIf="currentUgcTrackDrawn$|async as currentUgcTrackDrawn">
+      <wm-slope-chart [currentTrack]="currentUgcTrackDrawn"></wm-slope-chart>
+      <wm-tab-detail [properties]="currentUgcTrackDrawn?.properties"></wm-tab-detail>
+      <wm-feature-useful-urls [track]="currentUgcTrackDrawn"></wm-feature-useful-urls>
+    </ng-container>
+  </ng-container>
+  <ion-button
+    expand="full"
+    (click)="saveUgc()"
+    [disabled]="isIvalidForm$|async"
+    >{{ 'salva' | wmtrans}}</ion-button
+  >
+</ng-container>
