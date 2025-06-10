@@ -15,8 +15,11 @@ import {generateUUID, saveUgc} from '@wm-core/utils/localForage';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 import {AlertController} from '@ionic/angular';
 import {LangService} from '@wm-core/localization/lang.service';
-import {syncUgc, currentCustomTrack} from '@wm-core/store/features/ugc/ugc.actions';
-import {startDrawUgcPoi} from '@wm-core/store/user-activity/user-activity.action';
+import {
+  syncUgc,
+  currentCustomTrack,
+  setCurrentUgcPoiDrawn,
+} from '@wm-core/store/features/ugc/ugc.actions';
 
 @Component({
   selector: 'wm-draw-ugc',
@@ -91,7 +94,7 @@ export class WmDrawUgcComponent {
         ),
         switchMap(feature => saveUgc(feature)),
         switchMap(_ => {
-          this._store.dispatch(startDrawUgcPoi({ugcPoi: null}));
+          this._store.dispatch(setCurrentUgcPoiDrawn({currentUgcPoiDrawn: null}));
           this._store.dispatch(currentCustomTrack({currentCustomTrack: null}));
           return this._alertCtrl.create({
             message: `${this._langSvc.instant('Il salvataggio è stato completato')}!`,
