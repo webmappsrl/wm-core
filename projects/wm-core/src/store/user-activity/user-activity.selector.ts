@@ -1,7 +1,7 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {currentCustomTrack, currentUgcPoi, currentUgcPoiDrawn} from '../features/ugc/ugc.selector';
 import {UserActivityState} from './user-activity.reducer';
-import {confFlowLineQuote} from '../conf/conf.selector';
+import {confFlowLineQuote, confPOIFORMS, confTRACKFORMS} from '../conf/conf.selector';
 import {WmSlopeChartFlowLineQuote} from '@wm-types/slope-chart';
 
 export const userActivity = createFeatureSelector<UserActivityState>('user-activity');
@@ -196,4 +196,13 @@ export const featuresInViewport = createSelector(userActivity, state => state.fe
 export const hasFeatureInViewport = createSelector(
   featuresInViewport,
   featuresInViewport => featuresInViewport && featuresInViewport.length > 0,
+);
+
+export const currentDrawFormType = createSelector(
+  confTRACKFORMS,
+  confPOIFORMS,
+  hasCustomTrack,
+  (trackForms, poiForms, hasCustomTrack) => {
+    return hasCustomTrack ? trackForms : poiForms;
+  },
 );

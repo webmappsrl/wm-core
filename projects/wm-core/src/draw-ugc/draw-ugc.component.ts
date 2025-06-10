@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
 import {UntypedFormGroup} from '@angular/forms';
 import {BehaviorSubject, EMPTY, from, Observable, of} from 'rxjs';
 import {Store} from '@ngrx/store';
-import {confPOIFORMS, confTRACKFORMS} from '@wm-core/store/conf/conf.selector';
+import {currentDrawFormType} from '@wm-core/store/user-activity/user-activity.selector';
 import {hasCustomTrack, homeOpened} from '@wm-core/store/user-activity/user-activity.selector';
 import {catchError, map, switchMap, take} from 'rxjs/operators';
 import {WmFeature, WmProperties} from '@wm-types/feature';
@@ -26,7 +26,7 @@ import {startDrawUgcPoi} from '@wm-core/store/user-activity/user-activity.action
   encapsulation: ViewEncapsulation.None,
 })
 export class WmDrawUgcComponent {
-  confFORMS$: Observable<any>;
+  currentDrawFormType$: Observable<any> = this._store.select(currentDrawFormType);
   homeOpened$: Observable<boolean> = this._store.select(homeOpened);
   hasCustomTrack$: Observable<boolean> = this._store.select(hasCustomTrack);
   currentUgcDrawn$: Observable<WmFeature<LineString | Point>> = this._store.select(currentUgcDrawn);
@@ -45,15 +45,7 @@ export class WmDrawUgcComponent {
     private _enviromentSvc: EnvironmentService,
     private _alertCtrl: AlertController,
     private _langSvc: LangService,
-  ) {
-    this.hasCustomTrack$.pipe(take(1)).subscribe(hasCustomTrack => {
-      if (hasCustomTrack) {
-        this.confFORMS$ = this._store.select(confTRACKFORMS);
-      } else {
-        this.confFORMS$ = this._store.select(confPOIFORMS);
-      }
-    });
-  }
+  ) {}
 
   startAddPhotos(): void {
     addFormError(this.formGroup$.value, {photo: true});

@@ -18,7 +18,7 @@ import {
   currentCustomTrack,
   updateUgcPoiSuccess,
   deleteUgcPoiSuccess,
-  setCurrentUgcPoiDrawn,
+  setCurrentUgcPoiDrawnSuccess,
 } from '@wm-core/store/features/ugc/ugc.actions';
 import {WmFeature} from '@wm-types/feature';
 import {Hit} from '@wm-types/elastic';
@@ -122,7 +122,7 @@ export const UgcReducer = createReducer(
     ...state,
     currentCustomTrack,
   })),
-  on(setCurrentUgcPoiDrawn, (state, {currentUgcPoiDrawn}) => ({
+  on(setCurrentUgcPoiDrawnSuccess, (state, {currentUgcPoiDrawn}) => ({
     ...state,
     currentUgcPoiDrawn,
   })),

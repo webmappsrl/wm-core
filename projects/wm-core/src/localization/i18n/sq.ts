@@ -152,9 +152,12 @@ export const wmSQ = {
     '<span class="orange">Niveli 2: seksione që nuk preken nga lartësia e madhe (lartësia midis {{orange}} metra dhe {{red}} metra)</span>',
   '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
     '<span class="red">Niveli 3: seksione që preken nga lartësia e madhe (lartësia më e madhe se {{red}} metra)</span>',
-  'Un utente è già stato registrato con questa email.': 'Një përdorues është tashmë regjistruar me këtë email.',
-  'L\'email inserita non è corretta. Per favore, riprova.': 'Email-i që keni futur nuk është e saktë. Ju lutem provoni përsëri.',
-  'La password inserita non è corretta. Per favore, riprova.': 'Fjalëkalimi që keni futur nuk është i saktë. Ju lutem provoni përsëri.',
+  'Un utente è già stato registrato con questa email.':
+    'Një përdorues është tashmë regjistruar me këtë email.',
+  "L'email inserita non è corretta. Per favore, riprova.":
+    'Email-i që keni futur nuk është e saktë. Ju lutem provoni përsëri.',
+  'La password inserita non è corretta. Per favore, riprova.':
+    'Fjalëkalimi që keni futur nuk është i saktë. Ju lutem provoni përsëri.',
   'Errore': 'Gabim',
   'Tempo': 'Koha',
   'Velocità media': 'Shpejtësia mesatare',
@@ -165,10 +168,13 @@ export const wmSQ = {
   'Carica': 'Ngarko',
   'Aggiornamento effettuato con successo': 'Përditësimi u krye me sukses',
   'Ops!': 'Ops!',
-  'Non è stato possibile aggiornare, riprova più tardi': 'Nuk ishte e mundur të përditësohej, provoni përsëri më vonë',
+  'Non è stato possibile aggiornare, riprova più tardi':
+    'Nuk ishte e mundur të përditësohej, provoni përsëri më vonë',
   'Eliminazione effettuata con successo': 'Fshirja u krye me sukses',
-  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.': 'Are you sure you want to delete this POI? The removal is irreversible.',
-  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'A jeni të sigurt që dëshironi të fshini këtë gjurmë? Fshirja është e pakthyeshme.',
+  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.':
+    'Are you sure you want to delete this POI? The removal is irreversible.',
+  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.':
+    'A jeni të sigurt që dëshironi të fshini këtë gjurmë? Fshirja është e pakthyeshme.',
   'Login effettuato con successo': 'Hyrja u krye me sukses',
   'Logout effettuato con successo': 'Shkëputja u krye me sukses',
   'Ottieni indicazioni': 'Merr hulumtime',
@@ -187,4 +193,13 @@ export const wmSQ = {
   'Aggiungi': 'Shto',
   'Foto': 'Foto',
   '(max 3 photo)': '(maks 3 foto)',
+  'salva': 'ruaj',
+  'Il salvataggio è stato completato': 'Ruajtja u krye me sukses',
+  'Stai modificando le coordinate del POI, vuoi continuare?':
+    'Po e ndryshoni koordinatat e POI-s, dëshironi të vazhdohet?',
+  'No': 'No',
+  'Sì': 'Po',
+  'Attenzione': 'Vëmendje',
+  'Disegna': 'Dhëni',
+  'Esci': 'Dil',
 };

@@ -1,6 +1,6 @@
 <ng-container *ngIf="!(homeOpened$|async)">
   <wm-form
-    [confPOIFORMS]="confFORMS$|async"
+    [confPOIFORMS]="currentDrawFormType$|async"
     (formGroupEvt)="formGroup$.next($event)"
     (isInvalidEvt)="isIvalidForm$.next($event)"
   >

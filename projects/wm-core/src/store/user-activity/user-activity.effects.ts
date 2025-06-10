@@ -63,6 +63,8 @@ import {MultiPolygon} from 'geojson';
 import {setCurrentUgcPoiDrawn} from '../features/ugc/ugc.actions';
 import {ProfileAuthComponent} from '@wm-core/profile/profile-auth/profile-auth.component';
 import {currentCustomTrack} from '@wm-core/store/features/ugc/ugc.actions';
+import {confAUTHEnable} from '../conf/conf.selector';
+import {isLogged} from '../auth/auth.selectors';
 
 @Injectable()
 export class UserActivityEffects {
@@ -194,23 +196,37 @@ export class UserActivityEffects {
   drawTrackOpened$ = createEffect(() =>
     this._actions$.pipe(
       ofType(drawTrackOpened),
-      mergeMap(_ => [
-        currentCustomTrack({currentCustomTrack: null}),
-        setLayer(null),
-        resetPoiFilters(),
-        resetTrackFilters(),
-      ]),
+      withLatestFrom(this._store.select(confAUTHEnable), this._store.select(isLogged)),
+      mergeMap(([_, authEnabled, isLogged]) => {
+        if (authEnabled && !isLogged) {
+          return [openLoginModal()];
+        } else {
+          return [
+            currentCustomTrack({currentCustomTrack: null}),
+            setLayer(null),
+            resetPoiFilters(),
+            resetTrackFilters(),
+          ];
+        }
+      }),
     ),
   );
 
   startDrawUgcPoi$ = createEffect(() =>
     this._actions$.pipe(
       ofType(startDrawUgcPoi),
-      mergeMap(({ugcPoi}) => [
-        setCurrentUgcPoiDrawn({currentUgcPoiDrawn: ugcPoi}),
-        drawPoiOpened({drawPoiOpened: true}),
-        ...(ugcPoi === null ? [setLayer(null), resetPoiFilters(), resetTrackFilters()] : []),
-      ]),
+      withLatestFrom(this._store.select(confAUTHEnable), this._store.select(isLogged)),
+      mergeMap(([{ugcPoi}, authEnabled, isLogged]) => {
+        if (authEnabled && !isLogged) {
+          return [openLoginModal()];
+        } else {
+          return [
+            setCurrentUgcPoiDrawn({currentUgcPoiDrawn: ugcPoi}),
+            drawPoiOpened({drawPoiOpened: true}),
+            ...(ugcPoi === null ? [setLayer(null), resetPoiFilters(), resetTrackFilters()] : []),
+          ];
+        }
+      }),
     ),
   );
 

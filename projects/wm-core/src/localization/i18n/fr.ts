@@ -126,7 +126,7 @@ export const wmFR = {
   'Galleria': 'Galerie',
   'resetta la memoria': 'Réinitialiser la mémoire',
   'rimani acceso': 'Restez connecté',
-  'forza il dispositivo a non spegnersi': 'Forcez le périphérique à ne pas s\'éteindre',
+  'forza il dispositivo a non spegnersi': "Forcez le périphérique à ne pas s'éteindre",
   'PAGINE': 'PAGES',
   'I tuoi dati': 'Vos données',
   'pages.profile.projectlink': 'Projet',
@@ -138,7 +138,7 @@ export const wmFR = {
   'la distanza espressa in metri che indica la cadenza di rilevamento posizione, più il distance filter è minore piu il consumo della batteria sarà maggiore.':
     'La distance exprimée en mètres indique la fréquence de détection de la position, plus le filtre de distance est faible, plus le consommation de la batterie sera élevée.',
   "Per registrare tracce e poi correttamente, abilita l'autorizzazione alla posizione nelle impostazioni":
-    'Pour enregistrer les pistes et les points d\'intérêt correctement, activez la permission de position dans les paramètres.',
+    "Pour enregistrer les pistes et les points d'intérêt correctement, activez la permission de position dans les paramètres.",
   'I miei percorsi': 'Mes parcours',
   'Sentieri': 'Sentiers',
   '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
@@ -147,9 +147,12 @@ export const wmFR = {
     '<span class="orange">Niveau 2: sections partiellement en altitude (altitude comprise entre {{orange}} mètres et {{red}} mètres)</span>',
   '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
     '<span class="red">Niveau 3: sections en altitude (altitude supérieure à {{red}} mètres)</span>',
-  'Un utente è già stato registrato con questa email.': 'Un utilisateur a déjà été enregistré avec cet email.',
-  'L\'email inserita non è corretta. Per favore, riprova.': 'L\'email saisie est incorrecte. Veuillez réessayer.',
-  'La password inserita non è corretta. Per favore, riprova.': 'Le mot de passe saisi est incorrect. Veuillez réessayer.',
+  'Un utente è già stato registrato con questa email.':
+    'Un utilisateur a déjà été enregistré avec cet email.',
+  "L'email inserita non è corretta. Per favore, riprova.":
+    "L'email saisie est incorrecte. Veuillez réessayer.",
+  'La password inserita non è corretta. Per favore, riprova.':
+    'Le mot de passe saisi est incorrect. Veuillez réessayer.',
   'Errore': 'Erreur',
   'Tempo': 'Temps',
   'Velocità media': 'Analyse de la vitesse',
@@ -160,10 +163,13 @@ export const wmFR = {
   'Carica': 'Télécharger',
   'Aggiornamento effettuato con successo': 'Mise à jour réussie',
   'Ops!': 'Ops !',
-  'Non è stato possibile aggiornare, riprova più tardi': 'Il n\'a pas été possible de mettre à jour, essayez à nouveau plus tard',
+  'Non è stato possibile aggiornare, riprova più tardi':
+    "Il n'a pas été possible de mettre à jour, essayez à nouveau plus tard",
   'Eliminazione effettuata con successo': 'Suppression réussie',
-  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.': 'Êtes-vous sûr de vouloir supprimer ce POI ? La suppression est irréversible.',
-  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'Êtes-vous sûr de vouloir supprimer cette piste ? La suppression est irréversible.',
+  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.':
+    'Êtes-vous sûr de vouloir supprimer ce POI ? La suppression est irréversible.',
+  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.':
+    'Êtes-vous sûr de vouloir supprimer cette piste ? La suppression est irréversible.',
   'Login effettuato con successo': 'Connexion réussie',
   'Logout effettuato con successo': 'Déconnexion réussie',
   'Ottieni indicazioni': 'Obtenir des indications',
@@ -182,4 +188,13 @@ export const wmFR = {
   'Aggiungi': 'Ajouter',
   'Foto': 'Photo',
   '(max 3 photo)': '(max 3 photos)',
+  'salva': 'sauvegarder',
+  'Il salvataggio è stato completato': 'La sauvegarde a été effectuée',
+  'Stai modificando le coordinate del POI, vuoi continuare?':
+    'Vous modifiez les coordonnées du POI, voulez-vous continuer ?',
+  'No': 'Non',
+  'Sì': 'Oui',
+  'Attenzione': 'Attention',
+  'Disegna': 'Dessiner',
+  'Esci': 'Quitter',
 };

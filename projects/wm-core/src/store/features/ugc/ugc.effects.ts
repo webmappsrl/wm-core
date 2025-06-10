@@ -26,6 +26,8 @@ import {
   loadcurrentUgcPoiIdSuccess,
   loadCurrentUgcTrackFailure,
   loadCurrentUgcTrackSuccess,
+  setCurrentUgcPoiDrawn,
+  setCurrentUgcPoiDrawnSuccess,
   syncUgc,
   syncUgcFailure,
   syncUgcPois,
@@ -44,6 +46,7 @@ import {
   activableUgc,
   syncUgcIntervalEnabled,
   currentUgcPoiDrawnGeometry,
+  currentUgcPoi,
 } from '@wm-core/store/features/ugc/ugc.selector';
 import {
   getUgcPoi,
@@ -55,6 +58,7 @@ import {
 } from '@wm-core/utils/localForage';
 import {AlertController} from '@ionic/angular';
 import {LangService} from '@wm-core/localization/lang.service';
+import {areFeatureGeometriesEqual} from '@wm-core/utils/features';
 const SYNC_INTERVAL = 60000;
 @Injectable({
   providedIn: 'root',
@@ -314,6 +318,41 @@ export class UgcEffects {
           }),
         ),
       ),
+    ),
+  );
+
+  setCurrentUgcPoiDrawn$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(setCurrentUgcPoiDrawn),
+      withLatestFrom(this._store.select(currentUgcPoi)),
+      switchMap(([{currentUgcPoiDrawn}, currentUgcPoi]) => {
+        if (currentUgcPoi && !areFeatureGeometriesEqual(currentUgcPoiDrawn, currentUgcPoi)) {
+          return from(
+            this._alertCtrl.create({
+              header: this._langSvc.instant('Attenzione'),
+              message: this._langSvc.instant(
+                'Stai modificando le coordinate del POI, vuoi continuare?',
+              ),
+              buttons: [
+                {
+                  text: this._langSvc.instant('No'),
+                  role: 'cancel',
+                },
+                {
+                  text: this._langSvc.instant('Sì'),
+                  role: 'confirm',
+                },
+              ],
+            }),
+          ).pipe(
+            switchMap(alert => alert.present().then(() => alert.onDidDismiss())),
+            filter(result => result.role === 'confirm'),
+            map(() => setCurrentUgcPoiDrawnSuccess({currentUgcPoiDrawn})),
+          );
+        } else {
+          return of(setCurrentUgcPoiDrawnSuccess({currentUgcPoiDrawn}));
+        }
+      }),
     ),
   );
 

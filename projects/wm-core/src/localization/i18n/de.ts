@@ -148,9 +148,12 @@ export const wmDE = {
     '<span class="orange">Stufe 2: Abschnitte teilweise in großer Höhe (Höhe zwischen {{orange}} und {{red}} Metern)</span>',
   '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
     '<span class="red">Stufe 3: in großer Höhe (Höhe über {{red}} Metern)</span>',
-  'Un utente è già stato registrato con questa email.': 'Ein Benutzer ist bereits mit dieser E-Mail registriert.',
-  'L\'email inserita non è corretta. Per favore, riprova.': 'Die eingegebene E-Mail ist nicht korrekt. Bitte versuchen Sie es erneut.',
-  'La password inserita non è corretta. Per favore, riprova.': 'Das eingegebene Passwort ist nicht korrekt. Bitte versuchen Sie es erneut.',
+  'Un utente è già stato registrato con questa email.':
+    'Ein Benutzer ist bereits mit dieser E-Mail registriert.',
+  "L'email inserita non è corretta. Per favore, riprova.":
+    'Die eingegebene E-Mail ist nicht korrekt. Bitte versuchen Sie es erneut.',
+  'La password inserita non è corretta. Per favore, riprova.':
+    'Das eingegebene Passwort ist nicht korrekt. Bitte versuchen Sie es erneut.',
   'Errore': 'Fehler',
   'Tempo': 'Zeit',
   'Velocità media': 'Durchschnittsgeschwindigkeit',
@@ -161,10 +164,13 @@ export const wmDE = {
   'Carica': 'Hochladen',
   'Aggiornamento effettuato con successo': 'Aktualisierung erfolgreich durchgeführt',
   'Ops!': 'Ups!',
-  'Non è stato possibile aggiornare, riprova più tardi': 'Aktualisierung nicht möglich, versuchen Sie es später erneut',
+  'Non è stato possibile aggiornare, riprova più tardi':
+    'Aktualisierung nicht möglich, versuchen Sie es später erneut',
   'Eliminazione effettuata con successo': 'Löschung erfolgreich durchgeführt',
-  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.': 'Sind Sie sicher, dass Sie diesen POI löschen möchten? Die Löschung ist irreversibel.',
-  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'Sind Sie sicher, dass Sie diese Strecke löschen möchten? Die Löschung ist irreversibel.',
+  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.':
+    'Sind Sie sicher, dass Sie diesen POI löschen möchten? Die Löschung ist irreversibel.',
+  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.':
+    'Sind Sie sicher, dass Sie diese Strecke löschen möchten? Die Löschung ist irreversibel.',
   'Login effettuato con successo': 'Login erfolgreich',
   'Logout effettuato con successo': 'Logout erfolgreich',
   'Ottieni indicazioni': 'Indikationen erhalten',
@@ -183,4 +189,13 @@ export const wmDE = {
   'Aggiungi': 'Hinzufügen',
   'Foto': 'Foto',
   '(max 3 photo)': '(max 3 Fotos)',
+  'salva': 'speichern',
+  'Il salvataggio è stato completato': 'Das Speichern ist erfolgreich',
+  'Stai modificando le coordinate del POI, vuoi continuare?':
+    'Sie ändern die Koordinaten des POI, möchten Sie fortfahren?',
+  'No': 'Nein',
+  'Sì': 'Ja',
+  'Attenzione': 'Achtung',
+  'Disegna': 'Zeichnen',
+  'Esci': 'Aus',
 };

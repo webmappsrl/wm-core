@@ -144,9 +144,12 @@ export const wmES = {
     '<span class="orange">Nivel 2: tramos parcialmente en alta altitud (altitud entre {{orange}} metros y {{red}} metros)</span>',
   '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
     '<span class="red">Nivel 3: en alta altitud (altitud superior a {{red}} metros)</span>',
-  'Un utente è già stato registrato con questa email.': 'Un usuario ya está registrado con esta dirección de correo electrónico.',
-  'L\'email inserita non è corretta. Per favore, riprova.': 'El correo electrónico introducido no es correcto. Por favor, inténtalo de nuevo.',
-  'La password inserita non è corretta. Per favore, riprova.': 'La contraseña introducida no es correcta. Por favor, inténtalo de nuevo.',
+  'Un utente è già stato registrato con questa email.':
+    'Un usuario ya está registrado con esta dirección de correo electrónico.',
+  "L'email inserita non è corretta. Per favore, riprova.":
+    'El correo electrónico introducido no es correcto. Por favor, inténtalo de nuevo.',
+  'La password inserita non è corretta. Per favore, riprova.':
+    'La contraseña introducida no es correcta. Por favor, inténtalo de nuevo.',
   'Errore': 'Error',
   'Tempo': 'Tiempo',
   'Velocità media': 'Velocidad media',
@@ -157,10 +160,13 @@ export const wmES = {
   'Carica': 'Cargar',
   'Aggiornamento effettuato con successo': 'Actualización realizada con éxito',
   'Ops!': '¡Ups!',
-  'Non è stato possibile aggiornare, riprova più tardi': 'No fue posible actualizar, inténtalo de nuevo más tarde',
+  'Non è stato possibile aggiornare, riprova più tardi':
+    'No fue posible actualizar, inténtalo de nuevo más tarde',
   'Eliminazione effettuata con successo': 'Eliminación realizada con éxito',
-  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.': '¿Está seguro de que desea eliminar este POI? La eliminación es irreversible.',
-  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': '¿Está seguro de que desea eliminar esta ruta? La eliminación es irreversible.',
+  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.':
+    '¿Está seguro de que desea eliminar este POI? La eliminación es irreversible.',
+  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.':
+    '¿Está seguro de que desea eliminar esta ruta? La eliminación es irreversible.',
   'Login effettuato con successo': 'Inicio de sesión exitoso',
   'Logout effettuato con successo': 'Cierre de sesión exitoso',
   'Ottieni indicazioni': 'Obtener indicaciones',
@@ -179,4 +185,13 @@ export const wmES = {
   'Aggiungi': 'Agregar',
   'Foto': 'Foto',
   '(max 3 photo)': '(máx 3 fotos)',
+  'salva': 'guardar',
+  'Il salvataggio è stato completato': 'El guardado se ha completado',
+  'Stai modificando le coordinate del POI, vuoi continuare?':
+    'Estás modificando las coordenadas del POI, ¿quieres continuar?',
+  'No': 'No',
+  'Sì': 'Sí',
+  'Attenzione': 'Atención',
+  'Disegna': 'Dibujar',
+  'Esci': 'Salir',
 };

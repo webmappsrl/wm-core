@@ -102,3 +102,7 @@ export const setCurrentUgcPoiDrawn = createAction(
   '[Ugc] Set current Ugc Poi Drawn',
   props<{currentUgcPoiDrawn: WmFeature<Point> | null}>(),
 );
+export const setCurrentUgcPoiDrawnSuccess = createAction(
+  '[Ugc] Set current Ugc Poi Drawn Success',
+  props<{currentUgcPoiDrawn: WmFeature<Point> | null}>(),
+);

@@ -1,16 +1,13 @@
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {DeviceService} from '@wm-core/services/device.service';
-import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {
-  confAUTHEnable,
   confShowDraw,
   confShowDrawPoi,
   confShowDrawTrack,
 } from '@wm-core/store/conf/conf.selector';
 import {
   drawTrackOpened as ActiondrawTrackOpened,
-  openLoginModal,
   startDrawUgcPoi,
   stopDrawUgcPoi,
 } from '@wm-core/store/user-activity/user-activity.action';
@@ -30,8 +27,6 @@ import {take} from 'rxjs/operators';
   encapsulation: ViewEncapsulation.None,
 })
 export class WmDrawUgcButtonComponent {
-  authEnable$ = this._store.select(confAUTHEnable);
-  isLogged$ = this._store.select(isLogged);
   drawTrackOpened$ = this._store.select(drawTrackOpened);
   drawPoiOpened$ = this._store.select(drawPoiOpened);
   drawOpened$ = this._store.select(drawOpened);
@@ -61,35 +56,19 @@ export class WmDrawUgcButtonComponent {
 
   toggleDrawTrackEnabled(): void {
     this.showDrawTypeSelection$.next(false);
-    combineLatest([this.authEnable$, this.isLogged$, this.drawTrackOpened$])
-      .pipe(take(1))
-      .subscribe(([authEnabled, isLogged, drawTrackOpened]) => {
-        this._handleAuthFlow(authEnabled, isLogged, () => {
-          this._store.dispatch(ActiondrawTrackOpened({drawTrackOpened: !drawTrackOpened}));
-        });
-      });
+    this.drawTrackOpened$.pipe(take(1)).subscribe(drawTrackOpened => {
+      this._store.dispatch(ActiondrawTrackOpened({drawTrackOpened: !drawTrackOpened}));
+    });
   }
 
   toggleDrawPoiEnabled(): void {
     this.showDrawTypeSelection$.next(false);
-    combineLatest([this.authEnable$, this.isLogged$, this.drawPoiOpened$])
-      .pipe(take(1))
-      .subscribe(([authEnabled, isLogged, drawPoiOpened]) => {
-        this._handleAuthFlow(authEnabled, isLogged, () => {
-          if (drawPoiOpened) {
-            this._store.dispatch(stopDrawUgcPoi());
-          } else {
-            this._store.dispatch(startDrawUgcPoi({ugcPoi: null}));
-          }
-        });
-      });
-  }
-
-  private _handleAuthFlow(authEnabled: boolean, isLogged: boolean, action: () => void): void {
-    if (authEnabled && !isLogged) {
-      this._store.dispatch(openLoginModal());
-    } else {
-      action();
-    }
+    this.drawPoiOpened$.pipe(take(1)).subscribe(drawPoiOpened => {
+      if (drawPoiOpened) {
+        this._store.dispatch(stopDrawUgcPoi());
+      } else {
+        this._store.dispatch(startDrawUgcPoi({ugcPoi: null}));
+      }
+    });
   }
 }
