@@ -42,6 +42,9 @@ export class WmGetIcnPipe implements PipeTransform {
     if (value === 'oeno-gastronomy') {
       return 'icon-restaurant';
     }
+    if (value === 'joelette') {
+      return 'icon-wheelchair';
+    }
     return `${outline}${value}`;
   }
 }
