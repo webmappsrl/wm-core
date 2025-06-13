@@ -1,11 +1,7 @@
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {DeviceService} from '@wm-core/services/device.service';
-import {
-  confShowDraw,
-  confShowDrawPoi,
-  confShowDrawTrack,
-} from '@wm-core/store/conf/conf.selector';
+import {confShowDraw, confShowDrawPoi, confShowDrawTrack} from '@wm-core/store/conf/conf.selector';
 import {
   drawTrackOpened as ActiondrawTrackOpened,
   startDrawUgcPoi,
@@ -37,11 +33,11 @@ export class WmDrawUgcButtonComponent {
 
   constructor(private _store: Store, private _deviceSvc: DeviceService) {}
 
-  toggleTypeSelection() {
+  toggleTypeSelection(): void {
     this.showDrawTypeSelection$.next(!this.showDrawTypeSelection$.value);
   }
 
-  stopDrawing() {
+  stopDrawing(): void {
     this.showDrawTypeSelection$.next(false);
     combineLatest([this.drawTrackOpened$, this.drawPoiOpened$])
       .pipe(take(1))
