@@ -132,11 +132,11 @@ export const wmMapFeaturesInViewportFailure = createAction(
   '[User Activity] wm map features in viewport failure',
 );
 
-export const startEditUgcPoi = createAction(
-  '[User Activity] start edit ugc poi',
+export const startDrawUgcPoi = createAction(
+  '[User Activity] start draw ugc poi',
   props<{ugcPoi: WmFeature<Point>}>(),
 );
-export const stopEditUgcPoi = createAction('[User Activity] stop edit ugc poi');
+export const stopDrawUgcPoi = createAction('[User Activity] stop edit ugc poi');
 
 export const setHomeResultTabSelected = createAction('[User Activity] set home result tab selected', props<{tab: 'tracks' | 'pois' | null}>());
 
@@ -144,3 +144,4 @@ export const setCurrentLocation = createAction('[User Activity] set current loca
 
 export const startGetDirections = createAction('[User Activity] get directions');
 export const getDirections = createAction('[User Activity] get directions success', props<{coordinates: number[]}>());
+export const openLoginModal = createAction('[User Activity] open login modal');

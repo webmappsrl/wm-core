@@ -1,0 +1,23 @@
+<div *ngIf="(showDraw$|async)">
+  <ion-button
+    color="light"
+    (click)="toggleTypeSelection()"
+    *ngIf="!(drawOpened$ | async) else drawingFeature"
+  >
+    <ion-icon slot="start" name="pencil"></ion-icon>
+    {{ 'Disegna' | translate }}
+  </ion-button>
+  <ng-template #drawingFeature>
+    <ion-button color="light" (click)="stopDrawing()">
+      {{ 'Esci' | translate }}
+    </ion-button>
+  </ng-template>
+  <div *ngIf="showDrawTypeSelection$ | async">
+    <ion-button color="light" *ngIf="showDrawPoi$ | async" (click)="toggleDrawPoiEnabled()">
+      <ion-icon name="pin-outline"></ion-icon>
+    </ion-button>
+    <ion-button color="light" *ngIf="showDrawTrack$ | async" (click)="toggleDrawTrackEnabled()">
+      <ion-icon name="analytics-outline"></ion-icon>
+    </ion-button>
+  </div>
+</div>

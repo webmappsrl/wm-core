@@ -1,7 +1,7 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
-import {currentCustomTrack} from '../features/ugc/ugc.selector';
+import {currentCustomTrack, currentUgcPoi, currentUgcPoiDrawn} from '../features/ugc/ugc.selector';
 import {UserActivityState} from './user-activity.reducer';
-import {confFlowLineQuote} from '../conf/conf.selector';
+import {confFlowLineQuote, confPOIFORMS, confTRACKFORMS} from '../conf/conf.selector';
 import {WmSlopeChartFlowLineQuote} from '@wm-types/slope-chart';
 
 export const userActivity = createFeatureSelector<UserActivityState>('user-activity');
@@ -42,9 +42,15 @@ export const UICurrentPoiId = createSelector(
 export const drawTrackOpened = createSelector(userActivity, state =>
   state && state.drawTrackOpened ? state.drawTrackOpened : false,
 );
-
 export const drawPoiOpened = createSelector(userActivity, state =>
   state && state.drawPoiOpened ? state.drawPoiOpened : false,
+);
+export const drawOpened = createSelector(
+  drawTrackOpened,
+  drawPoiOpened,
+  (drawTrackOpened, drawPoiOpened) => {
+    return drawTrackOpened || drawPoiOpened;
+  },
 );
 
 export const filterTracks = createSelector(userActivity, state => {
@@ -85,9 +91,25 @@ export const loading = createSelector(userActivity, state => {
 });
 export const currentEcLayer = createSelector(userActivity, state => state.layer);
 
-export const homeOpened = createSelector(currentCustomTrack, hasCustomTrack => {
-  return hasCustomTrack == null;
+export const hasCustomPoi = createSelector(
+  currentUgcPoiDrawn,
+  currentUgcPoi,
+  (ugcPoiDrawn, ugcPoi) => {
+    return ugcPoiDrawn != null && ugcPoi == null;
+  },
+);
+
+export const hasCustomTrack = createSelector(currentCustomTrack, currentCustomTrack => {
+  return currentCustomTrack != null;
 });
+
+export const homeOpened = createSelector(
+  hasCustomTrack,
+  hasCustomPoi,
+  (hasCustomTrack, hasCustomPoi) => {
+    return !hasCustomTrack && !hasCustomPoi;
+  },
+);
 export const chartHoverElements = createSelector(userActivity, state => state.chartHoverElements);
 export const currentEcPoiId = createSelector(userActivity, state => state.currentEcPoiId);
 export const onlyPoisFilter = createSelector(
@@ -181,3 +203,12 @@ export const homeResultTabSelected = createSelector(
 );
 
 export const currentLocation = createSelector(userActivity, state => state.currentLocation);
+
+export const currentDrawFormType = createSelector(
+  confTRACKFORMS,
+  confPOIFORMS,
+  hasCustomTrack,
+  (trackForms, poiForms, hasCustomTrack) => {
+    return hasCustomTrack ? trackForms : poiForms;
+  },
+);

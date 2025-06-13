@@ -1,0 +1,21 @@
+wm-draw-ugc-button {
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    ion-button {
+      --background: white;
+      --box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2);
+      height: 40px;
+      margin: 0;
+    }
+    > div {
+      display: flex;
+      gap: 10px;
+
+      > ion-button {
+        flex: 1;
+      }
+    }
+  }
+}

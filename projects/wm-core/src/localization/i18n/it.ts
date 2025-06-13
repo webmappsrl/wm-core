@@ -144,7 +144,7 @@ export const wmIT = {
   'la distanza espressa in metri che indica la cadenza di rilevamento posizione, più il distance filter è minore piu il consumo della batteria sarà maggiore.':
     'Distanza espressa in metri che indica la cadenza di rilevamento posizione, più il distance filter è minore piu il consumo della batteria sarà maggiore.',
   "Per registrare tracce e poi correttamente, abilita l'autorizzazione alla posizione nelle impostazioni":
-    'Per registrare tracce e poi correttamente, abilita l\'autorizzazione alla posizione nelle impostazioni',
+    "Per registrare tracce e poi correttamente, abilita l'autorizzazione alla posizione nelle impostazioni",
   'I miei percorsi': 'I miei percorsi',
   'Sentieri': 'Sentieri',
   '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
@@ -153,9 +153,12 @@ export const wmIT = {
     '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra {{orange}} metri e {{red}} metri)</span>',
   '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
     '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>',
-  'Un utente è già stato registrato con questa email.': 'Un utente è già stato registrato con questa email.',
-  'L\'email inserita non è corretta. Per favore, riprova.': 'L\'email inserita non è corretta. Per favore, riprova.',
-  'La password inserita non è corretta. Per favore, riprova.': 'La password inserita non è corretta. Per favore, riprova.',
+  'Un utente è già stato registrato con questa email.':
+    'Un utente è già stato registrato con questa email.',
+  "L'email inserita non è corretta. Per favore, riprova.":
+    "L'email inserita non è corretta. Per favore, riprova.",
+  'La password inserita non è corretta. Per favore, riprova.':
+    'La password inserita non è corretta. Per favore, riprova.',
   'Errore': 'Errore',
   'Tempo': 'Tempo',
   'Velocità media': 'Velocità media',
@@ -166,10 +169,13 @@ export const wmIT = {
   'Carica': 'Carica',
   'Aggiornamento effettuato con successo': 'Aggiornamento effettuato con successo',
   'Ops!': 'Ops!',
-  'Non è stato possibile aggiornare, riprova più tardi': 'Non è stato possibile aggiornare, riprova più tardi',
+  'Non è stato possibile aggiornare, riprova più tardi':
+    'Non è stato possibile aggiornare, riprova più tardi',
   'Eliminazione effettuata con successo': 'Eliminazione effettuata con successo',
-  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.': 'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.',
-  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.',
+  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.':
+    'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.',
+  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.':
+    'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.',
   'Login effettuato con successo': 'Login effettuato con successo',
   'Logout effettuato con successo': 'Logout effettuato con successo',
   'Ottieni indicazioni': 'Ottieni indicazioni',
@@ -214,4 +220,13 @@ export const wmIT = {
   'Luoghi': 'Luoghi',
   'Percorso': 'Percorso',
   'Percorsi': 'Percorsi',
+  'salva': 'salva',
+  'Il salvataggio è stato completato': 'Il salvataggio è stato completato',
+  'Stai modificando le coordinate del POI, vuoi continuare?':
+    'Stai modificando le coordinate del POI, vuoi continuare?',
+  'No': 'No',
+  'Sì': 'Sì',
+  'Attenzione': 'Attenzione',
+  'Disegna': 'Disegna',
+  'Esci': 'Esci',
 };

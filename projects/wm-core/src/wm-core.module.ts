@@ -76,6 +76,8 @@ import {WmFeaturesInViewportComponent} from './features-in-viewport/features-in-
 import {WmDifficultyComponent} from './difficulty/difficulty.component';
 import {WmImagePickerComponent} from './image-picker/image-picker.component';
 import {ModalGetDirectionsComponent} from './modal-get-directions/modal-get-directions.component';
+import {WmDrawUgcComponent} from './draw-ugc/draw-ugc.component';
+import {WmDrawUgcButtonComponent} from './draw-ugc-button/draw-ugc-button.component';
 export const declarations = [
   WmTabDetailComponent,
   WmTabDescriptionComponent,
@@ -122,6 +124,8 @@ export const declarations = [
   WmDifficultyComponent,
   WmImagePickerComponent,
   ModalGetDirectionsComponent,
+  WmDrawUgcComponent,
+  WmDrawUgcButtonComponent,
 ];
 const modules = [
   WmSharedModule,

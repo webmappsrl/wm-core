@@ -19,6 +19,7 @@ import {
   confMAPLAYERS,
   confOPTIONS,
   confZoomFeaturesInViewport,
+  confShowDraw,
 } from '@wm-core/store/conf/conf.selector';
 import {
   allEcpoiFeatures,
@@ -29,12 +30,10 @@ import {
   ecPois,
 } from '@wm-core/store/features/ec/ec.selector';
 import {
-  drawTrackOpened as ActiondrawTrackOpened,
   backOfMapDetails,
   goToHome,
   openUgc,
   resetMap,
-  resetPoiFilters,
   resetTrackFilters,
   setLastFilterType,
   setLayer,
@@ -69,7 +68,6 @@ import {
 } from 'rxjs/operators';
 import {
   confJIDOUPDATETIME,
-  confShowDrawTrack,
   confAUTHEnable,
   confOPTIONSShowFeaturesInViewport,
 } from '@wm-core/store/conf/conf.selector';
@@ -101,7 +99,6 @@ import {
   ugcTracksFeatures,
 } from '@wm-core/store/features/ugc/ugc.selector';
 import {ModalController} from '@ionic/angular';
-import {ProfileAuthComponent} from '@wm-core/profile/profile-auth/profile-auth.component';
 import {WmMapTrackRelatedPoisDirective} from '@map-core/directives';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {WmMapComponent} from '@map-core/components';
@@ -235,7 +232,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   resetSelectedUgcPoi$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   setCurrentPoiSub$: Subscription = Subscription.EMPTY;
-  showDrawTrackButton$ = this._store.select(confShowDrawTrack);
+  confShowDraw$ = this._store.select(confShowDraw);
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   toggleLayerDirective$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   togglePoisDirective$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
@@ -539,42 +536,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
       case 'ugc':
         this.toggleUgcDirective$.next(data.toggle);
     }
-  }
-
-  toggleDrawTrackEnabled(): void {
-    combineLatest([this.authEnable$, this.isLogged$, this.drawTrackOpened$])
-      .pipe(
-        take(1),
-        switchMap(([authEnabled, isLogged, drawTrackOpened]) => {
-          if (authEnabled) {
-            if (isLogged) {
-              this._store.dispatch(ActiondrawTrackOpened({drawTrackOpened: !drawTrackOpened}));
-              this._store.dispatch(currentCustomTrackAction({currentCustomTrack: null}));
-              this._store.dispatch(setLayer(null));
-              this._store.dispatch(resetPoiFilters());
-              this._store.dispatch(resetTrackFilters());
-              this.updateEcTrack();
-              return of(null);
-            } else {
-              return from(
-                this._modalCtrl.create({
-                  component: ProfileAuthComponent,
-                  componentProps: {
-                    slide1: 'assets/images/profile/logged_out_slide_1.svg',
-                    slide2: 'assets/images/profile/logged_out_slide_2.svg',
-                  },
-                  id: 'wm-profile-auth-modal',
-                }),
-              ).pipe(concatMap(modal => from(modal.present())));
-            }
-          } else {
-            this._store.dispatch(ActiondrawTrackOpened({drawTrackOpened: !drawTrackOpened}));
-            this._store.dispatch(currentCustomTrackAction({currentCustomTrack: null}));
-            return of(null);
-          }
-        }),
-      )
-      .subscribe();
   }
 
   unselectPOI(): void {

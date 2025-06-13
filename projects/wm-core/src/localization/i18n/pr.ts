@@ -145,9 +145,12 @@ export const wmPR = {
     '<span class="orange">Nível 2: seções parcialmente em alta altitude (altitude entre {{orange}} metros e {{red}} metros)</span>',
   '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
     '<span class="red">Nível 3: seções em alta altitude (altitude superior a {{red}} metros)</span>',
-  'Un utente è già stato registrato con questa email.': 'Um usuário já foi registrado com este e-mail.',
-  'L\'email inserita non è corretta. Per favore, riprova.': 'O e-mail inserido está incorreto. Por favor, tente novamente.',
-  'La password inserita non è corretta. Per favore, riprova.': 'A senha inserida está incorreta. Por favor, tente novamente.',
+  'Un utente è già stato registrato con questa email.':
+    'Um usuário já foi registrado com este e-mail.',
+  "L'email inserita non è corretta. Per favore, riprova.":
+    'O e-mail inserido está incorreto. Por favor, tente novamente.',
+  'La password inserita non è corretta. Per favore, riprova.':
+    'A senha inserida está incorreta. Por favor, tente novamente.',
   'Errore': 'Erro',
   'Tempo': ' Tempo',
   'Velocità media': 'Velocidade média',
@@ -158,10 +161,13 @@ export const wmPR = {
   'Carica': 'Carregar',
   'Aggiornamento effettuato con successo': 'Atualização realizada com sucesso',
   'Ops!': 'Ops!',
-  'Non è stato possibile aggiornare, riprova più tardi': 'It was not possible to update, try again later',
+  'Non è stato possibile aggiornare, riprova più tardi':
+    'It was not possible to update, try again later',
   'Eliminazione effettuata con successo': 'Eliminação realizada com sucesso',
-  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.': 'Are you sure you want to delete this POI? The removal is irreversible.',
-  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'Are you sure you want to delete this track? The removal is irreversible.',
+  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.':
+    'Are you sure you want to delete this POI? The removal is irreversible.',
+  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.':
+    'Are you sure you want to delete this track? The removal is irreversible.',
   'Login effettuato con successo': 'Login realizado com sucesso',
   'Logout effettuato con successo': 'Logout realizado com sucesso',
   'Ottieni indicazioni': 'Obter indicações',
@@ -206,4 +212,13 @@ export const wmPR = {
   'Luoghi': 'Locais',
   'Percorso': 'Percurso',
   'Percorsi': 'Percursos',
+  'salva': 'salvar',
+  'Il salvataggio è stato completato': 'O salvamento foi concluído',
+  'Stai modificando le coordinate del POI, vuoi continuare?':
+    'Você está modificando as coordenadas do POI, deseja continuar?',
+  'No': 'No',
+  'Sì': 'Sì',
+  'Attenzione': 'Atenção',
+  'Disegna': 'Desenhar',
+  'Esci': 'Sair',
 };

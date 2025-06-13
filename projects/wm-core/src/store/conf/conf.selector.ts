@@ -106,6 +106,14 @@ export const confTHEMEVariables = createSelector(confTHEME, (theme: ITHEME) =>
   getCSSVariables(theme),
 );
 export const confShowDrawTrack = createSelector(confWEBAPP, state => state.draw_track_show);
+export const confShowDrawPoi = createSelector(confWEBAPP, state => state.draw_poi_show);
+export const confShowDraw = createSelector(
+  confShowDrawPoi,
+  confShowDrawTrack,
+  (drawPoi, drawTrack) => {
+    return drawPoi || drawTrack;
+  },
+);
 export const confShowEditingInline = createSelector(confWEBAPP, state => state.editing_inline_show);
 export const confPOIS = createSelector(confMAP, map => {
   if (map != null && map.pois != null) {
@@ -146,7 +154,10 @@ export const confOPTIONSShowFeaturesInViewport = createSelector(
   state => state.showFeaturesInViewport,
 );
 export const confOPTIONSShowMediaName = createSelector(confOPTIONS, state => state.showMediaName);
-export const confOPTIONSShowEmbeddedHtml = createSelector(confOPTIONS, state => state.showEmbeddedHtml);
+export const confOPTIONSShowEmbeddedHtml = createSelector(
+  confOPTIONS,
+  state => state.showEmbeddedHtml,
+);
 
 export const confZoomFeaturesInViewport = createSelector(confOPTIONS, state => {
   const minZoomFeaturesInViewport = state.minZoomFeaturesInViewport;

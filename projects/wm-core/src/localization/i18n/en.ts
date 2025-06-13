@@ -153,9 +153,12 @@ export const wmEN = {
     '<span class="orange">Level 2: sections partially in high altitude (altitude between {{orange}} meters and {{red}} meters)</span>',
   '<span class="red">Livello 3: in alta quota (quota superiore {{red}} metri)</span>':
     '<span class="red">Level 3: in high altitude (altitude above {{red}} meters)</span>',
-  'Un utente è già stato registrato con questa email.': 'A user has already been registered with this email.',
-  'L\'email inserita non è corretta. Per favore, riprova.': 'The email entered is incorrect. Please try again.',
-  'La password inserita non è corretta. Per favore, riprova.': 'The password entered is incorrect. Please try again.',
+  'Un utente è già stato registrato con questa email.':
+    'A user has already been registered with this email.',
+  "L'email inserita non è corretta. Per favore, riprova.":
+    'The email entered is incorrect. Please try again.',
+  'La password inserita non è corretta. Per favore, riprova.':
+    'The password entered is incorrect. Please try again.',
   'Errore': 'Error',
   'Tempo': 'Time',
   'Velocità media': 'Average speed',
@@ -166,10 +169,13 @@ export const wmEN = {
   'Carica': 'Upload',
   'Aggiornamento effettuato con successo': 'Application updated successfully',
   'Ops!': 'Ops!',
-  'Non è stato possibile aggiornare, riprova più tardi': 'It was not possible to update, try again later',
+  'Non è stato possibile aggiornare, riprova più tardi':
+    'It was not possible to update, try again later',
   'Eliminazione effettuata con successo': 'Deletion successful',
-  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.': 'Are you sure you want to delete this POI? The removal is irreversible.',
-  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.': 'Are you sure you want to delete this track? The removal is irreversible.',
+  'Sicuro di voler eliminare questo POI? La rimozione è irreversibile.':
+    'Are you sure you want to delete this POI? The removal is irreversible.',
+  'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.':
+    'Are you sure you want to delete this track? The removal is irreversible.',
   'Login effettuato con successo': 'Login successful',
   'Logout effettuato con successo': 'Logout successful',
   'Ottieni indicazioni': 'Get indications',
@@ -215,4 +221,13 @@ export const wmEN = {
   'Luoghi': 'Places',
   'Percorso': 'Path',
   'Percorsi': 'Paths',
+  'salva': 'save',
+  'Il salvataggio è stato completato': 'The saving has been completed',
+  'Stai modificando le coordinate del POI, vuoi continuare?':
+    'You are modifying the coordinates of the POI, do you want to continue?',
+  'No': 'No',
+  'Sì': 'Yes',
+  'Attenzione': 'Attention',
+  'Disegna': 'Draw',
+  'Esci': 'Exit',
 };

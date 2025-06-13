@@ -214,4 +214,13 @@ export const wmFR = {
   'Luoghi': 'Lieux',
   'Percorso': 'Parcours',
   'Percorsi': 'Parcours',
+  'salva': 'sauvegarder',
+  'Il salvataggio è stato completato': 'La sauvegarde a été effectuée',
+  'Stai modificando le coordinate del POI, vuoi continuare?':
+    'Vous modifiez les coordonnées du POI, voulez-vous continuer ?',
+  'No': 'Non',
+  'Sì': 'Oui',
+  'Attenzione': 'Attention',
+  'Disegna': 'Dessiner',
+  'Esci': 'Quitter',
 };
