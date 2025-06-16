@@ -175,3 +175,5 @@ export const homeResultTabSelected = createSelector(
   userActivity,
   state => state.homeResultTabSelected,
 );
+
+export const currentLocation = createSelector(userActivity, state => state.currentLocation);

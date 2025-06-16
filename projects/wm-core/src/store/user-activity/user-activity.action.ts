@@ -5,6 +5,7 @@ import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {MultiPolygon, Point} from 'geojson';
 import {mapDetailsStatus} from './user-activity.reducer';
 import {Hit} from '@wm-types/elastic';
+import {Location} from '@capacitor-community/background-geolocation';
 
 export const openUgc = createAction('[User Activity] Open User Generated Content');
 export const closeUgc = createAction('[User Activity] Close User Generated Content');
@@ -119,3 +120,5 @@ export const wmMapFeaturesInViewport = createAction('[User Activity] wm map feat
 export const wmMapFeaturesInViewportSuccess = createAction('[User Activity] wm map features in viewport success', props<{featuresInViewport: Hit[]}>());
 export const wmMapFeaturesInViewportFailure = createAction('[User Activity] wm map features in viewport failure');
 export const setHomeResultTabSelected = createAction('[User Activity] set home result tab selected', props<{tab: 'tracks' | 'pois' | null}>());
+
+export const setCurrentLocation = createAction('[User Activity] set current location', props<{location: Location}>());
