@@ -291,6 +291,7 @@ export interface IMAP {
   start_end_icons_show?: boolean;
   tiles: {[name: string]: string}[];
   tracks?: any[];
+  show_track_direction_arrow?: boolean;
 }
 
 export interface IMAPATTRIBUTION {
