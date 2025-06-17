@@ -323,7 +323,9 @@ export interface IOPTIONS {
   highlightReadMoreButton: boolean;
   mapAttributions?: IMAPATTRIBUTION[];
   maxFitZoom?: number;
+  maxZoomFeaturesInViewport?: number;
   minDynamicOverlayLayersZoom: number;
+  minZoomFeaturesInViewport?: number;
   passwordRecoveryUrl: string;
   poiIconRadius: number;
   poiIconZoom: number;

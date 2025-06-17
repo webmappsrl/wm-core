@@ -31,6 +31,7 @@
     [wmMapLayerEnableFeaturesInViewport]="confOPTIONSShowFeaturesInViewport$|async"
     [wmMapLayerShowFeaturesInViewport]="showFeaturesInViewport$|async"
     [wmMapLayerDisableLayers]="wmMapEcTracksDisableLayer$|async"
+    [wmMapLayerZoomFeaturesInViewport]="zoomFeaturesInViewport$|async"
     (colorSelectedFromLayerEVT)="trackColor$.next($event)"
     (featuresInViewportEVT)="featuresInViewport($event)"
     wmMapPois
