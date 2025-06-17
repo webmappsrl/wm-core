@@ -148,6 +148,15 @@ export const confOPTIONSShowFeaturesInViewport = createSelector(
 export const confOPTIONSShowMediaName = createSelector(confOPTIONS, state => state.showMediaName);
 export const confOPTIONSShowEmbeddedHtml = createSelector(confOPTIONS, state => state.showEmbeddedHtml);
 
+export const confZoomFeaturesInViewport = createSelector(confOPTIONS, state => {
+  const minZoomFeaturesInViewport = state.minZoomFeaturesInViewport;
+  const maxZoomFeaturesInViewport = state.maxZoomFeaturesInViewport;
+  return {
+    minZoomFeaturesInViewport,
+    maxZoomFeaturesInViewport,
+  }
+});
+
 const getLayers = (layersID: number[], layers: ILAYER[], tracks: Hit[]): ILAYER[] => {
   return layers
     .filter(l => layersID.indexOf(+l.id) > -1)

@@ -18,6 +18,7 @@ import {
   confMAP,
   confMAPLAYERS,
   confOPTIONS,
+  confZoomFeaturesInViewport,
 } from '@wm-core/store/conf/conf.selector';
 import {
   allEcpoiFeatures,
@@ -110,6 +111,7 @@ import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {GeolocationService} from '@wm-core/services/geolocation.service';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 import {FeatureLike} from 'ol/Feature';
+import {ZoomFeaturesInViewport} from '@wm-types/config';
 
 const initPadding = [10, 10, 10, 10];
 const initMenuOpened = true;
@@ -250,6 +252,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
     wmMapHitMapChangeFeatureId,
   );
   wmBackOfMapDetails$: Observable<boolean> = this._actions$.pipe(ofType(backOfMapDetails));
+  zoomFeaturesInViewport$: Observable<ZoomFeaturesInViewport> = this._store.select(confZoomFeaturesInViewport);
   constructor(
     private _route: ActivatedRoute,
     private _cdr: ChangeDetectorRef,
