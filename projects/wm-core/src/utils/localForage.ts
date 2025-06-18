@@ -6,7 +6,6 @@ import {IUser} from '@wm-core/store/auth/auth.model';
 
 export async function clearUgcData(): Promise<void> {
   await Promise.all([
-    synchronizedEctrack.clear(),
     synchronizedImg.clear(),
     synchronizedUgcTrack.clear(),
     synchronizedUgcPoi.clear(),
