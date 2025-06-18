@@ -17,6 +17,8 @@ import {
   updateTrackFilter,
   setHomeResultTabSelected,
   openUgc,
+  getDirections,
+  startGetDirections,
 } from './user-activity.action';
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
@@ -46,7 +48,7 @@ import {
   startWith,
   catchError,
 } from 'rxjs/operators';
-import {combineLatest, of} from 'rxjs';
+import {combineLatest, from, of} from 'rxjs';
 import {Filter} from '@wm-core/types/config';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {ModalController} from '@ionic/angular';
@@ -54,7 +56,8 @@ import {ModalUgcUploaderComponent} from '@wm-core/modal-ugc-uploader/modal-ugc-u
 import {HttpClient} from '@angular/common/http';
 import {WmFeature, WmFeatureCollection} from '@wm-types/feature';
 import {MultiPolygon} from 'geojson';
-import {countTracks} from '@wm-core/store/features/features.selector';
+import {countTracks, poiFirstCoordinates, trackFirstCoordinates, trackNearestCoordinates} from '@wm-core/store/features/features.selector';
+import {ModalGetDirectionsComponent} from '@wm-core/modal-get-directions/modal-get-directions.component';
 
 @Injectable()
 export class UserActivityEffects {
@@ -210,6 +213,54 @@ export class UserActivityEffects {
       ofType(openUgc),
       map(() => setHomeResultTabSelected({tab: 'tracks'})),
     ),
+  );
+
+  startGetDirections$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(startGetDirections),
+      withLatestFrom(
+        this._store.select(poiFirstCoordinates),
+        this._store.select(trackFirstCoordinates),
+        this._store.select(trackNearestCoordinates)
+      ),
+      switchMap(([_, poiFirstCoords, trackStartCoords, trackNearestCoords]) => {
+        if (poiFirstCoords) {
+          return of(getDirections({coordinates: poiFirstCoords}));
+        }
+
+        return from(this._modalCtrl.create({
+          component: ModalGetDirectionsComponent,
+          initialBreakpoint: 0.25,
+          breakpoints: [0, 0.25]
+        })).pipe(
+          switchMap(modal => from(modal.present()).pipe(
+            switchMap(() => from(modal.onDidDismiss()))
+          )),
+          map(result => result.data),
+          switchMap(type => {
+            switch (type) {
+              case 'start':
+                return of(getDirections({coordinates: trackStartCoords}));
+              case 'nearest':
+                return of(getDirections({coordinates: trackNearestCoords}));
+              default:
+                return of(null);
+            }
+          })
+        );
+      })
+    )
+  );
+
+  getDirections$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(getDirections),
+      map(({coordinates}) => {
+        const url = `https://www.google.com/maps/dir/?api=1&destination=${coordinates[1]},${coordinates[0]}`;
+        window.open(url, '_blank');
+      }),
+    ),
+    {dispatch: false},
   );
 
   constructor(

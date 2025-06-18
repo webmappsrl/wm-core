@@ -198,4 +198,7 @@ export const wmDE = {
   'joelette': 'joelette',
   'mtb': 'MTB',
   'mountain-bike': 'Mountainbike',
+  "Ottieni le indicazioni su Google Maps": "Indikationen auf Google Maps erhalten",
+  "Per il punto di partenza": "Für den Startpunkt",
+  "Per il punto più vicino in linea d'aria": "Für den nächsten Punkt in Luftlinie",
 };

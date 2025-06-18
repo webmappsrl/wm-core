@@ -21,7 +21,7 @@ import {
   ugcPoiFeatures,
   ugcTracks,
 } from './ugc/ugc.selector';
-import {GeoJSON} from 'ol/format';
+import {getClosestPoint} from '@map-core/utils/geometry';
 
 export const countAll = createSelector(countEcAll, countUgcAll, ugcOpened, (ec, ugc, ugcOpened) =>
   ugcOpened ? ugc : ec,
@@ -72,18 +72,15 @@ export const featureOpened = createSelector(track, poi, (track, poi) => {
 });
 export const trackFirstCoordinates = createSelector(
   track,
+  track => track?.geometry?.coordinates?.[0] ?? null,
+);
+export const trackNearestCoordinates = createSelector(
+  track,
   currentLocation,
   (track, currentLocation) => {
-    const geometry = track?.geometry;
-    if(!geometry) return null;
+    if(!currentLocation) return null;
 
-    if(!currentLocation) return geometry.coordinates?.[0] ?? null;
-
-    const currentCoord: [number, number] = [currentLocation.longitude, currentLocation.latitude];
-    const format = new GeoJSON();
-    const geometryOl = format.readGeometry(geometry);
-
-    return geometryOl.getClosestPoint(currentCoord);
+    return getClosestPoint(track, [currentLocation.longitude, currentLocation.latitude]);
   },
 );
 export const poiFirstCoordinates = createSelector(

@@ -204,4 +204,7 @@ export const wmEN = {
   'joelette': 'joelette',
   'mtb': 'MTB',
   'mountain-bike': 'Mountain bike',
+  "Ottieni le indicazioni su Google Maps": "Get directions on Google Maps",
+  "Per il punto di partenza": "For the start point",
+  "Per il punto più vicino in linea d'aria": "For the nearest point in line of sight",
 };

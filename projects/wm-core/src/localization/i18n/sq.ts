@@ -202,4 +202,7 @@ export const wmSQ = {
   'joelette': 'Joëlette',
   'mtb': 'MTB',
   'mountain-bike': 'Biçikletë malore',
+  "Ottieni le indicazioni su Google Maps": "Merr hulumtime në Google Maps",
+  "Per il punto di partenza": "Për pikën e nisjes",
+  "Per il punto più vicino in linea d'aria": "Për pikën më të afërt në vijë të shikimit",
 };

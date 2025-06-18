@@ -122,3 +122,6 @@ export const wmMapFeaturesInViewportFailure = createAction('[User Activity] wm m
 export const setHomeResultTabSelected = createAction('[User Activity] set home result tab selected', props<{tab: 'tracks' | 'pois' | null}>());
 
 export const setCurrentLocation = createAction('[User Activity] set current location', props<{location: Location}>());
+
+export const startGetDirections = createAction('[User Activity] get directions');
+export const getDirections = createAction('[User Activity] get directions success', props<{coordinates: number[]}>());
