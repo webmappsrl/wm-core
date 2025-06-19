@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {from, of} from 'rxjs';
-import {catchError, map, switchMap} from 'rxjs/operators';
+import {catchError, map, switchMap, distinctUntilChanged} from 'rxjs/operators';
 import {Response} from '@wm-types/elastic';
 import {EcService} from './ec.service';
 import {
@@ -73,6 +73,15 @@ export class EcEffects {
   featuresInViewport$ = createEffect(() =>
     this._actions$.pipe(
       ofType(wmMapFeaturesInViewport),
+      distinctUntilChanged((prev, curr) => {
+        const prevIds = prev.featureIds || [];
+        const currIds = curr.featureIds || [];
+
+        if (prevIds.length !== currIds.length) {
+          return false;
+        }
+        return prevIds.every((id, index) => id === currIds[index]);
+      }),
       switchMap(({featureIds}) => {
         if (featureIds.length === 0) {
           return of(null);
