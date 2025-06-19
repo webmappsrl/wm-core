@@ -12,15 +12,31 @@ wm-features-in-viewport {
         ion-card {
           display: flex;
           width: 100%;
-          max-height: 150px;
+          height: 102px;
           margin: 0;
-          .wm-box-taxonomies{
+          padding: 8px;
+          border-radius: 20px;
+          gap: 16px;
+          .wm-box-taxonomies {
             display: none;
           }
+          .wm-box-header-no-photo {
+            .wm-box-taxonomies {
+              display: none;
+            }
+          }
           ion-card-header{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
             padding-right: 0px;
+            padding-left: 0px;
+            ion-card-subtitle{
+              padding: 0px;
+            }
             ion-card-title{
-              margin: 5px 0px;
+              margin: 0px;
+              padding: 0px;
             }
             .wm-search-box-property.property-distance {
               padding-left: 28px;
@@ -33,6 +49,11 @@ wm-features-in-viewport {
               left: 0;
               top: 0;
             }
+          }
+
+          wm-img {
+            width: 118px;
+            min-height: 86px !important;
           }
         }
       }
