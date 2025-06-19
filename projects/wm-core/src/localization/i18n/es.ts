@@ -194,4 +194,7 @@ export const wmES = {
   'joelette': 'Joëlette',
   'mtb': 'MTB',
   'mountain-bike': 'Bicicleta de montaña',
+  "Ottieni le indicazioni su Google Maps": "Obtener indicaciones en Google Maps",
+  "Per il punto di partenza": "Para el punto de partida",
+  "Per il punto più vicino in linea d'aria": "Para el punto más cercano en línea de vista",
 };

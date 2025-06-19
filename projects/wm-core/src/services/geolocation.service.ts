@@ -12,7 +12,9 @@ import {WmFeature} from '@wm-types/feature';
 import {DeviceService} from './device.service';
 import {CStopwatch} from '@wm-core/utils/cstopwatch';
 import {getDistance} from 'ol/sphere';
-import {filter, map, startWith, defaultIfEmpty} from 'rxjs/operators';
+import {map, startWith} from 'rxjs/operators';
+import {Store} from '@ngrx/store';
+import {setCurrentLocation} from '@wm-core/store/user-activity/user-activity.action';
 
 @Injectable({
   providedIn: 'root',
@@ -34,7 +36,7 @@ export class GeolocationService {
   );
   onRecord$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  constructor(private _deviceService: DeviceService) {
+  constructor(private _deviceService: DeviceService, private _store: Store) {
     if (!this._deviceService.isBrowser) {
       App.addListener('appStateChange', async ({isActive}) => {
         if (isActive) {
@@ -227,6 +229,8 @@ export class GeolocationService {
         : this._calculateSpeed(this._currentLocation, location);
     this._currentLocation = location;
     this.onLocationChange.next(location);
+    //TODO: fare refactor utilizzando currentLocation dello store e non onLocationChange
+    this._store.dispatch(setCurrentLocation({location}));
   }
 
   private _getWatcherOptions(accuracy: 'high' | 'low'): WatcherOptions {

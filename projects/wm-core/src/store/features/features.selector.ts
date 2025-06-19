@@ -1,7 +1,7 @@
 import {createSelector} from '@ngrx/store';
 import {WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
-import {ecLayer, ugcOpened} from '../user-activity/user-activity.selector';
+import {currentLocation, ecLayer, ugcOpened} from '../user-activity/user-activity.selector';
 import {
   countEcAll,
   countEcPois,
@@ -21,6 +21,7 @@ import {
   ugcPoiFeatures,
   ugcTracks,
 } from './ugc/ugc.selector';
+import {getClosestPoint} from '@map-core/utils/geometry';
 
 export const countAll = createSelector(countEcAll, countUgcAll, ugcOpened, (ec, ugc, ugcOpened) =>
   ugcOpened ? ugc : ec,
@@ -72,6 +73,15 @@ export const featureOpened = createSelector(track, poi, (track, poi) => {
 export const trackFirstCoordinates = createSelector(
   track,
   track => track?.geometry?.coordinates?.[0] ?? null,
+);
+export const trackNearestCoordinates = createSelector(
+  track,
+  currentLocation,
+  (track, currentLocation) => {
+    if(!currentLocation) return null;
+
+    return getClosestPoint(track, [currentLocation.longitude, currentLocation.latitude]);
+  },
 );
 export const poiFirstCoordinates = createSelector(
   poi,
