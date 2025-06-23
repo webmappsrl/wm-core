@@ -5,6 +5,7 @@
     [wmMapPadding]="mapPadding$|async"
     [wmMapFilters]="apiElasticState$|async"
     [wmMapTranslationCallback]="translationCallback"
+    [wmMapEnableMapControls]="true"
     (wmMapOverlayEVT$)="setWmMapFeatureCollection($event)"
     [wmMapFeatureCollection]="(wmMapFeatureCollectionOverlay$|async)!= null"
     [wmMapFeatureCollectionOverlayUnselect]="wmBackOfMapDetails$|async"
