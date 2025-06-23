@@ -1,5 +1,5 @@
 <form [formGroup]="formIdGroup" *ngIf="disabled === false">
-  <ion-item class="wm-form-field">
+  <ion-item class="wm-form-field" *ngIf="(forms$|async)?.length > 1">
     <ion-label class="wm-form-field-label" position="stacked">{{"Seleziona il tipo di form" | wmtrans}}</ion-label>
     <ion-select class="wm-form-field-select" formControlName="id">
       <ion-select-option
