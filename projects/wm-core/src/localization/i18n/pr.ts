@@ -198,4 +198,5 @@ export const wmPR = {
   "Ottieni le indicazioni su Google Maps": "Obter indicações no Google Maps",
   "Per il punto di partenza": "Para o ponto de partida",
   "Per il punto più vicino in linea d'aria": "Para o ponto mais próximo em linha de visão",
+  'Tipo di form': 'Tipo de formulário',
 };
