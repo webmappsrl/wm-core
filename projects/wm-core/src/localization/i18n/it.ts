@@ -207,4 +207,7 @@ export const wmIT = {
   "Per il punto di partenza": "Per il punto di partenza",
   "Per il punto più vicino in linea d'aria": "Per il punto più vicino in linea d'aria",
   'Tipo di form': 'Tipo di form',
+  'massimo': 'massimo',
+  'foto': 'foto',
+  'Carica foto dalla libreria': 'Carica foto dalla libreria',
 };

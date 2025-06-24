@@ -198,4 +198,7 @@ export const wmES = {
   "Per il punto di partenza": "Para el punto de partida",
   "Per il punto più vicino in linea d'aria": "Para el punto más cercano en línea de vista",
   'Tipo di form': 'Tipo de formulario',
+  'massimo': 'máximo',
+  'foto': 'fotos',
+  'Carica foto dalla libreria': 'Cargar fotos de la biblioteca',
 };

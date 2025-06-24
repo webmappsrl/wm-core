@@ -206,4 +206,7 @@ export const wmSQ = {
   "Per il punto di partenza": "Për pikën e nisjes",
   "Per il punto più vicino in linea d'aria": "Për pikën më të afërt në vijë të shikimit",
   'Tipo di form': 'Lloji i formularit',
+  'massimo': 'maksimum',
+  'foto': 'foto',
+  'Carica foto dalla libreria': 'Ngarko foto nga biblioteka',
 };
