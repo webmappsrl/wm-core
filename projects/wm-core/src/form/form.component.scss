@@ -143,6 +143,15 @@ wm-form {
       white-space: normal;
     }
   }
+  .wm-form-only-title {
+    display: flex;
+    flex-direction: column;
+    padding: 0px 15px 0px 22px;
+    ion-title {
+      font-size: 18px;
+      padding: 8px 0px;
+    }
+  }
 }
 
 ion-alert {

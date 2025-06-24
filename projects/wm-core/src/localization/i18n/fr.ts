@@ -200,4 +200,5 @@ export const wmFR = {
   "Ottieni le indicazioni su Google Maps": "Obtenir des indications sur Google Maps",
   "Per il punto di partenza": "Pour le point de départ",
   "Per il punto più vicino in linea d'aria": "Pour le point le plus proche en ligne d'air",
+  'Tipo di form': 'Type de formulaire',
 };
