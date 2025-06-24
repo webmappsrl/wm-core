@@ -1,5 +1,5 @@
 <form [formGroup]="formIdGroup" *ngIf="disabled === false">
-  <ion-item class="wm-form-field" *ngIf="(forms$|async)?.length > 1">
+  <ion-item class="wm-form-field" *ngIf="(forms$|async)?.length > 1; else withoutSelect">
     <ion-label class="wm-form-field-label" position="stacked">{{"Seleziona il tipo di form" | wmtrans}}</ion-label>
     <ion-select class="wm-form-field-select" formControlName="id">
       <ion-select-option
@@ -9,6 +9,12 @@
       >
     </ion-select>
   </ion-item>
+  <ng-template #withoutSelect>
+    <div class="wm-form-only-title" *ngIf="forms$|async as forms">
+      <ion-label class="wm-form-field-label" position="stacked">{{"Tipo di form" | wmtrans}}</ion-label>
+      <ion-title>{{ forms[0]?.label | wmtrans}}</ion-title>
+    </div>
+  </ng-template>
 </form>
 <ng-container *ngIf="(enableForm$|async) === true">
   <form [formGroup]="formGroup">
