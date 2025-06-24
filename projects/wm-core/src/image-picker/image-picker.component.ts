@@ -1,9 +1,10 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Output, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angular/core';
 import {Photo} from '@capacitor/camera';
 import {Md5} from 'ts-md5';
 import {CameraService} from '@wm-core/services/camera.service';
 import {BehaviorSubject} from 'rxjs';
 import {UntypedFormGroup} from '@angular/forms';
+import { MAX_PHOTOS } from '@map-core/readonly/constants';
 
 @Component({
   selector: 'wm-image-picker',
@@ -16,10 +17,10 @@ export class WmImagePickerComponent {
   @Output() photosChanged = new EventEmitter<Photo[]>();
   @Output() startAddPhotos = new EventEmitter<void>();
   @Output() endAddPhotos = new EventEmitter<void>();
+  @Input() maxPhotos = MAX_PHOTOS;
 
-  fg: UntypedFormGroup;
   photos: BehaviorSubject<Photo[]> = new BehaviorSubject<Photo[]>([]);
-  maxPhotos = 3;
+
 
   constructor(private _cameraSvc: CameraService, private _cdr: ChangeDetectorRef) {}
 

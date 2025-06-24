@@ -4,14 +4,18 @@ wm-image-picker {
     color: var(--wm-color-medium);
   }
   .wm-image-picker-loadphoto {
-    padding: 20px;
+    padding: 16px;
     &.wm-image-picker-addimagecontainer {
-      padding: 20px 10px;
+      padding: 16px 10px;
     }
     border-radius: 15px;
     border: 2px var(--ion-color-light-shade, var(--wm-color-light-shade)) dashed;
     text-align: center;
     width: 100%;
+    height: 108px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
     .wm-image-picker-loadphoto-text {
       font-size: var(--wm-font-sm);
@@ -29,7 +33,6 @@ wm-image-picker {
     }
 
     .wm-image-picker-loadphoto-advice {
-      margin-top: 5px;
       font-size: var(--wm-font-xsm);
     }
   }
