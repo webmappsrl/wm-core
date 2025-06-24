@@ -20,6 +20,7 @@ import {distinctUntilChanged, filter} from 'rxjs/operators';
 })
 export class WmFormComponent implements OnDestroy {
   private _currentFormId = 0;
+  private _titleFirstClick = true;
 
   @Input() set confPOIFORMS(forms: any[]) {
     this.forms$.next(forms);
@@ -77,6 +78,7 @@ export class WmFormComponent implements OnDestroy {
       idx = this.forms$.value.findIndex(elem => elem.id === idx);
     }
     this._currentFormId = idx;
+    this._titleFirstClick = true;
     this.formIdGroup.controls['id'].setValue(idx);
     this.currentForm$.next(this.forms$.value[idx]);
     let formObj = {};
@@ -87,10 +89,25 @@ export class WmFormComponent implements OnDestroy {
         validators.push(Validators.required);
       }
       if (field.type === 'text') {
-        formObj[field.name] = [
-          values && values[field.name] ? values[field.name] : null,
-          validators,
-        ];
+        let defaultValue = null;
+
+        if (field.name === 'title') {
+          if (values && values[field.name]) {
+            defaultValue = values[field.name];
+          } else {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            defaultValue = `${this.currentForm$.value.id} ${year}/${month}/${day} ${hours}:${minutes}`;
+          }
+        } else {
+          defaultValue = values && values[field.name] ? values[field.name] : null;
+        }
+
+        formObj[field.name] = [defaultValue, validators];
       }
       if (field.type === 'textarea') {
         formObj[field.name] = [values && values[field.name] ? values[field.name] : '', validators];
@@ -111,5 +128,15 @@ export class WmFormComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.formGroupValueChangesSub.unsubscribe();
+  }
+
+  selectAllTitleText(event: any): void {
+    if (this._titleFirstClick) {
+      const input = event.target;
+      if (input && input.select) {
+        input.select();
+      }
+      this._titleFirstClick = false;
+    }
   }
 }
