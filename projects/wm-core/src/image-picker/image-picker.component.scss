@@ -1,4 +1,8 @@
 wm-image-picker {
+  .wm-image-picker-advice {
+    font-size: var(--wm-font-sm);
+    color: var(--wm-color-medium);
+  }
   .wm-image-picker-loadphoto {
     padding: 20px;
     &.wm-image-picker-addimagecontainer {
@@ -17,6 +21,11 @@ wm-image-picker {
         color: var(--wm-color-primary);
         font-weight: var(--wm-font-weight-bold);
       }
+    }
+
+    .wm-image-picker-loadphoto-icon {
+      font-size: 28px;
+      color: var(--wm-color-dark);
     }
 
     .wm-image-picker-loadphoto-advice {

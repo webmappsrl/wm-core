@@ -23,7 +23,7 @@ export class WmImagePickerComponent {
 
   constructor(private _cameraSvc: CameraService, private _cdr: ChangeDetectorRef) {}
 
-  async addPhotos(): Promise<void> {
+  async addPhotosFromLibrary(): Promise<void> {
     this.startAddPhotos.emit();
     const library = await this._cameraSvc.getPhotos();
 
@@ -52,6 +52,12 @@ export class WmImagePickerComponent {
 
     this.endAddPhotos.emit();
     this._cdr.detectChanges(); // Forza il refresh della view per abilitare il pulsante di salvataggio
+  }
+
+  async takePhoto(): Promise<void> {
+    const photo = await this._cameraSvc.shotPhoto();
+    this.photos.next([...this.photos.value, photo]);
+    this.photosChanged.emit(this.photos.value);
   }
 
   remove(idx: number): void {
