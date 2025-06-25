@@ -11,12 +11,17 @@
     </ion-toolbar>
   </ion-header>
   <div #content id="wm-ugc-poi-details-content">
-    <wm-form
-      *ngIf="isEditing$|async; else viewData"
-      [confPOIFORMS]="confPOIFORMS$|async"
-      [init]="currentUgcPoiProperties?.form"
-      (formGroupEvt)="fg = $event"
-    ></wm-form>
+    <ng-container *ngIf="isEditing$|async; else viewData">
+      <wm-form
+        [confPOIFORMS]="confPOIFORMS$|async"
+        [init]="currentUgcPoiProperties?.form"
+        (formGroupEvt)="fg = $event"
+      ></wm-form>
+      <wm-image-picker
+        [readonlyPhotos]="currentUgcPoiProperties?.media ?? []"
+        (photosChanged)="photosChanged($event)"
+      ></wm-image-picker>
+    </ng-container>
     <ng-template #viewData>
       <ng-container *ngIf="currentUgcPoiProperties?.form as form">
         <wm-form

@@ -3,6 +3,7 @@ import {Photo} from '@capacitor/camera';
 import {Md5} from 'ts-md5';
 import {CameraService} from '@wm-core/services/camera.service';
 import {BehaviorSubject} from 'rxjs';
+import {Media} from '@wm-types/feature';
 import {MAX_PHOTOS} from '@wm-core/constants/media';
 
 @Component({
@@ -17,9 +18,15 @@ export class WmImagePickerComponent {
   @Output() startAddPhotos = new EventEmitter<void>();
   @Output() endAddPhotos = new EventEmitter<void>();
   @Input() maxPhotos = MAX_PHOTOS;
+  @Input() set readonlyPhotos(readonlyPhotos: Media[]) {
+    this.photos.next([
+      ...this.photos.value,
+      ...readonlyPhotos,
+    ]);
+  }
 
-  photos: BehaviorSubject<Photo[]> = new BehaviorSubject<Photo[]>([]);
-
+  photos: BehaviorSubject<Media[]> = new BehaviorSubject<Media[]>([]);
+  showPhotos$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(private _cameraSvc: CameraService, private _cdr: ChangeDetectorRef) {}
 
@@ -35,6 +42,9 @@ export class WmImagePickerComponent {
 
         let exists: boolean = false;
         for (let p of this.photos.value) {
+          if (p.id) {
+            continue;
+          }
           const pData = await this._cameraSvc.getPhotoData(p.webPath);
           const pictureMd5 = Md5.hashStr(JSON.stringify(pData));
           if (md5 === pictureMd5) {

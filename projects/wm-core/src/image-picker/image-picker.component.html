@@ -67,6 +67,7 @@
     <ion-col size="4" *ngFor="let image of photos;let idx = index">
       <div class="wm-image-picker-imagecontainer">
         <ion-icon
+          *ngIf="image?.id == null"
           name="close-outline"
           class="wm-image-picker-remove"
           (click)="remove(idx)"

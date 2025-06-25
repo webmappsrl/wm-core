@@ -12,7 +12,7 @@ import {Store} from '@ngrx/store';
 import {BehaviorSubject, from, Observable, of} from 'rxjs';
 import {switchMap, take} from 'rxjs/operators';
 import {Point} from 'geojson';
-import {WmFeature} from '@wm-types/feature';
+import {Media, WmFeature} from '@wm-types/feature';
 import {LangService} from '@wm-core/localization/lang.service';
 import {deleteUgcPoi, updateUgcPoi} from '@wm-core/store/features/ugc/ugc.actions';
 import {UntypedFormGroup} from '@angular/forms';
@@ -39,6 +39,8 @@ export class UgcPoiPropertiesComponent {
   currentUgcPoiProperties$ = this._store.select(currentUgcPoiProperties);
   fg: UntypedFormGroup;
   isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+  private _photos: Media[] = [];
 
   slideOptions = {
     allowTouchMove: false,
@@ -105,6 +107,7 @@ export class UgcPoiPropertiesComponent {
             name: this.fg.value.title,
             form: this.fg.value,
             updatedAt: new Date(),
+            media: this._photos ?? currentUgcPoi?.properties?.media ?? [],
           },
         };
 
@@ -112,5 +115,9 @@ export class UgcPoiPropertiesComponent {
         this.isEditing$.next(false);
       }
     });
+  }
+
+  photosChanged(photos: Media[]): void {
+    this._photos = photos;
   }
 }

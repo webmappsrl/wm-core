@@ -15,13 +15,17 @@
     </ion-toolbar>
   </ion-header>
   <div #content id="wm-ugc-track-details-content">
-    <wm-form
-      *ngIf="isEditing$|async; else viewData"
-      [confPOIFORMS]="confTRACKFORMS$|async"
-      [init]="track?.properties?.form"
-      (formGroupEvt)="fg = $event"
-    ></wm-form>
-
+    <ng-container *ngIf="isEditing$|async; else viewData">
+      <wm-form
+        [confPOIFORMS]="confTRACKFORMS$|async"
+        [init]="track?.properties?.form"
+        (formGroupEvt)="fg = $event"
+      ></wm-form>
+      <wm-image-picker
+        [readonlyPhotos]="track?.properties?.media ?? []"
+        (photosChanged)="photosChanged($event)"
+      ></wm-image-picker>
+    </ng-container>
     <ng-template #viewData>
       <wm-slope-chart
         *ngIf="track != null"
