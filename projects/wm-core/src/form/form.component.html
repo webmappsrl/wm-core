@@ -69,6 +69,7 @@
               [placeholder]="field.placeholder | wmtrans"
               [formControlName]="field.name"
               [disabled]="disabled"
+              (click)="field.name === 'title' ? selectAllTitleText($event) : null"
             ></ion-input>
 
             <ion-textarea
