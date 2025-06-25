@@ -202,4 +202,7 @@ export const wmDE = {
   "Per il punto di partenza": "Für den Startpunkt",
   "Per il punto più vicino in linea d'aria": "Für den nächsten Punkt in Luftlinie",
   'Tipo di form': 'Formularart',
+  'massimo': 'maximal',
+  'foto': 'Fotos',
+  'Carica foto dalla libreria': 'Fotos aus der Bibliothek laden',
 };

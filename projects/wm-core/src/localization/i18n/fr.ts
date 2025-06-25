@@ -201,4 +201,7 @@ export const wmFR = {
   "Per il punto di partenza": "Pour le point de départ",
   "Per il punto più vicino in linea d'aria": "Pour le point le plus proche en ligne d'air",
   'Tipo di form': 'Type de formulaire',
+  'massimo': 'maximum',
+  'foto': 'photos',
+  'Carica foto dalla libreria': 'Charger les photos de la bibliothèque',
 };

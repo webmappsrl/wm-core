@@ -1,41 +1,69 @@
 <ion-grid>
-  <ion-row *ngIf="!(photos|async)?.length">
+  <ion-row>
     <ion-col size="12">
-      <div class="wm-image-picker-loadphoto" (click)="addPhotos()">
-        <div class="wm-image-picker-loadphoto-text">
-          <div class="wm-image-picker-loadphoto-action">
-            {{ "Carica" | wmtrans }}
-          </div>
-          {{ "foto dalla galleria" | wmtrans }}
+      <ion-text class="wm-image-picker-advice">{{"(" + ("massimo" | wmtrans) + " " + maxPhotos + " " + ("foto" | wmtrans) + ")"}}</ion-text>
+    </ion-col>
+  </ion-row>
+  <ion-row *ngIf="!(photos|async)?.length">
+    <ion-col size="6">
+      <div class="wm-image-picker-loadphoto" (click)="takePhoto()">
+        <div class="wm-image-picker-loadphoto-icon">
+          <ion-icon name="camera-outline"></ion-icon>
         </div>
         <div class="wm-image-picker-loadphoto-advice">
-          {{ "Dimensione massime: 3 photo" | wmtrans }}
+          {{ "Scatta una foto" | wmtrans }}
+        </div>
+      </div>
+    </ion-col>
+    <ion-col size="6">
+      <div class="wm-image-picker-loadphoto" (click)="addPhotosFromLibrary()">
+        <div class="wm-image-picker-loadphoto-icon">
+          <ion-icon name="images-outline"></ion-icon>
+        </div>
+        <div class="wm-image-picker-loadphoto-advice">
+          {{ "Carica foto dalla libreria" | wmtrans }}
         </div>
       </div>
     </ion-col>
   </ion-row>
 
   <ion-row *ngIf="(photos|async) as photos">
-    <ion-col size="4" *ngIf="photos?.length && photos.length < maxPhotos">
-      <div
-        class="
-        wm-image-picker-imagecontainer
-        wm-image-picker-addimagecontainer
-        wm-image-picker-loadphoto
-      "
-        (click)="addPhotos()"
-      >
-        <div class="wm-image-picker-loadphoto-text">
-          <div class="wm-image-picker-loadphoto-action">
-            {{ "Aggiungi" | wmtrans }}
+    <ng-container *ngIf="photos?.length && photos.length < maxPhotos">
+      <ion-col size="4">
+        <div
+          class="
+          wm-image-picker-imagecontainer
+          wm-image-picker-addimagecontainer
+          wm-image-picker-loadphoto
+        "
+          (click)="takePhoto()"
+        >
+          <div class="wm-image-picker-loadphoto-icon">
+            <ion-icon name="camera-outline"></ion-icon>
           </div>
-          {{ "Foto" | wmtrans }}
+          <div class="wm-image-picker-loadphoto-advice">
+            {{ "Scatta una foto" | wmtrans }}
+          </div>
         </div>
-        <div class="wm-image-picker-loadphoto-advice">
-          {{ "(max 3 photo)" | wmtrans }}
+      </ion-col>
+      <ion-col size="4">
+        <div
+          class="
+          wm-image-picker-imagecontainer
+          wm-image-picker-addimagecontainer
+          wm-image-picker-loadphoto
+        "
+          (click)="addPhotosFromLibrary()"
+        >
+          <div class="wm-image-picker-loadphoto-icon">
+            <ion-icon name="images-outline"></ion-icon>
+          </div>
+          <div class="wm-image-picker-loadphoto-advice">
+            {{ "Carica foto dalla libreria" | wmtrans }}
+          </div>
         </div>
-      </div>
-    </ion-col>
+      </ion-col>
+    </ng-container>
     <ion-col size="4" *ngFor="let image of photos;let idx = index">
       <div class="wm-image-picker-imagecontainer">
         <ion-icon

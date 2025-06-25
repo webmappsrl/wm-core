@@ -208,4 +208,7 @@ export const wmEN = {
   "Per il punto di partenza": "For the start point",
   "Per il punto più vicino in linea d'aria": "For the nearest point in line of sight",
   'Tipo di form': 'Form type',
+  'massimo': 'maximum',
+  'foto': 'photos',
+  'Carica foto dalla libreria': 'Load photos from the library',
 };

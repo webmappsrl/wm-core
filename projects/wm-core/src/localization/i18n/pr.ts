@@ -199,4 +199,7 @@ export const wmPR = {
   "Per il punto di partenza": "Para o ponto de partida",
   "Per il punto più vicino in linea d'aria": "Para o ponto mais próximo em linha de visão",
   'Tipo di form': 'Tipo de formulário',
+  'massimo': 'máximo',
+  'foto': 'fotos',
+  'Carica foto dalla libreria': 'Carregar fotos da biblioteca',
 };
