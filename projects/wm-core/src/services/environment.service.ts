@@ -136,4 +136,7 @@ export class EnvironmentService {
   get shareLink(): string {
     return this._shareLink;
   }
+  get shardName(): string {
+    return this._shardName;
+  }
 }
