@@ -1,7 +1,8 @@
 import {DOCUMENT} from '@angular/common';
 import {Component, Inject, Renderer2} from '@angular/core';
 import {Store} from '@ngrx/store';
-import {confAPP, confGeohubId, confWEBAPP} from '@wm-core/store/conf/conf.selector';
+import {EnvironmentService} from '@wm-core/services/environment.service';
+import {confAPP, confWEBAPP} from '@wm-core/store/conf/conf.selector';
 import {Observable} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 
@@ -33,27 +34,23 @@ import {filter, take} from 'rxjs/operators';
 export class MetaComponent {
   APP$: Observable<any> = this._store.select(confAPP);
   WEBAPP$: Observable<any> = this._store.select(confWEBAPP);
-  confGeohubId$: Observable<number> = this._store.select(confGeohubId);
 
   constructor(
     private _store: Store<any>,
     @Inject(DOCUMENT) private _document: Document,
     private _renderer: Renderer2,
+    private _environmentSvc: EnvironmentService,
   ) {
-    this.confGeohubId$
-      .pipe(
-        filter(p => p != null),
-        take(1),
-      )
-      .subscribe(id => {
-        if (id) {
-          const styleLink: any = this._renderer.createElement('link') as HTMLLinkElement;
-          this._renderer.setProperty(styleLink, 'rel', 'stylesheet');
-          this._renderer.setProperty(styleLink, 'href', `theme/${id}.css`);
-          this._renderer.setProperty(styleLink, 'id', 'client-theme');
-          this._renderer.appendChild(this._document.head, styleLink);
-        }
-      });
+    const shardName = this._environmentSvc.shardName;
+    const appId = this._environmentSvc.appId;
+    if(appId && shardName) {
+      const styleLink: any = this._renderer.createElement('link') as HTMLLinkElement;
+      this._renderer.setProperty(styleLink, 'rel', 'stylesheet');
+      this._renderer.setProperty(styleLink, 'href', `theme/${shardName}/${appId}.css`);
+      this._renderer.setProperty(styleLink, 'id', 'client-theme');
+      this._renderer.appendChild(this._document.head, styleLink);
+    }
+
     this.WEBAPP$.pipe(
       filter(webApp => webApp != null && webApp.gu_id != null),
       take(1),
