@@ -70,6 +70,21 @@ wm-image-picker {
       z-index: 1;
     }
 
+    wm-ugc-synchronized-badge {
+      display: flex;
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      background: white;
+      padding: 2px;
+      border-radius: 50%;
+      z-index: 1;
+      > ion-icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
     .wm-image-picker-add {
       font-size: 45px;
       color: var(--wm-color-dark);

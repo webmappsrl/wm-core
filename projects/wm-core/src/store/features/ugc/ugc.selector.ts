@@ -35,6 +35,10 @@ export const currentUgcTrackProperties = createSelector(
   currentUgcTrack,
   track => track?.properties,
 );
+export const currentUgcTrackId = createSelector(
+  currentUgcTrackProperties,
+  currentUgcTrackProperties => currentUgcTrackProperties?.id ?? currentUgcTrackProperties?.uuid ?? null,
+);
 export const currentUgcPoi = createSelector(ugc, state => state.currentUgcPoi);
 export const currentUgcPoiProperties = createSelector(currentUgcPoi, poi => poi?.properties);
 export const currentUgcPoiId = createSelector(

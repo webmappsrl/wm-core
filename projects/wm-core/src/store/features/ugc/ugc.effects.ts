@@ -9,11 +9,15 @@ import {
   takeUntil,
   startWith,
   withLatestFrom,
+  take,
 } from 'rxjs/operators';
 import {of, from, interval, EMPTY} from 'rxjs';
 import {
   currentUgcPoiId,
   currentUgcTrackId,
+  deleteUgcMedia,
+  deleteUgcMediaFailure,
+  deleteUgcMediaSuccess,
   deleteUgcPoi,
   deleteUgcPoiFailure,
   deleteUgcPoiSuccess,
@@ -75,11 +79,14 @@ export class UgcEffects {
   deleteUgcFailure$ = createEffect(
     () =>
       this._actions$.pipe(
-        ofType(deleteUgcTrackFailure, deleteUgcPoiFailure),
-        switchMap(() =>
+        ofType(deleteUgcTrackFailure, deleteUgcPoiFailure, deleteUgcMediaFailure),
+        switchMap(({error}) =>
           this._alertCtrl.create({
             header: this._langSvc.instant('Ops!'),
-            message: this._langSvc.instant('Non è stato possibile eliminare, riprova più tardi'),
+            message: this._langSvc.instant(`
+              Non è stato possibile eliminare, riprova più tardi.
+              ${error}
+              `),
             buttons: ['OK'],
           }),
         ),
@@ -305,6 +312,71 @@ export class UgcEffects {
           }),
         ),
       ),
+    ),
+  );
+
+  deleteUgcMedia$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(deleteUgcMedia),
+      mergeMap(({media}) => {
+        if(media?.id) {
+          return from(this._ugcSvc.deleteApiMedia(media.id)).pipe(
+            mergeMap(() => [
+              deleteUgcMediaSuccess({media}),
+              syncUgc(),
+            ]),
+            catchError(error => of(deleteUgcMediaFailure({error: error.error.message}))),
+          )
+        }
+        return of(deleteUgcMediaFailure({error: 'Media ID not found'}))
+      }),
+      catchError(error => of(deleteUgcMediaFailure({error}))),
+    ),
+  );
+
+  deleteUgcMediaSuccess$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(deleteUgcMediaSuccess),
+      switchMap(() => {
+        return this._alertCtrl.create({
+          message: this._langSvc.instant('Eliminazione effettuata con successo'),
+          buttons: ['OK'],
+        });
+      }),
+      switchMap(alert => alert.present()),
+    ),
+    {dispatch: false},
+  );
+
+  updateCurrentUgcPoiAfterUpdate$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(updateUgcPoiSuccess),
+      filter(action => action.poi?.properties?.id != null),
+      switchMap(action => {
+        const poiId = action.poi?.properties?.id;
+        return this._actions$.pipe(
+          ofType(syncUgcSuccess),
+          filter(syncAction => syncAction.responseType === 'Pois'),
+          take(1),
+          map(() => currentUgcPoiId({currentUgcPoiId: poiId})),
+        );
+      }),
+    ),
+  );
+
+  updateCurrentUgcTrackAfterUpdate$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(updateUgcTrackSuccess),
+      filter(action => action.track?.properties?.id != null),
+      switchMap(action => {
+        const trackId = action.track?.properties?.id;
+        return this._actions$.pipe(
+          ofType(syncUgcSuccess),
+          filter(syncAction => syncAction.responseType === 'Tracks'),
+          take(1),
+          map(() => currentUgcTrackId({currentUgcTrackId: trackId})),
+        );
+      }),
     ),
   );
 
