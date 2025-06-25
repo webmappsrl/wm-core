@@ -3,8 +3,7 @@ import {Photo} from '@capacitor/camera';
 import {Md5} from 'ts-md5';
 import {CameraService} from '@wm-core/services/camera.service';
 import {BehaviorSubject} from 'rxjs';
-import {UntypedFormGroup} from '@angular/forms';
-import { MAX_PHOTOS } from '@map-core/readonly/constants';
+import {MAX_PHOTOS} from '@wm-core/constants/media';
 
 @Component({
   selector: 'wm-image-picker',
