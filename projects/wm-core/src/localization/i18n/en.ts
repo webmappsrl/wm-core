@@ -211,4 +211,8 @@ export const wmEN = {
   'massimo': 'maximum',
   'foto': 'photos',
   'Carica foto dalla libreria': 'Load photos from the library',
+  'Luogo': 'Place',
+  'Luoghi': 'Places',
+  'Percorso': 'Path',
+  'Percorsi': 'Paths',
 };

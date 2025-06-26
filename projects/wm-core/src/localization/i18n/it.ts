@@ -210,4 +210,8 @@ export const wmIT = {
   'massimo': 'massimo',
   'foto': 'foto',
   'Carica foto dalla libreria': 'Carica foto dalla libreria',
+  'Luogo': 'Luogo',
+  'Luoghi': 'Luoghi',
+  'Percorso': 'Percorso',
+  'Percorsi': 'Percorsi',
 };

@@ -209,4 +209,8 @@ export const wmSQ = {
   'massimo': 'maksimum',
   'foto': 'foto',
   'Carica foto dalla libreria': 'Ngarko foto nga biblioteka',
+  'Luogo': 'Vendndodhja',
+  'Luoghi': 'Vendndodhjet',
+  'Percorso': 'Rruga',
+  'Percorsi': 'Rrugët',
 };

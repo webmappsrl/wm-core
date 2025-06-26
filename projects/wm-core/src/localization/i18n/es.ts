@@ -201,4 +201,8 @@ export const wmES = {
   'massimo': 'máximo',
   'foto': 'fotos',
   'Carica foto dalla libreria': 'Cargar fotos de la biblioteca',
+  'Luogo': 'Lugar',
+  'Luoghi': 'Lugares',
+  'Percorso': 'Ruta',
+  'Percorsi': 'Rutas',
 };

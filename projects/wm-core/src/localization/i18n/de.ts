@@ -205,4 +205,8 @@ export const wmDE = {
   'massimo': 'maximal',
   'foto': 'Fotos',
   'Carica foto dalla libreria': 'Fotos aus der Bibliothek laden',
+  'Luogo': 'Ort',
+  'Luoghi': 'Orte',
+  'Percorso': 'Pfad',
+  'Percorsi': 'Pfade',
 };

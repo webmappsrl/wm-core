@@ -202,4 +202,8 @@ export const wmPR = {
   'massimo': 'máximo',
   'foto': 'fotos',
   'Carica foto dalla libreria': 'Carregar fotos da biblioteca',
+  'Luogo': 'Lugar',
+  'Luoghi': 'Locais',
+  'Percorso': 'Percurso',
+  'Percorsi': 'Percursos',
 };
