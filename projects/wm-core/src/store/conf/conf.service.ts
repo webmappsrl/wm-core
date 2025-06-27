@@ -59,10 +59,15 @@ export class ConfService {
         }
 
         // Effettua la richiesta HTTP con Last-Modified
+        // Ignora cachedLastModified se siamo sullo shard carg
+        const shouldIgnoreCache = this._environmentSvc.shardName === 'carg';
+        const headers =
+          cachedLastModified && !shouldIgnoreCache ? {'If-Modified-Since': cachedLastModified} : {};
+
         this._http
           .get<ICONF>(url, {
             observe: 'response',
-            headers: cachedLastModified ? {'If-Modified-Since': cachedLastModified} : {},
+            headers,
           })
           .pipe(take(1))
           .subscribe(
