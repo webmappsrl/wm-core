@@ -25,6 +25,8 @@ export class AuthService {
       switchMap(confApp => {
         const sku = confApp.sku;
         const appId = confApp.id ?? confApp.geohubId;
+        email = email?.toLowerCase();
+
         return this._http.post(`${this._environmentSvc.origin}/api/auth/login`, {
           email,
           password,
@@ -49,6 +51,8 @@ export class AuthService {
       switchMap(confApp => {
         const sku = confApp.sku;
         const appId = confApp.id ?? confApp.geohubId;
+        email = email?.toLowerCase();
+
         return this._http.post(`${this._environmentSvc.origin}/api/auth/signup`, {
           name,
           email,
