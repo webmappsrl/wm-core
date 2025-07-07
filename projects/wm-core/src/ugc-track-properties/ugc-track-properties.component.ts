@@ -137,7 +137,7 @@ export class UgcTrackPropertiesComponent {
           ...this.track?.properties,
           name: this.fg.value.title,
           form: this.fg.value,
-          media: this._photos ?? this.track?.properties?.media ?? [],
+          media: this._photos ?? [],
           updatedAt: new Date(),
         },
       };
