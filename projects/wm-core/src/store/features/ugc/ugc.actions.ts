@@ -1,5 +1,5 @@
 import {createAction, props} from '@ngrx/store';
-import {WmFeature} from '@wm-types/feature';
+import {Media, WmFeature} from '@wm-types/feature';
 import {LineString, Point} from 'geojson';
 export const syncUgc = createAction('[Ugc] Sync');
 
@@ -96,4 +96,11 @@ export const updateUgcPoiFailure = createAction(
 export const currentCustomTrack = createAction(
   '[Ugc] Set current Custom Track',
   props<{currentCustomTrack: WmFeature<LineString> | null}>(),
+);
+
+export const deleteUgcMedia = createAction('[Ugc] Delete Ugc Media', props<{media: Media}>());
+export const deleteUgcMediaSuccess = createAction('[Ugc] Delete Ugc Media Success', props<{media: Media}>());
+export const deleteUgcMediaFailure = createAction(
+  '[Ugc] Delete Ugc Media Failure',
+  props<{error: string}>(),
 );

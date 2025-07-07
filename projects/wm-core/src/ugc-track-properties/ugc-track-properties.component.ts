@@ -14,7 +14,7 @@ import {Store} from '@ngrx/store';
 import {BehaviorSubject, from, Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {LineString} from 'geojson';
-import {WmFeature} from '@wm-types/feature';
+import {Media, WmFeature} from '@wm-types/feature';
 import {LangService} from '@wm-core/localization/lang.service';
 import {deleteUgcTrack, updateUgcTrack} from '@wm-core/store/features/ugc/ugc.actions';
 import {UntypedFormGroup} from '@angular/forms';
@@ -60,6 +60,8 @@ export class UgcTrackPropertiesComponent {
     loop: true,
   };
   track: WmFeature<LineString>;
+
+  private _photos: Media[] = [];
 
   constructor(
     private _store: Store,
@@ -114,6 +116,10 @@ export class UgcTrackPropertiesComponent {
     this._store.dispatch(trackElevationChartHoverElemenents({elements: event}));
   }
 
+  photosChanged(photos: Media[]): void {
+    this._photos = photos;
+  }
+
   removeUgcTrackFromUrl(): void {
     this._urlHandlerSvc.updateURL({ugc_track: undefined});
   }
@@ -131,6 +137,7 @@ export class UgcTrackPropertiesComponent {
           ...this.track?.properties,
           name: this.fg.value.title,
           form: this.fg.value,
+          media: this._photos ?? [],
           updatedAt: new Date(),
         },
       };

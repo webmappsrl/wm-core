@@ -340,17 +340,25 @@ export class UgcService {
     }
   }
 
-  updateApiPoi(poi: WmFeature<Point>): Observable<any> {
-    return this._http.post(`${this._environmentSvc.origin}/api/v2/ugc/poi/edit`, poi);
+  async updateApiPoi(poi: WmFeature<Point>): Promise<any> {
+    if (poi != null) {
+      const data = await this._buildFormData(poi);
+      return this._http.post(`${this._environmentSvc.origin}/api/v3/ugc/poi/edit`, data).toPromise();
+    }
+    return Promise.resolve(null);
   }
 
-  updateApiTrack(track: WmFeature<LineString>): Observable<any> {
-    return this._http.post(`${this._environmentSvc.origin}/api/v2/ugc/track/edit`, track);
+  async updateApiTrack(track: WmFeature<LineString>): Promise<any> {
+    if (track != null) {
+      const data = await this._buildFormData(track);
+      return this._http.post(`${this._environmentSvc.origin}/api/v3/ugc/track/edit`, data).toPromise();
+    }
+    return Promise.resolve(null);
   }
 
   private async _buildFormData(feature: WmFeature<LineString | Point>): Promise<FormData> {
     const {properties} = feature;
-    const photoFeatures = properties?.media ?? [];
+    const photoFeatures = properties?.media?.filter(p => !p.id) ?? [];
     const data = new FormData();
     data.append('feature', JSON.stringify(feature));
     for (let [index, photo] of photoFeatures.entries()) {
