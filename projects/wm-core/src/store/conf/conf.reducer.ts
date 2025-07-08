@@ -192,6 +192,8 @@ export const confReducer = createReducer(
         WEBAPP: {...state.WEBAPP, ...conf.WEBAPP},
         THEME: {...state.THEME, ...conf.THEME},
         OPTIONS: {...state.OPTIONS, ...conf.OPTIONS},
+        LANGUAGES: {...state.LANGUAGES, ...conf.LANGUAGES},
+        TRANSLATIONS: {...state.TRANSLATIONS, ...conf.TRANSLATIONS},
         MAP,
         loaded: true,
       },

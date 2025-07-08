@@ -90,22 +90,17 @@ export class LangService extends TranslateService implements TranslateService {
             this.setTranslation(l, translations[l], true);
           }
         });
-        this._confLANGUAGES$
-          .pipe(
-            filter(l => l != null),
-            take(1),
-          )
-          .subscribe(l => {
-            if (l && l.available) {
-              this.addLangs(l.available);
-            }
-            if (l && l.default) {
-              this.setDefaultLang(l.default);
-            }
-            this.useSavedLang();
-            this.isInit$.next(true);
-          });
       });
+    this._confLANGUAGES$.subscribe(l => {
+      if (l && l.available) {
+        this.addLangs(l.available);
+      }
+      if (l && l.default) {
+        this.setDefaultLang(l.default);
+      }
+      this.useSavedLang();
+      this.isInit$.next(true);
+    });
   }
 
   useSavedLang(): string {
