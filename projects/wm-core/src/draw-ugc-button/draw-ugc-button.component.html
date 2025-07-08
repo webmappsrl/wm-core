@@ -5,11 +5,11 @@
     *ngIf="!(drawOpened$ | async) else drawingFeature"
   >
     <ion-icon slot="start" name="pencil"></ion-icon>
-    {{ 'Disegna' | translate }}
+    {{ 'Disegna' | wmtrans }}
   </ion-button>
   <ng-template #drawingFeature>
     <ion-button color="light" (click)="stopDrawing()">
-      {{ 'Esci' | translate }}
+      {{ 'Esci' | wmtrans }}
     </ion-button>
   </ng-template>
   <div *ngIf="showDrawTypeSelection$ | async">
