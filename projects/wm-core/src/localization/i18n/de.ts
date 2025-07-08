@@ -224,4 +224,5 @@ export const wmDE = {
   'Attenzione': 'Achtung',
   'Disegna': 'Zeichnen',
   'Esci': 'Aus',
+  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Sie haben Ihren Wegpunkt erfolgreich gespeichert. Sie können ihn anzeigen, indem Sie sich in Ihr Profil einloggen.'
 };

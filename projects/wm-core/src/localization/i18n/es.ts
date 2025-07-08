@@ -220,4 +220,5 @@ export const wmES = {
   'Attenzione': 'Atención',
   'Disegna': 'Dibujar',
   'Esci': 'Salir',
+  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Has guardado correctamente tu waypoint. Puedes verlo accediendo a tu perfil.',
 };

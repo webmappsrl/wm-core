@@ -228,4 +228,5 @@ export const wmSQ = {
   'Attenzione': 'Vëmendje',
   'Disegna': 'Dhëni',
   'Esci': 'Dil',
+  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Keni ruajtur me sukses pikën tuaj të ndalimit. Mund ta shihni duke hyrë në profilin tuaj.'
 };

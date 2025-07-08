@@ -223,4 +223,5 @@ export const wmFR = {
   'Attenzione': 'Attention',
   'Disegna': 'Dessiner',
   'Esci': 'Quitter',
+  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Vous avez enregistré votre waypoint avec succès. Vous pouvez le visualiser en accédant à votre profil.',
 };
