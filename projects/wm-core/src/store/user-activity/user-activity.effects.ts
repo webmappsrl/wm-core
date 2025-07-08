@@ -63,7 +63,12 @@ import {HttpClient} from '@angular/common/http';
 import {WmFeature, WmFeatureCollection} from '@wm-types/feature';
 import {MultiPolygon} from 'geojson';
 import {setCurrentUgcPoiDrawn} from '../features/ugc/ugc.actions';
-import {countTracks, poiFirstCoordinates, trackFirstCoordinates, trackNearestCoordinates} from '@wm-core/store/features/features.selector';
+import {
+  countTracks,
+  poiFirstCoordinates,
+  trackFirstCoordinates,
+  trackNearestCoordinates,
+} from '@wm-core/store/features/features.selector';
 import {ModalGetDirectionsComponent} from '@wm-core/modal-get-directions/modal-get-directions.component';
 import {ProfileAuthComponent} from '@wm-core/profile/profile-auth/profile-auth.component';
 import {currentCustomTrack} from '@wm-core/store/features/ugc/ugc.actions';
@@ -244,10 +249,11 @@ export class UserActivityEffects {
     ),
   );
 
+  //TODO: refactor, gestire in un unico effect la logica dell'homeResultTabSelected
   setHomeResultTabWhenLastFilterTypeChanged$ = createEffect(() =>
     this._store.select(lastFilterType).pipe(
       filter(lastFilterType => lastFilterType != null),
-      map((lastFilterType) => setHomeResultTabSelected({tab: lastFilterType})),
+      map(lastFilterType => setHomeResultTabSelected({tab: lastFilterType})),
     ),
   );
 
@@ -272,21 +278,23 @@ export class UserActivityEffects {
       withLatestFrom(
         this._store.select(poiFirstCoordinates),
         this._store.select(trackFirstCoordinates),
-        this._store.select(trackNearestCoordinates)
+        this._store.select(trackNearestCoordinates),
       ),
       switchMap(([_, poiFirstCoords, trackStartCoords, trackNearestCoords]) => {
         if (poiFirstCoords) {
           return of(getDirections({coordinates: poiFirstCoords}));
         }
 
-        return from(this._modalCtrl.create({
-          component: ModalGetDirectionsComponent,
-          initialBreakpoint: 0.25,
-          breakpoints: [0, 0.25]
-        })).pipe(
-          switchMap(modal => from(modal.present()).pipe(
-            switchMap(() => from(modal.onDidDismiss()))
-          )),
+        return from(
+          this._modalCtrl.create({
+            component: ModalGetDirectionsComponent,
+            initialBreakpoint: 0.25,
+            breakpoints: [0, 0.25],
+          }),
+        ).pipe(
+          switchMap(modal =>
+            from(modal.present()).pipe(switchMap(() => from(modal.onDidDismiss()))),
+          ),
           map(result => result.data),
           switchMap(type => {
             switch (type) {
@@ -297,20 +305,21 @@ export class UserActivityEffects {
               default:
                 return of(null);
             }
-          })
+          }),
         );
-      })
-    )
-  );
-
-  getDirections$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(getDirections),
-      map(({coordinates}) => {
-        const url = `https://www.google.com/maps/dir/?api=1&destination=${coordinates[1]},${coordinates[0]}`;
-        window.open(url, '_blank');
       }),
     ),
+  );
+
+  getDirections$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(getDirections),
+        map(({coordinates}) => {
+          const url = `https://www.google.com/maps/dir/?api=1&destination=${coordinates[1]},${coordinates[0]}`;
+          window.open(url, '_blank');
+        }),
+      ),
     {dispatch: false},
   );
 

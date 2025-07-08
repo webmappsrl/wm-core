@@ -188,6 +188,7 @@ export class WmHomeComponent implements AfterContentInit {
   setUgc(): void {
     this._store.dispatch(openUgc());
     this._store.dispatch(setMapDetailsStatus({status: 'open'}));
+    //TODO: Da effettuare refactor spostare logica nell'effect
     this._store.select(countUgcTracks).pipe(take(1)).subscribe(countTracks => {
       if (countTracks > 0) {
         this._store.dispatch(setHomeResultTabSelected({tab: 'tracks'}));
