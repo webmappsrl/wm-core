@@ -19,7 +19,7 @@ import {
   updateUgcPoiSuccess,
   deleteUgcPoiSuccess,
   deleteUgcMediaSuccess,
-  setCurrentUgcPoiDrawn,
+  setCurrentUgcPoiDrawnSuccess,
 } from '@wm-core/store/features/ugc/ugc.actions';
 import {WmFeature} from '@wm-types/feature';
 import {Hit} from '@wm-types/elastic';
@@ -151,7 +151,7 @@ export const UgcReducer = createReducer(
     }
     return state;
   }),
-  on(setCurrentUgcPoiDrawn, (state, {currentUgcPoiDrawn}) => ({
+  on(setCurrentUgcPoiDrawnSuccess, (state, {currentUgcPoiDrawn}) => ({
     ...state,
     currentUgcPoiDrawn,
   })),

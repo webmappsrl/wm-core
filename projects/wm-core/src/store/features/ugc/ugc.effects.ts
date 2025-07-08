@@ -419,6 +419,7 @@ export class UgcEffects {
   setCurrentUgcPoiDrawn$ = createEffect(() =>
     this._actions$.pipe(
       ofType(setCurrentUgcPoiDrawn),
+      filter(({currentUgcPoiDrawn}) => currentUgcPoiDrawn != null),
       withLatestFrom(this._store.select(currentUgcPoi)),
       switchMap(([{currentUgcPoiDrawn}, currentUgcPoi]) => {
         if (currentUgcPoi && !areFeatureGeometriesEqual(currentUgcPoiDrawn, currentUgcPoi)) {
