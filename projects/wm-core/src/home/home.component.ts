@@ -30,7 +30,7 @@ import {
   ISLUGBOX,
 } from '@wm-core/types/config';
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
-import {countUgcAll} from '@wm-core/store/features/ugc/ugc.selector';
+import {countUgcAll, countUgcTracks} from '@wm-core/store/features/ugc/ugc.selector';
 import {
   currentEcLayer,
   showResult,
@@ -188,6 +188,11 @@ export class WmHomeComponent implements AfterContentInit {
   setUgc(): void {
     this._store.dispatch(openUgc());
     this._store.dispatch(setMapDetailsStatus({status: 'open'}));
+    this._store.select(countUgcTracks).pipe(take(1)).subscribe(countTracks => {
+      if (countTracks > 0) {
+        this._store.dispatch(setHomeResultTabSelected({tab: 'tracks'}));
+      }
+    });
   }
 
   togglePoiFilter(filterIdentifier: string, idx?: number): void {

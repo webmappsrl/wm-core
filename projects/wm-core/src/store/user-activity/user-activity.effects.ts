@@ -266,13 +266,6 @@ export class UserActivityEffects {
     ),
   );
 
-  setHomeResultTabToTrackWhenOpenUgc$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(openUgc),
-      map(() => setHomeResultTabSelected({tab: 'tracks'})),
-    ),
-  );
-
   startGetDirections$ = createEffect(() =>
     this._actions$.pipe(
       ofType(startGetDirections),
