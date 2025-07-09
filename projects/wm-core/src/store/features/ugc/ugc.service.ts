@@ -360,7 +360,11 @@ export class UgcService {
     const {properties} = feature;
     const photoFeatures = properties?.media?.filter(p => !p.id) ?? [];
     const data = new FormData();
-    data.append('feature', JSON.stringify(feature));
+
+    // Pulisce i dati EXIF da caratteri speciali prima di inviare
+    const cleanedFeature = this._cleanExifData(feature);
+    data.append('feature', JSON.stringify(cleanedFeature));
+
     for (let [index, photo] of photoFeatures.entries()) {
       if (photo && photo.webPath) {
         await saveImg(photo.webPath);
@@ -373,6 +377,40 @@ export class UgcService {
       data.append(`images[]`, image, `image_${index}.jpg`);
     }
     return data;
+  }
+
+  private _cleanExifData(feature: WmFeature<LineString | Point>): WmFeature<LineString | Point> {
+    if (feature.properties?.media) {
+      feature.properties.media = feature.properties.media.map((media: any) => {
+        if (media.exif) {
+          // Rimuove caratteri Unicode non validi dai dati EXIF
+          const cleanedExif = this._cleanObject(media.exif);
+          media.exif = cleanedExif;
+        }
+        return media;
+      });
+    }
+
+    return feature;
+  }
+
+  // Funzione ricorsiva per pulire oggetti da caratteri Unicode non validi
+  private _cleanObject(obj: any): any {
+    if (typeof obj === 'string') {
+      // Rimuove caratteri Unicode non validi (come \u0000, \u0001, \u0002, etc.)
+      return obj.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+    } else if (typeof obj === 'object' && obj !== null) {
+      if (Array.isArray(obj)) {
+        return obj.map(item => this._cleanObject(item));
+      } else {
+        const cleaned: any = {};
+        for (const [key, value] of Object.entries(obj)) {
+          cleaned[key] = this._cleanObject(value);
+        }
+        return cleaned;
+      }
+    }
+    return obj;
   }
 
   // Funzione per verificare se una traccia è stata modificata
