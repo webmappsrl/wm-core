@@ -380,8 +380,11 @@ export class UgcService {
   }
 
   private _cleanExifData(feature: WmFeature<LineString | Point>): WmFeature<LineString | Point> {
-    if (feature.properties?.media) {
-      feature.properties.media = feature.properties.media.map((media: any) => {
+    // Crea una copia dell'oggetto feature
+    const cleanedFeature = structuredClone(feature);
+
+    if (cleanedFeature.properties?.media) {
+      cleanedFeature.properties.media = cleanedFeature.properties.media.map((media: any) => {
         if (media.exif) {
           // Rimuove caratteri Unicode non validi dai dati EXIF
           const cleanedExif = this._cleanObject(media.exif);
@@ -391,7 +394,7 @@ export class UgcService {
       });
     }
 
-    return feature;
+    return cleanedFeature;
   }
 
   // Funzione ricorsiva per pulire oggetti da caratteri Unicode non validi
