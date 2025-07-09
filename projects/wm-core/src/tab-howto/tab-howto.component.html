@@ -106,6 +106,10 @@
             <i class="icon-temples"></i>
             <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
           </div>
+          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'by-car'">
+            <i class="icon-fill-bike_3"></i>
+            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
+          </div>
         </ng-container>
       </div>
     </div>

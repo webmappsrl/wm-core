@@ -45,6 +45,9 @@ export class WmGetIcnPipe implements PipeTransform {
     if (value === 'joelette') {
       return 'icon-wheelchair';
     }
+    if (value === 'by-car') {
+      return 'icon-outline-bike_3';
+    }
     return `${outline}${value}`;
   }
 }
