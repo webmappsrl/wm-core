@@ -3,6 +3,9 @@
   "version": "2.0.0",
   "description": "",
   "scripts": {
+    "test": "ng test wm-core",
+    "test:watch": "ng test wm-core --watch",
+    "test:single": "ng test wm-core --single-run",
     "surge": "./node_modules/surge/lib/cli.js --project ./documentation --domain http://doc.map-core.surge.sh/",
     "release:major": "changelog -M && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version major && git push origin && git push origin --tags",
     "release:minor": "changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version minor && git push origin && git push origin --tags",
