@@ -1,13 +1,21 @@
 wm-image-picker {
+  .wm-image-picker-advice {
+    font-size: var(--wm-font-sm);
+    color: var(--wm-color-medium);
+  }
   .wm-image-picker-loadphoto {
-    padding: 20px;
+    padding: 16px;
     &.wm-image-picker-addimagecontainer {
-      padding: 20px 10px;
+      padding: 16px 10px;
     }
     border-radius: 15px;
-    border: 2px var(--ion-color-light-shade) dashed;
+    border: 2px var(--ion-color-light-shade, var(--wm-color-light-shade)) dashed;
     text-align: center;
     width: 100%;
+    height: 108px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
     .wm-image-picker-loadphoto-text {
       font-size: var(--wm-font-sm);
@@ -19,8 +27,12 @@ wm-image-picker {
       }
     }
 
+    .wm-image-picker-loadphoto-icon {
+      font-size: 28px;
+      color: var(--wm-color-dark);
+    }
+
     .wm-image-picker-loadphoto-advice {
-      margin-top: 5px;
       font-size: var(--wm-font-xsm);
     }
   }
@@ -34,7 +46,7 @@ wm-image-picker {
     overflow: hidden;
 
     &.wm-image-picker-addimagecontainer {
-      border: dashed var(--wm-color-grey) 2px;
+      border: dashed var(--wm-color-grey, var(--wm-color-light-shade)) 2px;
     }
 
     .wm-image-picker-image {
