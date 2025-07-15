@@ -60,14 +60,17 @@ const verifyCleanExif = (parsedFeature: any) => {
 
 let httpMock: HttpTestingController;
 let service: UgcService;
-let mockStore: jasmine.SpyObj<Store>;
-let mockEnvironmentService: jasmine.SpyObj<EnvironmentService>;
+let mockStore: jest.Mocked<Store>;
+let mockEnvironmentService: jest.Mocked<EnvironmentService>;
 
 beforeEach(() => {
-  const storeSpy = jasmine.createSpyObj('Store', ['select', 'dispatch']);
-  const environmentSpy = jasmine.createSpyObj('EnvironmentService', [], {
+  const storeSpy = {
+    select: jest.fn().mockReturnValue(of(true)),
+    dispatch: jest.fn()
+  };
+  const environmentSpy = {
     origin: 'https://test-api.com'
-  });
+  };
 
   TestBed.configureTestingModule({
     imports: [HttpClientTestingModule],
@@ -79,11 +82,9 @@ beforeEach(() => {
   });
 
   service = TestBed.inject(UgcService);
-  mockStore = TestBed.inject(Store) as jasmine.SpyObj<Store>;
-  mockEnvironmentService = TestBed.inject(EnvironmentService) as jasmine.SpyObj<EnvironmentService>;
+  mockStore = TestBed.inject(Store) as jest.Mocked<Store>;
+  mockEnvironmentService = TestBed.inject(EnvironmentService) as jest.Mocked<EnvironmentService>;
   httpMock = TestBed.inject(HttpTestingController);
-
-  mockStore.select.and.returnValue(of(true));
 });
 
 afterEach(() => {
