@@ -69,9 +69,10 @@
         <ion-icon
           name="close-outline"
           class="wm-image-picker-remove"
-          (click)="remove(idx)"
+          (click)="remove(idx, image)"
         >
         </ion-icon>
+        <wm-ugc-synchronized-badge [properties]="image"></wm-ugc-synchronized-badge>
         <ng-container *ngIf="image as photoProp">
           <wm-img
             class="wm-image-picker-image"

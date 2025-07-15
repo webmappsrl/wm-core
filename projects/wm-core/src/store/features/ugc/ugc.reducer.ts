@@ -18,6 +18,7 @@ import {
   currentCustomTrack,
   updateUgcPoiSuccess,
   deleteUgcPoiSuccess,
+  deleteUgcMediaSuccess,
 } from '@wm-core/store/features/ugc/ugc.actions';
 import {WmFeature} from '@wm-types/feature';
 import {IHIT} from '@wm-core/types/elastic';
@@ -119,6 +120,34 @@ export const UgcReducer = createReducer(
     ...state,
     currentCustomTrack,
   })),
+  on(deleteUgcMediaSuccess, (state, {media}) => {
+    if(state.currentUgcPoi) {
+      const ugcPoi = {
+        ...state.currentUgcPoi,
+        properties: {
+          ...state.currentUgcPoi.properties,
+          media: state.currentUgcPoi.properties?.media?.filter(m => m.webPath !== media.webPath) ?? [],
+        },
+      }
+      return {
+        ...state,
+        currentUgcPoi: ugcPoi,
+      };
+    } else if(state.currentUgcTrack) {
+      const ugcTrack = {
+        ...state.currentUgcTrack,
+        properties: {
+          ...state.currentUgcTrack.properties,
+          media: state.currentUgcTrack.properties?.media?.filter(m => m.webPath !== media.webPath) ?? [],
+        },
+      }
+      return {
+        ...state,
+        currentUgcTrack: ugcTrack,
+      };
+    }
+    return state;
+  }),
 );
 export function wmFeatureToHits(features: WmFeature<LineString | Point>[]): IHIT[] {
   const hits: IHIT[] = [];
