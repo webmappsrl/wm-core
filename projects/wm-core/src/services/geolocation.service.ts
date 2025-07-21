@@ -14,7 +14,8 @@ import {CStopwatch} from '@wm-core/utils/cstopwatch';
 import {getDistance} from 'ol/sphere';
 import {map, startWith} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
-import {setCurrentLocation} from '@wm-core/store/user-activity/user-activity.action';
+import {setCurrentLocation, setFocusPosition, setOnRecord} from '@wm-core/store/user-activity/user-activity.action';
+import {onRecord} from '@wm-core/store/user-activity/user-activity.selector';
 
 @Injectable({
   providedIn: 'root',
@@ -34,7 +35,7 @@ export class GeolocationService {
   onModeChange: BehaviorSubject<'navigation' | 'recording' | 'stopped'> = new BehaviorSubject(
     this._mode,
   );
-  onRecord$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  onRecord$: Observable<boolean> = this._store.select(onRecord);
 
   constructor(private _deviceService: DeviceService, private _store: Store) {
     if (!this._deviceService.isBrowser) {
@@ -92,7 +93,7 @@ export class GeolocationService {
 
     this._mode = 'recording';
     this.onModeChange.next(this._mode);
-    this.onRecord$.next(true);
+    this._store.dispatch(setOnRecord({onRecord: true}));
 
     this._recordStopwatch = new CStopwatch();
     this._recordedFeature = this._getEmptyWmFeature();
@@ -114,7 +115,7 @@ export class GeolocationService {
     this._recordStopwatch = null;
     this._recordedFeature = null;
     this._isPaused = false;
-    this.onRecord$.next(false);
+    this._store.dispatch(setOnRecord({onRecord: false}));
     this._mode = 'stopped';
     this.onModeChange.next(this._mode);
 
@@ -127,17 +128,19 @@ export class GeolocationService {
     await this._stopWatcher();
     this._mode = 'stopped';
     this.onModeChange.next(this._mode);
-    this.onRecord$.next(false);
+    this._store.dispatch(setOnRecord({onRecord: false}));
   }
 
   pauseRecording(): void {
     this._recordStopwatch?.pause();
     this._isPaused = true;
+    this._store.dispatch(setFocusPosition({focusPosition: false}));
   }
 
   resumeRecording(): void {
     this._recordStopwatch?.resume();
     this._isPaused = false;
+    this._store.dispatch(setFocusPosition({focusPosition: true}));
   }
 
   openAppSettings(): void {

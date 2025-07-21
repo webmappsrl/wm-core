@@ -24,6 +24,8 @@ import {
   openUgc,
   getDirections,
   startGetDirections,
+  setFocusPosition,
+  setOnRecord,
 } from './user-activity.action';
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
@@ -341,6 +343,13 @@ export class UserActivityEffects {
         ),
       ),
     {dispatch: false},
+  );
+
+  setOnRecord$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(setOnRecord),
+      map(({onRecord}) => setFocusPosition({focusPosition: onRecord})),
+    ),
   );
 
   constructor(

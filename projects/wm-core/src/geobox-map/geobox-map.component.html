@@ -3,6 +3,7 @@
     #wmap
     [wmMapConf]="confMap$|async"
     [wmMapPadding]="mapPadding$|async"
+    [wmMapDisableFitView]="enableRecoderPanel$|async"
     [wmMapFilters]="apiElasticState$|async"
     [wmMapTranslationCallback]="translationCallback"
     [wmMapEnableMapControls]="true"
@@ -15,10 +16,11 @@
     (wmMapFeatureCollectionLayerSelected)="selectedLayerById($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
     (wmMapFeatureCollectionPopup)="openPopup($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
     (wmMapEmptyClickEVT$)="openPopup(null)"
+    [wmMapGeojson]="(enableRecoderPanel$|async) ? (recordedTrack$|async) : null"
     wmMapPosition
     [wmMapPositioncurrentLocation]="currentPosition$|async"
     [wmMapPositionCenter]="centerPositionEvt$|async"
-    [wmMapPositionfocus]="wmMapPositionfocus$|async"
+    [wmMapPositionfocus]="focusPosition$|async"
     wmMapCustomTracks
     [wmMapCustomTrackDrawTrack]="drawTrackOpened$|async"
     [wmMapCustomTrackDrawTrackHost]="graphhopperHost$|async"

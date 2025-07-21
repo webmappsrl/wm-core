@@ -212,3 +212,7 @@ export const currentDrawFormType = createSelector(
     return hasCustomTrack ? trackForms : poiForms;
   },
 );
+
+export const enableRecoderPanel = createSelector(userActivity, state => state.enableRecoderPanel);
+export const onRecord = createSelector(userActivity, state => state.onRecord);
+export const focusPosition = createSelector(userActivity, state => state.focusPosition);
