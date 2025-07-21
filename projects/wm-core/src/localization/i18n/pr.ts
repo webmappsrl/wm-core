@@ -180,7 +180,7 @@ export const wmPR = {
   'Dimensione': 'Tamanho',
   'questo campo è obbligatorio': 'este campo é obrigatório',
   'Quota': 'Elevação',
-  'I miei donwloads': 'Meus downloads',
+  'I miei downloads': 'Meus downloads',
   'foto dalla galleria': 'foto da galeria',
   'Dimensione massime: 3 photo': 'Tamanho máximo: 3 fotos',
   'Aggiungi': 'Adicionar',

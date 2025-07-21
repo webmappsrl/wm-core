@@ -183,7 +183,7 @@ export const wmDE = {
   'Dimensione': 'Größe',
   'questo campo è obbligatorio': 'Dieses Feld ist erforderlich',
   'Quota': 'Höhe',
-  'I miei donwloads': 'Meine Downloads',
+  'I miei downloads': 'Meine Downloads',
   'foto dalla galleria': 'foto aus der Galerie',
   'Dimensione massime: 3 photo': 'Maximale Größe: 3 Fotos',
   'Aggiungi': 'Hinzufügen',

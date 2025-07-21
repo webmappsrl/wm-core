@@ -188,7 +188,7 @@ export const wmIT = {
   'Dimensione': 'Dimensione',
   'questo campo è obbligatorio': 'questo campo è obbligatorio',
   'Quota': 'Quota',
-  'I miei donwloads': 'I miei donwloads',
+  'I miei downloads': 'I miei downloads',
   'foto dalla galleria': 'foto dalla galleria',
   'Dimensione massime: 3 photo': 'Dimensione massime: 3 photo',
   'Aggiungi': 'Aggiungi',

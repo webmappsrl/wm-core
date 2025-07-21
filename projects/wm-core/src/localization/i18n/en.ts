@@ -188,7 +188,7 @@ export const wmEN = {
   'Dimensione': 'Size',
   'questo campo è obbligatorio': 'this field is required',
   'Quota': 'Elevation',
-  'I miei donwloads': 'My downloads',
+  'I miei downloads': 'My downloads',
   'Sei sicuro di voler eliminare la traccia?': 'Are you sure you want to delete the track?',
   'foto dalla galleria': 'photo from the phone gallery',
   'Dimensione massime: 3 photo': 'Maximum 3 photo',

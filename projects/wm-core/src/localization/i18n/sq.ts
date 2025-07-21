@@ -187,7 +187,7 @@ export const wmSQ = {
   'Dimensione': 'Madhësia',
   'questo campo è obbligatorio': 'ky fushë është e detyrueshme',
   'Quota': 'Lartësia',
-  'I miei donwloads': 'Shkarkimet e mia',
+  'I miei downloads': 'Shkarkimet e mia',
   'foto dalla galleria': 'foto nga galeria',
   'Dimensione massime: 3 photo': 'Madhësia maksimale: 3 foto',
   'Aggiungi': 'Shto',

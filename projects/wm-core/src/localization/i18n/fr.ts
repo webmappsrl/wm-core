@@ -182,7 +182,7 @@ export const wmFR = {
   'Dimensione': 'Taille',
   'questo campo è obbligatorio': 'ce champ est obligatoire',
   'Quota': 'Élévation',
-  'I miei donwloads': 'Mes téléchargements',
+  'I miei downloads': 'Mes téléchargements',
   'foto dalla galleria': 'photo de la galerie',
   'Dimensione massime: 3 photo': 'Taille maximale : 3 photos',
   'Aggiungi': 'Ajouter',
