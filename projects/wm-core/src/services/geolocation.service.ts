@@ -194,14 +194,23 @@ export class GeolocationService {
 
   private _startWebWatcher(accuracy: 'high' | 'low'): void {
     this._webWatcherId = navigator.geolocation.watchPosition(
-      res =>
+      res => {
         this._onLocationUpdate({
           latitude: res.coords.latitude,
           longitude: res.coords.longitude,
           altitude: res.coords.altitude ?? 0,
           accuracy: res.coords.accuracy,
           time: res.timestamp,
-        } as any),
+        } as any);
+
+        if (this._mode === 'recording' && this._recordedFeature) {
+          this._recordedFeature.geometry.coordinates.push([
+            res.coords.longitude,
+            res.coords.latitude,
+            res.coords.altitude ?? 0,
+          ]);
+        }
+      },
       () => {},
       {enableHighAccuracy: accuracy === 'high'},
     );
