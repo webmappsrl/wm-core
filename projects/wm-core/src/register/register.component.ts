@@ -105,9 +105,7 @@ export class RegisterComponent {
           return of(null);
         }
       }),
-    ).subscribe(modal => {
-      modal?.present();
-    });
+    ).subscribe(modal => modal?.present());
   }
 
   register(): void {
