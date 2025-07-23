@@ -235,6 +235,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
     tap(enable => {
       if(!enable) {
         this._linestring = new olLinestring([]);
+        this.recordedTrack$.next(null);
       }
     })
   );
@@ -378,10 +379,10 @@ export class WmGeoboxMapComponent implements OnDestroy {
 
     combineLatest([
       this.currentPosition$.pipe(distinctUntilChanged((prev, curr) => prev?.latitude === curr?.latitude && prev?.longitude === curr?.longitude)),
-      this.wmMapPositionfocus$.pipe(startWith(false))
-    ]).subscribe(([loc, wmMapPositionfocus]) => {
+      this.enableRecoderPanel$.pipe(startWith(false))
+    ]).subscribe(([loc, enableRecoderPanel]) => {
       if(loc == null) return null;
-      if(wmMapPositionfocus || this.recordedTrack$.value == null) {
+      if(enableRecoderPanel) {
         const coordinate = fromLonLat([loc.longitude, loc.latitude]);
         this._linestring.appendCoordinate(coordinate);
         const featureCollection = new Collection([new Feature({geometry: this._linestring})]);
