@@ -139,4 +139,12 @@ export class WmFormComponent implements OnDestroy {
       this._titleFirstClick = false;
     }
   }
+
+  capitalizeTitle(event: any) {
+    const inputValue = event.target.value;
+    if (inputValue && inputValue.length === 1) {
+      const capitalizedValue = inputValue.toUpperCase();
+      this.formGroup.get('title')?.setValue(capitalizedValue, { emitEvent: false });
+    }
+  }
 }

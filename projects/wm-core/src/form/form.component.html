@@ -70,6 +70,7 @@
               [formControlName]="field.name"
               [disabled]="disabled"
               (click)="field.name === 'title' ? selectAllTitleText($event) : null"
+              (ionChange)="field.name === 'title' ? capitalizeTitle($event) : null"
             ></ion-input>
 
             <ion-textarea
