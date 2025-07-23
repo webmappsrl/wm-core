@@ -105,8 +105,9 @@ export class RegisterComponent {
           return of(null);
         }
       }),
-      switchMap(modal => modal ? from(modal.present()) : of(null))
-    ).subscribe();
+    ).subscribe(modal => {
+      modal?.present();
+    });
   }
 
   register(): void {
