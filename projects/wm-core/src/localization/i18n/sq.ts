@@ -228,5 +228,6 @@ export const wmSQ = {
   'Attenzione': 'Vëmendje',
   'Disegna': 'Dhëni',
   'Esci': 'Dil',
-  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Keni ruajtur me sukses pikën tuaj të ndalimit. Mund ta shihni duke hyrë në profilin tuaj.'
+  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Keni ruajtur me sukses pikën tuaj të ndalimit. Mund ta shihni duke hyrë në profilin tuaj.',
+  'Cliccando su \"Registrati\" accetti la nostra privacy e i termini e condizioni': 'Duke klikuar \"Regjistrohu\", pranoni tonën',
 };

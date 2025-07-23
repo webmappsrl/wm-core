@@ -155,30 +155,9 @@
     </div>
 
     <ion-label class="wm-registeruser-policy">
-      <ng-container *ngIf="(confPrivacy$ | async) as privacy; else wmDefaultPrivacy">
-        <ng-container *ngIf="privacy!= null && privacy.html != null; else wmDefaultPrivacy">
-          <a class="wm-registeruser-policylink" (click)="openCmp(privacy)">
-            {{ "Cliccando su \"Registrati\" accetti la nostra" | wmtrans }}
-          </a>
-        </ng-container>
-      </ng-container>
-      <ng-template #wmDefaultPrivacy>
-        <a
-          class="wm-registeruser-policylink"
-          target="_blank"
-          href="https://webmapp.it/privacy-policy/"
-        >
-          {{ "Cliccando su \"Registrati\" accetti la nostra" | wmtrans }}
-        </a>
-      </ng-template>
-      {{ "e i" | wmtrans }}
-      <a
-        class="wm-registeruser-policylink"
-        target="_blank"
-        href="https://webmapp.it/privacy-policy/"
-        >{{ "Termini e condizioni" | wmtrans }}</a
-      >
-      {{ "" | wmtrans }}
+      <a class="wm-registeruser-policylink" (click)="openPrivacyPolicy()">
+        {{ "Cliccando su \"Registrati\" accetti la nostra privacy e i termini e condizioni" | wmtrans }}
+      </a>
     </ion-label>
 
     <div class="wm-registeruser-buttoncontainer">

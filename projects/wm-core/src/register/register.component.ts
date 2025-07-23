@@ -17,6 +17,7 @@ import {LangService} from '@wm-core/localization/lang.service';
 import {loadSignUps} from '@wm-core/store/auth/auth.actions';
 import {isLogged, selectAuthState} from '@wm-core/store/auth/auth.selectors';
 import {confPAGES, confPRIVACY} from '@wm-core/store/conf/conf.selector';
+import {DEFAULT_PRIVACY_POLICY_URL} from '@wm-core/constants/links';
 
 @Component({
   selector: 'wm-register-component',
@@ -86,19 +87,26 @@ export class RegisterComponent {
     this._modalCtrl.dismiss();
   }
 
-  openCmp(privacy: any): void {
-    from(
-      this._modalCtrl.create({
-        component: WmInnerHtmlComponent,
-        componentProps: {
-          html: privacy.html,
-        },
-        swipeToClose: true,
-        mode: 'ios',
+  openPrivacyPolicy(): void {
+    this.confPrivacy$.pipe(
+      take(1),
+      switchMap(privacy => {
+        if (privacy?.html != null) {
+          return from(this._modalCtrl.create({
+            component: WmInnerHtmlComponent,
+            componentProps: {
+              html: privacy.html,
+            },
+            swipeToClose: true,
+            mode: 'ios',
+          }));
+        } else {
+          window.open(DEFAULT_PRIVACY_POLICY_URL, '_blank');
+          return of(null);
+        }
       }),
-    )
-      .pipe(take(1))
-      .subscribe(modal => modal.present());
+      switchMap(modal => modal ? from(modal.present()) : of(null))
+    ).subscribe();
   }
 
   register(): void {
