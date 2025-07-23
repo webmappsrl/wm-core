@@ -179,7 +179,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
   currentPoi$ = this._store.select(poi);
   currentPoiNextID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiPrevID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
-  focusPosition$: Observable<boolean> = this._store.select(focusPosition);
   currentPosition$: Observable<any> = this._store.select(currentLocation);
   currentRelatedPoi$ = this._store.select(currentEcRelatedPoi);
   currentRelatedPoiID$ = this._store.select(currentEcRelatedPoiId);
@@ -268,7 +267,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
     null,
   );
   wmMapHitMapUrl$: Observable<string | null> = this.confMap$.pipe(map(conf => conf?.hitMapUrl));
-  wmMapPositionfocus$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  wmMapPositionfocus$: Observable<boolean> = this._store.select(focusPosition);
   wmMapUgcDisableLayers$: Observable<boolean>;
   wmMapHitMapChangeFeatureById$: Observable<number> = this._store.select(
     wmMapHitMapChangeFeatureId,
@@ -379,10 +378,10 @@ export class WmGeoboxMapComponent implements OnDestroy {
 
     combineLatest([
       this.currentPosition$.pipe(distinctUntilChanged((prev, curr) => prev?.latitude === curr?.latitude && prev?.longitude === curr?.longitude)),
-      this.focusPosition$.pipe(startWith(false))
-    ]).subscribe(([loc, focusPosition]) => {
+      this.wmMapPositionfocus$.pipe(startWith(false))
+    ]).subscribe(([loc, wmMapPositionfocus]) => {
       if(loc == null) return null;
-      if(focusPosition || this.recordedTrack$.value == null) {
+      if(wmMapPositionfocus || this.recordedTrack$.value == null) {
         const coordinate = fromLonLat([loc.longitude, loc.latitude]);
         this._linestring.appendCoordinate(coordinate);
         const featureCollection = new Collection([new Feature({geometry: this._linestring})]);
@@ -409,14 +408,14 @@ export class WmGeoboxMapComponent implements OnDestroy {
   navigation(): void {
     this._geolocationSvc.startNavigation();
     combineLatest([
-      this.focusPosition$.pipe(take(1)),
+      this.wmMapPositionfocus$.pipe(take(1)),
       this.enableRecoderPanel$.pipe(take(1))
-    ]).subscribe(([focusPosition, enableRecoderPanel]) => {
+    ]).subscribe(([wmMapPositionfocus, enableRecoderPanel]) => {
       let focus = true;
       if(enableRecoderPanel) {
         this.centerPositionEvt$.next((!this.centerPositionEvt$.value)||false)
       } else {
-        focus = !focusPosition
+        focus = !wmMapPositionfocus
       }
       this._store.dispatch(setFocusPosition({focusPosition: focus}));
     });
