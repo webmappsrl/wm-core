@@ -3,20 +3,31 @@
     color="light"
     (click)="toggleTypeSelection()"
     *ngIf="!(drawOpened$ | async) else drawingFeature"
+    e2e-draw-button
   >
     <ion-icon slot="start" name="pencil"></ion-icon>
     {{ 'Disegna' | wmtrans }}
   </ion-button>
   <ng-template #drawingFeature>
-    <ion-button color="light" (click)="stopDrawing()">
+    <ion-button color="light" (click)="stopDrawing()" e2e-draw-button-exit>
       {{ 'Esci' | wmtrans }}
     </ion-button>
   </ng-template>
   <div *ngIf="showDrawTypeSelection$ | async">
-    <ion-button color="light" *ngIf="showDrawPoi$ | async" (click)="toggleDrawPoiEnabled()">
+    <ion-button
+      color="light"
+      *ngIf="showDrawPoi$ | async"
+      (click)="toggleDrawPoiEnabled()"
+      e2e-draw-button-poi
+    >
       <ion-icon name="pin-outline"></ion-icon>
     </ion-button>
-    <ion-button color="light" *ngIf="showDrawTrack$ | async" (click)="toggleDrawTrackEnabled()">
+    <ion-button
+      color="light"
+      *ngIf="showDrawTrack$ | async"
+      (click)="toggleDrawTrackEnabled()"
+      e2e-draw-button-track
+    >
       <ion-icon name="analytics-outline"></ion-icon>
     </ion-button>
   </div>
