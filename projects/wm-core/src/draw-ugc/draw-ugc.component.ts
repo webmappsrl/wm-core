@@ -18,7 +18,7 @@ import {LangService} from '@wm-core/localization/lang.service';
 import {
   syncUgc,
   currentCustomTrack,
-  setCurrentUgcPoiDrawn,
+  setCurrentUgcPoiDrawnSuccess,
 } from '@wm-core/store/features/ugc/ugc.actions';
 
 @Component({
@@ -94,7 +94,7 @@ export class WmDrawUgcComponent {
         ),
         switchMap(feature => saveUgc(feature)),
         switchMap(_ => {
-          this._store.dispatch(setCurrentUgcPoiDrawn({currentUgcPoiDrawn: null}));
+          this._store.dispatch(setCurrentUgcPoiDrawnSuccess({currentUgcPoiDrawn: null}));
           this._store.dispatch(currentCustomTrack({currentCustomTrack: null}));
           return this._alertCtrl.create({
             message: `${this._langSvc.instant('Il salvataggio è stato completato')}!`,

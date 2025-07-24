@@ -62,7 +62,7 @@ import {ModalUgcUploaderComponent} from '@wm-core/modal-ugc-uploader/modal-ugc-u
 import {HttpClient} from '@angular/common/http';
 import {WmFeature, WmFeatureCollection} from '@wm-types/feature';
 import {MultiPolygon} from 'geojson';
-import {setCurrentUgcPoiDrawn} from '../features/ugc/ugc.actions';
+import {setCurrentUgcPoiDrawn, setCurrentUgcPoiDrawnSuccess} from '../features/ugc/ugc.actions';
 import {
   countTracks,
   poiFirstCoordinates,
@@ -243,7 +243,7 @@ export class UserActivityEffects {
     this._actions$.pipe(
       ofType(stopDrawUgcPoi),
       mergeMap(() => [
-        setCurrentUgcPoiDrawn({currentUgcPoiDrawn: null}),
+        setCurrentUgcPoiDrawnSuccess({currentUgcPoiDrawn: null}),
         drawPoiOpened({drawPoiOpened: false}),
       ]),
     ),
