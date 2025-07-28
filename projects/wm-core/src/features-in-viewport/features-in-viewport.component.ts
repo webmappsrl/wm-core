@@ -18,31 +18,23 @@ export class WmFeaturesInViewportComponent {
 
   constructor(private _store: Store, private _urlHandlerSvc: UrlHandlerService) {
     this.sliderOptions$ = this.featuresInViewport$.pipe(
-      map(features => {
-        if (features.length === 1) {
-          return {
-            slidesPerView: 1.2,
-            spaceBetween: 0,
-            slidesOffsetBefore: 0,
-            slidesOffsetAfter: 0,
-            centeredSlides: true,
-            freeMode: true,
-          };
-        } else {
-          return {
-            slidesPerView: 1.2,
-            spaceBetween: 16,
-            slidesOffsetBefore: 16,
-            slidesOffsetAfter: 16,
-            centeredSlides: false,
-            freeMode: true,
-          };
-        }
-      })
+      map(features => this._getSliderOptions(features.length))
     );
   }
 
   setTrack(id: number): void {
     this._urlHandlerSvc.setTrack(id);
+  }
+
+  private _getSliderOptions(featureCount: number): any {
+    const isSingleFeature = featureCount === 1;
+    return {
+      slidesPerView: 1.2,
+      spaceBetween: isSingleFeature ? 0 : 16,
+      slidesOffsetBefore: isSingleFeature ? 0 : 16,
+      slidesOffsetAfter: isSingleFeature ? 0 : 16,
+      centeredSlides: isSingleFeature,
+      freeMode: true,
+    };
   }
 }
