@@ -231,14 +231,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
       return poi;
     }),
   );
-  enableRecoderPanel$: Observable<boolean> = this._store.select(enableRecoderPanel).pipe(
-    tap(enable => {
-      if(!enable) {
-        this._linestring = new olLinestring([]);
-        this.recordedTrack$.next(null);
-      }
-    })
-  );
+  enableRecoderPanel$: Observable<boolean> = this._store.select(enableRecoderPanel);
   overlayFeatureCollections$ = this._store.select(hitMapFeatureCollection);
   poiFilterIdentifiers$: Observable<string[]> = this._store.select(poiFilterIdentifiers);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
@@ -376,6 +369,13 @@ export class WmGeoboxMapComponent implements OnDestroy {
       this.isLogged$.pipe(startWith(false)),
       this.toggleUgcDirective$.pipe(startWith(true)),
     ]).pipe(map(([isLogged, toggleUgcDirective]) => !(isLogged && toggleUgcDirective)));
+
+    this.enableRecoderPanel$.subscribe(enable => {
+      if (!enable) {
+        this._linestring = new olLinestring([]);
+        this.recordedTrack$.next(null);
+      }
+    });
 
     combineLatest([
       this.currentPosition$.pipe(distinctUntilChanged((prev, curr) => prev?.latitude === curr?.latitude && prev?.longitude === curr?.longitude)),
