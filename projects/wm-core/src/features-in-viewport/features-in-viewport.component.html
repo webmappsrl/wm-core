@@ -1,6 +1,6 @@
 <ng-container *ngIf="featuresInViewport$ | async as featuresInViewport">
   <ion-slides
-    [options]="sliderOptions"
+    [options]="sliderOptions$|async"
     [ngClass]="{'slide-in': featuresInViewport.length > 0}"
     #slider
   >
