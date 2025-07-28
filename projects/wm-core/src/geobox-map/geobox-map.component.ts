@@ -35,6 +35,7 @@ import {
   openUgc,
   resetMap,
   resetTrackFilters,
+  setFocusPosition,
   setLastFilterType,
   setLayer,
   startLoader,
@@ -56,7 +57,6 @@ import {
 import {BehaviorSubject, combineLatest, from, merge, of, Subject, Subscription} from 'rxjs';
 import {Observable} from 'rxjs';
 import {
-  concatMap,
   debounceTime,
   distinctUntilChanged,
   filter,
@@ -78,9 +78,12 @@ import {
 import {IDATALAYER} from '@map-core/types/layer';
 import {
   chartHoverElements,
+  currentLocation,
   drawPoiOpened,
   drawTrackOpened,
   ecLayer,
+  enableRecoderPanel,
+  focusPosition,
   inputTyped,
   loading,
   mapFilters,
@@ -90,6 +93,8 @@ import {
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {WmFeature} from '@wm-types/feature';
 import {LineString, Point} from 'geojson';
+import {LineString as olLinestring} from 'ol/geom';
+import GeoJSON from 'ol/format/GeoJSON.js';
 import {
   currentCustomTrack,
   currentUgcPoi,
@@ -114,6 +119,8 @@ import {GeolocationService} from '@wm-core/services/geolocation.service';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 import {FeatureLike} from 'ol/Feature';
 import {ZoomFeaturesInViewport} from '@wm-types/config';
+import {fromLonLat} from 'ol/proj';
+import {Collection, Feature} from 'ol';
 
 const initPadding = [10, 10, 10, 10];
 const initMenuOpened = true;
@@ -127,6 +134,7 @@ const maxWidth = 600;
 })
 export class WmGeoboxMapComponent implements OnDestroy {
   private _confMAPLAYERS$: Observable<ILAYER[]> = this._store.select(confMAPLAYERS);
+  private _linestring = new olLinestring([]);
 
   readonly ecTrack$: Observable<WmFeature<LineString> | null>;
   readonly ecTrackID$: BehaviorSubject<number | string> = new BehaviorSubject<number | string>(
@@ -171,7 +179,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   currentPoi$ = this._store.select(poi);
   currentPoiNextID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiPrevID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
-  currentPosition$: Observable<any>;
+  currentPosition$: Observable<any> = this._store.select(currentLocation);
   currentRelatedPoi$ = this._store.select(currentEcRelatedPoi);
   currentRelatedPoiID$ = this._store.select(currentEcRelatedPoiId);
   currentUgcPoiIDToMap$: Observable<number | string | null>;
@@ -181,6 +189,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   drawTrackOpened$: Observable<boolean> = this._store.select(drawTrackOpened);
   drawPoiOpened$: Observable<boolean> = this._store.select(drawPoiOpened);
   showFeaturesInViewport$: Observable<boolean> = this._store.select(showFeaturesInViewport);
+  recordedTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   geohubId$ = this._store.select(confGeohubId);
   graphhopperHost$: Observable<string> = of(this._environmentSvc.graphhopperHost);
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
@@ -222,6 +231,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
       return poi;
     }),
   );
+  enableRecoderPanel$: Observable<boolean> = this._store.select(enableRecoderPanel);
   overlayFeatureCollections$ = this._store.select(hitMapFeatureCollection);
   poiFilterIdentifiers$: Observable<string[]> = this._store.select(poiFilterIdentifiers);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
@@ -251,7 +261,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
     null,
   );
   wmMapHitMapUrl$: Observable<string | null> = this.confMap$.pipe(map(conf => conf?.hitMapUrl));
-  wmMapPositionfocus$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  wmMapPositionfocus$: Observable<boolean> = this._store.select(focusPosition);
   wmMapUgcDisableLayers$: Observable<boolean>;
   wmMapHitMapChangeFeatureById$: Observable<number> = this._store.select(
     wmMapHitMapChangeFeatureId,
@@ -275,7 +285,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
       this.mapCmp?.wmMapControls?.reset();
       this._store.dispatch(wmMapHitMapChangeFeatureById({id: null}));
     });
-    this.currentPosition$ = this._geolocationSvc.onLocationChange;
     this.currentMapPaddings$ = combineLatest([
       this.showMenu$,
       this.mapPadding$,
@@ -360,6 +369,29 @@ export class WmGeoboxMapComponent implements OnDestroy {
       this.isLogged$.pipe(startWith(false)),
       this.toggleUgcDirective$.pipe(startWith(true)),
     ]).pipe(map(([isLogged, toggleUgcDirective]) => !(isLogged && toggleUgcDirective)));
+
+    this.enableRecoderPanel$.subscribe(enable => {
+      if (!enable) {
+        this._linestring = new olLinestring([]);
+        this.recordedTrack$.next(null);
+      }
+    });
+
+    combineLatest([
+      this.currentPosition$.pipe(distinctUntilChanged((prev, curr) => prev?.latitude === curr?.latitude && prev?.longitude === curr?.longitude)),
+      this.enableRecoderPanel$.pipe(startWith(false))
+    ]).subscribe(([loc, enableRecoderPanel]) => {
+      if(loc == null) return null;
+      if(enableRecoderPanel) {
+        const coordinate = fromLonLat([loc.longitude, loc.latitude]);
+        this._linestring.appendCoordinate(coordinate);
+        const featureCollection = new Collection([new Feature({geometry: this._linestring})]);
+        const geojson = new GeoJSON({featureProjection: 'EPSG:3857'}).writeFeaturesObject(
+          featureCollection.getArray(),
+        );
+        this.recordedTrack$.next(geojson)
+      }
+    })
   }
 
   featuresInViewport(features: FeatureLike[]): void {
@@ -376,8 +408,18 @@ export class WmGeoboxMapComponent implements OnDestroy {
 
   navigation(): void {
     this._geolocationSvc.startNavigation();
-    const isFocused = !this.wmMapPositionfocus$.value;
-    this.wmMapPositionfocus$.next(isFocused);
+    combineLatest([
+      this.wmMapPositionfocus$.pipe(take(1)),
+      this.enableRecoderPanel$.pipe(take(1))
+    ]).subscribe(([wmMapPositionfocus, enableRecoderPanel]) => {
+      let focus = true;
+      if(enableRecoderPanel) {
+        this.centerPositionEvt$.next((!this.centerPositionEvt$.value)||false)
+      } else {
+        focus = !wmMapPositionfocus
+      }
+      this._store.dispatch(setFocusPosition({focusPosition: focus}));
+    });
   }
 
   next(): void {

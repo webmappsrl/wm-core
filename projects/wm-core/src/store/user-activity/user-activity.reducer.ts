@@ -30,6 +30,9 @@ import {
   drawPoiOpened,
   setHomeResultTabSelected,
   setCurrentLocation,
+  setEnableRecoderPanel,
+  setOnRecord,
+  setFocusPosition,
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
@@ -61,6 +64,9 @@ export interface UserActivityState {
   wmMapHitmapFeatures: WmFeature<MultiPolygon>[];
   homeResultTabSelected: 'tracks' | 'pois' | null;
   currentLocation?: Location;
+  enableRecoderPanel: boolean;
+  onRecord: boolean;
+  focusPosition: boolean;
 }
 
 export interface UserAcitivityRootState {
@@ -83,6 +89,9 @@ const initialState: UserActivityState = {
   wmMapHitmapFeatures: [],
   featuresInViewport: [],
   homeResultTabSelected: 'tracks',
+  enableRecoderPanel: false,
+  onRecord: false,
+  focusPosition: false,
 };
 
 function extractFilterTaxonomies(layer) {
@@ -313,6 +322,27 @@ export const userActivityReducer = createReducer(
     return {
       ...state,
       currentLocation: location,
+    };
+  }),
+
+  on(setEnableRecoderPanel, (state, {enable}) => {
+    return {
+      ...state,
+      enableRecoderPanel: enable,
+    };
+  }),
+
+  on(setOnRecord, (state, {onRecord}) => {
+    return {
+      ...state,
+      onRecord,
+    };
+  }),
+
+  on(setFocusPosition, (state, {focusPosition}) => {
+    return {
+      ...state,
+      focusPosition,
     };
   }),
 );
