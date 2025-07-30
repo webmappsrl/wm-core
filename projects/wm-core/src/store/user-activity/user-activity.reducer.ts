@@ -30,9 +30,10 @@ import {
   drawPoiOpened,
   setHomeResultTabSelected,
   setCurrentLocation,
-  setEnableRecoderPanel,
+  setEnableTrackRecorderPanel,
   setOnRecord,
   setFocusPosition,
+  setEnablePoiRecorderPanel,
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
@@ -64,7 +65,8 @@ export interface UserActivityState {
   wmMapHitmapFeatures: WmFeature<MultiPolygon>[];
   homeResultTabSelected: 'tracks' | 'pois' | null;
   currentLocation?: Location;
-  enableRecoderPanel: boolean;
+  enableTrackRecoderPanel: boolean;
+  enablePoiRecorderPanel: boolean;
   onRecord: boolean;
   focusPosition: boolean;
 }
@@ -89,7 +91,8 @@ const initialState: UserActivityState = {
   wmMapHitmapFeatures: [],
   featuresInViewport: [],
   homeResultTabSelected: 'tracks',
-  enableRecoderPanel: false,
+  enableTrackRecoderPanel: false,
+  enablePoiRecorderPanel: false,
   onRecord: false,
   focusPosition: false,
 };
@@ -325,10 +328,10 @@ export const userActivityReducer = createReducer(
     };
   }),
 
-  on(setEnableRecoderPanel, (state, {enable}) => {
+  on(setEnableTrackRecorderPanel, (state, {enable}) => {
     return {
       ...state,
-      enableRecoderPanel: enable,
+      enableTrackRecoderPanel: enable,
     };
   }),
 
@@ -343,6 +346,13 @@ export const userActivityReducer = createReducer(
     return {
       ...state,
       focusPosition,
+    };
+  }),
+
+  on(setEnablePoiRecorderPanel, (state, {enable}) => {
+    return {
+      ...state,
+      enablePoiRecorderPanel: enable,
     };
   }),
 );

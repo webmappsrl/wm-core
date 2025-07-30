@@ -146,6 +146,8 @@ export const startGetDirections = createAction('[User Activity] get directions')
 export const getDirections = createAction('[User Activity] get directions success', props<{coordinates: number[]}>());
 export const openLoginModal = createAction('[User Activity] open login modal');
 
-export const setEnableRecoderPanel = createAction('[User Activity] set enable register panel', props<{enable: boolean}>());
+export const setEnableTrackRecorderPanel = createAction('[User Activity] set enable register panel', props<{enable: boolean}>());
 export const setOnRecord = createAction('[User Activity] set on record', props<{onRecord: boolean}>());
 export const setFocusPosition = createAction('[User Activity] set focus position', props<{focusPosition: boolean}>());
+export const setEnablePoiRecorderPanel = createAction('[User Activity] set enable poi recorder panel', props<{enable: boolean}>());
+

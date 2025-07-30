@@ -82,7 +82,9 @@ import {
   drawPoiOpened,
   drawTrackOpened,
   ecLayer,
-  enableRecoderPanel,
+  enableRecorderPanel,
+  enableTrackRecorderPanel,
+  enablePoiRecorderPanel,
   focusPosition,
   inputTyped,
   loading,
@@ -165,6 +167,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   authEnable$: Observable<boolean> = this._store.select(confAUTHEnable);
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
   centerPositionEvt$: BehaviorSubject<boolean> = new BehaviorSubject<boolean | null>(null);
+  zoomPositionEvt$: BehaviorSubject<boolean> = new BehaviorSubject<boolean | null>(null);
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
   confJIDOUPDATETIME$: Observable<any> = this._store.select(confJIDOUPDATETIME);
   confMap$: Observable<any> = this._store.select(confMAP);
@@ -231,7 +234,9 @@ export class WmGeoboxMapComponent implements OnDestroy {
       return poi;
     }),
   );
-  enableRecoderPanel$: Observable<boolean> = this._store.select(enableRecoderPanel);
+  enableTrackRecorderPanel$: Observable<boolean> = this._store.select(enableTrackRecorderPanel);
+  enablePoiRecorderPanel$: Observable<boolean> = this._store.select(enablePoiRecorderPanel);
+  enableRecorderPanel$: Observable<boolean> = this._store.select(enableRecorderPanel);
   overlayFeatureCollections$ = this._store.select(hitMapFeatureCollection);
   poiFilterIdentifiers$: Observable<string[]> = this._store.select(poiFilterIdentifiers);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
@@ -267,7 +272,9 @@ export class WmGeoboxMapComponent implements OnDestroy {
     wmMapHitMapChangeFeatureId,
   );
   wmBackOfMapDetails$: Observable<boolean> = this._actions$.pipe(ofType(backOfMapDetails));
-  zoomFeaturesInViewport$: Observable<ZoomFeaturesInViewport> = this._store.select(confZoomFeaturesInViewport);
+  zoomFeaturesInViewport$: Observable<ZoomFeaturesInViewport> = this._store.select(
+    confZoomFeaturesInViewport,
+  );
   constructor(
     private _route: ActivatedRoute,
     private _cdr: ChangeDetectorRef,
@@ -370,7 +377,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
       this.toggleUgcDirective$.pipe(startWith(true)),
     ]).pipe(map(([isLogged, toggleUgcDirective]) => !(isLogged && toggleUgcDirective)));
 
-    this.enableRecoderPanel$.subscribe(enable => {
+    this.enableTrackRecorderPanel$.subscribe(enable => {
       if (!enable) {
         this._linestring = new olLinestring([]);
         this.recordedTrack$.next(null);
@@ -378,20 +385,24 @@ export class WmGeoboxMapComponent implements OnDestroy {
     });
 
     combineLatest([
-      this.currentPosition$.pipe(distinctUntilChanged((prev, curr) => prev?.latitude === curr?.latitude && prev?.longitude === curr?.longitude)),
-      this.enableRecoderPanel$.pipe(startWith(false))
-    ]).subscribe(([loc, enableRecoderPanel]) => {
-      if(loc == null) return null;
-      if(enableRecoderPanel) {
+      this.currentPosition$.pipe(
+        distinctUntilChanged(
+          (prev, curr) => prev?.latitude === curr?.latitude && prev?.longitude === curr?.longitude,
+        ),
+      ),
+      this.enableTrackRecorderPanel$.pipe(startWith(false)),
+    ]).subscribe(([loc, enableTrackRecorderPanel]) => {
+      if (loc == null) return null;
+      if (enableTrackRecorderPanel) {
         const coordinate = fromLonLat([loc.longitude, loc.latitude]);
         this._linestring.appendCoordinate(coordinate);
         const featureCollection = new Collection([new Feature({geometry: this._linestring})]);
         const geojson = new GeoJSON({featureProjection: 'EPSG:3857'}).writeFeaturesObject(
           featureCollection.getArray(),
         );
-        this.recordedTrack$.next(geojson)
+        this.recordedTrack$.next(geojson);
       }
-    })
+    });
   }
 
   featuresInViewport(features: FeatureLike[]): void {
@@ -410,13 +421,13 @@ export class WmGeoboxMapComponent implements OnDestroy {
     this._geolocationSvc.startNavigation();
     combineLatest([
       this.wmMapPositionfocus$.pipe(take(1)),
-      this.enableRecoderPanel$.pipe(take(1))
-    ]).subscribe(([wmMapPositionfocus, enableRecoderPanel]) => {
+      this.enableTrackRecorderPanel$.pipe(take(1)),
+    ]).subscribe(([wmMapPositionfocus, enableTrackRecorderPanel]) => {
       let focus = true;
-      if(enableRecoderPanel) {
-        this.centerPositionEvt$.next((!this.centerPositionEvt$.value)||false)
+      if (enableTrackRecorderPanel) {
+        this.centerPositionEvt$.next(!this.centerPositionEvt$.value || false);
       } else {
-        focus = !wmMapPositionfocus
+        focus = !wmMapPositionfocus;
       }
       this._store.dispatch(setFocusPosition({focusPosition: focus}));
     });
