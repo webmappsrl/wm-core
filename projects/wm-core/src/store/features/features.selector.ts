@@ -1,7 +1,7 @@
 import {createSelector} from '@ngrx/store';
 import {WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
-import {currentLocation, ecLayer, enableRecoderPanel, ugcOpened} from '../user-activity/user-activity.selector';
+import {currentLocation, ecLayer, enableRecorderPanel, ugcOpened} from '../user-activity/user-activity.selector';
 import {
   countEcAll,
   countEcPois,
@@ -95,8 +95,8 @@ export const featureFirstCoordinates = createSelector(
 export const showFeaturesInViewport = createSelector(
   featureOpened,
   ecLayer,
-  enableRecoderPanel,
-  (featureOpened, ecLayer, enableRecoderPanel) => {
-    return featureOpened == false && ecLayer == null && enableRecoderPanel == false;
+  enableRecorderPanel,
+  (featureOpened, ecLayer, enableRecorderPanel) => {
+    return featureOpened == false && ecLayer == null && enableRecorderPanel == false;
   },
 );

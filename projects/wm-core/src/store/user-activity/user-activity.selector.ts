@@ -213,6 +213,15 @@ export const currentDrawFormType = createSelector(
   },
 );
 
-export const enableRecoderPanel = createSelector(userActivity, state => state.enableRecoderPanel);
+export const enableTrackRecorderPanel = createSelector(userActivity, state => state.enableTrackRecoderPanel);
+export const enablePoiRecorderPanel = createSelector(userActivity, state => state.enablePoiRecorderPanel);
+export const enableRecorderPanel = createSelector(
+  enableTrackRecorderPanel,
+  enablePoiRecorderPanel,
+  (enableTrackRecorderPanel, enablePoiRecorderPanel) => {
+    return enableTrackRecorderPanel || enablePoiRecorderPanel;
+  },
+);
 export const onRecord = createSelector(userActivity, state => state.onRecord);
 export const focusPosition = createSelector(userActivity, state => state.focusPosition);
+
