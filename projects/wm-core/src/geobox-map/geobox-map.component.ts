@@ -54,7 +54,7 @@ import {
   SelectFilterOption,
   SliderFilter,
 } from '@wm-core/types/config';
-import {BehaviorSubject, combineLatest, from, merge, of, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, from, merge, of, Subject, Subscription, EMPTY} from 'rxjs';
 import {Observable} from 'rxjs';
 import {
   debounceTime,
@@ -65,6 +65,7 @@ import {
   switchMap,
   take,
   tap,
+  takeUntil,
 } from 'rxjs/operators';
 import {
   confJIDOUPDATETIME,
@@ -377,23 +378,26 @@ export class WmGeoboxMapComponent implements OnDestroy {
       this.toggleUgcDirective$.pipe(startWith(true)),
     ]).pipe(map(([isLogged, toggleUgcDirective]) => !(isLogged && toggleUgcDirective)));
 
-    this.enableTrackRecorderPanel$.subscribe(enable => {
-      if (!enable) {
-        this._linestring = new olLinestring([]);
-        this.recordedTrack$.next(null);
-      }
-    });
-
-    combineLatest([
-      this.currentPosition$.pipe(
-        distinctUntilChanged(
-          (prev, curr) => prev?.latitude === curr?.latitude && prev?.longitude === curr?.longitude,
-        ),
-      ),
-      this.enableTrackRecorderPanel$.pipe(startWith(false)),
-    ]).subscribe(([loc, enableTrackRecorderPanel]) => {
-      if (loc == null) return null;
-      if (enableTrackRecorderPanel) {
+    this.enableTrackRecorderPanel$
+      .pipe(
+        distinctUntilChanged(),
+        switchMap(enableTrackRecorderPanel => {
+          if (!enableTrackRecorderPanel) {
+            this._linestring = new olLinestring([]);
+            this.recordedTrack$.next(null);
+            return EMPTY;
+          }
+          return this.currentPosition$.pipe(
+            distinctUntilChanged(
+              (prev, curr) =>
+                prev?.latitude === curr?.latitude && prev?.longitude === curr?.longitude,
+            ),
+            takeUntil(this.enableTrackRecorderPanel$.pipe(filter(enabled => !enabled))),
+          );
+        }),
+      )
+      .subscribe(loc => {
+        if (loc == null) return;
         const coordinate = fromLonLat([loc.longitude, loc.latitude]);
         this._linestring.appendCoordinate(coordinate);
         const featureCollection = new Collection([new Feature({geometry: this._linestring})]);
@@ -401,8 +405,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
           featureCollection.getArray(),
         );
         this.recordedTrack$.next(geojson);
-      }
-    });
+      });
   }
 
   featuresInViewport(features: FeatureLike[]): void {
