@@ -388,10 +388,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
             return EMPTY;
           }
           return this.currentPosition$.pipe(
-            distinctUntilChanged(
-              (prev, curr) =>
-                prev?.latitude === curr?.latitude && prev?.longitude === curr?.longitude,
-            ),
             takeUntil(this.enableTrackRecorderPanel$.pipe(filter(enabled => !enabled))),
           );
         }),
