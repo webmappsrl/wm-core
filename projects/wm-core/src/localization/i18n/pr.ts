@@ -223,4 +223,8 @@ export const wmPR = {
   'Esci': 'Sair',
   'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Você salvou corretamente o seu waypoint. Você pode visualizá-lo acessando o seu perfil.',
   'Cliccando su \"Registrati\" accetti la nostra privacy e i termini e condizioni': 'Ao clicar em \"Registrar\" aceita a nossa política de privacidade e os nossos termos e condições',
+  "culture-history": "Cultura e história",
+  "environmental-education": "Educação ambiental",
+  "eating-sleeping": "Comer e dormir",
+  "by-car": "Em carro",
 };

@@ -225,4 +225,8 @@ export const wmFR = {
   'Esci': 'Quitter',
   'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Vous avez enregistré votre waypoint avec succès. Vous pouvez le visualiser en accédant à votre profil.',
   'Cliccando su \"Registrati\" accetti la nostra privacy e i termini e condizioni': 'En cliquant sur \"S\'inscrire\", vous acceptez notre politique de confidentialité et nos conditions d\'utilisation',
+  "culture-history": "Culture et histoire",
+  "environmental-education": "Éducation environnementale",
+  "eating-sleeping": "Manger et dormir",
+  "by-car": "En voiture",
 };

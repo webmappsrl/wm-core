@@ -48,6 +48,15 @@ export class WmGetIcnPipe implements PipeTransform {
     if (value === 'by-car') {
       return 'icon-outline-bike_3';
     }
+    if (value === 'culture-history') {
+      return 'icon-temples';
+    }
+    if (value === 'environmental-education') {
+      return 'icon-outline-lake';
+    }
+    if (value === 'eating-sleeping') {
+      return 'icon-restaurant';
+    }
     return `${outline}${value}`;
   }
 }

@@ -231,4 +231,8 @@ export const wmIT = {
   'Esci': 'Esci',
   'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.',
   'Cliccando su \"Registrati\" accetti la nostra privacy e i termini e condizioni': 'Cliccando su \"Registrati\" accetti la nostra privacy e i termini e condizioni',
+  "culture-history": "Cultura e storia",
+  "environmental-education": "Educazione ambientale",
+  "eating-sleeping": "Mangiare e dormire",
+  "by-car": "In macchina",
 };

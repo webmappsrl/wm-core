@@ -233,4 +233,8 @@ export const wmEN = {
   'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.':
     'You have saved the waypoint correctly. You can view it by accessing your profile.',
   'Cliccando su \"Registrati\" accetti la nostra privacy e i termini e condizioni': 'By clicking on \"Register\" you accept our privacy and terms and conditions',
+  "culture-history": "Culture and History",
+  "environmental-education": "Environmental Education",
+  "eating-sleeping": "Eating and Sleeping",
+  "by-car": "By Car",
 };

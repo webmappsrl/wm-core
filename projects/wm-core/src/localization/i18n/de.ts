@@ -226,4 +226,8 @@ export const wmDE = {
   'Esci': 'Aus',
   'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Sie haben Ihren Wegpunkt erfolgreich gespeichert. Sie können ihn anzeigen, indem Sie sich in Ihr Profil einloggen.',
   'Cliccando su \"Registrati\" accetti la nostra privacy e i termini e condizioni': 'Mit dem Klick auf \"Registrieren\" akzeptieren Sie unsere Datenschutzrichtlinie und unsere Geschäftsbedingungen',
+  "culture-history": "Kultur und Geschichte",
+  "environmental-education": "Umweltbildung",
+  "eating-sleeping": "Essen und Schlafen",
+  "by-car": "Auto",
 };

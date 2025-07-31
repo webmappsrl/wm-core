@@ -222,4 +222,8 @@ export const wmES = {
   'Esci': 'Salir',
   'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Has guardado correctamente tu waypoint. Puedes verlo accediendo a tu perfil.',
   'Cliccando su \"Registrati\" accetti la nostra privacy e i termini e condizioni': 'Al hacer clic en \"Registrarse\" acepta nuestra política de privacidad y nuestros términos y condiciones',
+  "culture-history": "Cultura y historia",
+  "environmental-education": "Educación ambiental",
+  "eating-sleeping": "Comer y dormir",
+  "by-car": "En coche",
 };
