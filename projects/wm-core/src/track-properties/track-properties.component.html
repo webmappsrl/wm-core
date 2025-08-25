@@ -18,6 +18,12 @@
     *ngIf="ecTrackProperties?.not_accessible != null && ecTrackProperties?.not_accessible === true"
     [alert]="ecTrackProperties?.not_accessible_message"
   ></wm-track-alert>
+  <wm-inner-component-html
+    [enableDismiss]="false"
+    *ngIf="ecTrackProperties?.excerpt as excerpt"
+    [html]="excerpt|wmtrans"
+  >
+  </wm-inner-component-html>
   <wm-track-edges [properties]="ecTrackProperties" [conf]="currentLayer$|async"></wm-track-edges>
   <wm-travel-mode></wm-travel-mode>
   <div *ngIf="flowLineQuoteShow$|async" class="wm-flowline">
