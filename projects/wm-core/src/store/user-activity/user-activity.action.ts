@@ -151,3 +151,12 @@ export const setOnRecord = createAction('[User Activity] set on record', props<{
 export const setFocusPosition = createAction('[User Activity] set focus position', props<{focusPosition: boolean}>());
 export const setEnablePoiRecorderPanel = createAction('[User Activity] set enable poi recorder panel', props<{enable: boolean}>());
 
+export const setEnableTilesDownload = createAction('[User Activity] set enable tiles download', props<{enableTilesDownload: boolean}>());
+export const setDisableTilesDownloadButton = createAction(
+  '[User Activity] set disable tiles download button',
+  props<{disableTilesDownloadButton: boolean}>(),
+);
+export const setWmMapTilesBoundingBox = createAction(
+  '[User Activity] set wm map tiles bounding box',
+  props<{wmMapTilesBoundingBox: WmFeature<MultiPolygon> | null}>(),
+);

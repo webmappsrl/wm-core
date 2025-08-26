@@ -225,3 +225,12 @@ export const enableRecorderPanel = createSelector(
 export const onRecord = createSelector(userActivity, state => state.onRecord);
 export const focusPosition = createSelector(userActivity, state => state.focusPosition);
 
+export const enableTilesDownload = createSelector(userActivity, state => state.enableTilesDownload);
+export const disableTilesDownloadButton = createSelector(
+  userActivity,
+  state => state.disableTilesDownloadButton,
+);
+export const wmMapTilesBoundingBox = createSelector(
+  userActivity,
+  state => state.wmMapTilesBoundingBox,
+);

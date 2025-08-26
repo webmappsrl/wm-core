@@ -72,6 +72,12 @@
     [wmMapDrawUgcPoiEnabled]="drawPoiOpened$|async"
     [wmMapDrawUgcPoiPoi]="currentUgcPoiDrawn$|async"
     (wmMapDrawUgcPoiEvt)="updateUgcPoiDrawn($event)"
+    wmMapTilesDownload
+    [wmMapTilesBoundingBoxes]="boundingBoxes$|async"
+    [wmMapTilesDownloadShow]="enableTilesDownload$|async"
+    (wmMapTilesBoundingBox)="setWmMapTilesBoundingBox($event)"
+    (wmMapTilesZoomDisableDownloadButton)="setWmMapTilesDisableDownloadButton($event)"
+    (wmMapTilesDelete)="deleteBoundingBox($event)"
   >
     <wm-filters
       top-right

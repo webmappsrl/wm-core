@@ -235,4 +235,7 @@ export const wmIT = {
   "environmental-education": "Educazione ambientale",
   "eating-sleeping": "Mangiare e dormire",
   "by-car": "In macchina",
+  'Eliminazione': 'Eliminazione',
+  'Elimina': 'Elimina',
+  'Sei sicuro di voler eliminare questi dati?': 'Sei sicuro di voler eliminare questi dati?',
 };

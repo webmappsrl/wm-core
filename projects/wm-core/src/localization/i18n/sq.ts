@@ -234,4 +234,7 @@ export const wmSQ = {
   "environmental-education": "Edukimi ambientale",
   "eating-sleeping": "Mëngjes dhe mëngjes",
   "by-car": "Me makinë",
+  'Eliminazione': 'Fshirje',
+  'Elimina': 'Fshij',
+  'Sei sicuro di voler eliminare questi dati?': 'A jeni të sigurt që dëshironi të fshini këto të dhëna?',
 };

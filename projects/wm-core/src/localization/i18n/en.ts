@@ -237,4 +237,7 @@ export const wmEN = {
   "environmental-education": "Environmental Education",
   "eating-sleeping": "Eating and Sleeping",
   "by-car": "By Car",
+  'Eliminazione': 'Deletion',
+  'Elimina': 'Delete',
+  'Sei sicuro di voler eliminare questi dati?': 'Are you sure you want to delete this data?',
 };

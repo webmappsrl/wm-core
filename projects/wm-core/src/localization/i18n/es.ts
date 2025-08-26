@@ -226,4 +226,7 @@ export const wmES = {
   "environmental-education": "Educación ambiental",
   "eating-sleeping": "Comer y dormir",
   "by-car": "En coche",
+  'Eliminazione': 'Eliminación',
+  'Elimina': 'Eliminar',
+  'Sei sicuro di voler eliminare questi dati?': '¿Está seguro de que desea eliminar estos datos?',
 };

@@ -230,4 +230,7 @@ export const wmDE = {
   "environmental-education": "Umweltbildung",
   "eating-sleeping": "Essen und Schlafen",
   "by-car": "Auto",
+  'Eliminazione': 'Löschen',
+  'Elimina': 'Löschen',
+  'Sei sicuro di voler eliminare questi dati?': 'Sind Sie sicher, dass Sie diese Daten löschen möchten?',
 };
