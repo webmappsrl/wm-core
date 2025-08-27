@@ -34,6 +34,9 @@ import {
   setOnRecord,
   setFocusPosition,
   setEnablePoiRecorderPanel,
+  setEnableTilesDownload,
+  setWmMapTilesBoundingBox,
+  setDisableTilesDownloadButton,
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
@@ -69,6 +72,9 @@ export interface UserActivityState {
   enablePoiRecorderPanel: boolean;
   onRecord: boolean;
   focusPosition: boolean;
+  enableTilesDownload: boolean;
+  disableTilesDownloadButton: boolean;
+  wmMapTilesBoundingBox?: WmFeature<MultiPolygon>;
 }
 
 export interface UserAcitivityRootState {
@@ -95,6 +101,8 @@ const initialState: UserActivityState = {
   enablePoiRecorderPanel: false,
   onRecord: false,
   focusPosition: false,
+  enableTilesDownload: false,
+  disableTilesDownloadButton: false,
 };
 
 function extractFilterTaxonomies(layer) {
@@ -353,6 +361,25 @@ export const userActivityReducer = createReducer(
     return {
       ...state,
       enablePoiRecorderPanel: enable,
+    };
+  }),
+
+  on(setEnableTilesDownload, (state, {enableTilesDownload}) => {
+    return {
+      ...state,
+      enableTilesDownload,
+    };
+  }),
+  on(setWmMapTilesBoundingBox, (state, {wmMapTilesBoundingBox}) => {
+    return {
+      ...state,
+      wmMapTilesBoundingBox,
+    };
+  }),
+  on(setDisableTilesDownloadButton, (state, {disableTilesDownloadButton}) => {
+    return {
+      ...state,
+      disableTilesDownloadButton,
     };
   }),
 );

@@ -227,4 +227,7 @@ export const wmPR = {
   "environmental-education": "Educação ambiental",
   "eating-sleeping": "Comer e dormir",
   "by-car": "Em carro",
+  'Eliminazione': 'Exclusão',
+  'Elimina': 'Excluir',
+  'Sei sicuro di voler eliminare questi dati?': 'Tem certeza de que deseja excluir estes dados?',
 };

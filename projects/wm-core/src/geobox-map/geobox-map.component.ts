@@ -8,8 +8,13 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {hitMapFeatureCollection, padding, leftPadding} from '@map-core/store/map-core.selector';
-import {padding as actionPadding} from '@map-core/store/map-core.actions';
+import {
+  hitMapFeatureCollection,
+  padding,
+  leftPadding,
+  boundingBoxes,
+} from '@map-core/store/map-core.selector';
+import {padding as actionPadding, deleteBoundingBox} from '@map-core/store/map-core.actions';
 import {select, Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
 import {
@@ -35,9 +40,11 @@ import {
   openUgc,
   resetMap,
   resetTrackFilters,
+  setDisableTilesDownloadButton,
   setFocusPosition,
   setLastFilterType,
   setLayer,
+  setWmMapTilesBoundingBox,
   startLoader,
   stopLoader,
   togglePoiFilter,
@@ -93,9 +100,10 @@ import {
   poiFilterIdentifiers,
   ugcOpened,
   wmMapHitMapChangeFeatureId,
+  enableTilesDownload,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {WmFeature} from '@wm-types/feature';
-import {LineString, Point} from 'geojson';
+import {LineString, MultiPolygon, Point} from 'geojson';
 import {LineString as olLinestring} from 'ol/geom';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import {
@@ -106,7 +114,7 @@ import {
   ugcPoiFeatures,
   ugcTracksFeatures,
 } from '@wm-core/store/features/ugc/ugc.selector';
-import {ModalController} from '@ionic/angular';
+import {AlertController, ModalController} from '@ionic/angular';
 import {WmMapTrackRelatedPoisDirective} from '@map-core/directives';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {WmMapComponent} from '@map-core/components';
@@ -166,6 +174,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   apiElasticState$: Observable<any> = this._store.select(mapFilters);
   apiSearchInputTyped$: Observable<string> = this._store.select(inputTyped);
   authEnable$: Observable<boolean> = this._store.select(confAUTHEnable);
+  boundingBoxes$: Observable<WmFeature<MultiPolygon>[]> = this._store.select(boundingBoxes);
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
   centerPositionEvt$: BehaviorSubject<boolean> = new BehaviorSubject<boolean | null>(null);
   zoomPositionEvt$: BehaviorSubject<boolean> = new BehaviorSubject<boolean | null>(null);
@@ -192,6 +201,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   dataLayerUrls$: Observable<IDATALAYER>;
   drawTrackOpened$: Observable<boolean> = this._store.select(drawTrackOpened);
   drawPoiOpened$: Observable<boolean> = this._store.select(drawPoiOpened);
+  enableTilesDownload$: Observable<boolean> = this._store.select(enableTilesDownload);
   showFeaturesInViewport$: Observable<boolean> = this._store.select(showFeaturesInViewport);
   recordedTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   geohubId$ = this._store.select(confGeohubId);
@@ -282,6 +292,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
     private _store: Store,
     private _langService: LangService,
     private _modalCtrl: ModalController,
+    private _alertCtrl: AlertController,
     private _actions$: Actions,
     private _urlHandlerSvc: UrlHandlerService,
     private _deviceSvc: DeviceService,
@@ -575,6 +586,37 @@ export class WmGeoboxMapComponent implements OnDestroy {
         }
       });
     }
+  }
+
+  setWmMapTilesBoundingBox(boundingBox: WmFeature<MultiPolygon>): void {
+    this._store.dispatch(setWmMapTilesBoundingBox({wmMapTilesBoundingBox: boundingBox}));
+  }
+
+  setWmMapTilesDisableDownloadButton(disable: boolean): void {
+    this._store.dispatch(setDisableTilesDownloadButton({disableTilesDownloadButton: disable}));
+  }
+
+  deleteBoundingBox(coordinates: string): void {
+    this._alertCtrl
+      .create({
+        header: this._langService.instant('Eliminazione'),
+        message: this._langService.instant('Sei sicuro di voler eliminare questi dati?'),
+        buttons: [
+          {
+            text: this._langService.instant('Annulla'),
+            role: 'cancel',
+          },
+          {
+            text: this._langService.instant('Elimina'),
+            handler: () => {
+              this._store.dispatch(deleteBoundingBox({boundingBoxId: coordinates}));
+            },
+          },
+        ],
+      })
+      .then(alert => {
+        alert.present();
+      });
   }
 
   toggleDirective(data: {type: 'layers' | 'pois' | 'ugc'; toggle: boolean}): void {

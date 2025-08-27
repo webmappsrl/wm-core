@@ -229,4 +229,7 @@ export const wmFR = {
   "environmental-education": "Éducation environnementale",
   "eating-sleeping": "Manger et dormir",
   "by-car": "En voiture",
+  'Eliminazione': 'Suppression',
+  'Elimina': 'Supprimer',
+  'Sei sicuro di voler eliminare questi dati?': 'Êtes-vous sûr de vouloir supprimer ces données ?',
 };
