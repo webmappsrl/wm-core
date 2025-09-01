@@ -1,0 +1,1820 @@
+@font-face {
+  font-family: 'webmapp';
+  src:  url('fonts/webmapp.eot?z2w8i5');
+  src:  url('fonts/webmapp.eot?z2w8i5#iefix') format('embedded-opentype'),
+    url('fonts/webmapp.ttf?z2w8i5') format('truetype'),
+    url('fonts/webmapp.woff?z2w8i5') format('woff'),
+    url('fonts/webmapp.svg?z2w8i5#webmapp') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+.ol-popup {
+  max-height: 400px;
+  min-width: 300px;
+}
+.ol-popup .closeBox {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1000;
+}
+.ol-popup .img-cnt {
+  position: relative;
+  height: 200px;
+}
+.ol-popup .img-cnt img {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  height: inherit;
+  width: 100%;
+}
+
+.ol-popup.hasclosebox .ol-popup-content {
+  margin: 0;
+}
+.ol-popup .ol-popup-content {
+  padding: 0;
+  margin: 0;
+}
+.ol-popup .ol-popup-content div ion-card {
+  margin: 0;
+}
+
+[class^="wm-icon-"], [class*=" wm-icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'webmapp' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.wm-icon-txn-canoe:before {
+  content: "\e900";
+}
+.wm-icon-txn-environmental-education:before {
+  content: "\e901";
+}
+.wm-icon-txn-landscape:before {
+  content: "\e903";
+}
+.wm-icon-txn-nordic-walking:before {
+  content: "\e904";
+}
+.wm-icon-txn-shop-greengrocer:before {
+  content: "\e906";
+}
+.wm-icon-txn-speleology:before {
+  content: "\e907";
+}
+.wm-icon-compass-thin-outline:before {
+  content: "\e995";
+}
+.wm-icon-map-thin-outline:before {
+  content: "\e998";
+}
+.wm-icon-person-thin-outline:before {
+  content: "\e9a2";
+}
+.wm-icon-txn-braille-language:before {
+  content: "\e908";
+}
+.wm-icon-txn-cognitive-disability:before {
+  content: "\ea18";
+}
+.wm-icon-txn-hearing-aid:before {
+  content: "\ea75";
+}
+.wm-icon-txn-hearing-disability:before {
+  content: "\eb04";
+}
+.wm-icon-txn-joelette-transport:before {
+  content: "\eb37";
+}
+.wm-icon-txn-low-vision-assisted:before {
+  content: "\eb38";
+}
+.wm-icon-txn-low-vision-guide-dog:before {
+  content: "\eb39";
+}
+.wm-icon-txn-mobility-disability:before {
+  content: "\eb3a";
+}
+.wm-icon-txn-power-wheelchair:before {
+  content: "\eb3b";
+}
+.wm-icon-txn-sign-language:before {
+  content: "\eb3c";
+}
+.wm-icon-txn-visual-disability:before {
+  content: "\eb3d";
+}
+.wm-icon-duration-outline:before {
+  content: "\eb6a";
+}
+.wm-icon-mail-outline:before {
+  content: "\eb84";
+}
+.wm-icon-pause-outline:before {
+  content: "\eb8f";
+}
+.wm-icon-phone-outline:before {
+  content: "\eb90";
+}
+.wm-icon-play-outline:before {
+  content: "\eb94";
+}
+.wm-icon-stop-outline:before {
+  content: "\ebab";
+}
+.wm-icon-duration:before {
+  content: "\ebdf";
+}
+.wm-icon-mail:before {
+  content: "\ebf0";
+}
+.wm-icon-txn-pause:before {
+  content: "\ebf8";
+}
+.wm-icon-phone:before {
+  content: "\ebf9";
+}
+.wm-icon-txn-play:before {
+  content: "\ebfb";
+}
+.wm-icon-txn-stop:before {
+  content: "\ec11";
+}
+.wm-icon-appointment:before {
+  content: "\eaec";
+}
+.wm-icon-eco-friendly:before {
+  content: "\eaed";
+}
+.wm-icon-accessible-toilets:before {
+  content: "\eaee";
+}
+.wm-icon-baby-strollers:before {
+  content: "\ead0";
+}
+.wm-icon-hearing-impaired:before {
+  content: "\ead1";
+}
+.wm-icon-intellectual-disability:before {
+  content: "\ead2";
+}
+.wm-icon-children-and-elderly:before {
+  content: "\ead3";
+}
+.wm-icon-blind-assistance:before {
+  content: "\ead4";
+}
+.wm-icon-blind:before {
+  content: "\ead5";
+}
+.wm-icon-low-vision:before {
+  content: "\ead6";
+}
+.wm-icon-wheelchair-with-assistance:before {
+  content: "\ead7";
+}
+.wm-icon-wheelchair-access:before {
+  content: "\ead8";
+}
+.wm-icon-accessible-parking:before {
+  content: "\ead9";
+}
+.wm-icon-accessible-parking1:before {
+  content: "\eada";
+}
+.wm-icon-txn-square:before {
+  content: "\eadb";
+}
+.wm-icon-txn-highway:before {
+  content: "\eadc";
+}
+.wm-icon-txn-ferry:before {
+  content: "\eadd";
+}
+.wm-icon-txn-watchtower:before {
+  content: "\eade";
+}
+.wm-icon-txn-power-plant:before {
+  content: "\eadf";
+}
+.wm-icon-txn-bancomat:before {
+  content: "\eae0";
+}
+.wm-icon-dae:before {
+  content: "\eae1";
+}
+.wm-icon-txn-e-bike-charger:before {
+  content: "\eaeb";
+}
+.wm-icon-txn-motoabbigliamenti:before {
+  content: "\eacf";
+}
+.wm-icon-txn-aerialway:before {
+  content: "\e902";
+}
+.wm-icon-txn-airfield:before {
+  content: "\e909";
+}
+.wm-icon-txn-airport:before {
+  content: "\e90a";
+}
+.wm-icon-txn-alcohol-shop:before {
+  content: "\e90b";
+}
+.wm-icon-amusement-park:before {
+  content: "\e90c";
+}
+.wm-icon-animal-shelter:before {
+  content: "\e90d";
+}
+.wm-icon-txn-aquarium:before {
+  content: "\e90e";
+}
+.wm-icon-txn-arrow:before {
+  content: "\e90f";
+}
+.wm-icon-txn-art-gallery:before {
+  content: "\e910";
+}
+.wm-icon-txn-attraction:before {
+  content: "\e911";
+}
+.wm-icon-txn-bakery:before {
+  content: "\e912";
+}
+.wm-icon-bank-jp:before {
+  content: "\e913";
+}
+.wm-icon-txn-bank:before {
+  content: "\e914";
+}
+.wm-icon-txn-bar:before {
+  content: "\e915";
+}
+.wm-icon-txn-barrier:before {
+  content: "\e916";
+}
+.wm-icon-txn-baseball:before {
+  content: "\e917";
+}
+.wm-icon-txn-basketball:before {
+  content: "\e918";
+}
+.wm-icon-txn-bbq:before {
+  content: "\e919";
+}
+.wm-icon-txn-beach:before {
+  content: "\e91a";
+}
+.wm-icon-txn-beer:before {
+  content: "\e91b";
+}
+.wm-icon-bicycle-share:before {
+  content: "\e91c";
+}
+.wm-icon-txn-bicycle:before {
+  content: "\e91d";
+}
+.wm-icon-blood-bank:before {
+  content: "\e91e";
+}
+.wm-icon-bowling-alley:before {
+  content: "\e91f";
+}
+.wm-icon-txn-bridge:before {
+  content: "\e920";
+}
+.wm-icon-building-alt1:before {
+  content: "\e921";
+}
+.wm-icon-txn-building:before {
+  content: "\e922";
+}
+.wm-icon-txn-bus:before {
+  content: "\e923";
+}
+.wm-icon-txn-cafe:before {
+  content: "\e924";
+}
+.wm-icon-txn-campsite:before {
+  content: "\e925";
+}
+.wm-icon-txn-car-rental:before {
+  content: "\e926";
+}
+.wm-icon-car-repair:before {
+  content: "\e927";
+}
+.wm-icon-txn-car:before {
+  content: "\e928";
+}
+.wm-icon-txn-casino:before {
+  content: "\e929";
+}
+.wm-icon-castle-jp:before {
+  content: "\e92a";
+}
+.wm-icon-txn-castle:before {
+  content: "\e92b";
+}
+.wm-icon-txn-caution:before {
+  content: "\e92c";
+}
+.wm-icon-cemetery-jp:before {
+  content: "\e92d";
+}
+.wm-icon-txn-cemetery:before {
+  content: "\e92e";
+}
+.wm-icon-charging-station:before {
+  content: "\e92f";
+}
+.wm-icon-txn-cinema:before {
+  content: "\e930";
+}
+.wm-icon-txn-circle-stroked-outline:before {
+  content: "\e931";
+}
+.wm-icon-txn-circle:before {
+  content: "\e932";
+}
+.wm-icon-txn-city:before {
+  content: "\e933";
+}
+.wm-icon-txn-clothing-store:before {
+  content: "\e934";
+}
+.wm-icon-college-jp:before {
+  content: "\e935";
+}
+.wm-icon-txn-college:before {
+  content: "\e936";
+}
+.wm-icon-txn-commercial:before {
+  content: "\e937";
+}
+.wm-icon-communications-tower:before {
+  content: "\e938";
+}
+.wm-icon-txn-confectionery:before {
+  content: "\e939";
+}
+.wm-icon-txn-construction:before {
+  content: "\e93a";
+}
+.wm-icon-txn-convenience:before {
+  content: "\e93b";
+}
+.wm-icon-txn-cricket:before {
+  content: "\e93c";
+}
+.wm-icon-txn-cross:before {
+  content: "\e93d";
+}
+.wm-icon-txn-dam:before {
+  content: "\e93e";
+}
+.wm-icon-txn-danger:before {
+  content: "\e93f";
+}
+.wm-icon-txn-defibrillator:before {
+  content: "\e940";
+}
+.wm-icon-txn-dentist:before {
+  content: "\e941";
+}
+.wm-icon-txn-diamond:before {
+  content: "\e942";
+}
+.wm-icon-txn-doctor:before {
+  content: "\e943";
+}
+.wm-icon-dog-park:before {
+  content: "\e944";
+}
+.wm-icon-drinking-water:before {
+  content: "\e945";
+}
+.wm-icon-txn-elevator:before {
+  content: "\e946";
+}
+.wm-icon-txn-embassy:before {
+  content: "\e947";
+}
+.wm-icon-emergency-phone:before {
+  content: "\e948";
+}
+.wm-icon-entrance-alt1:before {
+  content: "\e949";
+}
+.wm-icon-txn-entrance:before {
+  content: "\e94a";
+}
+.wm-icon-txn-farm:before {
+  content: "\e94b";
+}
+.wm-icon-fast-food:before {
+  content: "\e94c";
+}
+.wm-icon-txn-fence:before {
+  content: "\e94d";
+}
+.wm-icon-ferry-jp:before {
+  content: "\e94e";
+}
+.wm-icon-txn-ferry-alt:before {
+  content: "\e94f";
+}
+.wm-icon-fire-station-jp:before {
+  content: "\e950";
+}
+.wm-icon-fire-station:before {
+  content: "\e951";
+}
+.wm-icon-fitness-centre:before {
+  content: "\e952";
+}
+.wm-icon-txn-florist:before {
+  content: "\e953";
+}
+.wm-icon-txn-fuel:before {
+  content: "\e954";
+}
+.wm-icon-txn-furniture:before {
+  content: "\e955";
+}
+.wm-icon-txn-gaming:before {
+  content: "\e956";
+}
+.wm-icon-garden-centre:before {
+  content: "\e957";
+}
+.wm-icon-txn-garden:before {
+  content: "\e958";
+}
+.wm-icon-txn-gate:before {
+  content: "\e959";
+}
+.wm-icon-txn-gift:before {
+  content: "\e95a";
+}
+.wm-icon-txn-globe:before {
+  content: "\e95b";
+}
+.wm-icon-txn-golf:before {
+  content: "\e95c";
+}
+.wm-icon-txn-grocery:before {
+  content: "\e95d";
+}
+.wm-icon-txn-hairdresser:before {
+  content: "\e95e";
+}
+.wm-icon-txn-harbor:before {
+  content: "\e95f";
+}
+.wm-icon-txn-hardware:before {
+  content: "\e960";
+}
+.wm-icon-txn-heart:before {
+  content: "\e961";
+}
+.wm-icon-txn-heliport:before {
+  content: "\e962";
+}
+.wm-icon-highway-rest-area:before {
+  content: "\e963";
+}
+.wm-icon-txn-historic:before {
+  content: "\e964";
+}
+.wm-icon-txn-home:before {
+  content: "\e965";
+}
+.wm-icon-txn-horse-riding:before {
+  content: "\e966";
+}
+.wm-icon-hospital-jp:before {
+  content: "\e967";
+}
+.wm-icon-txn-hospital:before {
+  content: "\e968";
+}
+.wm-icon-hot-spring:before {
+  content: "\e969";
+}
+.wm-icon-txn-ice-cream:before {
+  content: "\e96a";
+}
+.wm-icon-txn-industry:before {
+  content: "\e96b";
+}
+.wm-icon-txn-information:before {
+  content: "\e96c";
+}
+.wm-icon-jewelry-store:before {
+  content: "\e96d";
+}
+.wm-icon-txn-karaoke:before {
+  content: "\e96e";
+}
+.wm-icon-landmark-jp:before {
+  content: "\e96f";
+}
+.wm-icon-txn-landmark:before {
+  content: "\e970";
+}
+.wm-icon-txn-landuse:before {
+  content: "\e971";
+}
+.wm-icon-txn-laundry:before {
+  content: "\e972";
+}
+.wm-icon-txn-library:before {
+  content: "\e973";
+}
+.wm-icon-lift-gate:before {
+  content: "\e974";
+}
+.wm-icon-lighthouse-jp:before {
+  content: "\e975";
+}
+.wm-icon-txn-lighthouse:before {
+  content: "\e976";
+}
+.wm-icon-txn-lodging:before {
+  content: "\e977";
+}
+.wm-icon-txn-logging:before {
+  content: "\e978";
+}
+.wm-icon-marker-stroked-outline:before {
+  content: "\e979";
+}
+.wm-icon-txn-marker:before {
+  content: "\e97a";
+}
+.wm-icon-txn-mobile-phone:before {
+  content: "\e97b";
+}
+.wm-icon-monument-jp:before {
+  content: "\e97c";
+}
+.wm-icon-txn-monument:before {
+  content: "\e97d";
+}
+.wm-icon-txn-mountain:before {
+  content: "\e97e";
+}
+.wm-icon-txn-museum:before {
+  content: "\e97f";
+}
+.wm-icon-txn-music:before {
+  content: "\e980";
+}
+.wm-icon-txn-natural:before {
+  content: "\e981";
+}
+.wm-icon-observation-tower:before {
+  content: "\e982";
+}
+.wm-icon-txn-optician:before {
+  content: "\e983";
+}
+.wm-icon-txn-paint:before {
+  content: "\e984";
+}
+.wm-icon-txn-park-alt:before {
+  content: "\e985";
+}
+.wm-icon-txn-park:before {
+  content: "\e986";
+}
+.wm-icon-txn-parking-garage:before {
+  content: "\e987";
+}
+.wm-icon-parking-paid:before {
+  content: "\e988";
+}
+.wm-icon-txn-parking:before {
+  content: "\e989";
+}
+.wm-icon-txn-pharmacy:before {
+  content: "\e98a";
+}
+.wm-icon-txn-picnic-site:before {
+  content: "\e98b";
+}
+.wm-icon-txn-pitch:before {
+  content: "\e98c";
+}
+.wm-icon-place-of-worship:before {
+  content: "\e98d";
+}
+.wm-icon-txn-playground:before {
+  content: "\e98e";
+}
+.wm-icon-police-jp:before {
+  content: "\e98f";
+}
+.wm-icon-txn-police:before {
+  content: "\e990";
+}
+.wm-icon-post-jp:before {
+  content: "\e991";
+}
+.wm-icon-txn-post:before {
+  content: "\e992";
+}
+.wm-icon-txn-prison:before {
+  content: "\e993";
+}
+.wm-icon-racetrack-boat:before {
+  content: "\e994";
+}
+.wm-icon-racetrack-cycling:before {
+  content: "\e996";
+}
+.wm-icon-racetrack-horse:before {
+  content: "\e997";
+}
+.wm-icon-txn-racetrack:before {
+  content: "\e999";
+}
+.wm-icon-rail-light:before {
+  content: "\e99a";
+}
+.wm-icon-rail-metro:before {
+  content: "\e99b";
+}
+.wm-icon-txn-rail:before {
+  content: "\e99c";
+}
+.wm-icon-ranger-station:before {
+  content: "\e99d";
+}
+.wm-icon-txn-recycling:before {
+  content: "\e99e";
+}
+.wm-icon-txn-religious-buddhist:before {
+  content: "\e99f";
+}
+.wm-icon-txn-religious-christian:before {
+  content: "\e9a0";
+}
+.wm-icon-txn-religious-jewish:before {
+  content: "\e9a1";
+}
+.wm-icon-txn-religious-muslim:before {
+  content: "\e9a3";
+}
+.wm-icon-txn-religious-shinto:before {
+  content: "\e9a4";
+}
+.wm-icon-residential-community:before {
+  content: "\e9a5";
+}
+.wm-icon-restaurant-bbq:before {
+  content: "\e9a6";
+}
+.wm-icon-restaurant-noodle:before {
+  content: "\e9a7";
+}
+.wm-icon-restaurant-pizza:before {
+  content: "\e9a8";
+}
+.wm-icon-restaurant-seafood:before {
+  content: "\e9a9";
+}
+.wm-icon-restaurant-sushi:before {
+  content: "\e9aa";
+}
+.wm-icon-txn-restaurant:before {
+  content: "\e9ab";
+}
+.wm-icon-road-accident:before {
+  content: "\e9ac";
+}
+.wm-icon-txn-roadblock:before {
+  content: "\e9ad";
+}
+.wm-icon-txn-rocket:before {
+  content: "\e9ae";
+}
+.wm-icon-school-jp:before {
+  content: "\e9af";
+}
+.wm-icon-txn-school:before {
+  content: "\e9b0";
+}
+.wm-icon-txn-scooter:before {
+  content: "\e9b1";
+}
+.wm-icon-txn-shelter:before {
+  content: "\e9b2";
+}
+.wm-icon-txn-shoe:before {
+  content: "\e9b3";
+}
+.wm-icon-txn-shop:before {
+  content: "\e9b4";
+}
+.wm-icon-txn-skateboard:before {
+  content: "\e9b5";
+}
+.wm-icon-txn-skiing:before {
+  content: "\e9b6";
+}
+.wm-icon-txn-slaughterhouse:before {
+  content: "\e9b7";
+}
+.wm-icon-txn-slipway:before {
+  content: "\e9b8";
+}
+.wm-icon-txn-snowmobile:before {
+  content: "\e9b9";
+}
+.wm-icon-txn-soccer:before {
+  content: "\e9ba";
+}
+.wm-icon-square-outline:before {
+  content: "\e9bb";
+}
+.wm-icon-square:before {
+  content: "\e9bc";
+}
+.wm-icon-txn-stadium:before {
+  content: "\e9bd";
+}
+.wm-icon-star-stroked-outline:before {
+  content: "\e9be";
+}
+.wm-icon-txn-star:before {
+  content: "\e9bf";
+}
+.wm-icon-txn-suitcase:before {
+  content: "\e9c0";
+}
+.wm-icon-txn-swimming:before {
+  content: "\e9c1";
+}
+.wm-icon-table-tennis:before {
+  content: "\e9c2";
+}
+.wm-icon-txn-teahouse:before {
+  content: "\e9c3";
+}
+.wm-icon-txn-telephone:before {
+  content: "\e9c4";
+}
+.wm-icon-txn-tennis:before {
+  content: "\e9c5";
+}
+.wm-icon-txn-theatre:before {
+  content: "\e9c6";
+}
+.wm-icon-txn-toilet:before {
+  content: "\e9c7";
+}
+.wm-icon-txn-toll:before {
+  content: "\e9c8";
+}
+.wm-icon-txn-town-hall:before {
+  content: "\e9c9";
+}
+.wm-icon-txn-town:before {
+  content: "\e9ca";
+}
+.wm-icon-triangle-stroked-outline:before {
+  content: "\e9cb";
+}
+.wm-icon-txn-triangle:before {
+  content: "\e9cc";
+}
+.wm-icon-txn-tunnel:before {
+  content: "\e9cd";
+}
+.wm-icon-txn-veterinary:before {
+  content: "\e9ce";
+}
+.wm-icon-txn-viewpoint:before {
+  content: "\e9cf";
+}
+.wm-icon-txn-village:before {
+  content: "\e9d0";
+}
+.wm-icon-txn-volcano:before {
+  content: "\e9d1";
+}
+.wm-icon-txn-volleyball:before {
+  content: "\e9d2";
+}
+.wm-icon-txn-warehouse:before {
+  content: "\e9d3";
+}
+.wm-icon-waste-basket:before {
+  content: "\e9d4";
+}
+.wm-icon-txn-watch:before {
+  content: "\e9d5";
+}
+.wm-icon-txn-water:before {
+  content: "\e9d6";
+}
+.wm-icon-txn-waterfall:before {
+  content: "\e9d7";
+}
+.wm-icon-txn-watermill:before {
+  content: "\e9d8";
+}
+.wm-icon-txn-wetland:before {
+  content: "\e9d9";
+}
+.wm-icon-txn-wheelchair:before {
+  content: "\e9da";
+}
+.wm-icon-txn-windmill:before {
+  content: "\e9db";
+}
+.wm-icon-txn-zoo:before {
+  content: "\e9dc";
+}
+.wm-icon-txn-adults:before {
+  content: "\e9dd";
+}
+.wm-icon-txn-alert:before {
+  content: "\e9de";
+}
+.wm-icon-txn-alpine-hut-cai:before {
+  content: "\e9df";
+}
+.wm-icon-txn-alpine-hut:before {
+  content: "\e9e0";
+}
+.wm-icon-txn-alpinism:before {
+  content: "\e9e1";
+}
+.wm-icon-american-football:before {
+  content: "\e9e2";
+}
+.wm-icon-txn-ascent:before {
+  content: "\e9e3";
+}
+.wm-icon-txn-autumn:before {
+  content: "\e9e4";
+}
+.wm-icon-txn-bakery-alt:before {
+  content: "\e9e5";
+}
+.wm-icon-beach-umbrella:before {
+  content: "\e9e6";
+}
+.wm-icon-txn-binoculars:before {
+  content: "\e9e7";
+}
+.wm-icon-txn-boot:before {
+  content: "\e9e8";
+}
+.wm-icon-txn-boudinage:before {
+  content: "\e9e9";
+}
+.wm-icon-txn-camera:before {
+  content: "\e9ea";
+}
+.wm-icon-castle-alt:before {
+  content: "\e9eb";
+}
+.wm-icon-txn-cave-entrance:before {
+  content: "\e9ec";
+}
+.wm-icon-txn-cave:before {
+  content: "\e9ed";
+}
+.wm-icon-txn-church:before {
+  content: "\e9ee";
+}
+.wm-icon-txn-climbing:before {
+  content: "\e9ef";
+}
+.wm-icon-txn-clock:before {
+  content: "\e9f0";
+}
+.wm-icon-txn-cloud:before {
+  content: "\e9f1";
+}
+.wm-icon-txn-coffee:before {
+  content: "\e9f2";
+}
+.wm-icon-cognitive-impared:before {
+  content: "\e9f3";
+}
+.wm-icon-txn-compass:before {
+  content: "\e9f4";
+}
+.wm-icon-txn-cyc-e-bike:before {
+  content: "\e9f5";
+}
+.wm-icon-cyc-percorso-lineare:before {
+  content: "\e9f6";
+}
+.wm-icon-txn-descent:before {
+  content: "\e9f7";
+}
+.wm-icon-txn-distance:before {
+  content: "\e9f8";
+}
+.wm-icon-txn-dolmen:before {
+  content: "\e9f9";
+}
+.wm-icon-domus-de-janas:before {
+  content: "\e9fa";
+}
+.wm-icon-txn-earth:before {
+  content: "\e9fb";
+}
+.wm-icon-eye-disabled:before {
+  content: "\e9fc";
+}
+.wm-icon-txn-eye:before {
+  content: "\e9fd";
+}
+.wm-icon-txn-family:before {
+  content: "\e9fe";
+}
+.wm-icon-txn-faults:before {
+  content: "\e9ff";
+}
+.wm-icon-txn-fauna:before {
+  content: "\ea00";
+}
+.wm-icon-fc-corpo-forestale:before {
+  content: "\ea01";
+}
+.wm-icon-fc-planetario:before {
+  content: "\ea02";
+}
+.wm-icon-fc-sede:before {
+  content: "\ea03";
+}
+.wm-icon-fc-utb:before {
+  content: "\ea04";
+}
+.wm-icon-txn-female:before {
+  content: "\ea05";
+}
+.wm-icon-txn-fishing:before {
+  content: "\ea06";
+}
+.wm-icon-txn-flame:before {
+  content: "\ea07";
+}
+.wm-icon-txn-flora:before {
+  content: "\ea08";
+}
+.wm-icon-txn-folds:before {
+  content: "\ea09";
+}
+.wm-icon-txn-foliations:before {
+  content: "\ea0a";
+}
+.wm-icon-txn-food-tasting:before {
+  content: "\ea0b";
+}
+.wm-icon-food-intolerance:before {
+  content: "\ea0c";
+}
+.wm-icon-txn-fort:before {
+  content: "\ea0d";
+}
+.wm-icon-txn-fractures:before {
+  content: "\ea0e";
+}
+.wm-icon-garden-center:before {
+  content: "\ea0f";
+}
+.wm-icon-txn-generic:before {
+  content: "\ea10";
+}
+.wm-icon-txn-geology:before {
+  content: "\ea11";
+}
+.wm-icon-giants-grave:before {
+  content: "\ea12";
+}
+.wm-icon-gps-fixed-indicator:before {
+  content: "\ea13";
+}
+.wm-icon-txn-guidepost:before {
+  content: "\ea14";
+}
+.wm-icon-txn-hammer:before {
+  content: "\ea15";
+}
+.wm-icon-txn-headphone:before {
+  content: "\ea16";
+}
+.wm-icon-hearing-impared:before {
+  content: "\ea17";
+}
+.wm-icon-heart-broken:before {
+  content: "\ea19";
+}
+.wm-icon-help-buoy:before {
+  content: "\ea1a";
+}
+.wm-icon-txn-hiking:before {
+  content: "\ea1b";
+}
+.wm-icon-txn-hiking2:before {
+  content: "\ea1c";
+}
+.wm-icon-txn-hostel:before {
+  content: "\ea1d";
+}
+.wm-icon-txn-icecream:before {
+  content: "\ea1e";
+}
+.wm-icon-txn-info:before {
+  content: "\ea1f";
+}
+.wm-icon-txn-informatcircled:before {
+  content: "\ea20";
+}
+.wm-icon-txn-lake:before {
+  content: "\ea21";
+}
+.wm-icon-txn-layers:before {
+  content: "\ea22";
+}
+.wm-icon-txn-lineations:before {
+  content: "\ea23";
+}
+.wm-icon-logo-apuane:before {
+  content: "\ea24";
+}
+.wm-icon-magnifying-glass:before {
+  content: "\ea25";
+}
+.wm-icon-txn-manor:before {
+  content: "\ea26";
+}
+.wm-icon-txn-map:before {
+  content: "\ea27";
+}
+.wm-icon-txn-mappalo:before {
+  content: "\ea28";
+}
+.wm-icon-txn-metamorphic:before {
+  content: "\ea29";
+}
+.wm-icon-txn-mill:before {
+  content: "\ea2a";
+}
+.wm-icon-txn-mine:before {
+  content: "\ea2b";
+}
+.wm-icon-txn-monastery:before {
+  content: "\ea2c";
+}
+.wm-icon-txn-montepisano:before {
+  content: "\ea2d";
+}
+.wm-icon-txn-mtb:before {
+  content: "\ea2e";
+}
+.wm-icon-txn-museum2:before {
+  content: "\ea2f";
+}
+.wm-icon-music-note:before {
+  content: "\ea30";
+}
+.wm-icon-txn-navigate:before {
+  content: "\ea31";
+}
+.wm-icon-no-smoking:before {
+  content: "\ea32";
+}
+.wm-icon-txn-nuclear:before {
+  content: "\ea33";
+}
+.wm-icon-txn-nuraghe:before {
+  content: "\ea34";
+}
+.wm-icon-txn-olive-tree:before {
+  content: "\ea35";
+}
+.wm-icon-txn-panorama:before {
+  content: "\ea36";
+}
+.wm-icon-panoramic-view:before {
+  content: "\ea37";
+}
+.wm-icon-txn-paper-airplane:before {
+  content: "\ea38";
+}
+.wm-icon-txn-paragliding:before {
+  content: "\ea39";
+}
+.wm-icon-txn-pieve:before {
+  content: "\ea3a";
+}
+.wm-icon-txn-pin:before {
+  content: "\ea3b";
+}
+.wm-icon-txn-pizza:before {
+  content: "\ea3c";
+}
+.wm-icon-txn-plane:before {
+  content: "\ea3d";
+}
+.wm-icon-txn-planet:before {
+  content: "\ea3e";
+}
+.wm-icon-pnab-qp:before {
+  content: "\ea3f";
+}
+.wm-icon-txn-pnab:before {
+  content: "\ea40";
+}
+.wm-icon-txn-primary-structures:before {
+  content: "\ea41";
+}
+.wm-icon-pickaxe:before {
+  content: "\ea42";
+}
+.wm-icon-shovel:before {
+  content: "\ea43";
+}
+.wm-icon-txn-road-bike:before {
+  content: "\ea44";
+}
+.wm-icon-txn-rowing:before {
+  content: "\ea45";
+}
+.wm-icon-txn-ruins:before {
+  content: "\ea46";
+}
+.wm-icon-txn-saddle:before {
+  content: "\ea47";
+}
+.wm-icon-txn-sailing:before {
+  content: "\ea48";
+}
+.wm-icon-txn-scissors:before {
+  content: "\ea49";
+}
+.wm-icon-txn-settings:before {
+  content: "\ea4a";
+}
+.wm-icon-txn-shear-zones:before {
+  content: "\ea4b";
+}
+.wm-icon-txn-sites-of-interest:before {
+  content: "\ea4c";
+}
+.wm-icon-soccer-alt:before {
+  content: "\ea4d";
+}
+.wm-icon-txn-spa:before {
+  content: "\ea4e";
+}
+.wm-icon-txn-speakerphone:before {
+  content: "\ea4f";
+}
+.wm-icon-txn-speedometer:before {
+  content: "\ea50";
+}
+.wm-icon-txn-spoon:before {
+  content: "\ea51";
+}
+.wm-icon-txn-spring:before {
+  content: "\ea52";
+}
+.wm-icon-star-alt:before {
+  content: "\ea53";
+}
+.wm-icon-txn-stroller:before {
+  content: "\ea54";
+}
+.wm-icon-txn-untitled2:before {
+  content: "\ea55";
+}
+.wm-icon-txn-untitled3:before {
+  content: "\ea56";
+}
+.wm-icon-txn-untitled4:before {
+  content: "\ea57";
+}
+.wm-icon-txn-untitled5:before {
+  content: "\ea58";
+}
+.wm-icon-txn-untitled6:before {
+  content: "\ea59";
+}
+.wm-icon-txn-untitled7:before {
+  content: "\ea5a";
+}
+.wm-icon-txn-untitled8:before {
+  content: "\ea5b";
+}
+.wm-icon-txn-untitled9:before {
+  content: "\ea5c";
+}
+.wm-icon-txn-untitled10:before {
+  content: "\ea5d";
+}
+.wm-icon-txn-untitled11:before {
+  content: "\ea5e";
+}
+.wm-icon-txn-untitled12:before {
+  content: "\ea5f";
+}
+.wm-icon-txn-untitled13:before {
+  content: "\ea60";
+}
+.wm-icon-circle-outline:before {
+  content: "\ea61";
+}
+.wm-icon-txn-sushi:before {
+  content: "\ea62";
+}
+.wm-icon-txn-touring-bike:before {
+  content: "\ea63";
+}
+.wm-icon-txn-tower:before {
+  content: "\ea64";
+}
+.wm-icon-txn-trail:before {
+  content: "\ea65";
+}
+.wm-icon-txn-train:before {
+  content: "\ea66";
+}
+.wm-icon-trash-a:before {
+  content: "\ea67";
+}
+.wm-icon-trash-b:before {
+  content: "\ea68";
+}
+.wm-icon-txn-trophy:before {
+  content: "\ea69";
+}
+.wm-icon-txn-umbrella:before {
+  content: "\ea6a";
+}
+.wm-icon-txn-university:before {
+  content: "\ea6b";
+}
+.wm-icon-via-ferrata:before {
+  content: "\ea6c";
+}
+.wm-icon-txn-videocamera:before {
+  content: "\ea6d";
+}
+.wm-icon-txn-villa:before {
+  content: "\ea6e";
+}
+.wm-icon-visually-impaired:before {
+  content: "\ea6f";
+}
+.wm-icon-vt-botteghe:before {
+  content: "\ea70";
+}
+.wm-icon-txn-vt-eventi:before {
+  content: "\ea71";
+}
+.wm-icon-vt-produttori:before {
+  content: "\ea72";
+}
+.wm-icon-vt-ristoranti:before {
+  content: "\ea73";
+}
+.wm-icon-txn-wand:before {
+  content: "\ea74";
+}
+.wm-icon-txn-waterdrop:before {
+  content: "\ea76";
+}
+.wm-icon-way-side-shrine:before {
+  content: "\ea77";
+}
+.wm-icon-txn-wifi:before {
+  content: "\ea78";
+}
+.wm-icon-txn-wilderness-hut-cai:before {
+  content: "\ea79";
+}
+.wm-icon-txn-wilderness-hut:before {
+  content: "\ea7a";
+}
+.wm-icon-wine-tasting:before {
+  content: "\ea7b";
+}
+.wm-icon-txn-wineglass:before {
+  content: "\ea7c";
+}
+.wm-icon-txn-woman:before {
+  content: "\ea7d";
+}
+.wm-icon-txn-wrench:before {
+  content: "\ea7e";
+}
+.wm-icon-bakery:before {
+  content: "\ea7f";
+}
+.wm-icon-flora:before {
+  content: "\ea80";
+}
+.wm-icon-florist:before {
+  content: "\ea81";
+}
+.wm-icon-hostel:before {
+  content: "\ea82";
+}
+.wm-icon-lodging:before {
+  content: "\ea83";
+}
+.wm-icon-restaurant:before {
+  content: "\ea84";
+}
+.wm-icon-shop:before {
+  content: "\ea85";
+}
+.wm-icon-vc-prodotti:before {
+  content: "\ea86";
+}
+.wm-icon-txn-activities:before {
+  content: "\ea87";
+}
+.wm-icon-txn-background:before {
+  content: "\ea88";
+}
+.wm-icon-txn-document:before {
+  content: "\ea89";
+}
+.wm-icon-txn-list:before {
+  content: "\ea8a";
+}
+.wm-icon-txn-microphone:before {
+  content: "\ea8b";
+}
+.wm-icon-pause:before {
+  content: "\ea8c";
+}
+.wm-icon-play:before {
+  content: "\ea8d";
+}
+.wm-icon-stop:before {
+  content: "\ea8e";
+}
+.wm-icon-txn-track:before {
+  content: "\ea8f";
+}
+.wm-icon-add-user:before {
+  content: "\ea90";
+}
+.wm-icon-baby-backpack:before {
+  content: "\ea91";
+}
+.wm-icon-baby-carriage:before {
+  content: "\ea92";
+}
+.wm-icon-txn-basket:before {
+  content: "\ea93";
+}
+.wm-icon-txn-bell:before {
+  content: "\ea94";
+}
+.wm-icon-txn-bike:before {
+  content: "\ea95";
+}
+.wm-icon-camera:before {
+  content: "\ea96";
+}
+.wm-icon-txn-directions:before {
+  content: "\ea97";
+}
+.wm-icon-txn-edit:before {
+  content: "\ea98";
+}
+.wm-icon-txn-filters:before {
+  content: "\ea99";
+}
+.wm-icon-txn-groups:before {
+  content: "\ea9a";
+}
+.wm-icon-heart:before {
+  content: "\ea9b";
+}
+.wm-icon-home:before {
+  content: "\ea9c";
+}
+.wm-icon-txn-horse:before {
+  content: "\ea9d";
+}
+.wm-icon-info:before {
+  content: "\ea9e";
+}
+.wm-icon-txn-kebab:before {
+  content: "\ea9f";
+}
+.wm-icon-txn-levels:before {
+  content: "\eaa0";
+}
+.wm-icon-map:before {
+  content: "\eaa1";
+}
+.wm-icon-txn-nav:before {
+  content: "\eaa2";
+}
+.wm-icon-pin:before {
+  content: "\eaa3";
+}
+.wm-icon-txn-search:before {
+  content: "\eaa4";
+}
+.wm-icon-settings:before {
+  content: "\eaa5";
+}
+.wm-icon-txn-share:before {
+  content: "\eaa6";
+}
+.wm-icon-txn-ski:before {
+  content: "\eaa7";
+}
+.wm-icon-star:before {
+  content: "\eaa8";
+}
+.wm-icon-txn-trekking:before {
+  content: "\eaa9";
+}
+.wm-icon-txn-user:before {
+  content: "\eaaa";
+}
+.wm-icon-activities-outline:before {
+  content: "\eaab";
+}
+.wm-icon-background-outline:before {
+  content: "\eaac";
+}
+.wm-icon-document-outline:before {
+  content: "\eaad";
+}
+.wm-icon-list-outline:before {
+  content: "\eaae";
+}
+.wm-icon-microphone-outline:before {
+  content: "\eaaf";
+}
+.wm-icon-pause-circle-outline:before {
+  content: "\eab0";
+}
+.wm-icon-play-circle-outline:before {
+  content: "\eab1";
+}
+.wm-icon-stop-circle-outline:before {
+  content: "\eab2";
+}
+.wm-icon-track-outline:before {
+  content: "\eab3";
+}
+.wm-icon-arrow-left-outline:before {
+  content: "\eab4";
+}
+.wm-icon-arrow-right-outline:before {
+  content: "\eab5";
+}
+.wm-icon-check-outline:before {
+  content: "\eab6";
+}
+.wm-icon-chevron-down-outline:before {
+  content: "\eab7";
+}
+.wm-icon-chevron-left-outline:before {
+  content: "\eab8";
+}
+.wm-icon-chevron-right-outline:before {
+  content: "\eab9";
+}
+.wm-icon-chevron-up-outline:before {
+  content: "\eaba";
+}
+.wm-icon-close-outline:before {
+  content: "\eabb";
+}
+.wm-icon-add-user-outline:before {
+  content: "\eabc";
+}
+.wm-icon-baby-backpack-outline:before {
+  content: "\eabd";
+}
+.wm-icon-baby-carriage-outline:before {
+  content: "\eabe";
+}
+.wm-icon-basket-outline:before {
+  content: "\eabf";
+}
+.wm-icon-bell-outline:before {
+  content: "\eac0";
+}
+.wm-icon-bike-outline:before {
+  content: "\eac1";
+}
+.wm-icon-camera-outline:before {
+  content: "\eac2";
+}
+.wm-icon-directions-outline:before {
+  content: "\eac3";
+}
+.wm-icon-donwload-outline:before {
+  content: "\eac4";
+}
+.wm-icon-edit-outline:before {
+  content: "\eac5";
+}
+.wm-icon-filters-outline:before {
+  content: "\eac6";
+}
+.wm-icon-groups-outline:before {
+  content: "\eac7";
+}
+.wm-icon-heart-outline:before {
+  content: "\eac8";
+}
+.wm-icon-home-outline:before {
+  content: "\eac9";
+}
+.wm-icon-horse-outline:before {
+  content: "\eaca";
+}
+.wm-icon-info-outline:before {
+  content: "\eacb";
+}
+.wm-icon-kebab-outline:before {
+  content: "\eacc";
+}
+.wm-icon-levels-outline:before {
+  content: "\eacd";
+}
+.wm-icon-map-outline:before {
+  content: "\eace";
+}
+.wm-icon-nav-outline:before {
+  content: "\eaef";
+}
+.wm-icon-pin-outline:before {
+  content: "\eaf0";
+}
+.wm-icon-recording-outline:before {
+  content: "\eaf1";
+}
+.wm-icon-search-outline:before {
+  content: "\eaf2";
+}
+.wm-icon-settings-outline:before {
+  content: "\eaf3";
+}
+.wm-icon-share-outline:before {
+  content: "\eaf4";
+}
+.wm-icon-ski-outline:before {
+  content: "\eaf5";
+}
+.wm-icon-star-outline:before {
+  content: "\eaf6";
+}
+.wm-icon-trekking-outline:before {
+  content: "\eaf7";
+}
+.wm-icon-user-outline:before {
+  content: "\eaf8";
+}
+.wm-icon-arrival-outline:before {
+  content: "\eaf9";
+}
+.wm-icon-arrow-down-outline:before {
+  content: "\eafa";
+}
+.wm-icon-arrow-up-outline:before {
+  content: "\eafb";
+}
+.wm-icon-e-bike-outline:before {
+  content: "\eafc";
+}
+.wm-icon-carriage-ouline:before {
+  content: "\eafd";
+}
+.wm-icon-car-outline:before {
+  content: "\eafe";
+}
+.wm-icon-ncc-outline:before {
+  content: "\eaff";
+}
+.wm-icon-children-outline:before {
+  content: "\eb00";
+}
+.wm-icon-city-tour-outline:before {
+  content: "\eb01";
+}
+.wm-icon-difficulty-outline:before {
+  content: "\eb02";
+}
+.wm-icon-dislivello-negativo-outline:before {
+  content: "\eb03";
+}
+.wm-icon-dislivello-positivo-outline:before {
+  content: "\eb05";
+}
+.wm-icon-distance-outline:before {
+  content: "\eb06";
+}
+.wm-icon-downhill-outline:before {
+  content: "\eb07";
+}
+.wm-icon-flag-outline:before {
+  content: "\eb08";
+}
+.wm-icon-globe-outline:before {
+  content: "\eb09";
+}
+.wm-icon-lake-outline:before {
+  content: "\eb0a";
+}
+.wm-icon-minus-outline:before {
+  content: "\eb0b";
+}
+.wm-icon-mountain-outline:before {
+  content: "\eb0c";
+}
+.wm-icon-mtb-outline:before {
+  content: "\eb0d";
+}
+.wm-icon-nordic-walking-outline:before {
+  content: "\eb0e";
+}
+.wm-icon-plus-outline:before {
+  content: "\eb0f";
+}
+.wm-icon-refuge-outline:before {
+  content: "\eb10";
+}
+.wm-icon-river-outline:before {
+  content: "\eb11";
+}
+.wm-icon-running-outline:before {
+  content: "\eb12";
+}
+.wm-icon-self-guided-outline:before {
+  content: "\eb13";
+}
+.wm-icon-snowshoes-outline:before {
+  content: "\eb14";
+}
+.wm-icon-sporting-outline:before {
+  content: "\eb15";
+}
+.wm-icon-viewpoint-outline:before {
+  content: "\eb16";
+}
+.wm-icon-walking-copy-outline:before {
+  content: "\eb17";
+}
+.wm-icon-walking-outline:before {
+  content: "\eb18";
+}
+.wm-icon-waterfall-outline:before {
+  content: "\eb19";
+}
+.wm-icon-weekend-outline:before {
+  content: "\eb1a";
+}
+.wm-icon-with-guide-outline:before {
+  content: "\eb1b";
+}
+.wm-icon-arrival:before {
+  content: "\eb1c";
+}
+.wm-icon-e-bike:before {
+  content: "\eb1d";
+}
+.wm-icon-carriage:before {
+  content: "\eb1e";
+}
+.wm-icon-car:before {
+  content: "\eb1f";
+}
+.wm-icon-ncc:before {
+  content: "\eb20";
+}
+.wm-icon-compass-outline:before {
+  content: "\eb21";
+}
+.wm-icon-children:before {
+  content: "\eb22";
+}
+.wm-icon-city-tour:before {
+  content: "\eb23";
+}
+.wm-icon-map-outline1-outline:before {
+  content: "\eb24";
+}
+.wm-icon-difficulty-new:before {
+  content: "\eb25";
+}
+.wm-icon-person-outline:before {
+  content: "\eb26";
+}
+.wm-icon-pin-distance-line:before {
+  content: "\eb27";
+}
+.wm-icon-distance:before {
+  content: "\eb28";
+}
+.wm-icon-downhill:before {
+  content: "\eb29";
+}
+.wm-icon-swimming:before {
+  content: "\eb2a";
+}
+.wm-icon-flag-1:before {
+  content: "\eb2b";
+}
+.wm-icon-flag-1-outline:before {
+  content: "\eb2c";
+}
+.wm-icon-globe:before {
+  content: "\eb2d";
+}
+.wm-icon-lake:before {
+  content: "\eb2e";
+}
+.wm-icon-minus:before {
+  content: "\eb2f";
+}
+.wm-icon-mountain:before {
+  content: "\eb30";
+}
+.wm-icon-mtb:before {
+  content: "\eb31";
+}
+.wm-icon-nordik-walking:before {
+  content: "\eb32";
+}
+.wm-icon-plus:before {
+  content: "\eb33";
+}
+.wm-icon-refuge:before {
+  content: "\eb34";
+}
+.wm-icon-river:before {
+  content: "\eb35";
+}
+.wm-icon-unie9c9:before {
+  content: "\eb36";
+}
+.wm-icon-self-guided:before {
+  content: "\eb3e";
+}
+.wm-icon-snowshoes:before {
+  content: "\eb3f";
+}
+.wm-icon-sporting:before {
+  content: "\eb40";
+}
+.wm-icon-user:before {
+  content: "\eb41";
+}
+.wm-icon-viewpoint:before {
+  content: "\eb42";
+}
+.wm-icon-waterfall:before {
+  content: "\eb43";
+}
+.wm-icon-weekend:before {
+  content: "\eb44";
+}
+.wm-icon-with-guide:before {
+  content: "\eb45";
+}
+.wm-icon-binoculars:before {
+  content: "\eb46";
+}
+.wm-icon-temples:before {
+  content: "\eb47";
+}
