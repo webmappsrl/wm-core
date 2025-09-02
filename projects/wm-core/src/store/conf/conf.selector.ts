@@ -158,6 +158,10 @@ export const confOPTIONSShowEmbeddedHtml = createSelector(
   confOPTIONS,
   state => state.showEmbeddedHtml,
 );
+export const confOPTIONSShowDownloadTilesButton = createSelector(
+  confOPTIONS,
+  state => state.showDownloadTilesButton,
+);
 
 export const confZoomFeaturesInViewport = createSelector(confOPTIONS, state => {
   const minZoomFeaturesInViewport = state.minZoomFeaturesInViewport;
@@ -165,7 +169,7 @@ export const confZoomFeaturesInViewport = createSelector(confOPTIONS, state => {
   return {
     minZoomFeaturesInViewport,
     maxZoomFeaturesInViewport,
-  }
+  };
 });
 
 const getLayers = (layersID: number[], layers: ILAYER[], tracks: Hit[]): ILAYER[] => {

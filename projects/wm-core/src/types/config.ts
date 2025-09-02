@@ -342,6 +342,7 @@ export interface IOPTIONS {
   showDescent: boolean;
   showDifficultyLegend: boolean;
   showDistance: boolean;
+  showDownloadTilesButton: boolean;
   showDurationBackward: boolean;
   showDurationForward: boolean;
   showEditLink: boolean;
