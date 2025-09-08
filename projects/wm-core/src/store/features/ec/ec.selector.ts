@@ -1,5 +1,5 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
-import {confFILTERSTRACKS, confMAPLayers, confPOISFilter, confPoisIcons} from '../../conf/conf.selector';
+import {confFILTERSTRACKS, confMAPLayers, confPOISFilter} from '../../conf/conf.selector';
 import {buildStats, calculateLayerFeaturesCount, filterFeatures, filterFeaturesByInputTyped} from './utils';
 import {Elastic} from '@wm-types/elastic';
 import {Ec} from './ec.reducer';
@@ -12,6 +12,7 @@ import {
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
+import {icons} from '@wm-core/store/icons/icons.selector';
 
 export const ec = createFeatureSelector<Elastic>('ec');
 
@@ -104,32 +105,21 @@ export const poisFilteredFeaturesByInputType = createSelector(
   (poisFilteredFeatures, inputTyped) =>
     filterFeaturesByInputTyped(poisFilteredFeatures, inputTyped),
 );
-export const ecPois = createSelector(
-  poisFilteredFeaturesByInputType,
-  confPoisIcons,
-  (allEcPois, icons) => {
-    let allEcPoisfeatures = allEcPois;
-    if (allEcPoisfeatures != null && icons != null) {
-      const iconKeys = Object.keys(icons);
-      const features = allEcPoisfeatures.map((f: any) => {
-        if (f != null && f.properties != null && f.properties.taxonomyIdentifiers != null) {
-          const filteredArray = f.properties.taxonomyIdentifiers.filter((value: any) =>
-            iconKeys.includes(value),
-          );
-          if (filteredArray.length > 0) {
-            //@ts-ignore
-            let p = {...f.properties, ...{svgIcon: icons[filteredArray[0]]}};
-
-            return {...f, ...{properties: p}};
-          }
-        }
-        return f;
-      });
-      return features;
-    }
-    return allEcPoisfeatures;
-  },
-);
+export const ecPois = createSelector(poisFilteredFeaturesByInputType, icons, (allEcPois, icons) => {
+  let allEcPoisfeatures = allEcPois;
+  if (allEcPoisfeatures != null && icons != null) {
+    const features = allEcPoisfeatures.map((f: any) => {
+      if (f?.properties?.taxonomy?.poi_type != null) {
+        const iconName = f.properties.taxonomy.poi_type.icon_name ?? '';
+        let p = {...f.properties, ...{svgIcon: icons?.[iconName]}};
+        return {...f, ...{properties: p}};
+      }
+      return f;
+    });
+    return features;
+  }
+  return allEcPoisfeatures;
+});
 export const countEcPois = createSelector(ecPois, ecPois => ecPois?.length);
 export const countEcAll = createSelector(countEcTracks, countEcPois, (cTracks, cPois) => {
   const c1 = typeof cTracks === 'number' ? cTracks : 0;

@@ -2,10 +2,9 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {ICONF} from '../../types/config';
-import {synchronizedApi} from '@wm-core/utils/localForage';
-import {distinctUntilChanged, shareReplay, take} from 'rxjs/operators';
 import {DeviceService} from '@wm-core/services/device.service';
 import {EnvironmentService} from '@wm-core/services/environment.service';
+import {handleApiCache} from '@wm-core/utils/api-cache-handler';
 @Injectable({
   providedIn: 'root',
 })
@@ -43,64 +42,18 @@ export class ConfService {
   public getConf(): Observable<ICONF> {
     const url = this._environmentSvc.confUrl;
 
-    return new Observable<ICONF>(observer => {
-      synchronizedApi.getItem(`${url}`).then((cachedData: string | null) => {
-        let parsedData: ICONF | null = null;
-        const cachedLastModified = localStorage.getItem(`${url}-last-modified`);
-
-        // Verifica se c'è un dato in cache
-        if (cachedData) {
-          try {
-            parsedData = JSON.parse(cachedData) as ICONF;
-            observer.next(parsedData); // Invio immediato dei dati in cache
-          } catch (e) {
-            console.warn('Error parsing cached data. Ignoring cache.', e);
-          }
-        }
-
-        // Effettua la richiesta HTTP con Last-Modified
-        // Ignora cachedLastModified se siamo sullo shard carg
-        const shouldIgnoreCache = this._environmentSvc.shardName === 'carg';
-        const headers =
-          cachedLastModified && !shouldIgnoreCache ? {'If-Modified-Since': cachedLastModified} : {};
-
-        this._http
-          .get<ICONF>(url, {
-            observe: 'response',
-            headers,
-          })
-          .pipe(take(1))
-          .subscribe(
-            response => {
-              const lastModified = response.headers.get('last-modified');
-
-              if (response.status === 200) {
-                const conf = {...response.body, isMobile: this._deviceSvc?.isMobile ?? false};
-                if (conf) {
-                  // Aggiorna cache solo se necessario
-                  synchronizedApi.setItem(`${url}`, JSON.stringify(conf));
-                  if (lastModified) {
-                    localStorage.setItem(`${url}-last-modified`, lastModified);
-                  }
-                  observer.next(conf);
-                }
-              } else if (response.status === 304) {
-                console.log('No changes detected, using cached data.');
-              }
-              observer.complete();
-            },
-            error => {
-              if (!parsedData) {
-                observer.error(error); // Nessun dato in cache, errore critico
-              } else {
-                observer.complete();
-              }
-            },
-          );
-      });
-    }).pipe(
-      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-      shareReplay(1), // Riduce chiamate duplicate per più osservatori
+    return handleApiCache<ICONF>(
+      this._http,
+      url,
+      (data: ICONF) => {
+        data.isMobile = this._deviceSvc?.isMobile ?? false;
+      },
+      this._environmentSvc.shardName === 'carg'
+        ? {}
+        : (() => {
+            const lastModified = localStorage.getItem(`${url}-last-modified`);
+            return lastModified ? {'If-Modified-Since': lastModified} : {};
+          })(),
     );
   }
 }

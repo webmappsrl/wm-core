@@ -18,6 +18,7 @@ export class EnvironmentService {
   private _graphhopperHost: string;
   private _shard: Shard;
   private _awsApi: string;
+  private _awsIconsUrl: string;
   private _awsPoisUrl: string;
   private _awsPbfUrl: string;
   private _confUrl: string;
@@ -76,10 +77,12 @@ export class EnvironmentService {
     if (this._isOldShardName(this._shardName)) {
       this._awsPoisUrl = `${this._awsApi}/pois/${this._appId}.geojson`;
       this._confUrl = `${this._awsApi}/conf/${this._appId}.json`;
+      this._awsIconsUrl = `${this._awsApi}/icons/${this._appId}.json`;
       this._awsPbfUrl = `https://wmpbf.s3.eu-central-1.amazonaws.com/${this._appId}/{z}/{x}/{y}.pbf`;
     } else {
       this._awsPoisUrl = `${this._awsApi}/${this._appId}/pois.geojson`;
       this._confUrl = `${this._awsApi}/${this._appId}/config.json`;
+      this._awsIconsUrl = `${this._awsApi}/${this._appId}/icons.json`;
       this._awsPbfUrl = `${this._awsApi}/${this._appId}/pbf/{z}/{x}/{y}.pbf`;
     }
   }
@@ -138,5 +141,8 @@ export class EnvironmentService {
   }
   get shardName(): string {
     return this._shardName;
+  }
+  get awsIconsUrl(): string {
+    return this._awsIconsUrl;
   }
 }

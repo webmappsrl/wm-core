@@ -17,11 +17,16 @@
                 (click)="addPoiFilter(option)"
                 color="{{option.identifier|isSelected:(poiFilters)}}"
               >
-                <ng-container *ngIf="option.icon != null;else imgT">
-                  <div appBuildSvg [svg]="option.icon"></div>
+                <ng-container *ngIf="icons$ | async as icons; esle optionIcon">
+                  <div appBuildSvg *ngIf="icons?.[option?.icon_name] as icon" [svg]="icon"></div>
                 </ng-container>
-                <ng-template #imgT>
-                  <img [src]="option.identifier" />
+                <ng-template #optionIcon>
+                  <ng-container *ngIf="option.icon != null;else imgT">
+                    <div appBuildSvg [svg]="option.icon"></div>
+                  </ng-container>
+                  <ng-template #imgT>
+                    <img [src]="option.identifier" />
+                  </ng-template>
                 </ng-template>
                 <ion-label>{{option.name|wmtrans}}</ion-label>
                 <span class="wm-filters-count">
@@ -58,7 +63,6 @@
               >
                 <div
                   appBuildSvg
-                  style="height:55%"
                   *ngIf="option.icon"
                   [svg]="option.icon"
                   [color]="option.color"

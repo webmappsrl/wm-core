@@ -9,9 +9,11 @@ export class BuildSvgDirective {
     this.elementRef.nativeElement.innerHTML = svg;
   }
   @Input() set color(color: string) {
-    this.elementRef.nativeElement.innerHTML = this.elementRef.nativeElement.innerHTML.replaceAll(
-      'darkorange',
-      color,
-    );
+    if (color) {
+      this.elementRef.nativeElement.innerHTML = this.elementRef.nativeElement.innerHTML.replaceAll(
+        'darkorange',
+        color,
+      );
+    }
   }
 }

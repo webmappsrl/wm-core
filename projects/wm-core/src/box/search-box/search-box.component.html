@@ -45,8 +45,12 @@
     *ngIf="data?.taxonomyActivities!= null && data?.taxonomyActivities.length>0 &&data?.taxonomyActivities != '[]'"
   >
     <div class="wm-box-taxonomy" *ngFor="let item of data?.taxonomyActivities">
-      <i [class]="item|getIcn"></i>
-      <div>{{item|lowercase|wmtrans}}</div>
+      <ng-container *ngIf="data.taxonomyIcons?.[item] as taxonomyIcon">
+        <ng-container *ngIf="icons$ | async as icons">
+          <div appBuildSvg [svg]="icons?.[taxonomyIcon.icon_name]"></div>
+        </ng-container>
+        <div>{{taxonomyIcon.label|wmtrans|lowercase}}</div>
+      </ng-container>
     </div>
   </div>
 </ng-template>
