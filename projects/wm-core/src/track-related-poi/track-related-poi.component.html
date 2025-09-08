@@ -11,10 +11,13 @@
           <img class="webmapp-track-poi-img" [src]="properties.feature_image?.sizes?.['108x148']" />
         </ng-container>
         <ng-template #svgTemplate>
-          <ng-container *ngIf="properties.taxonomy?.poi_type?.icon != null;else noImage">
-            <ng-container *ngIf="properties.taxonomy.poi_type.icon as svg">
-              <div appBuildSvg class="wm-filter-icon" [svg]="svg"></div>
-            </ng-container>
+          <ng-container *ngIf="icons$|async as icons; else noImage">
+            <div
+              *ngIf="icons[properties?.taxonomy?.poi_type?.icon_name] != null; else noImage"
+              appBuildSvg
+              class="wm-filter-icon"
+              [svg]="icons[properties?.taxonomy?.poi_type?.icon_name]"
+            ></div>
           </ng-container>
         </ng-template>
         <ng-template #noImage>
