@@ -4,122 +4,18 @@
       <div class="webmapp-title">{{'Attività'|wmtrans}}</div>
       <div class="webmapp-walkability" *ngIf="taxonomy.activity as activity">
         <ng-container *ngFor="let item of activity">
-          <div
-            class="webmapp-walkability-box"
-            *ngIf="item.identifier ==='hiking'|| item.identifier === 'trekking'"
-          >
-            <i class="icon-fill-trekking"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div
-            class="webmapp-walkability-box"
-            *ngIf="item.identifier === 'cycling'||item.identifier === 'mtb'"
-          >
-            <i class="icon-outline-bike"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'running'">
-            <i class="icon-outline-running"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'walking'">
-            <i class="icon-outline-walking"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'skitouring'">
-            <i class="icon-outline-nordic-walking"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'asphalt'">
-            <i class="icon-outline-track"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'bitumenduro'">
-            <i class="icon-outline-track"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'onoff'">
-            <i class="icon-outline-filters"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'real-dirt'">
-            <i class="icon-outline-track"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'bar'">
-            <i class="icon-outline-group"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'touring-bike'">
-            <i class="icon-outline-bike"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'road-bike'">
-            <i class="icon-outline-bike"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'mountain-bike'">
-            <i class="icon-outline-bike"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'e-bike'">
-            <i class="icon-outline-bike"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'nordic-walking'">
-            <i class="icon-outline-nordic-walking"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'train-trekking'">
-            <i class="icon-train"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'adventure'">
-            <i class="icon-fill-trekking"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'tourism'">
-            <i class="icon-fill-star"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'ciaspole'">
-            <i class="icon-outline-nordic-walking"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'oeno-gastronomy'">
-            <i class="icon-restaurant"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'birdwatching'">
-            <i class="icon-binoculars"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'joelette'">
-            <i class="icon-wheelchair"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'swimming-snorkeling'">
-            <i class="icon-swimming"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'art-and-culture'">
-            <i class="icon-temples"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'by-car'">
-            <i class="icon-fill-bike_3"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'culture-history'">
-            <i class="icon-temples"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'environmental-education'">
-            <i class="icon-outline-lake"></i>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
-          </div>
-          <div class="webmapp-walkability-box" *ngIf="item.identifier === 'eating-sleeping'">
-            <i class="icon-restaurant"></i>
+          <div class="webmapp-walkability-box">
+            <ng-container *ngIf="icons$ | async as icons">
+              <div
+                appBuildSvg
+                *ngIf="icons?.[item?.icon_name] as icon; else legacyIcon"
+                [svg]="icon"
+              ></div>
+              <!-- TODO: [icon_name] da rimuovere una volta rigenerate tutte le tracce -->
+              <ng-template #legacyIcon>
+                <div appBuildSvg *ngIf="item.icon != null" [svg]="item.icon"></div>
+              </ng-template>
+            </ng-container>
             <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
           </div>
         </ng-container>

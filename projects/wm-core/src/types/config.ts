@@ -485,6 +485,7 @@ export interface SelectFilter extends Filter {
 export interface SelectFilterOption {
   color?: string;
   icon?: string;
+  icon_name?: string;
   id?: number;
   identifier: string;
   name: iLocalString;

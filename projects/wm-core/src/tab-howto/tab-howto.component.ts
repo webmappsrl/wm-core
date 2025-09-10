@@ -1,6 +1,9 @@
 import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
-import {IGeojsonProperties} from '@wm-core/types/model';
 import {WmProperties} from '@wm-types/feature';
+import {Store} from '@ngrx/store';
+import {icons} from '@wm-core/store/icons/icons.selector';
+import {ICONS} from '@wm-types/config';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'wm-tab-howto',
@@ -14,8 +17,9 @@ export class WmTabHowtoComponent {
   set form(form: any) {
     this.properties = {...this.properties, ...{identifier: form.activity, label: form.title}};
   }
-
   @Input() properties: WmProperties;
 
-  constructor() {}
+  icons$: Observable<ICONS> = this._store.select(icons);
+
+  constructor(private _store: Store) {}
 }

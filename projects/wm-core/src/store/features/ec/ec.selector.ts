@@ -1,6 +1,11 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
-import {confFILTERSTRACKS, confMAPLayers, confPOISFilter, confPoisIcons} from '../../conf/conf.selector';
-import {buildStats, calculateLayerFeaturesCount, filterFeatures, filterFeaturesByInputTyped} from './utils';
+import {confFILTERSTRACKS, confMAPLayers, confPOISFilter} from '../../conf/conf.selector';
+import {
+  buildStats,
+  calculateLayerFeaturesCount,
+  filterFeatures,
+  filterFeaturesByInputTyped,
+} from './utils';
 import {Elastic} from '@wm-types/elastic';
 import {Ec} from './ec.reducer';
 import {
@@ -12,6 +17,7 @@ import {
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
+import {icons} from '@wm-core/store/icons/icons.selector';
 
 export const ec = createFeatureSelector<Elastic>('ec');
 
@@ -104,32 +110,22 @@ export const poisFilteredFeaturesByInputType = createSelector(
   (poisFilteredFeatures, inputTyped) =>
     filterFeaturesByInputTyped(poisFilteredFeatures, inputTyped),
 );
-export const ecPois = createSelector(
-  poisFilteredFeaturesByInputType,
-  confPoisIcons,
-  (allEcPois, icons) => {
-    let allEcPoisfeatures = allEcPois;
-    if (allEcPoisfeatures != null && icons != null) {
-      const iconKeys = Object.keys(icons);
-      const features = allEcPoisfeatures.map((f: any) => {
-        if (f != null && f.properties != null && f.properties.taxonomyIdentifiers != null) {
-          const filteredArray = f.properties.taxonomyIdentifiers.filter((value: any) =>
-            iconKeys.includes(value),
-          );
-          if (filteredArray.length > 0) {
-            //@ts-ignore
-            let p = {...f.properties, ...{svgIcon: icons[filteredArray[0]]}};
-
-            return {...f, ...{properties: p}};
-          }
-        }
-        return f;
-      });
-      return features;
-    }
-    return allEcPoisfeatures;
-  },
-);
+export const ecPois = createSelector(poisFilteredFeaturesByInputType, icons, (allEcPois, icons) => {
+  let allEcPoisfeatures = allEcPois;
+  if (allEcPoisfeatures != null && icons != null) {
+    const features = allEcPoisfeatures.map((f: any) => {
+      if (f?.properties?.taxonomy?.poi_type != null) {
+        const iconName = f.properties.taxonomy.poi_type.icon_name ?? '';
+        const svgIcon = icons?.[iconName] ?? f.properties.taxonomy.poi_type.icon ?? ''; // TODO: [icon_name] da rimuovere una volta rigenerate tutte le tracce
+        let p = {...f.properties, ...{svgIcon}};
+        return {...f, ...{properties: p}};
+      }
+      return f;
+    });
+    return features;
+  }
+  return allEcPoisfeatures;
+});
 export const countEcPois = createSelector(ecPois, ecPois => ecPois?.length);
 export const countEcAll = createSelector(countEcTracks, countEcPois, (cTracks, cPois) => {
   const c1 = typeof cTracks === 'number' ? cTracks : 0;
@@ -218,9 +214,14 @@ export const currentPoiProperties = createSelector(
   },
 );
 
-export const layerFeaturesCount = createSelector(confMAPLayers, allEcpoiFeatures, aggregationBucketsLayers, (confMAPLayers, allEcpoiFeatures, aggregationBucketsLayers) => {
-  return calculateLayerFeaturesCount(confMAPLayers, allEcpoiFeatures, aggregationBucketsLayers);
-});
+export const layerFeaturesCount = createSelector(
+  confMAPLayers,
+  allEcpoiFeatures,
+  aggregationBucketsLayers,
+  (confMAPLayers, allEcpoiFeatures, aggregationBucketsLayers) => {
+    return calculateLayerFeaturesCount(confMAPLayers, allEcpoiFeatures, aggregationBucketsLayers);
+  },
+);
 
 export const currentRelatedPoiIndex = createSelector(
   currentEcRelatedPois,
@@ -244,7 +245,9 @@ export const nextRelatedPoiId = createSelector(
   currentEcRelatedPois,
   currentEcRelatedPoiId,
   (relatedPois, relatedPoiId) => {
-    const index = relatedPois.findIndex((p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId);
+    const index = relatedPois.findIndex(
+      (p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId,
+    );
     return relatedPois[index + 1]?.properties?.id ?? null;
   },
 );
@@ -253,21 +256,28 @@ export const prevRelatedPoiId = createSelector(
   currentEcRelatedPois,
   currentEcRelatedPoiId,
   (relatedPois, relatedPoiId) => {
-    const index = relatedPois.findIndex((p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId);
+    const index = relatedPois.findIndex(
+      (p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId,
+    );
     return relatedPois[index - 1]?.properties?.id ?? null;
   },
 );
 
-export const currentEcImageGalleryIndex = createSelector(ec, (state: Ec) => state.currentEcImageGalleryIndex);
+export const currentEcImageGalleryIndex = createSelector(
+  ec,
+  (state: Ec) => state.currentEcImageGalleryIndex,
+);
 
 export const currentEcImageGallery = createSelector(
   currentEcRelatedPoiProperties,
   currentEcTrackProperties,
   currentEcPoiProperties,
   (currentEcRelatedPoiProperties, currentEcTrackProperties, currentEcPoiProperties) => {
-    return currentEcRelatedPoiProperties?.image_gallery
-      ?? currentEcTrackProperties?.image_gallery
-      ?? currentEcPoiProperties?.image_gallery
-      ?? null;
+    return (
+      currentEcRelatedPoiProperties?.image_gallery ??
+      currentEcTrackProperties?.image_gallery ??
+      currentEcPoiProperties?.image_gallery ??
+      null
+    );
   },
 );

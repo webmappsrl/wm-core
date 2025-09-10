@@ -78,6 +78,8 @@ import {WmImagePickerComponent} from './image-picker/image-picker.component';
 import {ModalGetDirectionsComponent} from './modal-get-directions/modal-get-directions.component';
 import {WmDrawUgcComponent} from './draw-ugc/draw-ugc.component';
 import {WmDrawUgcButtonComponent} from './draw-ugc-button/draw-ugc-button.component';
+import {iconsReducer} from './store/icons/icons.reducer';
+import {IconsEffects} from './store/icons/icons.effects';
 export const declarations = [
   WmTabDetailComponent,
   WmTabDescriptionComponent,
@@ -152,6 +154,7 @@ const modules = [
       StoreModule.forFeature('ugc', UgcReducer),
       StoreModule.forFeature('user-activity', userActivityReducer),
       StoreModule.forFeature('network', networkReducer),
+      StoreModule.forFeature('icons', iconsReducer),
       EffectsModule.forFeature([
         EcEffects,
         ConfEffects,
@@ -159,6 +162,7 @@ const modules = [
         UgcEffects,
         UserActivityEffects,
         NetworkEffects,
+        IconsEffects,
       ]),
       TranslateModule.forRoot({
         loader: {
