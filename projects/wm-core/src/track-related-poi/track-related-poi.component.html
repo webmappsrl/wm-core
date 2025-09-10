@@ -13,11 +13,19 @@
         <ng-template #svgTemplate>
           <ng-container *ngIf="icons$|async as icons; else noImage">
             <div
-              *ngIf="icons[properties?.taxonomy?.poi_type?.icon_name] != null; else noImage"
+              *ngIf="icons[properties?.taxonomy?.poi_type?.icon_name] != null; else legacyIcon"
               appBuildSvg
               class="wm-filter-icon"
               [svg]="icons[properties?.taxonomy?.poi_type?.icon_name]"
             ></div>
+            <!-- TODO: [icon_name] da rimuovere una volta rigenerate tutte le tracce -->
+            <ng-template #legacyIcon>
+              <div
+                appBuildSvg
+                *ngIf="properties?.taxonomy?.poi_type?.icon != null; else noImage"
+                [svg]="properties?.taxonomy?.poi_type?.icon"
+              ></div>
+            </ng-template>
           </ng-container>
         </ng-template>
         <ng-template #noImage>
@@ -26,11 +34,17 @@
 
         <div class="webmapp-track-poi-text">
           <div class="webmapp-track-poi-title">
-            {{ properties.name | wmtrans }} <!-- | lowercase -->
+            {{ properties.name | wmtrans }}
+            <!-- | lowercase -->
           </div>
-          <div class="webmapp-track-poi-distance-from-current-location" *ngIf="properties?.distanceFromCurrentLocation != null">
+          <div
+            class="webmapp-track-poi-distance-from-current-location"
+            *ngIf="properties?.distanceFromCurrentLocation != null"
+          >
             {{ 'Distanza da te' | wmtrans }}
-            <span [innerHTML]="properties.distanceFromCurrentLocation | distance:'auto':0:'html'"></span>
+            <span
+              [innerHTML]="properties.distanceFromCurrentLocation | distance:'auto':0:'html'"
+            ></span>
           </div>
           <div class="webmapp-track-poi-btns">
             <div class="webmapp-poi-popup-btn" *ngIf="properties.address">

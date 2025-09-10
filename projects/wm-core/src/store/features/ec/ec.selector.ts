@@ -1,6 +1,11 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {confFILTERSTRACKS, confMAPLayers, confPOISFilter} from '../../conf/conf.selector';
-import {buildStats, calculateLayerFeaturesCount, filterFeatures, filterFeaturesByInputTyped} from './utils';
+import {
+  buildStats,
+  calculateLayerFeaturesCount,
+  filterFeatures,
+  filterFeaturesByInputTyped,
+} from './utils';
 import {Elastic} from '@wm-types/elastic';
 import {Ec} from './ec.reducer';
 import {
@@ -111,7 +116,8 @@ export const ecPois = createSelector(poisFilteredFeaturesByInputType, icons, (al
     const features = allEcPoisfeatures.map((f: any) => {
       if (f?.properties?.taxonomy?.poi_type != null) {
         const iconName = f.properties.taxonomy.poi_type.icon_name ?? '';
-        let p = {...f.properties, ...{svgIcon: icons?.[iconName]}};
+        const svgIcon = icons?.[iconName] ?? f.properties.taxonomy.poi_type.icon ?? ''; // TODO: [icon_name] da rimuovere una volta rigenerate tutte le tracce
+        let p = {...f.properties, ...{svgIcon}};
         return {...f, ...{properties: p}};
       }
       return f;
@@ -208,9 +214,14 @@ export const currentPoiProperties = createSelector(
   },
 );
 
-export const layerFeaturesCount = createSelector(confMAPLayers, allEcpoiFeatures, aggregationBucketsLayers, (confMAPLayers, allEcpoiFeatures, aggregationBucketsLayers) => {
-  return calculateLayerFeaturesCount(confMAPLayers, allEcpoiFeatures, aggregationBucketsLayers);
-});
+export const layerFeaturesCount = createSelector(
+  confMAPLayers,
+  allEcpoiFeatures,
+  aggregationBucketsLayers,
+  (confMAPLayers, allEcpoiFeatures, aggregationBucketsLayers) => {
+    return calculateLayerFeaturesCount(confMAPLayers, allEcpoiFeatures, aggregationBucketsLayers);
+  },
+);
 
 export const currentRelatedPoiIndex = createSelector(
   currentEcRelatedPois,
@@ -234,7 +245,9 @@ export const nextRelatedPoiId = createSelector(
   currentEcRelatedPois,
   currentEcRelatedPoiId,
   (relatedPois, relatedPoiId) => {
-    const index = relatedPois.findIndex((p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId);
+    const index = relatedPois.findIndex(
+      (p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId,
+    );
     return relatedPois[index + 1]?.properties?.id ?? null;
   },
 );
@@ -243,21 +256,28 @@ export const prevRelatedPoiId = createSelector(
   currentEcRelatedPois,
   currentEcRelatedPoiId,
   (relatedPois, relatedPoiId) => {
-    const index = relatedPois.findIndex((p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId);
+    const index = relatedPois.findIndex(
+      (p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId,
+    );
     return relatedPois[index - 1]?.properties?.id ?? null;
   },
 );
 
-export const currentEcImageGalleryIndex = createSelector(ec, (state: Ec) => state.currentEcImageGalleryIndex);
+export const currentEcImageGalleryIndex = createSelector(
+  ec,
+  (state: Ec) => state.currentEcImageGalleryIndex,
+);
 
 export const currentEcImageGallery = createSelector(
   currentEcRelatedPoiProperties,
   currentEcTrackProperties,
   currentEcPoiProperties,
   (currentEcRelatedPoiProperties, currentEcTrackProperties, currentEcPoiProperties) => {
-    return currentEcRelatedPoiProperties?.image_gallery
-      ?? currentEcTrackProperties?.image_gallery
-      ?? currentEcPoiProperties?.image_gallery
-      ?? null;
+    return (
+      currentEcRelatedPoiProperties?.image_gallery ??
+      currentEcTrackProperties?.image_gallery ??
+      currentEcPoiProperties?.image_gallery ??
+      null
+    );
   },
 );

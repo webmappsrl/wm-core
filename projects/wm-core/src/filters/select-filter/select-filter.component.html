@@ -18,7 +18,15 @@
                 color="{{option.identifier|isSelected:(poiFilters)}}"
               >
                 <ng-container *ngIf="icons$ | async as icons; esle optionIcon">
-                  <div appBuildSvg *ngIf="icons?.[option?.icon_name] as icon" [svg]="icon"></div>
+                  <div
+                    appBuildSvg
+                    *ngIf="icons?.[option?.icon_name] as icon; else legacyIcon"
+                    [svg]="icon"
+                  ></div>
+                  <!-- TODO: [icon_name] da rimuovere una volta rigenerate tutte le tracce -->
+                  <ng-template #legacyIcon>
+                    <div appBuildSvg *ngIf="option.icon != null" [svg]="option.icon"></div>
+                  </ng-template>
                 </ng-container>
                 <ng-template #optionIcon>
                   <ng-container *ngIf="option.icon != null;else imgT">

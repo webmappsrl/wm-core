@@ -6,11 +6,15 @@
         <ng-container *ngFor="let item of activity">
           <div class="webmapp-walkability-box">
             <ng-container *ngIf="icons$ | async as icons">
-              <div 
-                appBuildSvg 
-                *ngIf="icons?.[item?.icon_name] as icon"
+              <div
+                appBuildSvg
+                *ngIf="icons?.[item?.icon_name] as icon; else legacyIcon"
                 [svg]="icon"
               ></div>
+              <!-- TODO: [icon_name] da rimuovere una volta rigenerate tutte le tracce -->
+              <ng-template #legacyIcon>
+                <div appBuildSvg *ngIf="item.icon != null" [svg]="item.icon"></div>
+              </ng-template>
             </ng-container>
             <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
           </div>
