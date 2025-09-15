@@ -44,14 +44,15 @@
     class="wm-box-taxonomies"
     *ngIf="data?.taxonomyActivities!= null && data?.taxonomyActivities.length>0 &&data?.taxonomyActivities != '[]'"
   >
-    <div class="wm-box-taxonomy" *ngFor="let item of data?.taxonomyActivities">
-      <ng-container *ngIf="data.taxonomyIcons?.[item] as taxonomyIcon">
-        <ng-container *ngIf="icons$ | async as icons">
-          <div appBuildSvg [svg]="icons?.[taxonomyIcon.icon_name]"></div>
+    <ng-container *ngFor="let item of data?.taxonomyActivities">
+      <div class="wm-box-taxonomy" *ngIf="data.taxonomyIcons?.[item]">
+        <ng-container *ngIf="data.taxonomyIcons?.[item] as taxonomyIcon">
+          <ng-container *ngIf="icons$ | async as icons">
+            <div appBuildSvg [svg]="icons?.[taxonomyIcon.icon_name]"></div>
+          </ng-container>
         </ng-container>
-        <div>{{taxonomyIcon.label|wmtrans|lowercase}}</div>
-      </ng-container>
-    </div>
+      </div>
+    </ng-container>
   </div>
 </ng-template>
 
