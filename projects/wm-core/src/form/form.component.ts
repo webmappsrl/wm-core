@@ -35,7 +35,7 @@ export class WmFormComponent implements OnDestroy {
 
   @Input() set init(values: any) {
     if (values != null) {
-      this.setForm(values.index ?? values.formId, values);
+      this.setForm(values.formId ?? values.index, values);
     }
   }
 
@@ -83,7 +83,7 @@ export class WmFormComponent implements OnDestroy {
     this.currentForm$.next(this.forms$.value[idx]);
     let formObj = {};
 
-    this.currentForm$.value.fields.forEach(field => {
+    this.currentForm$.value?.fields.forEach(field => {
       const validators = [];
       if (field.required) {
         validators.push(Validators.required);
@@ -144,7 +144,7 @@ export class WmFormComponent implements OnDestroy {
     const inputValue = event.target.value;
     if (inputValue && inputValue.length === 1) {
       const capitalizedValue = inputValue.toUpperCase();
-      this.formGroup.get('title')?.setValue(capitalizedValue, { emitEvent: false });
+      this.formGroup.get('title')?.setValue(capitalizedValue, {emitEvent: false});
     }
   }
 }

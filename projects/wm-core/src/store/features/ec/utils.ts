@@ -60,10 +60,14 @@ export const filterFeaturesByInputTyped = (
   return filteredFeaturesByInputTyped;
 };
 
-export const calculateLayerFeaturesCount = (layers: ILAYER[], pois:WmFeature<Point>[], aggregationBucketsLayers: Bucket[]) => {
+export const calculateLayerFeaturesCount = (
+  layers: ILAYER[],
+  pois: WmFeature<Point>[],
+  aggregationBucketsLayers: Bucket[],
+) => {
   const layerFeaturesCount: LayerFeaturesCount = {};
 
-  if(layers?.length > 0 && (pois?.length > 0 || aggregationBucketsLayers?.length > 0)) {
+  if (layers?.length > 0 && (pois?.length > 0 || aggregationBucketsLayers?.length > 0)) {
     layers.forEach(layer => {
       const layerId = layer.id;
       const layerTaxonomies = layer.taxonomy_themes;
@@ -74,9 +78,8 @@ export const calculateLayerFeaturesCount = (layers: ILAYER[], pois:WmFeature<Poi
 
       pois.forEach(poi => {
         const poiTaxonomies = poi.properties?.taxonomy?.theme ?? [];
-        const hasCommonTaxonomy = layerTaxonomies.some(taxonomy =>
-            poiTaxonomies.includes(taxonomy?.id)
-        );
+        const hasCommonTaxonomy =
+          layerTaxonomies?.some(taxonomy => poiTaxonomies.includes(taxonomy?.id)) ?? false;
         if (hasCommonTaxonomy) {
           layerFeaturesCount[layerId].pois++;
         }
@@ -90,4 +93,4 @@ export const calculateLayerFeaturesCount = (layers: ILAYER[], pois:WmFeature<Poi
   }
 
   return layerFeaturesCount;
-}
+};
