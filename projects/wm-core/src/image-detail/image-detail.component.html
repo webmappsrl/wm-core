@@ -7,10 +7,13 @@
           class="image-name"
           *ngIf="image.name && (confOPTIONSShowMediaName$|async)"
         >{{image.name|wmtrans}}</ion-text>
-        <ion-text
+        <wm-inner-component-html
           class="image-caption"
+          [enableDismiss]="false"
           *ngIf="image.caption"
-        >{{image.caption|wmtrans}}</ion-text>
+          [html]="image.caption|wmtrans"
+        >
+        </wm-inner-component-html>
       </ion-slide>
     </ion-slides>
     <ng-container *ngIf="currentImageGallery.length > 1">
