@@ -7,6 +7,8 @@ export interface IUser {
   updatedAt?: string;
   role?: string;
   access_token: string;
+  privacy_consent?: boolean;
+  privacy_consent_date?: string;
 }
 
 export interface ILogoutResponse extends IUser {
