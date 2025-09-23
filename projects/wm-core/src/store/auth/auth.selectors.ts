@@ -9,7 +9,7 @@ export const user = createSelector(selectAuthState, state => state.user);
 export const saveDrawTrackAsUgc = createSelector(isLogged, confWEBAPP, (isLogged, conf) => {
   return conf.draw_track_show && isLogged;
 });
-export const hasPrivacyConsent = createSelector(user, user => {
+export const hasDataConsent = createSelector(user, user => {
   // Check both user model and localStorage
   const userConsent = user?.privacy_consent === true;
   const localConsent = localStorage.getItem('privacy_consent') === 'true';
@@ -17,13 +17,9 @@ export const hasPrivacyConsent = createSelector(user, user => {
 });
 
 // Helper function to check localStorage consent
-export const hasLocalStoragePrivacyConsent = () => {
+export const hasLocalStorageDataConsent = () => {
   return localStorage.getItem('privacy_consent') === 'true';
 };
-export const needsPrivacyConsent = createSelector(
-  isLogged,
-  hasPrivacyConsent,
-  (isLogged, hasConsent) => {
-    return isLogged && !hasConsent;
-  },
-);
+export const needsDataConsent = createSelector(isLogged, hasDataConsent, (isLogged, hasConsent) => {
+  return isLogged && !hasConsent;
+});
