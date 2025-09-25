@@ -67,4 +67,17 @@ export class AuthService {
   delete(): Observable<any> {
     return this._http.post(`${this._environmentSvc.origin}/api/auth/delete`, {}) as Observable<any>;
   }
+
+  updateDataConsent(consent: boolean, appId: string): Observable<any> {
+    return this._http.post(`${this._environmentSvc.origin}/api/auth/data-consent`, {
+      consent,
+      app_id: appId,
+    }) as Observable<any>;
+  }
+
+  getDataConsent(appId: string): Observable<any> {
+    return this._http.get(
+      `${this._environmentSvc.origin}/api/auth/data-consent?app_id=${appId}`,
+    ) as Observable<any>;
+  }
 }
