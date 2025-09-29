@@ -159,28 +159,6 @@ export const confReducer = createReducer(
   on(loadConfSuccess, (state, {conf}) => {
     localStorage.setItem('appname', state.APP.name);
     let MAP = {...state.MAP, ...{...conf.MAP}};
-    if (conf.APP.geohubId === 3) {
-      let res = {};
-      const mockedMapLayers = conf.MAP?.layers?.map((layer: ILAYER) => {
-        const edgesObj = layer.edges ?? {};
-        const edgesKeys = Object.keys(edgesObj);
-        edgesKeys.forEach(edgeKey => {
-          let edgeObj = edgesObj[edgeKey];
-          const nextCrossroads = isCrossroads(edgesObj, +edgeKey, 'prev');
-          const prevCrossroads = isCrossroads(edgesObj, +edgeKey, 'next');
-          // @ts-ignore
-          res[edgeKey] = {
-            ...edgeObj,
-            nextCrossroads,
-            prevCrossroads,
-          };
-        });
-
-        return {...layer, ...{edges: res}};
-      });
-
-      MAP = {...state.MAP, ...{...conf.MAP, ...{layers: mockedMapLayers}}};
-    }
     if (MAP != null) {
       if (MAP.controls) {
         MAP.controls = {...addIdToControls(MAP.controls)};
