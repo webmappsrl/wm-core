@@ -41,6 +41,12 @@ wm-select-filter {
         margin-left: -7px;
         margin-top: -4px;
       }
+      wm-icon {
+        height: 100%;
+        svg {
+          height: 100%;
+        }
+      }
     }
   }
 }

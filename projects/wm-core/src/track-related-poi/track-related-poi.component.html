@@ -11,22 +11,7 @@
           <img class="webmapp-track-poi-img" [src]="properties.feature_image?.sizes?.['108x148']" />
         </ng-container>
         <ng-template #svgTemplate>
-          <ng-container *ngIf="icons$|async as icons; else noImage">
-            <div
-              *ngIf="icons[properties?.taxonomy?.poi_type?.icon_name] != null; else legacyIcon"
-              appBuildSvg
-              class="wm-filter-icon"
-              [svg]="icons[properties?.taxonomy?.poi_type?.icon_name]"
-            ></div>
-            <!-- TODO: [icon_name] da rimuovere una volta rigenerate tutte le tracce -->
-            <ng-template #legacyIcon>
-              <div
-                appBuildSvg
-                *ngIf="properties?.taxonomy?.poi_type?.icon != null; else noImage"
-                [svg]="properties?.taxonomy?.poi_type?.icon"
-              ></div>
-            </ng-template>
-          </ng-container>
+          <wm-icon [iconData]="properties?.taxonomy?.poi_type"></wm-icon>
         </ng-template>
         <ng-template #noImage>
           <img class="webmapp-track-poi-img" [src]="defaultPhotoPath" />

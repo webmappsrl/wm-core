@@ -47,15 +47,17 @@ wm-tab-howto {
         flex-grow: 0;
         margin: 8px 0px;
       }
-      > div {
-        svg {
-          height: unset;
+      wm-icon {
+        > div {
+          svg {
+            height: unset;
 
-          circle {
-            fill: transparent;
-          }
-          g {
-            fill: #ff8128;
+            circle {
+              fill: transparent;
+            }
+            g {
+              fill: #ff8128;
+            }
           }
         }
       }

@@ -7,6 +7,7 @@ import {SelectFilterComponent} from './select-filter/select-filter.component';
 import {StatusFilterComponent} from './status-filter/status-filter.component';
 import {SliderFilterComponent} from './slider-filter/slider-filter.component';
 import {SliderFilterMeasurePipe} from './slider-filter/slider-filter-measure.pipe';
+import {WmSharedModule} from '../shared/shared.module';
 const components = [
   FiltersComponent,
   SelectFilterComponent,
@@ -16,7 +17,7 @@ const components = [
 ];
 @NgModule({
   declarations: components,
-  imports: [CommonModule, IonicModule, WmPipeModule],
+  imports: [CommonModule, IonicModule, WmPipeModule, WmSharedModule],
   exports: components,
 })
 export class WmFiltersModule {}

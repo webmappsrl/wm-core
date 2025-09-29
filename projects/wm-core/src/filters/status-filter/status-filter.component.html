@@ -30,8 +30,8 @@
         </ng-container>
         <ng-container *ngFor="let f of poiFilters$|async">
           <ion-chip (click)="removePoiFilter(f.identifier)">
-            <ng-container *ngIf="f.icon != null;else imgT">
-              <div class="wm-status-filter-icn" appBuildSvg [svg]="f.icon"></div>
+            <ng-container *ngIf="(f.icon_name != null) || (f.icon != null);else imgT">
+              <wm-icon [iconData]="f"></wm-icon>
             </ng-container>
             <ng-template #imgT>
               <img [src]="f.identifier" />
