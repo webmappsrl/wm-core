@@ -161,7 +161,7 @@ export const confReducer = createReducer(
     let MAP = {...state.MAP, ...{...conf.MAP}};
     if (conf.APP.geohubId === 3) {
       let res = {};
-      const mockedMapLayers = conf.MAP.layers.map((layer: ILAYER) => {
+      const mockedMapLayers = conf.MAP?.layers?.map((layer: ILAYER) => {
         const edgesObj = layer.edges ?? {};
         const edgesKeys = Object.keys(edgesObj);
         edgesKeys.forEach(edgeKey => {

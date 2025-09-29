@@ -17,8 +17,6 @@ import {Observable, BehaviorSubject, combineLatest, of} from 'rxjs';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {GeolocationService} from '@wm-core/services/geolocation.service';
 import {map, switchMap} from 'rxjs/operators';
-import {ICONS} from '@wm-types/config';
-import {icons} from '@wm-core/store/icons/icons.selector';
 
 export const MAX_VISIBLE_POIS = 4;
 @Component({
@@ -37,7 +35,6 @@ export class TrackRelatedPoiComponent {
   currentRelatedEcPid$ = this._store.select(currentEcRelatedPoiId);
   defaultPhotoPath = '/assets/icon/no-photo.svg';
   isExpanded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  icons$: Observable<ICONS> = this._store.select(icons);
   pois$: Observable<WmFeature<Point>[]> = this._store.select(currentEcRelatedPois).pipe(
     switchMap(pois =>
       pois?.length ? combineLatest([

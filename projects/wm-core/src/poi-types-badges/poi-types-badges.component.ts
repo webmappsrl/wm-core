@@ -1,17 +1,12 @@
 import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
-import {Store} from '@ngrx/store';
-import {icons} from '@wm-core/store/icons/icons.selector';
-import {Observable} from 'rxjs';
 
 @Component({
   selector: 'wm-poi-types-badges',
   template: `
     <ng-container *ngIf="poiTypes as poiTypes">
       <div *ngFor="let poiType of poiTypes">
-        <ng-container *ngIf="icons$ | async as icons">
-          <div appBuildSvg *ngIf="icons?.[poiType.icon_name] as svgIcon" [svg]="svgIcon"></div>
-        </ng-container>
+        <wm-icon [iconData]="poiType"></wm-icon>
         <span>{{poiType.name | wmtrans}}</span>
       </div>
     </ng-container>
@@ -63,9 +58,8 @@ import {Observable} from 'rxjs';
 })
 export class PoiTypesBadgesComponent {
   @Input() poiTypes: any;
-  icons$: Observable<{[key: string]: string}> = this._store.select(icons);
 
-  constructor(private _sanitizer: DomSanitizer, private _store: Store) {}
+  constructor(private _sanitizer: DomSanitizer) {}
 
   sanitize(html: string) {
     return this._sanitizer.bypassSecurityTrustHtml(html);

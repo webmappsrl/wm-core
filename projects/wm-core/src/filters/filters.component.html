@@ -29,8 +29,8 @@
         <ion-item class="wm-selected-filters">
           <ng-container *ngFor="let f of poiFilters$|async">
             <ion-chip class="wm-active-filter" (click)="removePoiFilter(f)">
-              <ng-container *ngIf="f.icon != null;else imgT">
-                <div appBuildSvg class="wm-filter-icon" [svg]="f.icon"></div>
+              <ng-container *ngIf="f?.icon_name != null || f?.icon != null;else imgT">
+                <wm-icon [iconData]="f"></wm-icon>
               </ng-container>
               <ng-template #imgT>
                 <img [src]="f.identifier" />
@@ -41,9 +41,7 @@
           </ng-container>
           <ng-container *ngFor="let f of trackFilters$|async">
             <ion-chip class="wm-active-filter" (click)="removeTrackFilter(f)">
-              <ng-container *ngIf="f.icon != null">
-                <div appBuildSvg class="wm-filter-icon" [svg]="f.icon" [color]="f.color"></div>
-              </ng-container>
+              <wm-icon [iconData]="f"></wm-icon>
               <ion-label>{{f.name|wmtrans}}{{f|wmUnits}}</ion-label>
               <ion-icon name="close"></ion-icon>
             </ion-chip>

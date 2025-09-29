@@ -11,12 +11,6 @@ wm-status-filter {
     align-items: stretch;
     max-height: 200px;
     overflow: auto;
-    .wm-status-filter-icn {
-      height: 17px;
-      * {
-        height: 100%;
-      }
-    }
     ion-chip {
       order: 0;
       flex: 1 1 auto;
@@ -41,6 +35,12 @@ wm-status-filter {
         display: block;
         margin-left: -7px;
         margin-top: -4px;
+      }
+      wm-icon {
+        height: 100%;
+        div[appBuildSvg] {
+          height: 100%;
+        }
       }
     }
   }
