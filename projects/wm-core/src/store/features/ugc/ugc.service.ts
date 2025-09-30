@@ -1,11 +1,8 @@
-import {LineString, Point} from 'geojson';
-import {Observable, from, of} from 'rxjs';
-
-import {isLogged} from './../../auth/auth.selectors';
-import {updateUgcPois, updateUgcTracks} from './ugc.actions';
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Store} from '@ngrx/store';
+import {DataConsentService} from '@wm-core/services/data-consent.service';
+import {EnvironmentService} from '@wm-core/services/environment.service';
 import {
   getDeviceUgcPoi,
   getDeviceUgcPois,
@@ -23,36 +20,56 @@ import {
   saveUgcTrack,
 } from '@wm-core/utils/localForage';
 import {WmFeature, WmFeatureCollection} from '@wm-types/feature';
+
+import {LineString, Point} from 'geojson';
+import {Observable, from, of} from 'rxjs';
+
+import {isLogged} from './../../auth/auth.selectors';
+import {updateUgcPois, updateUgcTracks} from './ugc.actions';
 import {catchError, map, take, tap} from 'rxjs/operators';
-import {EnvironmentService} from '@wm-core/services/environment.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UgcService {
-  isLogged$ = this._store.select(isLogged);
-  private syncQueue: Promise<void> = Promise.resolve();
   private isSyncingUgcPoi = false;
   private isSyncingUgcTrack = false;
+  private syncQueue: Promise<void> = Promise.resolve();
+
+  public isLogged$ = this._store.select(isLogged);
+
   constructor(
     private _http: HttpClient,
     private _store: Store,
     private _environmentSvc: EnvironmentService,
-  ) {}
+    private _dataConsentSvc: DataConsentService,
+  ) {
+    // Listen for consent acceptance events to trigger UGC sync
+    this._dataConsentSvc.consentAccepted$.subscribe(() => {
+      console.log('🔄 Consent accepted event received, triggering UGC synchronization...');
+      this.syncUgc()
+        .then(() => {
+          console.log('✅ UGC synchronization completed after consent acceptance');
+        })
+        .catch(error => {
+          console.error('❌ Error during UGC synchronization after consent acceptance:', error);
+        });
+    });
+  }
 
-  deleteApiMedia(id: number): Observable<any> {
+  public deleteApiMedia(id: number): Observable<any> {
     return this._http.get(`${this._environmentSvc.origin}/api/v2/ugc/media/delete/${id}`);
   }
 
-  deleteApiPoi(id: number): Observable<any> {
+  public deleteApiPoi(id: number): Observable<any> {
     return this._http.get(`${this._environmentSvc.origin}/api/v2/ugc/poi/delete/${id}`);
   }
 
-  deleteApiTrack(id: number): Observable<any> {
+  public deleteApiTrack(id: number): Observable<any> {
     return this._http.get(`${this._environmentSvc.origin}/api/v2/ugc/track/delete/${id}`);
   }
 
-  deletePoi(poi: WmFeature<Point>): Observable<any> {
+  public deletePoi(poi: WmFeature<Point>): Observable<any> {
     const id = poi.properties.id;
     return this.deleteApiPoi(id).pipe(
       take(1),
@@ -60,7 +77,7 @@ export class UgcService {
     );
   }
 
-  deleteTrack(track: WmFeature<LineString>): Observable<any> {
+  public deleteTrack(track: WmFeature<LineString>): Observable<any> {
     if (track.properties.id) {
       return this.deleteApiTrack(track.properties.id).pipe(
         take(1),
@@ -75,6 +92,13 @@ export class UgcService {
 
   async fetchUgcPois(): Promise<void> {
     try {
+      // Check if user has data consent before fetching from API
+      const hasConsent = this._dataConsentSvc.getCurrentConsentStatus();
+      if (!hasConsent) {
+        console.log('🔒 Data consent not given, skipping UGC POI fetch from API');
+        return;
+      }
+
       const apiUgcPois = await this.getApiPois();
       if (apiUgcPois == null) {
         return;
@@ -96,8 +120,15 @@ export class UgcService {
     }
   }
 
-  async fetchUgcTracks(): Promise<void> {
+  public async fetchUgcTracks(): Promise<void> {
     try {
+      // Check if user has data consent before fetching from API
+      const hasConsent = this._dataConsentSvc.getCurrentConsentStatus();
+      if (!hasConsent) {
+        console.log('🔒 Data consent not given, skipping UGC Track fetch from API');
+        return;
+      }
+
       const apiUgcTracks = await this.getApiTracks();
       if (apiUgcTracks == null) {
         return;
@@ -119,21 +150,21 @@ export class UgcService {
     }
   }
 
-  async getApiPois(): Promise<WmFeatureCollection<Point>> {
+  public async getApiPois(): Promise<WmFeatureCollection<Point>> {
     return await this._http
       .get<WmFeatureCollection<Point>>(`${this._environmentSvc.origin}/api/v2/ugc/poi/index`)
       .pipe(catchError(_ => of(null)))
       .toPromise();
   }
 
-  async getApiTracks(): Promise<WmFeatureCollection<LineString>> {
+  public async getApiTracks(): Promise<WmFeatureCollection<LineString>> {
     return await this._http
       .get<WmFeatureCollection<LineString>>(`${this._environmentSvc.origin}/api/v2/ugc/track/index`)
       .pipe(catchError(_ => of(null)))
       .toPromise();
   }
 
-  getPoi(poiId: string): Observable<WmFeature<Point> | null> {
+  public getPoi(poiId: string): Observable<WmFeature<Point> | null> {
     return new Observable<WmFeature<Point> | null>(observer => {
       getDeviceUgcPoi(poiId)
         .then(devicePoi => {
@@ -160,16 +191,23 @@ export class UgcService {
     });
   }
 
-  loadUgcPois() {
+  public loadUgcPois() {
     return from(getUgcPois()).pipe(map(ugcPoiFeatures => updateUgcPois({ugcPoiFeatures})));
   }
 
-  loadUgcTracks() {
+  public loadUgcTracks() {
     return from(getUgcTracks()).pipe(map(ugcTrackFeatures => updateUgcTracks({ugcTrackFeatures})));
   }
 
-  async pushUgcPois(): Promise<void> {
+  public async pushUgcPois(): Promise<void> {
     try {
+      // Check if user has data consent before pushing to API
+      const hasConsent = this._dataConsentSvc.getCurrentConsentStatus();
+      if (!hasConsent) {
+        console.log('🔒 Data consent not given, skipping UGC POI push to API');
+        return;
+      }
+
       let deviceUgcPois = await getDeviceUgcPois();
       let synchronizedUgcPois = await getSynchronizedUgcPois();
 
@@ -184,12 +222,17 @@ export class UgcService {
           continue;
         }
 
+        // Se il consenso è attivo, sincronizza TUTTI gli UGC non sincronizzati
+        console.log(`🔄 Syncing POI ${deviceUgcPoi.properties.uuid} (consent is active)`);
+
         try {
           const res = await this.saveApiPoi(deviceUgcPoi);
           if (res) {
             await removeDeviceUgcPoi(deviceUgcPoi.properties.uuid);
             synchronizedUgcPois.push(deviceUgcPoi); // Aggiorna la lista dei POI sincronizzati
-            //  console.log(`POI with UUID ${deviceUgcPoi.properties.uuid} synchronized and removed.`);
+            console.log(
+              `✅ POI with UUID ${deviceUgcPoi.properties.uuid} synchronized and removed.`,
+            );
           }
         } catch (poiError) {
           console.error(
@@ -198,14 +241,21 @@ export class UgcService {
           );
         }
       }
-      // console.log('POI synchronization completed successfully');
+      console.log('✅ POI synchronization completed successfully');
     } catch (error) {
       console.error('Error during POI synchronization:', error);
     }
   }
 
-  async pushUgcTracks(): Promise<void> {
+  public async pushUgcTracks(): Promise<void> {
     try {
+      // Check if user has data consent before pushing to API
+      const hasConsent = this._dataConsentSvc.getCurrentConsentStatus();
+      if (!hasConsent) {
+        console.log('🔒 Data consent not given, skipping UGC Track push to API');
+        return;
+      }
+
       let deviceUgcTracks = await getDeviceUgcTracks();
       let synchronizedUgcTracks = await getSynchronizedUgcTracks();
 
@@ -215,17 +265,22 @@ export class UgcService {
         );
 
         if (existingTrack) {
-          const res = await this.saveApiTrack(deviceUgcTrack);
-          // console.log(`Track with UUID ${deviceUgcTrack.properties.uuid} already exists. Skipping save.`,);
+          await removeDeviceUgcTrack(deviceUgcTrack.properties.uuid);
+          // console.log(`Track with UUID ${deviceUgcTrack.properties.uuid} already exists. Skipping save.`);
           continue;
         }
+
+        // Se il consenso è attivo, sincronizza TUTTI gli UGC non sincronizzati
+        console.log(`🔄 Syncing Track ${deviceUgcTrack.properties.uuid} (consent is active)`);
 
         try {
           const res = await this.saveApiTrack(deviceUgcTrack);
           if (res) {
             await removeDeviceUgcTrack(deviceUgcTrack.properties.uuid);
             synchronizedUgcTracks.push(deviceUgcTrack); // Aggiorna la lista delle tracce sincronizzate
-            // console.log(`Track with UUID ${deviceUgcTrack.properties.uuid} synchronized and removed.`);
+            console.log(
+              `✅ Track with UUID ${deviceUgcTrack.properties.uuid} synchronized and removed.`,
+            );
           }
         } catch (trackError) {
           console.error(
@@ -234,7 +289,7 @@ export class UgcService {
           );
         }
       }
-      // console.log('Track synchronization completed successfully');
+      console.log('✅ Track synchronization completed successfully');
     } catch (error) {
       console.error('Error during track synchronization:', error);
     }
@@ -247,7 +302,7 @@ export class UgcService {
    *
    * @returns
    */
-  async saveApiPoi(poi: WmFeature<Point>): Promise<WmFeature<Point> | null> {
+  public async saveApiPoi(poi: WmFeature<Point>): Promise<WmFeature<Point> | null> {
     if (poi != null) {
       const data = await this._buildFormData(poi);
 
@@ -267,7 +322,7 @@ export class UgcService {
    *
    * @returns
    */
-  async saveApiTrack(track: WmFeature<LineString>): Promise<WmFeature<LineString> | null> {
+  public async saveApiTrack(track: WmFeature<LineString>): Promise<WmFeature<LineString> | null> {
     if (track != null) {
       const data = await this._buildFormData(track);
 
@@ -280,7 +335,7 @@ export class UgcService {
     return Promise.resolve(null);
   }
 
-  async syncUgc(): Promise<void> {
+  public async syncUgc(): Promise<void> {
     const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
 
     if (isLogged) {
@@ -304,7 +359,7 @@ export class UgcService {
     }
   }
 
-  async syncUgcPois(): Promise<void> {
+  public async syncUgcPois(): Promise<void> {
     try {
       if (this.isSyncingUgcPoi) {
         return;
@@ -322,7 +377,7 @@ export class UgcService {
     }
   }
 
-  async syncUgcTracks(): Promise<void> {
+  public async syncUgcTracks(): Promise<void> {
     try {
       if (this.isSyncingUgcTrack) {
         return;
@@ -340,18 +395,22 @@ export class UgcService {
     }
   }
 
-  async updateApiPoi(poi: WmFeature<Point>): Promise<any> {
+  public async updateApiPoi(poi: WmFeature<Point>): Promise<any> {
     if (poi != null) {
       const data = await this._buildFormData(poi);
-      return this._http.post(`${this._environmentSvc.origin}/api/v3/ugc/poi/edit`, data).toPromise();
+      return this._http
+        .post(`${this._environmentSvc.origin}/api/v3/ugc/poi/edit`, data)
+        .toPromise();
     }
     return Promise.resolve(null);
   }
 
-  async updateApiTrack(track: WmFeature<LineString>): Promise<any> {
+  public async updateApiTrack(track: WmFeature<LineString>): Promise<any> {
     if (track != null) {
       const data = await this._buildFormData(track);
-      return this._http.post(`${this._environmentSvc.origin}/api/v3/ugc/track/edit`, data).toPromise();
+      return this._http
+        .post(`${this._environmentSvc.origin}/api/v3/ugc/track/edit`, data)
+        .toPromise();
     }
     return Promise.resolve(null);
   }

@@ -8,10 +8,15 @@ import {isLogged, needsDataConsent} from '@wm-core/store/auth/auth.selectors';
 import {AuthService} from '@wm-core/store/auth/auth.service';
 import {confAPP, confPRIVACY} from '@wm-core/store/conf/conf.selector';
 import {IAPP} from '@wm-core/types/config';
+import {EnvironmentService} from '@wm-core/services/environment.service';
+import {
+  ConsentHistory,
+  DataConsentInfo,
+} from '../../../../../wm-types/src/data-consent';
 
-import {BehaviorSubject, Observable, from} from 'rxjs';
+import {BehaviorSubject, Observable, from, of, Subject} from 'rxjs';
 
-import {filter, switchMap, take} from 'rxjs/operators';
+import {filter, switchMap, take, map, catchError} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +24,10 @@ import {filter, switchMap, take} from 'rxjs/operators';
 export class DataConsentService {
   private dataConsentSubject = new BehaviorSubject<boolean>(this._hasDataConsentInLocalStorage());
   private isConsentSyncComplete = false;
+
+  // Subject per comunicare l'accettazione del consenso senza dipendenze circolari
+  private consentAcceptedSubject = new Subject<void>();
+  public consentAccepted$ = this.consentAcceptedSubject.asObservable();
 
   public confAPP$: Observable<IAPP> = this._store.select(confAPP);
   public dataConsent$ = this.dataConsentSubject.asObservable();
@@ -31,6 +40,7 @@ export class DataConsentService {
     private _store: Store,
     private _authSvc: AuthService,
     private _langSvc: LangService,
+    private _environmentSvc: EnvironmentService,
   ) {}
 
   /**
@@ -230,6 +240,12 @@ export class DataConsentService {
           this._authSvc.updateDataConsent(consent, appId.toString()).subscribe({
             next: response => {
               console.log('Data consent updated in backend:', response);
+
+              // Emit event when consent is accepted to trigger UGC sync
+              if (consent) {
+                console.log('🔄 User accepted consent, emitting sync trigger event...');
+                this.consentAcceptedSubject.next();
+              }
             },
             error: error => {
               console.error('Error updating data consent in backend:', error);
@@ -237,6 +253,12 @@ export class DataConsentService {
           });
         }
       });
+    } else {
+      // If user is not logged in but accepted consent, still emit the event
+      if (consent) {
+        console.log('🔄 User accepted consent (not logged in), emitting sync trigger event...');
+        this.consentAcceptedSubject.next();
+      }
     }
   }
 
@@ -244,10 +266,14 @@ export class DataConsentService {
    * Sync consent response to localStorage
    */
   private _syncConsentToLocalStorage(response: any): void {
-    if (response.has_consent) {
+    // Handle new API response format with data_consent_info
+    const consentInfo: DataConsentInfo = response.data_consent_info || response;
+    const hasConsent = consentInfo.has_consent;
+
+    if (hasConsent) {
       localStorage.setItem('privacy_consent', 'true');
-      if (response.latest_consent?.consent_date) {
-        localStorage.setItem('privacy_consent_date', response.latest_consent.consent_date);
+      if (consentInfo.latest_consent?.consent_date) {
+        localStorage.setItem('privacy_consent_date', consentInfo.latest_consent.consent_date);
       } else {
         localStorage.setItem('privacy_consent_date', new Date().toISOString());
       }
@@ -274,7 +300,9 @@ export class DataConsentService {
             this._authSvc.getDataConsent(appId.toString()).subscribe({
               next: response => {
                 console.log('🔍 Backend consent response:', response);
-                if (response.has_consent !== undefined) {
+                // Handle new API response format
+                const consentInfo: DataConsentInfo = response.data_consent_info || response;
+                if (consentInfo.has_consent !== undefined) {
                   this._syncConsentToLocalStorage(response);
                   this.updateDataConsentStatus();
                   console.log('🔄 Re-checking consent status after sync...');
@@ -307,7 +335,9 @@ export class DataConsentService {
             this._authSvc.getDataConsent(appId.toString()).subscribe({
               next: response => {
                 console.log('🔍 Backend consent response:', response);
-                if (response.has_consent !== undefined) {
+                // Handle new API response format
+                const consentInfo: DataConsentInfo = response.data_consent_info || response;
+                if (consentInfo.has_consent !== undefined) {
                   this._syncConsentToLocalStorage(response);
                   this.updateDataConsentStatus();
                   this.isConsentSyncComplete = true;
@@ -327,5 +357,54 @@ export class DataConsentService {
         });
       }
     });
+  }
+
+  /**
+   * Get consent history from backend
+   */
+  public getConsentHistory(): Observable<ConsentHistory | null> {
+    const appId = this._environmentSvc.appId?.toString();
+    if (!appId) {
+      return of(null);
+    }
+
+    return this._authSvc.getDataConsent(appId).pipe(
+      map((response: any): ConsentHistory | null => {
+        // Handle new API response format with data_consent_info
+        const consentInfo: DataConsentInfo = response.data_consent_info || response;
+        if (consentInfo && (consentInfo.latest_consent || consentInfo.consent_history)) {
+          return {
+            latest_consent: consentInfo.latest_consent,
+            consent_history: consentInfo.consent_history || [],
+          };
+        }
+        return null;
+      }),
+      catchError(error => {
+        console.error('Error fetching consent history:', error);
+        return of(null);
+      }),
+    );
+  }
+
+  /**
+   * Get the most recent consent date for logging purposes
+   * @param consentHistory Consent history from backend
+   * @returns Date of most recent consent change, or null if no history
+   */
+  public getMostRecentConsentDate(consentHistory: ConsentHistory | null): Date | null {
+    if (
+      !consentHistory ||
+      !consentHistory.consent_history ||
+      consentHistory.consent_history.length === 0
+    ) {
+      return null;
+    }
+
+    const sortedHistory = [...consentHistory.consent_history].sort(
+      (a, b) => new Date(b.consent_date).getTime() - new Date(a.consent_date).getTime(),
+    );
+
+    return new Date(sortedHistory[0].consent_date);
   }
 }
