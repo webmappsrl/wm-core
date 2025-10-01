@@ -69,7 +69,7 @@ export class AuthService {
   }
 
   updateDataConsent(consent: boolean, appId: string): Observable<any> {
-    return this._http.post(`${this._environmentSvc.origin}/api/auth/edit-user`, {
+    return this._http.post(`${this._environmentSvc.origin}/api/auth/user`, {
       consent,
       app_id: appId,
     }) as Observable<any>;
@@ -77,31 +77,21 @@ export class AuthService {
 
   getDataConsent(appId: string): Observable<any> {
     return this._http.get(
-      `${this._environmentSvc.origin}/api/auth/edit-user?app_id=${appId}`,
+      `${this._environmentSvc.origin}/api/auth/user?app_id=${appId}`,
     ) as Observable<any>;
   }
 
-  /**
-   * Update user data (complete user editing)
-   * @param userData Partial user data to update
-   * @returns Observable with updated user data
-   */
   updateUser(userData: any): Observable<IUser> {
     return this._http.post(
-      `${this._environmentSvc.origin}/api/auth/edit-user`,
+      `${this._environmentSvc.origin}/api/auth/user`,
       userData,
     ) as Observable<IUser>;
   }
 
-  /**
-   * Get complete user data
-   * @param appId Optional app ID to include data consent info
-   * @returns Observable with user data
-   */
   getUserData(appId?: string): Observable<IUser> {
     const url = appId
-      ? `${this._environmentSvc.origin}/api/auth/edit-user?app_id=${appId}`
-      : `${this._environmentSvc.origin}/api/auth/edit-user`;
+      ? `${this._environmentSvc.origin}/api/auth/user?app_id=${appId}`
+      : `${this._environmentSvc.origin}/api/auth/user`;
     return this._http.get(url) as Observable<IUser>;
   }
 }

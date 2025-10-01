@@ -8,6 +8,7 @@ export const hasLocalStorageDataConsent = () => {
 };
 
 export const selectAuthState = createFeatureSelector<fromAuth.AuthState>(fromAuth.authFeatureKey);
+export const isLogged = createSelector(selectAuthState, state => state != null && state.isLogged);
 export const error = createSelector(selectAuthState, state => state != null && state.error);
 export const user = createSelector(selectAuthState, state => state.user);
 export const hasDataConsent = createSelector(user, user => {
@@ -25,7 +26,6 @@ export const hasDataConsent = createSelector(user, user => {
     return localConsent;
   }
 });
-export const isLogged = createSelector(selectAuthState, state => state != null && state.isLogged);
 export const needsDataConsent = createSelector(isLogged, hasDataConsent, (isLogged, hasConsent) => {
   return isLogged && !hasConsent;
 });
