@@ -28,7 +28,6 @@ export class PrivacyAgreeService {
   private privacyAgreeSubject = new BehaviorSubject<boolean>(this._hasPrivacyAgreeInLocalStorage());
   private isPrivacyAgreeSyncComplete = false;
 
-  // Subject per comunicare l'accettazione del consenso senza dipendenze circolari
   private privacyAgreeAcceptedSubject = new Subject<void>();
   public privacyAgreeAccepted$ = this.privacyAgreeAcceptedSubject.asObservable();
 
