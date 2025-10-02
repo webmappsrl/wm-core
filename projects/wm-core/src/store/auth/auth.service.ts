@@ -37,7 +37,7 @@ export class AuthService {
     );
   }
 
-  getUser(): Observable<IUser> {
+  me(): Observable<IUser> {
     return this._http.post(`${this._environmentSvc.origin}/api/auth/me`, {}) as Observable<IUser>;
   }
 
@@ -75,23 +75,10 @@ export class AuthService {
     }) as Observable<any>;
   }
 
-  getPrivacyAgree(appId: number): Observable<any> {
-    return this._http.get(
-      `${this._environmentSvc.origin}/api/auth/user?app_id=${appId}`,
-    ) as Observable<any>;
-  }
-
   updateUser(userData: any): Observable<IUser> {
     return this._http.post(
       `${this._environmentSvc.origin}/api/auth/user`,
       userData,
     ) as Observable<IUser>;
-  }
-
-  getUserData(appId?: string): Observable<IUser> {
-    const url = appId
-      ? `${this._environmentSvc.origin}/api/auth/user?app_id=${appId}`
-      : `${this._environmentSvc.origin}/api/auth/user`;
-    return this._http.get(url) as Observable<IUser>;
   }
 }

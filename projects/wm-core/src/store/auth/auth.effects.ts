@@ -40,7 +40,7 @@ export class AuthEffects {
     return this._actions$.pipe(
       ofType(AuthActions.loadAuths),
       switchMap(action =>
-        this._authSvc.getUser().pipe(
+        this._authSvc.me().pipe(
           map(user => {
             saveAuth(user);
             return AuthActions.loadAuthsSuccess({user});

@@ -6,8 +6,14 @@ export interface IUser {
   updatedAt?: string;
   role?: string;
   access_token: string;
-  privacy_agree?: boolean;
-  privacy_agree_date?: string;
+  properties?: {
+    privacy?: Array<{
+      agree: boolean;
+      date: string;
+      app_id: number;
+      user_id: number;
+    }>;
+  };
 }
 
 export interface ILogoutResponse extends IUser {

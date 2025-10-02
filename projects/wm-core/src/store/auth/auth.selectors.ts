@@ -12,19 +12,9 @@ export const isLogged = createSelector(selectAuthState, state => state != null &
 export const error = createSelector(selectAuthState, state => state != null && state.error);
 export const user = createSelector(selectAuthState, state => state.user);
 export const hasPrivacyAgree = createSelector(user, user => {
-  // Check both user model and localStorage
-  const userPrivacyAgree = user?.privacy_agree === true;
-  const localPrivacyAgree = localStorage.getItem('privacy_agree') === 'true';
-
-  // Priority: If user is logged in, localStorage should be synced with backend
-  // If user is not logged in, use localStorage only (offline mode)
-  if (user) {
-    // User is logged in - localStorage should reflect backend state
-    return localPrivacyAgree;
-  } else {
-    // User is not logged in - use localStorage as fallback
-    return localPrivacyAgree;
-  }
+  // Always use localStorage as the source of truth
+  // localStorage is synced with backend when user is logged in
+  return localStorage.getItem('privacy_agree') === 'true';
 });
 export const needsPrivacyAgree = createSelector(
   isLogged,
