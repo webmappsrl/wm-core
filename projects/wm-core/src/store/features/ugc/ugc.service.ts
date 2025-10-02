@@ -1,7 +1,7 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Store} from '@ngrx/store';
-import {DataConsentService} from '@wm-core/services/data-consent.service';
+import {PrivacyAgreeService} from '@wm-core/services/privacy-agree.service';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 import {
   getDeviceUgcPoi,
@@ -42,17 +42,20 @@ export class UgcService {
     private _http: HttpClient,
     private _store: Store,
     private _environmentSvc: EnvironmentService,
-    private _dataConsentSvc: DataConsentService,
+    private _privacyAgreeSvc: PrivacyAgreeService,
   ) {
-    // Listen for consent acceptance events to trigger UGC sync
-    this._dataConsentSvc.consentAccepted$.subscribe(() => {
-      console.log('🔄 Consent accepted event received, triggering UGC synchronization...');
+    // Listen for privacy agree acceptance events to trigger UGC sync
+    this._privacyAgreeSvc.privacyAgreeAccepted$.subscribe(() => {
+      console.log('🔄 Privacy agree accepted event received, triggering UGC synchronization...');
       this.syncUgc()
         .then(() => {
-          console.log('✅ UGC synchronization completed after consent acceptance');
+          console.log('✅ UGC synchronization completed after privacy agree acceptance');
         })
         .catch(error => {
-          console.error('❌ Error during UGC synchronization after consent acceptance:', error);
+          console.error(
+            '❌ Error during UGC synchronization after privacy agree acceptance:',
+            error,
+          );
         });
     });
   }
@@ -92,10 +95,10 @@ export class UgcService {
 
   private async _fetchUgcPois(): Promise<void> {
     try {
-      // Check if user has data consent before fetching from API
-      const hasConsent = this._dataConsentSvc.getCurrentConsentStatus();
-      if (!hasConsent) {
-        console.log('🔒 Data consent not given, skipping UGC POI fetch from API');
+      // Check if user has privacy agree before fetching from API
+      const hasPrivacyAgree = this._privacyAgreeSvc.getCurrentPrivacyAgreeStatus();
+      if (!hasPrivacyAgree) {
+        console.log('🔒 Privacy agree not given, skipping UGC POI fetch from API');
         return;
       }
 
@@ -114,18 +117,18 @@ export class UgcService {
           // console.log(`fetchUgcPois sync: ${apiUgcPoi.properties.id}`);
         }
       }
-      // console.log('fetchUgcPois: Sincronizzazione eseguita correttamente');
+      // console.log('fetchUgcPois: Synchronization completed successfully');
     } catch (error) {
-      console.error('fetchUgcPois: Errore durante la sincronizzazione:', error);
+      console.error('fetchUgcPois: Error during synchronization:', error);
     }
   }
 
   private async _fetchUgcTracks(): Promise<void> {
     try {
-      // Check if user has data consent before fetching from API
-      const hasConsent = this._dataConsentSvc.getCurrentConsentStatus();
-      if (!hasConsent) {
-        console.log('🔒 Data consent not given, skipping UGC Track fetch from API');
+      // Check if user has privacy agree before fetching from API
+      const hasPrivacyAgree = this._privacyAgreeSvc.getCurrentPrivacyAgreeStatus();
+      if (!hasPrivacyAgree) {
+        console.log('🔒 Privacy agree not given, skipping UGC Track fetch from API');
         return;
       }
 
@@ -144,9 +147,9 @@ export class UgcService {
           // console.log(`fetchUgcTracks sync: ${apiTrack.properties.id}`);
         }
       }
-      // console.log('fetchUgcTracks: Sincronizzazione eseguita correttamente');
+      // console.log('fetchUgcTracks: Synchronization completed successfully');
     } catch (error) {
-      console.error('fetchUgcTracks: Errore durante la sincronizzazione:', error);
+      console.error('fetchUgcTracks: Error during synchronization:', error);
     }
   }
 
@@ -201,10 +204,10 @@ export class UgcService {
 
   private async _pushUgcPois(): Promise<void> {
     try {
-      // Check if user has data consent before pushing to API
-      const hasConsent = this._dataConsentSvc.getCurrentConsentStatus();
-      if (!hasConsent) {
-        console.log('🔒 Data consent not given, skipping UGC POI push to API');
+      // Check if user has privacy agree before pushing to API
+      const hasPrivacyAgree = this._privacyAgreeSvc.getCurrentPrivacyAgreeStatus();
+      if (!hasPrivacyAgree) {
+        console.log('🔒 Privacy agree not given, skipping UGC POI push to API');
         return;
       }
 
@@ -222,14 +225,14 @@ export class UgcService {
           continue;
         }
 
-        // Se il consenso è attivo, sincronizza TUTTI gli UGC non sincronizzati
-        console.log(`🔄 Syncing POI ${deviceUgcPoi.properties.uuid} (consent is active)`);
+        // If privacy agree is active, sync ALL unsynchronized UGC
+        console.log(`🔄 Syncing POI ${deviceUgcPoi.properties.uuid} (privacy agree is active)`);
 
         try {
           const res = await this.saveApiPoi(deviceUgcPoi);
           if (res) {
             await removeDeviceUgcPoi(deviceUgcPoi.properties.uuid);
-            synchronizedUgcPois.push(deviceUgcPoi); // Aggiorna la lista dei POI sincronizzati
+            synchronizedUgcPois.push(deviceUgcPoi); // Update the list of synchronized POIs
             console.log(
               `✅ POI with UUID ${deviceUgcPoi.properties.uuid} synchronized and removed.`,
             );
@@ -249,10 +252,10 @@ export class UgcService {
 
   private async _pushUgcTracks(): Promise<void> {
     try {
-      // Check if user has data consent before pushing to API
-      const hasConsent = this._dataConsentSvc.getCurrentConsentStatus();
-      if (!hasConsent) {
-        console.log('🔒 Data consent not given, skipping UGC Track push to API');
+      // Check if user has privacy agree before pushing to API
+      const hasPrivacyAgree = this._privacyAgreeSvc.getCurrentPrivacyAgreeStatus();
+      if (!hasPrivacyAgree) {
+        console.log('🔒 Privacy agree not given, skipping UGC Track push to API');
         return;
       }
 
@@ -270,14 +273,14 @@ export class UgcService {
           continue;
         }
 
-        // Se il consenso è attivo, sincronizza TUTTI gli UGC non sincronizzati
-        console.log(`🔄 Syncing Track ${deviceUgcTrack.properties.uuid} (consent is active)`);
+        // If privacy agree is active, sync ALL unsynchronized UGC
+        console.log(`🔄 Syncing Track ${deviceUgcTrack.properties.uuid} (privacy agree is active)`);
 
         try {
           const res = await this.saveApiTrack(deviceUgcTrack);
           if (res) {
             await removeDeviceUgcTrack(deviceUgcTrack.properties.uuid);
-            synchronizedUgcTracks.push(deviceUgcTrack); // Aggiorna la lista delle tracce sincronizzate
+            synchronizedUgcTracks.push(deviceUgcTrack); // Update the list of synchronized tracks
             console.log(
               `✅ Track with UUID ${deviceUgcTrack.properties.uuid} synchronized and removed.`,
             );
@@ -336,8 +339,8 @@ export class UgcService {
   }
 
   /**
-   * Sincronizza UGC in base al tipo specificato
-   * @param type Tipo di UGC da sincronizzare ('poi', 'track', o null per entrambi)
+   * Synchronize UGC based on the specified type
+   * @param type Type of UGC to synchronize ('poi', 'track', or null for both)
    */
   public async syncUgc(type: SyncUgcTypes = null): Promise<void> {
     const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
@@ -351,12 +354,12 @@ export class UgcService {
             } else if (type === 'track') {
               await this._syncUgcTracks();
             } else {
-              // type === null - sincronizza entrambi
+              // type === null - sync both
               await this._syncUgcPois();
               await this._syncUgcTracks();
             }
           } catch (error) {
-            console.error('syncUgc: Errore durante la sincronizzazione:', error);
+            console.error('syncUgc: Error during synchronization:', error);
           }
         } else {
           from(getUgcTracks())
@@ -384,7 +387,7 @@ export class UgcService {
       }
     } catch (error) {
       this.isSyncingUgcPoi = false;
-      console.error('syncUgcPois: Errore durante la sincronizzazione:', error);
+      console.error('syncUgcPois: Error during synchronization:', error);
     }
   }
 
@@ -402,7 +405,7 @@ export class UgcService {
       }
     } catch (error) {
       this.isSyncingUgcTrack = false;
-      console.error('syncUgcTracks: Errore durante la sincronizzazione:', error);
+      console.error('syncUgcTracks: Error during synchronization:', error);
     }
   }
 
@@ -431,7 +434,7 @@ export class UgcService {
     const photoFeatures = properties?.media?.filter(p => !p.id) ?? [];
     const data = new FormData();
 
-    // Pulisce i dati EXIF da caratteri speciali prima di inviare
+    // Clean EXIF data from special characters before sending
     const cleanedFeature = this._cleanExifData(feature);
     data.append('feature', JSON.stringify(cleanedFeature));
 
@@ -450,13 +453,13 @@ export class UgcService {
   }
 
   private _cleanExifData(feature: WmFeature<LineString | Point>): WmFeature<LineString | Point> {
-    // Crea una copia dell'oggetto feature
+    // Create a copy of the feature object
     const cleanedFeature = structuredClone(feature);
 
     if (cleanedFeature.properties?.media) {
       cleanedFeature.properties.media = cleanedFeature.properties.media.map((media: any) => {
         if (media.exif) {
-          // Rimuove caratteri Unicode non validi dai dati EXIF
+          // Remove invalid Unicode characters from EXIF data
           const cleanedExif = this._cleanObject(media.exif);
           media.exif = cleanedExif;
         }
@@ -467,10 +470,10 @@ export class UgcService {
     return cleanedFeature;
   }
 
-  // Funzione ricorsiva per pulire oggetti da caratteri Unicode non validi
+  // Recursive function to clean objects from invalid Unicode characters
   private _cleanObject(obj: any): any {
     if (typeof obj === 'string') {
-      // Rimuove caratteri Unicode non validi (come \u0000, \u0001, \u0002, etc.)
+      // Remove invalid Unicode characters (like \u0000, \u0001, \u0002, etc.)
       return obj.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
     } else if (typeof obj === 'object' && obj !== null) {
       if (Array.isArray(obj)) {
@@ -486,12 +489,12 @@ export class UgcService {
     return obj;
   }
 
-  // Funzione per verificare se una traccia è stata modificata
+  // Function to check if a track has been modified
   private _isFeatureModified(apiFeature: WmFeature<any>, cloudFeature: WmFeature<any>): boolean {
     if (cloudFeature == null) {
       return true;
     }
-    // Confronta proprietà rilevanti per verificare se la traccia è stata modificata
+    // Compare relevant properties to check if the track has been modified
     return (
       JSON.stringify(apiFeature.geometry) !== JSON.stringify(cloudFeature.geometry) ||
       JSON.stringify(apiFeature.properties) !== JSON.stringify(cloudFeature.properties)
