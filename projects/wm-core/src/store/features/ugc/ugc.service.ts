@@ -1,8 +1,8 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Store} from '@ngrx/store';
-import {PrivacyAgreeService} from '@wm-core/services/privacy-agree.service';
 import {EnvironmentService} from '@wm-core/services/environment.service';
+import {PrivacyAgreeService} from '@wm-core/services/privacy-agree.service';
 import {
   getDeviceUgcPoi,
   getDeviceUgcPois,
@@ -24,7 +24,7 @@ import {WmFeature, WmFeatureCollection, SyncUgcTypes} from '@wm-types/feature';
 import {LineString, Point} from 'geojson';
 import {Observable, from, of} from 'rxjs';
 
-import {isLogged} from './../../auth/auth.selectors';
+import {isLogged, isLoggedAndHasPrivacyAgree} from './../../auth/auth.selectors';
 import {updateUgcPois, updateUgcTracks} from './ugc.actions';
 import {catchError, map, take, tap} from 'rxjs/operators';
 
@@ -37,6 +37,7 @@ export class UgcService {
   private syncQueue: Promise<void> = Promise.resolve();
 
   public isLogged$ = this._store.select(isLogged);
+  public isLoggedAndHasPrivacyAgree$ = this._store.select(isLoggedAndHasPrivacyAgree);
 
   constructor(
     private _http: HttpClient,
@@ -95,10 +96,14 @@ export class UgcService {
 
   private async _fetchUgcPois(): Promise<void> {
     try {
-      // Check if user has privacy agree before fetching from API
-      const hasPrivacyAgree = this._privacyAgreeSvc.getCurrentPrivacyAgreeStatus();
-      if (!hasPrivacyAgree) {
-        console.log('🔒 Privacy agree not given, skipping UGC POI fetch from API');
+      // Check if user is logged in AND has privacy agree before fetching from API
+      const isLoggedAndHasPrivacyAgree = await from(
+        this.isLoggedAndHasPrivacyAgree$.pipe(take(1)),
+      ).toPromise();
+      if (!isLoggedAndHasPrivacyAgree) {
+        console.log(
+          '🔒 User not logged in or privacy agree not given, skipping UGC POI fetch from API',
+        );
         return;
       }
 
@@ -125,10 +130,14 @@ export class UgcService {
 
   private async _fetchUgcTracks(): Promise<void> {
     try {
-      // Check if user has privacy agree before fetching from API
-      const hasPrivacyAgree = this._privacyAgreeSvc.getCurrentPrivacyAgreeStatus();
-      if (!hasPrivacyAgree) {
-        console.log('🔒 Privacy agree not given, skipping UGC Track fetch from API');
+      // Check if user is logged in AND has privacy agree before fetching from API
+      const isLoggedAndHasPrivacyAgree = await from(
+        this.isLoggedAndHasPrivacyAgree$.pipe(take(1)),
+      ).toPromise();
+      if (!isLoggedAndHasPrivacyAgree) {
+        console.log(
+          '🔒 User not logged in or privacy agree not given, skipping UGC Track fetch from API',
+        );
         return;
       }
 
@@ -204,10 +213,14 @@ export class UgcService {
 
   private async _pushUgcPois(): Promise<void> {
     try {
-      // Check if user has privacy agree before pushing to API
-      const hasPrivacyAgree = this._privacyAgreeSvc.getCurrentPrivacyAgreeStatus();
-      if (!hasPrivacyAgree) {
-        console.log('🔒 Privacy agree not given, skipping UGC POI push to API');
+      // Check if user is logged in AND has privacy agree before pushing to API
+      const isLoggedAndHasPrivacyAgree = await from(
+        this.isLoggedAndHasPrivacyAgree$.pipe(take(1)),
+      ).toPromise();
+      if (!isLoggedAndHasPrivacyAgree) {
+        console.log(
+          '🔒 User not logged in or privacy agree not given, skipping UGC POI push to API',
+        );
         return;
       }
 
@@ -252,10 +265,14 @@ export class UgcService {
 
   private async _pushUgcTracks(): Promise<void> {
     try {
-      // Check if user has privacy agree before pushing to API
-      const hasPrivacyAgree = this._privacyAgreeSvc.getCurrentPrivacyAgreeStatus();
-      if (!hasPrivacyAgree) {
-        console.log('🔒 Privacy agree not given, skipping UGC Track push to API');
+      // Check if user is logged in AND has privacy agree before pushing to API
+      const isLoggedAndHasPrivacyAgree = await from(
+        this.isLoggedAndHasPrivacyAgree$.pipe(take(1)),
+      ).toPromise();
+      if (!isLoggedAndHasPrivacyAgree) {
+        console.log(
+          '🔒 User not logged in or privacy agree not given, skipping UGC Track push to API',
+        );
         return;
       }
 

@@ -4,7 +4,11 @@ import {Store} from '@ngrx/store';
 import {DEFAULT_PRIVACY_POLICY_URL} from '@wm-core/constants/links';
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
 import {LangService} from '@wm-core/localization/lang.service';
-import {isLogged, needsPrivacyAgree} from '@wm-core/store/auth/auth.selectors';
+import {
+  isLogged,
+  needsPrivacyAgree,
+  isLoggedAndHasPrivacyAgree,
+} from '@wm-core/store/auth/auth.selectors';
 import {AuthService} from '@wm-core/store/auth/auth.service';
 import {IUser} from '@wm-core/store/auth/auth.model';
 import {confAPP, confPRIVACY} from '@wm-core/store/conf/conf.selector';
@@ -32,6 +36,9 @@ export class PrivacyAgreeService {
   public privacyAgree$ = this.privacyAgreeSubject.asObservable();
   public isLogged$: Observable<boolean> = this._store.select(isLogged);
   public needsPrivacyAgree$: Observable<boolean> = this._store.select(needsPrivacyAgree);
+  public isLoggedAndHasPrivacyAgree$: Observable<boolean> = this._store.select(
+    isLoggedAndHasPrivacyAgree,
+  );
 
   constructor(
     private _alertCtrl: AlertController,

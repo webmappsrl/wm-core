@@ -23,6 +23,14 @@ export const needsPrivacyAgree = createSelector(
     return isLogged && !hasPrivacyAgree;
   },
 );
+
+export const isLoggedAndHasPrivacyAgree = createSelector(
+  isLogged,
+  hasPrivacyAgree,
+  (isLogged, hasPrivacyAgree) => {
+    return isLogged && hasPrivacyAgree;
+  },
+);
 export const saveDrawTrackAsUgc = createSelector(isLogged, confWEBAPP, (isLogged, conf) => {
   return conf.draw_track_show && isLogged;
 });
