@@ -109,6 +109,10 @@ export class RegisterComponent {
   }
 
   register(): void {
+    // Save privacy agree to localStorage immediately
+    localStorage.setItem('privacy_agree', 'true');
+    localStorage.setItem('privacy_agree_date', new Date().toISOString());
+
     const loader$ = from(
       this._loadingCtrl.create({
         message: this._langSvc.instant('Registrazione in corso'),
@@ -130,6 +134,7 @@ export class RegisterComponent {
         email: this.registerForm.get('email').value,
         password: this.registerForm.get('password').value,
         referrer: this.referrer,
+        privacyAgree: true,
       }),
     );
   }

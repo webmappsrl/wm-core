@@ -83,7 +83,7 @@ export class AuthEffects {
     return this._actions$.pipe(
       ofType(AuthActions.loadSignUps),
       switchMap(action =>
-        this._authSvc.signUp(action.name, action.email, action.password).pipe(
+        this._authSvc.signUp(action.name, action.email, action.password, action.privacyAgree).pipe(
           map(user => {
             saveAuth(user);
             return AuthActions.loadSignUpsSuccess({user});

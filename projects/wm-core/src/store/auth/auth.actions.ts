@@ -4,7 +4,13 @@ import {IUser} from './auth.model';
 
 export const loadSignUps = createAction(
   '[Auth] Load SignUps',
-  props<{name: string; email: string; password: string; referrer?: string}>(),
+  props<{
+    name: string;
+    email: string;
+    password: string;
+    referrer?: string;
+    privacyAgree?: boolean;
+  }>(),
 );
 export const loadSignUpsSuccess = createAction(
   '[Auth] Load SignUps Success',
