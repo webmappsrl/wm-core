@@ -26,7 +26,6 @@ import {filter, switchMap, take, map, catchError} from 'rxjs/operators';
 })
 export class PrivacyAgreeService {
   private privacyAgreeSubject = new BehaviorSubject<boolean>(this._hasPrivacyAgreeInLocalStorage());
-  private isPrivacyAgreeSyncComplete = false;
   private isManualAlertOpen = false;
 
   private privacyAgreeAcceptedSubject = new Subject<void>();
@@ -395,18 +394,12 @@ export class PrivacyAgreeService {
                 // Always update privacy agree status, even if no privacy data exists
                 this._syncPrivacyAgreeToLocalStorage(user);
                 this.updatePrivacyAgreeStatus();
-                this.isPrivacyAgreeSyncComplete = true;
-                console.log('✅ Privacy agree sync completed, allowing privacy agree checks');
                 console.log('🔄 Checking privacy agree status after sync...');
                 this._checkPrivacyAgreeStatus();
               },
               error: error => {
                 console.error('Error syncing privacy agree from backend:', error);
                 console.log('Using localStorage data due to backend error');
-                this.isPrivacyAgreeSyncComplete = true;
-                console.log(
-                  '✅ Privacy agree sync completed (with error), allowing privacy agree checks',
-                );
               },
             });
           }
