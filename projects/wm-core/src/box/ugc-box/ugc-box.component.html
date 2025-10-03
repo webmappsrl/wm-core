@@ -9,5 +9,15 @@
     <ion-icon slot="icon-only" name="cloud-upload-outline"></ion-icon>
   </ion-button>
   <div class="wm-box-title">{{"I miei percorsi" | wmtrans}}</div>
+  <wm-privacy-agree-button
+    *ngIf="needsPrivacyAgree$|async"
+    expand="block"
+    color="danger"
+    fill="solid"
+    size="small"
+    class="wm-ugc-privacy-button"
+  >
+    {{'Dati non sincronizzati'|wmtrans}}
+  </wm-privacy-agree-button>
   <ng-content></ng-content>
 </div>

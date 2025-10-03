@@ -27,6 +27,7 @@ import {filter, switchMap, take, map, catchError} from 'rxjs/operators';
 export class PrivacyAgreeService {
   private privacyAgreeSubject = new BehaviorSubject<boolean>(this._hasPrivacyAgreeInLocalStorage());
   private isPrivacyAgreeSyncComplete = false;
+  private isManualAlertOpen = false;
 
   private privacyAgreeAcceptedSubject = new Subject<void>();
   public privacyAgreeAccepted$ = this.privacyAgreeAcceptedSubject.asObservable();
@@ -53,6 +54,13 @@ export class PrivacyAgreeService {
    */
   public getCurrentPrivacyAgreeStatus(): boolean {
     return this._hasPrivacyAgreeInLocalStorage();
+  }
+
+  /**
+   * Set manual alert open status to prevent automatic alerts
+   */
+  public setManualAlertOpen(isOpen: boolean): void {
+    this.isManualAlertOpen = isOpen;
   }
 
   /**
@@ -194,6 +202,12 @@ export class PrivacyAgreeService {
    * Check if privacy agree is needed and show alert if necessary
    */
   private _checkPrivacyAgreeStatus(): void {
+    // Don't show automatic alert if manual alert is already open
+    if (this.isManualAlertOpen) {
+      console.log('🚫 Manual alert is open, skipping automatic alert');
+      return;
+    }
+
     this.needsPrivacyAgree$.pipe(take(1)).subscribe(needsPrivacyAgree => {
       console.log('🔍 Needs privacy agree:', needsPrivacyAgree);
       if (needsPrivacyAgree) {

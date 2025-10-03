@@ -1,0 +1,13 @@
+<ion-button
+  *ngIf="isLogged$|async"
+  (click)="openPrivacyAgreeAlert()"
+  [size]="size"
+  [expand]="expand"
+  [fill]="fill"
+  [color]="color"
+  [class]="cssClass"
+  [disabled]="disabled"
+>
+  <ion-icon *ngIf="showIcon" [name]="iconName" slot="start" size="small"></ion-icon>
+  <ng-content></ng-content>
+</ion-button>

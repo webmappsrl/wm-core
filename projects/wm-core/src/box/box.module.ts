@@ -21,6 +21,7 @@ import {UgcBoxComponent} from './ugc-box/ugc-box.component';
 import {UpdatedAtComponent} from './udpated-at/updated-at.component';
 import {DownloadsEcTrackBox} from './downloads-ec-track-box /downloads-ec-track-box.component';
 import {WmLayerFeaturesCounterBadgeComponent} from '@wm-core/layer-features-counter-badge/layer-features-counter-badge.component';
+import {WmPrivacyAgreeButtonComponent} from '../privacy-agree-button/privacy-agree-button.component';
 
 const boxComponents = [
   LayerBoxComponent,
@@ -41,6 +42,7 @@ const boxComponents = [
   UpdatedAtComponent,
   DownloadsEcTrackBox,
   WmLayerFeaturesCounterBadgeComponent,
+  WmPrivacyAgreeButtonComponent,
 ];
 @NgModule({
   declarations: boxComponents,
