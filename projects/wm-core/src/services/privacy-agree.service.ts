@@ -57,6 +57,20 @@ export class PrivacyAgreeService {
   }
 
   /**
+   * Save privacy agree during signup (no confirmation needed)
+   * @param privacyAgree Whether user accepted privacy agree
+   * @param isLoggedIn Whether the user is currently logged in
+   * @param confApp$ Observable for app configuration
+   */
+  public savePrivacyAgreeForSignup(
+    privacyAgree: boolean,
+    isLoggedIn: boolean,
+    confApp$: Observable<IAPP>,
+  ): void {
+    this._savePrivacyAgree(privacyAgree, isLoggedIn, confApp$, true);
+  }
+
+  /**
    * Set manual alert open status to prevent automatic alerts
    */
   public setManualAlertOpen(isOpen: boolean): void {
@@ -155,23 +169,23 @@ export class PrivacyAgreeService {
               text: accept,
               handler: () => {
                 console.log('User accepted privacy agree');
-                this._savePrivacyAgree(true, isLoggedIn, confApp$);
-                observer.next(true);
-                observer.complete();
-                return true;
+                // Close the main alert first, then show confirmation
+                this._alertCtrl.dismiss().then(() => {
+                  this._showConfirmationAlert(true, isLoggedIn, confApp$, observer);
+                });
+                return true; // Close the alert
               },
             },
             {
               text: reject,
               role: 'cancel',
-              handler: async () => {
+              handler: () => {
                 console.log('User rejected privacy agree');
-
-                // Save rejection to both localStorage and backend
-                this._savePrivacyAgree(false, isLoggedIn, confApp$);
-
-                observer.next(false);
-                observer.complete();
+                // Close the main alert first, then show confirmation
+                this._alertCtrl.dismiss().then(() => {
+                  this._showConfirmationAlert(false, isLoggedIn, confApp$, observer);
+                });
+                return true; // Close the alert
               },
             },
           ],
@@ -233,11 +247,13 @@ export class PrivacyAgreeService {
    * @param privacyAgree Whether user accepted privacy agree
    * @param isLoggedIn Whether the user is currently logged in
    * @param confApp$ Observable for app configuration
+   * @param isSignup Whether this is during signup (no confirmation needed)
    */
   private _savePrivacyAgree(
     privacyAgree: boolean,
     isLoggedIn: boolean,
     confApp$: Observable<IAPP>,
+    isSignup: boolean = false,
   ): void {
     // Save to localStorage
     if (privacyAgree) {
@@ -430,6 +446,57 @@ export class PrivacyAgreeService {
         return of(null);
       }),
     );
+  }
+
+  /**
+   * Show confirmation alert for privacy agree changes
+   * @param accepted Whether user accepted or rejected
+   * @param isLoggedIn Whether user is logged in
+   * @param confApp$ App configuration observable
+   * @param observer Original alert observer
+   */
+  private _showConfirmationAlert(
+    accepted: boolean,
+    isLoggedIn: boolean,
+    confApp$: Observable<IAPP>,
+    observer: any,
+  ): void {
+    const confirmTitle = this._langSvc.instant('privacy.agree.confirm.title');
+    const confirmMessage = accepted
+      ? this._langSvc.instant('privacy.agree.confirm.accept_message')
+      : this._langSvc.instant('privacy.agree.confirm.reject_message');
+    const confirmYes = this._langSvc.instant('privacy.agree.confirm.yes');
+    const confirmNo = this._langSvc.instant('privacy.agree.confirm.no');
+
+    this._alertCtrl
+      .create({
+        header: confirmTitle,
+        message: confirmMessage,
+        buttons: [
+          {
+            text: confirmNo,
+            role: 'cancel',
+            handler: () => {
+              console.log('User cancelled privacy agree change');
+              // Complete the observer without saving anything
+              observer.next(null);
+              observer.complete();
+            },
+          },
+          {
+            text: confirmYes,
+            handler: () => {
+              console.log(`User confirmed privacy agree: ${accepted ? 'accepted' : 'rejected'}`);
+              this._savePrivacyAgree(accepted, isLoggedIn, confApp$, false);
+              observer.next(accepted);
+              observer.complete();
+            },
+          },
+        ],
+      })
+      .then(alert => {
+        alert.present();
+      });
   }
 
   /**

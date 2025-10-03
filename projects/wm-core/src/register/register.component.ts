@@ -16,8 +16,9 @@ import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
 import {LangService} from '@wm-core/localization/lang.service';
 import {loadSignUps} from '@wm-core/store/auth/auth.actions';
 import {isLogged, selectAuthState} from '@wm-core/store/auth/auth.selectors';
-import {confPAGES, confPRIVACY} from '@wm-core/store/conf/conf.selector';
+import {confPAGES, confPRIVACY, confAPP} from '@wm-core/store/conf/conf.selector';
 import {DEFAULT_PRIVACY_POLICY_URL} from '@wm-core/constants/links';
+import {PrivacyAgreeService} from '@wm-core/services/privacy-agree.service';
 
 @Component({
   selector: 'wm-register-component',
@@ -41,6 +42,7 @@ export class RegisterComponent {
   };
   confPages$: Observable<any>;
   confPrivacy$: Observable<any>;
+  confAPP$: Observable<any>;
   isValid$: Observable<boolean> = of(false);
   loadingString = '';
   registerForm: UntypedFormGroup;
@@ -55,6 +57,7 @@ export class RegisterComponent {
     private _modalCtrl: ModalController,
     private _langSvc: LangService,
     private _store: Store<any>,
+    private _privacyAgreeSvc: PrivacyAgreeService,
   ) {
     this.registerForm = this._formBuilder.group(
       {
@@ -68,6 +71,7 @@ export class RegisterComponent {
     this.isValid$ = this.registerForm.statusChanges.pipe(map(status => status === 'VALID'));
     this.confPrivacy$ = this._store.select(confPRIVACY);
     this.confPages$ = this._store.select(confPAGES);
+    this.confAPP$ = this._store.select(confAPP);
 
     this.isLogged$
       .pipe(
@@ -109,9 +113,9 @@ export class RegisterComponent {
   }
 
   register(): void {
-    // Save privacy agree to localStorage immediately
-    localStorage.setItem('privacy_agree', 'true');
-    localStorage.setItem('privacy_agree_date', new Date().toISOString());
+    // Save privacy agree to localStorage immediately when user clicks "Registrati"
+    // Use the service method for signup (no confirmation needed)
+    this._privacyAgreeSvc.savePrivacyAgreeForSignup(true, false, this.confAPP$);
 
     const loader$ = from(
       this._loadingCtrl.create({
