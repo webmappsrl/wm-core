@@ -18,6 +18,9 @@ import {WmProperties} from '@wm-types/feature';
         ion-icon {
           width: 22px;
           height: 22px;
+          border-radius: 8px;
+          padding: 3px;
+          background-color: #fff;
           &[name='cloud-done-outline'] {
             color: #04ae04;
           }
@@ -32,5 +35,5 @@ import {WmProperties} from '@wm-types/feature';
   encapsulation: ViewEncapsulation.None,
 })
 export class UgcSynchronizedBadgeComponent {
-  @Input() properties: { [name: string]: any; } | WmProperties;
+  @Input() properties: {[name: string]: any} | WmProperties;
 }
