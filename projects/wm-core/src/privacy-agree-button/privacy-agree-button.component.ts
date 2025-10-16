@@ -1,4 +1,4 @@
-import {Component, Input, Output, EventEmitter, OnInit, OnDestroy} from '@angular/core';
+import {Component, Input, Output, EventEmitter, OnDestroy} from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
@@ -12,7 +12,7 @@ import {IAPP} from '@wm-core/types/config';
   templateUrl: './privacy-agree-button.component.html',
   styleUrls: ['./privacy-agree-button.component.scss'],
 })
-export class WmPrivacyAgreeButtonComponent implements OnInit, OnDestroy {
+export class WmPrivacyAgreeButtonComponent implements OnDestroy {
   @Input() size: 'small' | 'default' | 'large' = 'small';
   @Input() expand: 'full' | 'block' | null = 'block';
   @Input() fill: 'clear' | 'outline' | 'solid' = 'outline';
@@ -31,10 +31,6 @@ export class WmPrivacyAgreeButtonComponent implements OnInit, OnDestroy {
   private _isAlertOpen: boolean = false;
 
   constructor(private _store: Store, private _privacyAgreeSvc: PrivacyAgreeService) {}
-
-  ngOnInit(): void {
-    // Component initialization if needed
-  }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
@@ -60,13 +56,11 @@ export class WmPrivacyAgreeButtonComponent implements OnInit, OnDestroy {
         this._subscription.add(
           this._privacyAgreeSvc.showPrivacyAgreeAlert(isLogged, this.confAPP$).subscribe({
             next: result => {
-              console.log('Privacy agree result:', result);
               this.consentResult.emit(result);
               this._isAlertOpen = false;
               this._privacyAgreeSvc.setManualAlertOpen(false);
             },
             error: error => {
-              console.error('Privacy agree error:', error);
               this._isAlertOpen = false;
               this._privacyAgreeSvc.setManualAlertOpen(false);
             },

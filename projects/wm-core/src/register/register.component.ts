@@ -114,7 +114,6 @@ export class RegisterComponent {
 
   register(): void {
     // Save privacy agree to localStorage immediately when user clicks "Registrati"
-    // Use the service method for signup (no confirmation needed)
     this._privacyAgreeSvc.savePrivacyAgreeForSignup(true, false, this.confAPP$);
 
     const loader$ = from(

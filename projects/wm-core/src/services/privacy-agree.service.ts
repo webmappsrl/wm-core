@@ -4,22 +4,16 @@ import {Store} from '@ngrx/store';
 import {DEFAULT_PRIVACY_POLICY_URL} from '@wm-core/constants/links';
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
 import {LangService} from '@wm-core/localization/lang.service';
-import {
-  isLogged,
-  needsPrivacyAgree,
-  isLoggedAndHasPrivacyAgree,
-} from '@wm-core/store/auth/auth.selectors';
+import {isLogged, needsPrivacyAgree} from '@wm-core/store/auth/auth.selectors';
 import {AuthService} from '@wm-core/store/auth/auth.service';
 import {IUser} from '@wm-core/store/auth/auth.model';
 import {confAPP, confPRIVACY} from '@wm-core/store/conf/conf.selector';
 import {IAPP} from '@wm-core/types/config';
-import {EnvironmentService} from '@wm-core/services/environment.service';
-import {PrivacyAgreeHistory} from '@wm-types/privacy-agree';
 import {loadAuthsSuccess} from '@wm-core/store/auth/auth.actions';
 
-import {BehaviorSubject, Observable, from, of, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, from, Subject} from 'rxjs';
 
-import {filter, switchMap, take, map, catchError} from 'rxjs/operators';
+import {filter, switchMap, take} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -35,9 +29,6 @@ export class PrivacyAgreeService {
   public privacyAgree$ = this.privacyAgreeSubject.asObservable();
   public isLogged$: Observable<boolean> = this._store.select(isLogged);
   public needsPrivacyAgree$: Observable<boolean> = this._store.select(needsPrivacyAgree);
-  public isLoggedAndHasPrivacyAgree$: Observable<boolean> = this._store.select(
-    isLoggedAndHasPrivacyAgree,
-  );
 
   constructor(
     private _alertCtrl: AlertController,
@@ -45,15 +36,7 @@ export class PrivacyAgreeService {
     private _store: Store,
     private _authSvc: AuthService,
     private _langSvc: LangService,
-    private _environmentSvc: EnvironmentService,
   ) {}
-
-  /**
-   * Get current privacy agree status
-   */
-  public getCurrentPrivacyAgreeStatus(): boolean {
-    return this._hasPrivacyAgreeInLocalStorage();
-  }
 
   /**
    * Save privacy agree during signup (no confirmation needed)
@@ -156,10 +139,9 @@ export class PrivacyAgreeService {
             {
               text: readPrivacy,
               handler: () => {
-                console.log('Opening privacy policy...');
                 this.openPrivacyPolicy().subscribe({
-                  next: () => console.log('Privacy policy opened successfully'),
-                  error: error => console.error('Error opening privacy policy:', error),
+                  next: () => {},
+                  error: error => {},
                 });
                 return false;
               },
@@ -167,7 +149,6 @@ export class PrivacyAgreeService {
             {
               text: accept,
               handler: () => {
-                console.log('User accepted privacy agree');
                 // Close the main alert first, then show confirmation
                 this._alertCtrl.dismiss().then(() => {
                   this._showConfirmationAlert(true, isLoggedIn, confApp$, observer);
@@ -179,7 +160,6 @@ export class PrivacyAgreeService {
               text: reject,
               role: 'cancel',
               handler: () => {
-                console.log('User rejected privacy agree');
                 // Close the main alert first, then show confirmation
                 this._alertCtrl.dismiss().then(() => {
                   this._showConfirmationAlert(false, isLoggedIn, confApp$, observer);
@@ -217,19 +197,14 @@ export class PrivacyAgreeService {
   private _checkPrivacyAgreeStatus(): void {
     // Don't show automatic alert if manual alert is already open
     if (this.isManualAlertOpen) {
-      console.log('🚫 Manual alert is open, skipping automatic alert');
       return;
     }
 
     this.needsPrivacyAgree$.pipe(take(1)).subscribe(needsPrivacyAgree => {
-      console.log('🔍 Needs privacy agree:', needsPrivacyAgree);
       if (needsPrivacyAgree) {
-        console.log('⚠️ Needs privacy agree, showing alert...');
         this.isLogged$.pipe(take(1)).subscribe(isLogged => {
           this.showPrivacyAgreeAlert(isLogged, this.confAPP$).subscribe();
         });
-      } else {
-        console.log('✅ No privacy agree needed, alert not shown');
       }
     });
   }
@@ -273,22 +248,16 @@ export class PrivacyAgreeService {
         if (appId) {
           this._authSvc.updatePrivacyAgree(privacyAgree, Number(appId)).subscribe({
             next: response => {
-              console.log('Privacy agree updated in backend:', response);
-
               // Dispatch updated user to store (response is now the user directly with fresh data from me() subscribe in backend)
               this._store.dispatch(loadAuthsSuccess({user: response}));
-              console.log(
-                '✅ Updated user dispatched to store (data from me() subscribe in backend)',
-              );
 
               // Emit event when privacy agree is accepted to trigger UGC sync
               if (privacyAgree) {
-                console.log('🔄 User accepted privacy agree, emitting sync trigger event...');
                 this.privacyAgreeAcceptedSubject.next();
               }
             },
             error: error => {
-              console.error('Error updating privacy agree in backend:', error);
+              // Error updating privacy agree in backend
             },
           });
         }
@@ -296,9 +265,6 @@ export class PrivacyAgreeService {
     } else {
       // If user is not logged in but accepted privacy agree, still emit the event
       if (privacyAgree) {
-        console.log(
-          '🔄 User accepted privacy agree (not logged in), emitting sync trigger event...',
-        );
         this.privacyAgreeAcceptedSubject.next();
       }
     }
@@ -311,7 +277,6 @@ export class PrivacyAgreeService {
     // Handle new API response format with properties.privacy
     const privacyArray = user.properties?.privacy;
     if (!privacyArray || privacyArray.length === 0) {
-      console.log('No privacy data in user response - user needs to make a choice');
       // Remove any existing privacy agree data to force user to make a choice
       localStorage.removeItem('privacy_agree');
       localStorage.removeItem('privacy_agree_date');
@@ -326,11 +291,9 @@ export class PrivacyAgreeService {
     if (latestPrivacy.agree) {
       localStorage.setItem('privacy_agree', 'true');
       localStorage.setItem('privacy_agree_date', latestPrivacy.date);
-      console.log('✅ Synced privacy agree: true to localStorage');
     } else {
       localStorage.removeItem('privacy_agree');
       localStorage.removeItem('privacy_agree_date');
-      console.log('❌ Synced privacy agree: false to localStorage');
     }
   }
 
@@ -338,31 +301,23 @@ export class PrivacyAgreeService {
    * Sync privacy agree from backend (without waiting)
    */
   private _syncPrivacyAgreeFromBackend(): void {
-    console.log('🔄 Starting privacy agree sync from backend...');
     this.isLogged$.pipe(take(1)).subscribe(isLogged => {
-      console.log('🔍 User logged in:', isLogged);
       if (isLogged) {
         this.confAPP$.pipe(take(1)).subscribe(confApp => {
           const appId = confApp.id ?? confApp.geohubId;
-          console.log('🔍 App ID for sync:', appId);
           if (appId) {
             this._authSvc.me().subscribe({
               next: (user: IUser) => {
-                console.log('🔍 Backend user response:', user);
-
                 // Always dispatch updated user to store
                 this._store.dispatch(loadAuthsSuccess({user: user}));
-                console.log('✅ User data dispatched to store from me()');
 
                 // Always update privacy agree status, even if no privacy data exists
                 this._syncPrivacyAgreeToLocalStorage(user);
                 this.updatePrivacyAgreeStatus();
-                console.log('🔄 Re-checking privacy agree status after sync...');
                 this._checkPrivacyAgreeStatus();
               },
               error: error => {
-                console.error('Error syncing privacy agree from backend:', error);
-                console.log('Using localStorage data due to backend error');
+                // Using localStorage data due to backend error
               },
             });
           }
@@ -375,70 +330,29 @@ export class PrivacyAgreeService {
    * Sync privacy agree from backend and wait for completion
    */
   private _syncPrivacyAgreeFromBackendAndWait(): void {
-    console.log('🔄 Starting privacy agree sync from backend and waiting...');
     this.isLogged$.pipe(take(1)).subscribe(isLogged => {
-      console.log('🔍 User logged in:', isLogged);
       if (isLogged) {
         this.confAPP$.pipe(take(1)).subscribe(confApp => {
           const appId = confApp.id ?? confApp.geohubId;
-          console.log('🔍 App ID for sync:', appId);
           if (appId) {
             this._authSvc.me().subscribe({
               next: (user: IUser) => {
-                console.log('🔍 Backend user response:', user);
-
                 // Always dispatch updated user to store
                 this._store.dispatch(loadAuthsSuccess({user: user}));
-                console.log('✅ User data dispatched to store from me()');
 
                 // Always update privacy agree status, even if no privacy data exists
                 this._syncPrivacyAgreeToLocalStorage(user);
                 this.updatePrivacyAgreeStatus();
-                console.log('🔄 Checking privacy agree status after sync...');
                 this._checkPrivacyAgreeStatus();
               },
               error: error => {
-                console.error('Error syncing privacy agree from backend:', error);
-                console.log('Using localStorage data due to backend error');
+                // Using localStorage data due to backend error
               },
             });
           }
         });
       }
     });
-  }
-
-  /**
-   * Get privacy agree history from backend
-   */
-  public getPrivacyAgreeHistory(): Observable<PrivacyAgreeHistory | null> {
-    const appId = this._environmentSvc.appId;
-    if (!appId) {
-      return of(null);
-    }
-
-    return this._authSvc.me().pipe(
-      map((user: IUser): PrivacyAgreeHistory | null => {
-        // Handle new API response format with properties.privacy
-        const privacyArray = user.properties?.privacy;
-        if (privacyArray && privacyArray.length > 0) {
-          // Sort by date descending (most recent first)
-          const sortedPrivacy = [...privacyArray].sort(
-            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-          );
-
-          return {
-            latest_agree: sortedPrivacy[0],
-            agree_history: sortedPrivacy,
-          };
-        }
-        return null;
-      }),
-      catchError(error => {
-        console.error('Error fetching privacy agree history:', error);
-        return of(null);
-      }),
-    );
   }
 
   /**
@@ -470,7 +384,6 @@ export class PrivacyAgreeService {
             text: confirmNo,
             role: 'cancel',
             handler: () => {
-              console.log('User cancelled privacy agree change');
               // Complete the observer without saving anything
               observer.next(null);
               observer.complete();
@@ -479,7 +392,6 @@ export class PrivacyAgreeService {
           {
             text: confirmYes,
             handler: () => {
-              console.log(`User confirmed privacy agree: ${accepted ? 'accepted' : 'rejected'}`);
               this._savePrivacyAgree(accepted, isLoggedIn, confApp$, false);
               // Show final confirmation alert after saving
               this._showFinalConfirmationAlert(accepted, observer);
@@ -512,11 +424,6 @@ export class PrivacyAgreeService {
           {
             text: okButton,
             handler: () => {
-              console.log(
-                `Final confirmation: Privacy agree ${
-                  accepted ? 'accepted' : 'rejected'
-                } successfully`,
-              );
               observer.next(accepted);
               observer.complete();
             },
@@ -526,28 +433,5 @@ export class PrivacyAgreeService {
       .then(alert => {
         alert.present();
       });
-  }
-
-  /**
-   * Get the most recent privacy agree date for logging purposes
-   * @param privacyAgreeHistory Privacy agree history from backend
-   * @returns Date of most recent privacy agree change, or null if no history
-   */
-  public getMostRecentPrivacyAgreeDate(
-    privacyAgreeHistory: PrivacyAgreeHistory | null,
-  ): Date | null {
-    if (
-      !privacyAgreeHistory ||
-      !privacyAgreeHistory.agree_history ||
-      privacyAgreeHistory.agree_history.length === 0
-    ) {
-      return null;
-    }
-
-    const sortedHistory = [...privacyAgreeHistory.agree_history].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-    );
-
-    return new Date(sortedHistory[0].date);
   }
 }

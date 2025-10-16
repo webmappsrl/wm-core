@@ -12,7 +12,6 @@ export const isLogged = createSelector(selectAuthState, state => state != null &
 export const error = createSelector(selectAuthState, state => state != null && state.error);
 export const user = createSelector(selectAuthState, state => state.user);
 export const hasPrivacyAgree = createSelector(user, user => {
-  // Always use localStorage as the source of truth
   // localStorage is synced with backend when user is logged in
   return localStorage.getItem('privacy_agree') === 'true';
 });
