@@ -481,6 +481,42 @@ export class PrivacyAgreeService {
             handler: () => {
               console.log(`User confirmed privacy agree: ${accepted ? 'accepted' : 'rejected'}`);
               this._savePrivacyAgree(accepted, isLoggedIn, confApp$, false);
+              // Show final confirmation alert after saving
+              this._showFinalConfirmationAlert(accepted, observer);
+            },
+          },
+        ],
+      })
+      .then(alert => {
+        alert.present();
+      });
+  }
+
+  /**
+   * Show final confirmation alert after privacy agree change is completed
+   * @param accepted Whether user accepted or rejected
+   * @param observer Original alert observer
+   */
+  private _showFinalConfirmationAlert(accepted: boolean, observer: any): void {
+    const finalTitle = this._langSvc.instant('privacy.agree.final_confirm.title');
+    const finalMessage = accepted
+      ? this._langSvc.instant('privacy.agree.final_confirm.accept_message')
+      : this._langSvc.instant('privacy.agree.final_confirm.reject_message');
+    const okButton = this._langSvc.instant('privacy.agree.final_confirm.ok');
+
+    this._alertCtrl
+      .create({
+        header: finalTitle,
+        message: finalMessage,
+        buttons: [
+          {
+            text: okButton,
+            handler: () => {
+              console.log(
+                `Final confirmation: Privacy agree ${
+                  accepted ? 'accepted' : 'rejected'
+                } successfully`,
+              );
               observer.next(accepted);
               observer.complete();
             },
