@@ -238,4 +238,6 @@ export const wmIT = {
   'Eliminazione': 'Eliminazione',
   'Elimina': 'Elimina',
   'Sei sicuro di voler eliminare questi dati?': 'Sei sicuro di voler eliminare questi dati?',
+  'Modifica consenso dati': 'Modifica consenso dati',
+  'Dati non sincronizzati': 'Dati non sincronizzati',
 };

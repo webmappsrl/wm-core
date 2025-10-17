@@ -232,4 +232,6 @@ export const wmFR = {
   'Eliminazione': 'Suppression',
   'Elimina': 'Supprimer',
   'Sei sicuro di voler eliminare questi dati?': 'Êtes-vous sûr de vouloir supprimer ces données ?',
+  'Modifica consenso dati': 'Modifier le consentement aux données',
+  'Dati non sincronizzati': 'Données non synchronisées',
 };
