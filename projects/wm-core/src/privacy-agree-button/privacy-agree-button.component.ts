@@ -3,9 +3,9 @@ import {Observable, Subscription} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
-import {confAPP} from '@wm-core/store/conf/conf.selector';
+import {confPRIVACY} from '@wm-core/store/conf/conf.selector';
 import {PrivacyAgreeService} from '@wm-core/services/privacy-agree.service';
-import {IAPP} from '@wm-core/types/config';
+import {IPROJECT} from '@wm-core/types/config';
 
 @Component({
   selector: 'wm-privacy-agree-button',
@@ -25,7 +25,7 @@ export class WmPrivacyAgreeButtonComponent implements OnDestroy {
   @Output() consentResult = new EventEmitter<boolean>();
 
   isLogged$: Observable<boolean> = this._store.select(isLogged);
-  confAPP$: Observable<IAPP> = this._store.select(confAPP);
+  confPRIVACY$: Observable<IPROJECT> = this._store.select(confPRIVACY);
 
   private _subscription: Subscription = new Subscription();
   private _isAlertOpen: boolean = false;
@@ -54,7 +54,7 @@ export class WmPrivacyAgreeButtonComponent implements OnDestroy {
     this._subscription.add(
       this.isLogged$.pipe(take(1)).subscribe(isLogged => {
         this._subscription.add(
-          this._privacyAgreeSvc.showPrivacyAgreeAlert(isLogged, this.confAPP$).subscribe({
+          this._privacyAgreeSvc.showPrivacyAgreeAlert(isLogged, this.confPRIVACY$).subscribe({
             next: result => {
               this.consentResult.emit(result);
               this._isAlertOpen = false;

@@ -8,7 +8,7 @@ import {isLogged, needsPrivacyAgree} from '@wm-core/store/auth/auth.selectors';
 import {AuthService} from '@wm-core/store/auth/auth.service';
 import {IUser} from '@wm-core/store/auth/auth.model';
 import {confAPP, confPRIVACY} from '@wm-core/store/conf/conf.selector';
-import {IAPP} from '@wm-core/types/config';
+import {IAPP, IPROJECT} from '@wm-core/types/config';
 import {loadAuthsSuccess} from '@wm-core/store/auth/auth.actions';
 
 import {BehaviorSubject, Observable, from, Subject} from 'rxjs';
@@ -42,14 +42,9 @@ export class PrivacyAgreeService {
    * Save privacy agree during signup (no confirmation needed)
    * @param privacyAgree Whether user accepted privacy agree
    * @param isLoggedIn Whether the user is currently logged in
-   * @param confApp$ Observable for app configuration
    */
-  public savePrivacyAgreeForSignup(
-    privacyAgree: boolean,
-    isLoggedIn: boolean,
-    confApp$: Observable<IAPP>,
-  ): void {
-    this._savePrivacyAgree(privacyAgree, isLoggedIn, confApp$, true);
+  public savePrivacyAgreeForSignup(privacyAgree: boolean, isLoggedIn: boolean): void {
+    this._savePrivacyAgree(privacyAgree, isLoggedIn, true);
   }
 
   /**
@@ -119,10 +114,13 @@ export class PrivacyAgreeService {
   /**
    * Show privacy agree alert and handle user response
    * @param isLoggedIn Whether the user is currently logged in
-   * @param confApp$ Observable for app configuration
+   * @param confPrivacy$ Observable for privacy configuration
    * @returns Observable that emits when the alert is dismissed
    */
-  public showPrivacyAgreeAlert(isLoggedIn: boolean, confApp$: Observable<IAPP>): Observable<any> {
+  public showPrivacyAgreeAlert(
+    isLoggedIn: boolean,
+    confPrivacy$: Observable<IPROJECT>,
+  ): Observable<any> {
     return new Observable(observer => {
       // Use translations
       const title = this._langSvc.instant('privacy.agree.title');
@@ -151,7 +149,7 @@ export class PrivacyAgreeService {
               handler: () => {
                 // Close the main alert first, then show confirmation
                 this._alertCtrl.dismiss().then(() => {
-                  this._showConfirmationAlert(true, isLoggedIn, confApp$, observer);
+                  this._showConfirmationAlert(true, isLoggedIn, observer);
                 });
                 return true; // Close the alert
               },
@@ -162,7 +160,7 @@ export class PrivacyAgreeService {
               handler: () => {
                 // Close the main alert first, then show confirmation
                 this._alertCtrl.dismiss().then(() => {
-                  this._showConfirmationAlert(false, isLoggedIn, confApp$, observer);
+                  this._showConfirmationAlert(false, isLoggedIn, observer);
                 });
                 return true; // Close the alert
               },
@@ -203,7 +201,7 @@ export class PrivacyAgreeService {
     this.needsPrivacyAgree$.pipe(take(1)).subscribe(needsPrivacyAgree => {
       if (needsPrivacyAgree) {
         this.isLogged$.pipe(take(1)).subscribe(isLogged => {
-          this.showPrivacyAgreeAlert(isLogged, this.confAPP$).subscribe();
+          this.showPrivacyAgreeAlert(isLogged, this._store.select(confPRIVACY)).subscribe();
         });
       }
     });
@@ -220,13 +218,11 @@ export class PrivacyAgreeService {
    * Save privacy agree to both localStorage and backend
    * @param privacyAgree Whether user accepted privacy agree
    * @param isLoggedIn Whether the user is currently logged in
-   * @param confApp$ Observable for app configuration
    * @param isSignup Whether this is during signup (no confirmation needed)
    */
   private _savePrivacyAgree(
     privacyAgree: boolean,
     isLoggedIn: boolean,
-    confApp$: Observable<IAPP>,
     isSignup: boolean = false,
   ): void {
     // Save to localStorage
@@ -243,7 +239,7 @@ export class PrivacyAgreeService {
 
     // Save to backend if user is logged in
     if (isLoggedIn) {
-      confApp$.pipe(take(1)).subscribe(confApp => {
+      this.confAPP$.pipe(take(1)).subscribe(confApp => {
         const appId = confApp.id ?? confApp.geohubId;
         if (appId) {
           this._authSvc.updatePrivacyAgree(privacyAgree, Number(appId)).subscribe({
@@ -359,15 +355,9 @@ export class PrivacyAgreeService {
    * Show confirmation alert for privacy agree changes
    * @param accepted Whether user accepted or rejected
    * @param isLoggedIn Whether user is logged in
-   * @param confApp$ App configuration observable
    * @param observer Original alert observer
    */
-  private _showConfirmationAlert(
-    accepted: boolean,
-    isLoggedIn: boolean,
-    confApp$: Observable<IAPP>,
-    observer: any,
-  ): void {
+  private _showConfirmationAlert(accepted: boolean, isLoggedIn: boolean, observer: any): void {
     const confirmTitle = this._langSvc.instant('privacy.agree.confirm.title');
     const confirmMessage = accepted
       ? this._langSvc.instant('privacy.agree.confirm.accept_message')
@@ -392,7 +382,7 @@ export class PrivacyAgreeService {
           {
             text: confirmYes,
             handler: () => {
-              this._savePrivacyAgree(accepted, isLoggedIn, confApp$, false);
+              this._savePrivacyAgree(accepted, isLoggedIn, false);
               // Show final confirmation alert after saving
               this._showFinalConfirmationAlert(accepted, observer);
             },
