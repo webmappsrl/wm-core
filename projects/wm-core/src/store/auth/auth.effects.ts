@@ -9,6 +9,7 @@ import {AlertController} from '@ionic/angular';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Action, Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
+import {PrivacyAgreeService} from '@wm-core/services/privacy-agree.service';
 import {
   clearUgcDeviceData,
   clearUgcSynchronizedData,
@@ -16,7 +17,7 @@ import {
   removeAuth,
   saveAuth,
 } from '@wm-core/utils/localForage';
-import {catchError, filter, map, switchMap} from 'rxjs/operators';
+import {catchError, filter, map, switchMap, tap} from 'rxjs/operators';
 
 @Injectable()
 export class AuthEffects {
@@ -84,8 +85,14 @@ export class AuthEffects {
       ofType(AuthActions.loadSignUps),
       switchMap(action =>
         this._authSvc.signUp(action.name, action.email, action.password, action.privacyAgree).pipe(
-          map(user => {
+          tap(user => {
             saveAuth(user);
+            // Save privacy agree to backend after successful user creation
+            if (action.privacyAgree) {
+              this._privacyAgreeSvc.savePrivacyAgreeForSignup(true, true);
+            }
+          }),
+          map(user => {
             return AuthActions.loadSignUpsSuccess({user});
           }),
           catchError(error => {
@@ -170,6 +177,7 @@ export class AuthEffects {
     private _alertCtrl: AlertController,
     private _langSvc: LangService,
     private _store: Store,
+    private _privacyAgreeSvc: PrivacyAgreeService,
   ) {}
 
   private _createErrorAlert(error: string): Promise<HTMLIonAlertElement> {

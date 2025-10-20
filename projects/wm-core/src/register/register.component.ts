@@ -18,7 +18,6 @@ import {loadSignUps} from '@wm-core/store/auth/auth.actions';
 import {isLogged, selectAuthState} from '@wm-core/store/auth/auth.selectors';
 import {confPAGES, confPRIVACY} from '@wm-core/store/conf/conf.selector';
 import {DEFAULT_PRIVACY_POLICY_URL} from '@wm-core/constants/links';
-import {PrivacyAgreeService} from '@wm-core/services/privacy-agree.service';
 
 @Component({
   selector: 'wm-register-component',
@@ -56,7 +55,6 @@ export class RegisterComponent {
     private _modalCtrl: ModalController,
     private _langSvc: LangService,
     private _store: Store<any>,
-    private _privacyAgreeSvc: PrivacyAgreeService,
   ) {
     this.registerForm = this._formBuilder.group(
       {
@@ -111,9 +109,6 @@ export class RegisterComponent {
   }
 
   register(): void {
-    // Save privacy agree to localStorage immediately when user clicks "Registrati"
-    this._privacyAgreeSvc.savePrivacyAgreeForSignup(true, false);
-
     const loader$ = from(
       this._loadingCtrl.create({
         message: this._langSvc.instant('Registrazione in corso'),
