@@ -7,15 +7,15 @@ export interface IUser {
   role?: string;
   access_token: string;
   properties?: {
-    privacy?: Array<{
-      agree: boolean;
-      date: string;
-      app_id: number;
-      user_id: number;
-    }>;
+    privacy?: Privacy[];
   };
 }
 
 export interface ILogoutResponse extends IUser {
   message: string;
+}
+export interface Privacy {
+  agree: boolean;
+  date: string;
+  app_id: number;
 }

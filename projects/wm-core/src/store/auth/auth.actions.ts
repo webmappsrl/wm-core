@@ -50,3 +50,9 @@ export const deleteUserFailure = createAction(
 
 export const loadSignOuts = createAction('[Auth] Load SignOut');
 export const loadSignOutsSuccess = createAction('[Auth] Load SignOut Success');
+
+export const updateUserPrivacy = createAction('[Auth] update user privacy', props<{agree}>())
+export const updatePrivacyFailure = createAction(
+  '[Auth] update user privacy failure',
+  props<{error: HttpErrorResponse}>(),
+);

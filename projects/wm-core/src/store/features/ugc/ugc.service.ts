@@ -2,7 +2,6 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {EnvironmentService} from '@wm-core/services/environment.service';
-import {PrivacyAgreeService} from '@wm-core/services/privacy-agree.service';
 import {
   getDeviceUgcPoi,
   getDeviceUgcPois,
@@ -43,22 +42,8 @@ export class UgcService {
     private _http: HttpClient,
     private _store: Store,
     private _environmentSvc: EnvironmentService,
-    private _privacyAgreeSvc: PrivacyAgreeService,
   ) {
-    // Listen for privacy agree acceptance events to trigger UGC sync
-    this._privacyAgreeSvc.privacyAgreeAccepted$.subscribe(() => {
-      console.log('🔄 Privacy agree accepted event received, triggering UGC synchronization...');
-      this.syncUgc()
-        .then(() => {
-          console.log('✅ UGC synchronization completed after privacy agree acceptance');
-        })
-        .catch(error => {
-          console.error(
-            '❌ Error during UGC synchronization after privacy agree acceptance:',
-            error,
-          );
-        });
-    });
+
   }
 
   deleteApiMedia(id: number): Observable<any> {

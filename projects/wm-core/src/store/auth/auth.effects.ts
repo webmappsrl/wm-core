@@ -9,7 +9,6 @@ import {AlertController} from '@ionic/angular';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Action, Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
-import {PrivacyAgreeService} from '@wm-core/services/privacy-agree.service';
 import {
   clearUgcDeviceData,
   clearUgcSynchronizedData,
@@ -87,10 +86,6 @@ export class AuthEffects {
         this._authSvc.signUp(action.name, action.email, action.password, action.privacyAgree).pipe(
           tap(user => {
             saveAuth(user);
-            // Save privacy agree to backend after successful user creation
-            if (action.privacyAgree) {
-              this._privacyAgreeSvc.savePrivacyAgreeForSignup(true, true);
-            }
           }),
           map(user => {
             return AuthActions.loadSignUpsSuccess({user});
@@ -102,6 +97,39 @@ export class AuthEffects {
       ),
     );
   });
+  updatePrivacyAgree$ = createEffect(() => {
+    return this._actions$.pipe(
+      ofType(AuthActions.updateUserPrivacy),
+      switchMap(action =>
+        this._authSvc.updatePrivacyAgree(action.agree).pipe(
+          map(user => {
+            saveAuth(user);
+            if(action.agree) {
+              this._store.dispatch(syncUgc());
+            }
+            return AuthActions.loadAuthsSuccess({user});
+          }),
+          catchError(error => {
+            return of(AuthActions.updatePrivacyFailure({error}));
+          }),
+        ),
+      ),
+    );
+  });
+  updatePrivacyIfNeeded$ = createEffect(() => {
+    return this._actions$.pipe(ofType(AuthActions.loadAuthsSuccess, AuthActions.loadSignInsSuccess),
+      switchMap(action => {
+        const user = action.user;
+        const properties = user.properties?? null;
+        const privacy = properties?.privacy??null;
+        if(privacy== null ||privacy.length == 0) {
+          return this._authSvc.showPrivacyAgreeAlert();
+        }
+
+        return of(null)
+      })
+    );
+  }, {dispatch: false});
   logoutByError$ = createEffect(
     () => {
       return this._actions$.pipe(
@@ -177,7 +205,6 @@ export class AuthEffects {
     private _alertCtrl: AlertController,
     private _langSvc: LangService,
     private _store: Store,
-    private _privacyAgreeSvc: PrivacyAgreeService,
   ) {}
 
   private _createErrorAlert(error: string): Promise<HTMLIonAlertElement> {

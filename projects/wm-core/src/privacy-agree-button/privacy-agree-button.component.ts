@@ -1,11 +1,12 @@
-import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {Observable} from 'rxjs';
-import {take, switchMap} from 'rxjs/operators';
+import {take, switchMap, filter} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
-import {isLogged} from '@wm-core/store/auth/auth.selectors';
+import {isLogged, privacyUser} from '@wm-core/store/auth/auth.selectors';
 import {confPRIVACY} from '@wm-core/store/conf/conf.selector';
-import {PrivacyAgreeService} from '@wm-core/services/privacy-agree.service';
 import {IPROJECT} from '@wm-core/types/config';
+import {Privacy} from '@wm-core/store/auth/auth.model';
+import {AuthService} from '@wm-core/store/auth/auth.service';
 
 @Component({
   selector: 'wm-privacy-agree-button',
@@ -22,47 +23,29 @@ export class WmPrivacyAgreeButtonComponent {
   @Input() showIcon: boolean = true;
   @Input() disabled: boolean = false;
 
-  @Output() consentResultEVT = new EventEmitter<boolean>();
 
   isLogged$: Observable<boolean> = this._store.select(isLogged);
-  confPRIVACY$: Observable<IPROJECT> = this._store.select(confPRIVACY);
+  confPRIVACYPAGE$: Observable<IPROJECT> = this._store.select(confPRIVACY);
+  privacyUser$: Observable<Privacy> = this._store.select(privacyUser);
 
-  private _isAlertOpen: boolean = false;
 
-  constructor(private _store: Store, private _privacyAgreeSvc: PrivacyAgreeService) {}
+  constructor(
+    private _store: Store,
+    private _authSvc: AuthService,
+  ) {}
 
   /**
    * Open privacy agree alert to allow user to modify privacy consent
    */
   openPrivacyAgreeAlert(): void {
-    if (this.disabled || this._isAlertOpen) {
-      return;
-    }
-
-    this._isAlertOpen = true;
-    this._privacyAgreeSvc.setManualAlertOpen(true);
-
     this.isLogged$
       .pipe(
         take(1),
-        switchMap(isLogged =>
-          this._privacyAgreeSvc.showPrivacyAgreeAlert(isLogged, this.confPRIVACY$),
-        ),
+        filter(l=>l),
+        switchMap(isLogged => this._authSvc.showPrivacyAgreeAlert()),
       )
-      .subscribe({
-        next: result => {
-          this.consentResultEVT.emit(result);
-          this._isAlertOpen = false;
-          this._privacyAgreeSvc.setManualAlertOpen(false);
-        },
-        error: error => {
-          this._isAlertOpen = false;
-          this._privacyAgreeSvc.setManualAlertOpen(false);
-        },
-        complete: () => {
-          this._isAlertOpen = false;
-          this._privacyAgreeSvc.setManualAlertOpen(false);
-        },
-      });
+      .subscribe();
   }
+
+
 }
