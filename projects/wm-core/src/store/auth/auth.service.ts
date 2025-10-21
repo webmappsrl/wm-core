@@ -97,13 +97,6 @@ export class AuthService {
     );
   }
 
-  updateUser(userData: any): Observable<IUser> {
-    return this._http.post(
-      `${this._environmentSvc.origin}/api/auth/user`,
-      userData,
-    ) as Observable<IUser>;
-  }
-
   /**
    * Show privacy agree alert and handle user response
    * @returns Observable that emits when the alert is dismissed
