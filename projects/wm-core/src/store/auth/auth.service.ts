@@ -186,27 +186,6 @@ export class AuthService {
     }
   }
 
-  private async _confirmModifyPrivacy(): Promise<boolean> {
-    const title = this._langSvc.instant('privacy.modify.title'); // es. "Confermi la modifica?"
-    const message = this._langSvc.instant('privacy.modify.message'); // es. "Vuoi aggiornare le impostazioni privacy?"
-    const yes = this._langSvc.instant('common.yes'); // es. "Sì"
-    const no = this._langSvc.instant('common.no'); // es. "No"
-
-    const alert = await this._alertCtrl.create({
-      header: title,
-      message,
-      backdropDismiss: false,
-      buttons: [
-        {text: no, role: 'cancel'},
-        {text: yes, role: 'confirm'},
-      ],
-    });
-
-    await alert.present();
-    const {role} = await alert.onDidDismiss();
-    return role === 'confirm';
-  }
-
   /**
    * Open privacy policy modal or external link
    */
