@@ -36,8 +36,8 @@ export class UgcService {
   private isSyncingUgcTrack = false;
   private syncQueue: Promise<void> = Promise.resolve();
 
-  public isLogged$ = this._store.select(isLogged);
-  public isLoggedAndHasPrivacyAgree$ = this._store.select(isLoggedAndHasPrivacyAgree);
+  isLogged$ = this._store.select(isLogged);
+  isLoggedAndHasPrivacyAgree$ = this._store.select(isLoggedAndHasPrivacyAgree);
 
   constructor(
     private _http: HttpClient,
@@ -61,19 +61,19 @@ export class UgcService {
     });
   }
 
-  public deleteApiMedia(id: number): Observable<any> {
+  deleteApiMedia(id: number): Observable<any> {
     return this._http.get(`${this._environmentSvc.origin}/api/v2/ugc/media/delete/${id}`);
   }
 
-  public deleteApiPoi(id: number): Observable<any> {
+  deleteApiPoi(id: number): Observable<any> {
     return this._http.get(`${this._environmentSvc.origin}/api/v2/ugc/poi/delete/${id}`);
   }
 
-  public deleteApiTrack(id: number): Observable<any> {
+  deleteApiTrack(id: number): Observable<any> {
     return this._http.get(`${this._environmentSvc.origin}/api/v2/ugc/track/delete/${id}`);
   }
 
-  public deletePoi(poi: WmFeature<Point>): Observable<any> {
+  deletePoi(poi: WmFeature<Point>): Observable<any> {
     const id = poi.properties.id;
     return this.deleteApiPoi(id).pipe(
       take(1),
@@ -81,7 +81,7 @@ export class UgcService {
     );
   }
 
-  public deleteTrack(track: WmFeature<LineString>): Observable<any> {
+  deleteTrack(track: WmFeature<LineString>): Observable<any> {
     if (track.properties.id) {
       return this.deleteApiTrack(track.properties.id).pipe(
         take(1),
@@ -176,7 +176,7 @@ export class UgcService {
       .toPromise();
   }
 
-  public getPoi(poiId: string): Observable<WmFeature<Point> | null> {
+  getPoi(poiId: string): Observable<WmFeature<Point> | null> {
     return new Observable<WmFeature<Point> | null>(observer => {
       getDeviceUgcPoi(poiId)
         .then(devicePoi => {
@@ -203,11 +203,11 @@ export class UgcService {
     });
   }
 
-  public loadUgcPois() {
+  loadUgcPois() {
     return from(getUgcPois()).pipe(map(ugcPoiFeatures => updateUgcPois({ugcPoiFeatures})));
   }
 
-  public loadUgcTracks() {
+  loadUgcTracks() {
     return from(getUgcTracks()).pipe(map(ugcTrackFeatures => updateUgcTracks({ugcTrackFeatures})));
   }
 
@@ -322,7 +322,7 @@ export class UgcService {
    *
    * @returns
    */
-  public async saveApiPoi(poi: WmFeature<Point>): Promise<WmFeature<Point> | null> {
+  async saveApiPoi(poi: WmFeature<Point>): Promise<WmFeature<Point> | null> {
     if (poi != null) {
       const data = await this._buildFormData(poi);
 
@@ -342,7 +342,7 @@ export class UgcService {
    *
    * @returns
    */
-  public async saveApiTrack(track: WmFeature<LineString>): Promise<WmFeature<LineString> | null> {
+  async saveApiTrack(track: WmFeature<LineString>): Promise<WmFeature<LineString> | null> {
     if (track != null) {
       const data = await this._buildFormData(track);
 
@@ -359,7 +359,7 @@ export class UgcService {
    * Synchronize UGC based on the specified type
    * @param type Type of UGC to synchronize ('poi', 'track', or null for both)
    */
-  public async syncUgc(type: SyncUgcTypes = null): Promise<void> {
+  async syncUgc(type: SyncUgcTypes = null): Promise<void> {
     const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
 
     if (isLogged) {
@@ -426,7 +426,7 @@ export class UgcService {
     }
   }
 
-  public async updateApiPoi(poi: WmFeature<Point>): Promise<any> {
+  async updateApiPoi(poi: WmFeature<Point>): Promise<any> {
     if (poi != null) {
       const data = await this._buildFormData(poi);
       return this._http
@@ -436,7 +436,7 @@ export class UgcService {
     return Promise.resolve(null);
   }
 
-  public async updateApiTrack(track: WmFeature<LineString>): Promise<any> {
+  async updateApiTrack(track: WmFeature<LineString>): Promise<any> {
     if (track != null) {
       const data = await this._buildFormData(track);
       return this._http
