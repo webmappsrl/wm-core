@@ -1,11 +1,7 @@
-import {LineString, Point} from 'geojson';
-import {Observable, from, of} from 'rxjs';
-
-import {isLogged} from './../../auth/auth.selectors';
-import {updateUgcPois, updateUgcTracks} from './ugc.actions';
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Store} from '@ngrx/store';
+import {EnvironmentService} from '@wm-core/services/environment.service';
 import {
   getDeviceUgcPoi,
   getDeviceUgcPois,
@@ -22,18 +18,26 @@ import {
   saveUgcPoi,
   saveUgcTrack,
 } from '@wm-core/utils/localForage';
-import {WmFeature, WmFeatureCollection} from '@wm-types/feature';
+import {WmFeature, WmFeatureCollection, SyncUgcTypes} from '@wm-types/feature';
+
+import {LineString, Point} from 'geojson';
+import {Observable, from, of} from 'rxjs';
+
+import {isLogged, isLoggedAndHasPrivacyAgree} from './../../auth/auth.selectors';
+import {updateUgcPois, updateUgcTracks} from './ugc.actions';
 import {catchError, map, take, tap} from 'rxjs/operators';
-import {EnvironmentService} from '@wm-core/services/environment.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UgcService {
-  isLogged$ = this._store.select(isLogged);
-  private syncQueue: Promise<void> = Promise.resolve();
   private isSyncingUgcPoi = false;
   private isSyncingUgcTrack = false;
+  private syncQueue: Promise<void> = Promise.resolve();
+
+  isLogged$ = this._store.select(isLogged);
+  isLoggedAndHasPrivacyAgree$ = this._store.select(isLoggedAndHasPrivacyAgree);
+
   constructor(
     private _http: HttpClient,
     private _store: Store,
@@ -56,7 +60,7 @@ export class UgcService {
     const id = poi.properties.id;
     return this.deleteApiPoi(id).pipe(
       take(1),
-      tap(() => this.syncUgc()),
+      tap(() => this.syncUgc('poi')),
     );
   }
 
@@ -64,7 +68,7 @@ export class UgcService {
     if (track.properties.id) {
       return this.deleteApiTrack(track.properties.id).pipe(
         take(1),
-        tap(() => this.syncUgc()),
+        tap(() => this.syncUgc('track')),
       );
     }
     if (track.properties.uuid) {
@@ -73,9 +77,9 @@ export class UgcService {
     return of({error: 'Track id not found'});
   }
 
-  async fetchUgcPois(): Promise<void> {
+  private async _fetchUgcPois(): Promise<void> {
     try {
-      const apiUgcPois = await this.getApiPois();
+      const apiUgcPois = await this._getApiPois();
       if (apiUgcPois == null) {
         return;
       }
@@ -90,15 +94,15 @@ export class UgcService {
           // console.log(`fetchUgcPois sync: ${apiUgcPoi.properties.id}`);
         }
       }
-      // console.log('fetchUgcPois: Sincronizzazione eseguita correttamente');
+      // console.log('fetchUgcPois: Synchronization completed successfully');
     } catch (error) {
-      console.error('fetchUgcPois: Errore durante la sincronizzazione:', error);
+      console.error('fetchUgcPois: Error during synchronization:', error);
     }
   }
 
-  async fetchUgcTracks(): Promise<void> {
+  private async _fetchUgcTracks(): Promise<void> {
     try {
-      const apiUgcTracks = await this.getApiTracks();
+      const apiUgcTracks = await this._getApiTracks();
       if (apiUgcTracks == null) {
         return;
       }
@@ -113,20 +117,20 @@ export class UgcService {
           // console.log(`fetchUgcTracks sync: ${apiTrack.properties.id}`);
         }
       }
-      // console.log('fetchUgcTracks: Sincronizzazione eseguita correttamente');
+      // console.log('fetchUgcTracks: Synchronization completed successfully');
     } catch (error) {
-      console.error('fetchUgcTracks: Errore durante la sincronizzazione:', error);
+      console.error('fetchUgcTracks: Error during synchronization:', error);
     }
   }
 
-  async getApiPois(): Promise<WmFeatureCollection<Point>> {
+  private async _getApiPois(): Promise<WmFeatureCollection<Point>> {
     return await this._http
       .get<WmFeatureCollection<Point>>(`${this._environmentSvc.origin}/api/v2/ugc/poi/index`)
       .pipe(catchError(_ => of(null)))
       .toPromise();
   }
 
-  async getApiTracks(): Promise<WmFeatureCollection<LineString>> {
+  private async _getApiTracks(): Promise<WmFeatureCollection<LineString>> {
     return await this._http
       .get<WmFeatureCollection<LineString>>(`${this._environmentSvc.origin}/api/v2/ugc/track/index`)
       .pipe(catchError(_ => of(null)))
@@ -168,7 +172,7 @@ export class UgcService {
     return from(getUgcTracks()).pipe(map(ugcTrackFeatures => updateUgcTracks({ugcTrackFeatures})));
   }
 
-  async pushUgcPois(): Promise<void> {
+  private async _pushUgcPois(): Promise<void> {
     try {
       let deviceUgcPois = await getDeviceUgcPois();
       let synchronizedUgcPois = await getSynchronizedUgcPois();
@@ -184,12 +188,17 @@ export class UgcService {
           continue;
         }
 
+        // If privacy agree is active, sync ALL unsynchronized UGC
+        console.log(`🔄 Syncing POI ${deviceUgcPoi.properties.uuid} (privacy agree is active)`);
+
         try {
           const res = await this.saveApiPoi(deviceUgcPoi);
           if (res) {
             await removeDeviceUgcPoi(deviceUgcPoi.properties.uuid);
-            synchronizedUgcPois.push(deviceUgcPoi); // Aggiorna la lista dei POI sincronizzati
-            //  console.log(`POI with UUID ${deviceUgcPoi.properties.uuid} synchronized and removed.`);
+            synchronizedUgcPois.push(deviceUgcPoi); // Update the list of synchronized POIs
+            console.log(
+              `✅ POI with UUID ${deviceUgcPoi.properties.uuid} synchronized and removed.`,
+            );
           }
         } catch (poiError) {
           console.error(
@@ -198,13 +207,13 @@ export class UgcService {
           );
         }
       }
-      // console.log('POI synchronization completed successfully');
+      console.log('✅ POI synchronization completed successfully');
     } catch (error) {
       console.error('Error during POI synchronization:', error);
     }
   }
 
-  async pushUgcTracks(): Promise<void> {
+  private async _pushUgcTracks(): Promise<void> {
     try {
       let deviceUgcTracks = await getDeviceUgcTracks();
       let synchronizedUgcTracks = await getSynchronizedUgcTracks();
@@ -215,17 +224,22 @@ export class UgcService {
         );
 
         if (existingTrack) {
-          const res = await this.saveApiTrack(deviceUgcTrack);
-          // console.log(`Track with UUID ${deviceUgcTrack.properties.uuid} already exists. Skipping save.`,);
+          await removeDeviceUgcTrack(deviceUgcTrack.properties.uuid);
+          // console.log(`Track with UUID ${deviceUgcTrack.properties.uuid} already exists. Skipping save.`);
           continue;
         }
+
+        // If privacy agree is active, sync ALL unsynchronized UGC
+        console.log(`🔄 Syncing Track ${deviceUgcTrack.properties.uuid} (privacy agree is active)`);
 
         try {
           const res = await this.saveApiTrack(deviceUgcTrack);
           if (res) {
             await removeDeviceUgcTrack(deviceUgcTrack.properties.uuid);
-            synchronizedUgcTracks.push(deviceUgcTrack); // Aggiorna la lista delle tracce sincronizzate
-            // console.log(`Track with UUID ${deviceUgcTrack.properties.uuid} synchronized and removed.`);
+            synchronizedUgcTracks.push(deviceUgcTrack); // Update the list of synchronized tracks
+            console.log(
+              `✅ Track with UUID ${deviceUgcTrack.properties.uuid} synchronized and removed.`,
+            );
           }
         } catch (trackError) {
           console.error(
@@ -234,7 +248,7 @@ export class UgcService {
           );
         }
       }
-      // console.log('Track synchronization completed successfully');
+      console.log('✅ Track synchronization completed successfully');
     } catch (error) {
       console.error('Error during track synchronization:', error);
     }
@@ -280,31 +294,40 @@ export class UgcService {
     return Promise.resolve(null);
   }
 
-  async syncUgc(): Promise<void> {
-    const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
-
-    if (isLogged) {
-      this.syncQueue = this.syncQueue.then(async () => {
-        if (isLogged) {
-          try {
-            await this.syncUgcPois();
-            await this.syncUgcTracks();
-          } catch (error) {
-            console.error('syncUgc: Errore durante la sincronizzazione:', error);
-          }
-        } else {
-          from(getUgcTracks())
-            .pipe(take(1))
-            .subscribe(ugcTrackFeatures => {
-              this._store.dispatch(updateUgcTracks({ugcTrackFeatures}));
-            });
-        }
-      });
-      return this.syncQueue;
+  /**
+   * Synchronize UGC based on the specified type
+   * @param type Type of UGC to synchronize ('poi', 'track', or null for both)
+   */
+  async syncUgc(type: SyncUgcTypes = null): Promise<void> {
+    const isLoggedAndHasPrivacyAgree = await from(
+      this.isLoggedAndHasPrivacyAgree$.pipe(take(1)),
+    ).toPromise();
+    if (!isLoggedAndHasPrivacyAgree) {
+      console.log(
+        '🔒 User not logged in or privacy agree not given, skipping UGC POI fetch from API',
+      );
+      return;
     }
+
+    this.syncQueue = this.syncQueue.then(async () => {
+      try {
+        if (type === 'poi') {
+          await this._syncUgcPois();
+        } else if (type === 'track') {
+          await this._syncUgcTracks();
+        } else {
+          // type === null - sync both
+          await this._syncUgcPois();
+          await this._syncUgcTracks();
+        }
+      } catch (error) {
+        console.error('syncUgc: Error during synchronization:', error);
+      }
+    });
+    return this.syncQueue;
   }
 
-  async syncUgcPois(): Promise<void> {
+  private async _syncUgcPois(): Promise<void> {
     try {
       if (this.isSyncingUgcPoi) {
         return;
@@ -312,17 +335,17 @@ export class UgcService {
       const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
       if (isLogged) {
         this.isSyncingUgcPoi = true;
-        await this.pushUgcPois();
-        await this.fetchUgcPois();
+        await this._pushUgcPois();
+        await this._fetchUgcPois();
         this.isSyncingUgcPoi = false;
       }
     } catch (error) {
       this.isSyncingUgcPoi = false;
-      console.error('syncUgcPois: Errore durante la sincronizzazione:', error);
+      console.error('syncUgcPois: Error during synchronization:', error);
     }
   }
 
-  async syncUgcTracks(): Promise<void> {
+  private async _syncUgcTracks(): Promise<void> {
     try {
       if (this.isSyncingUgcTrack) {
         return;
@@ -330,20 +353,22 @@ export class UgcService {
       const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
       if (isLogged) {
         this.isSyncingUgcTrack = true;
-        await this.pushUgcTracks();
-        await this.fetchUgcTracks();
+        await this._pushUgcTracks();
+        await this._fetchUgcTracks();
         this.isSyncingUgcTrack = false;
       }
     } catch (error) {
       this.isSyncingUgcTrack = false;
-      console.error('syncUgcTracks: Errore durante la sincronizzazione:', error);
+      console.error('syncUgcTracks: Error during synchronization:', error);
     }
   }
 
   async updateApiPoi(poi: WmFeature<Point>): Promise<any> {
     if (poi != null) {
       const data = await this._buildFormData(poi);
-      return this._http.post(`${this._environmentSvc.origin}/api/v3/ugc/poi/edit`, data).toPromise();
+      return this._http
+        .post(`${this._environmentSvc.origin}/api/v3/ugc/poi/edit`, data)
+        .toPromise();
     }
     return Promise.resolve(null);
   }
@@ -351,7 +376,9 @@ export class UgcService {
   async updateApiTrack(track: WmFeature<LineString>): Promise<any> {
     if (track != null) {
       const data = await this._buildFormData(track);
-      return this._http.post(`${this._environmentSvc.origin}/api/v3/ugc/track/edit`, data).toPromise();
+      return this._http
+        .post(`${this._environmentSvc.origin}/api/v3/ugc/track/edit`, data)
+        .toPromise();
     }
     return Promise.resolve(null);
   }
@@ -361,7 +388,7 @@ export class UgcService {
     const photoFeatures = properties?.media?.filter(p => !p.id) ?? [];
     const data = new FormData();
 
-    // Pulisce i dati EXIF da caratteri speciali prima di inviare
+    // Clean EXIF data from special characters before sending
     const cleanedFeature = this._cleanExifData(feature);
     data.append('feature', JSON.stringify(cleanedFeature));
 
@@ -380,13 +407,13 @@ export class UgcService {
   }
 
   private _cleanExifData(feature: WmFeature<LineString | Point>): WmFeature<LineString | Point> {
-    // Crea una copia dell'oggetto feature
+    // Create a copy of the feature object
     const cleanedFeature = structuredClone(feature);
 
     if (cleanedFeature.properties?.media) {
       cleanedFeature.properties.media = cleanedFeature.properties.media.map((media: any) => {
         if (media.exif) {
-          // Rimuove caratteri Unicode non validi dai dati EXIF
+          // Remove invalid Unicode characters from EXIF data
           const cleanedExif = this._cleanObject(media.exif);
           media.exif = cleanedExif;
         }
@@ -397,10 +424,10 @@ export class UgcService {
     return cleanedFeature;
   }
 
-  // Funzione ricorsiva per pulire oggetti da caratteri Unicode non validi
+  // Recursive function to clean objects from invalid Unicode characters
   private _cleanObject(obj: any): any {
     if (typeof obj === 'string') {
-      // Rimuove caratteri Unicode non validi (come \u0000, \u0001, \u0002, etc.)
+      // Remove invalid Unicode characters (like \u0000, \u0001, \u0002, etc.)
       return obj.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
     } else if (typeof obj === 'object' && obj !== null) {
       if (Array.isArray(obj)) {
@@ -416,12 +443,12 @@ export class UgcService {
     return obj;
   }
 
-  // Funzione per verificare se una traccia è stata modificata
+  // Function to check if a track has been modified
   private _isFeatureModified(apiFeature: WmFeature<any>, cloudFeature: WmFeature<any>): boolean {
     if (cloudFeature == null) {
       return true;
     }
-    // Confronta proprietà rilevanti per verificare se la traccia è stata modificata
+    // Compare relevant properties to check if the track has been modified
     return (
       JSON.stringify(apiFeature.geometry) !== JSON.stringify(cloudFeature.geometry) ||
       JSON.stringify(apiFeature.properties) !== JSON.stringify(cloudFeature.properties)

@@ -4,7 +4,12 @@ import {IUser} from './auth.model';
 
 export const loadSignUps = createAction(
   '[Auth] Load SignUps',
-  props<{name: string; email: string; password: string; referrer?: string}>(),
+  props<{
+    name: string;
+    email: string;
+    password: string;
+    referrer?: string;
+  }>(),
 );
 export const loadSignUpsSuccess = createAction(
   '[Auth] Load SignUps Success',
@@ -44,3 +49,9 @@ export const deleteUserFailure = createAction(
 
 export const loadSignOuts = createAction('[Auth] Load SignOut');
 export const loadSignOutsSuccess = createAction('[Auth] Load SignOut Success');
+
+export const updateUserPrivacy = createAction('[Auth] update user privacy', props<{agree}>());
+export const updatePrivacyFailure = createAction(
+  '[Auth] update user privacy failure',
+  props<{error: HttpErrorResponse}>(),
+);

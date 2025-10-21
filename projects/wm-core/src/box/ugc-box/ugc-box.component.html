@@ -8,6 +8,20 @@
   <ion-button *ngIf="(ugcOpen$|async)" color="light" (click)="openUgcUploader()">
     <ion-icon slot="icon-only" name="cloud-upload-outline"></ion-icon>
   </ion-button>
-  <div class="wm-box-title">{{"I miei percorsi" | wmtrans}}</div>
+  <div
+    class="wm-box-title"
+    [style.bottom]="((ugcOpen$|async) && (needsPrivacyAgree$|async)) ? '15px' : '0px'"
+  >
+    {{"I miei percorsi" | wmtrans}}
+  </div>
+  <wm-privacy-agree-button
+    *ngIf="(ugcOpen$|async) && (needsPrivacyAgree$|async)"
+    expand="block"
+    color="danger"
+    fill="solid"
+    size="small"
+  >
+    {{'Dati non sincronizzati'|wmtrans}}
+  </wm-privacy-agree-button>
   <ng-content></ng-content>
 </div>

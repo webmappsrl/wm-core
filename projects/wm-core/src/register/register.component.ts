@@ -88,24 +88,28 @@ export class RegisterComponent {
   }
 
   openPrivacyPolicy(): void {
-    this.confPrivacy$.pipe(
-      take(1),
-      switchMap(privacy => {
-        if (privacy?.html != null) {
-          return from(this._modalCtrl.create({
-            component: WmInnerHtmlComponent,
-            componentProps: {
-              html: privacy.html,
-            },
-            swipeToClose: true,
-            mode: 'ios',
-          }));
-        } else {
-          window.open(DEFAULT_PRIVACY_POLICY_URL, '_blank');
-          return of(null);
-        }
-      }),
-    ).subscribe(modal => modal?.present());
+    this.confPrivacy$
+      .pipe(
+        take(1),
+        switchMap(privacy => {
+          if (privacy?.html != null) {
+            return from(
+              this._modalCtrl.create({
+                component: WmInnerHtmlComponent,
+                componentProps: {
+                  html: privacy.html,
+                },
+                swipeToClose: true,
+                mode: 'ios',
+              }),
+            );
+          } else {
+            window.open(DEFAULT_PRIVACY_POLICY_URL, '_blank');
+            return of(null);
+          }
+        }),
+      )
+      .subscribe(modal => modal?.present());
   }
 
   register(): void {

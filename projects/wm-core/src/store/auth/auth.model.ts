@@ -1,4 +1,3 @@
-
 export interface IUser {
   id: number;
   email?: string;
@@ -7,8 +6,16 @@ export interface IUser {
   updatedAt?: string;
   role?: string;
   access_token: string;
+  properties?: {
+    privacy?: Privacy[];
+  };
 }
 
 export interface ILogoutResponse extends IUser {
   message: string;
+}
+export interface Privacy {
+  agree: boolean;
+  date: string;
+  app_id: number;
 }

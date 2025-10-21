@@ -233,4 +233,6 @@ export const wmDE = {
   'Eliminazione': 'Löschen',
   'Elimina': 'Löschen',
   'Sei sicuro di voler eliminare questi dati?': 'Sind Sie sicher, dass Sie diese Daten löschen möchten?',
+  'Modifica consenso dati': 'Dateneinwilligung ändern',
+  'Dati non sincronizzati': 'Nicht synchronisierte Daten',
 };

@@ -16,7 +16,7 @@ import {
   removeAuth,
   saveAuth,
 } from '@wm-core/utils/localForage';
-import {catchError, filter, map, switchMap} from 'rxjs/operators';
+import {catchError, filter, map, switchMap, tap} from 'rxjs/operators';
 
 @Injectable()
 export class AuthEffects {
@@ -40,7 +40,7 @@ export class AuthEffects {
     return this._actions$.pipe(
       ofType(AuthActions.loadAuths),
       switchMap(action =>
-        this._authSvc.getUser().pipe(
+        this._authSvc.me().pipe(
           map(user => {
             saveAuth(user);
             return AuthActions.loadAuthsSuccess({user});
@@ -84,8 +84,10 @@ export class AuthEffects {
       ofType(AuthActions.loadSignUps),
       switchMap(action =>
         this._authSvc.signUp(action.name, action.email, action.password).pipe(
-          map(user => {
+          tap(user => {
             saveAuth(user);
+          }),
+          map(user => {
             return AuthActions.loadSignUpsSuccess({user});
           }),
           catchError(error => {
@@ -95,6 +97,57 @@ export class AuthEffects {
       ),
     );
   });
+  updatePrivacyAgree$ = createEffect(() => {
+    return this._actions$.pipe(
+      ofType(AuthActions.updateUserPrivacy),
+      switchMap(action =>
+        this._authSvc.updatePrivacyAgree(action.agree).pipe(
+          map(user => {
+            saveAuth(user);
+            return AuthActions.loadAuthsSuccess({user});
+          }),
+          catchError(error => {
+            return of(AuthActions.updatePrivacyFailure({error}));
+          }),
+        ),
+      ),
+    );
+  });
+  syncUgcAfterAuthSuccess$ = createEffect(
+    () => {
+      return this._actions$.pipe(
+        ofType(AuthActions.loadAuthsSuccess),
+        filter(action => {
+          const user = action.user;
+          const properties = user.properties ?? null;
+          const privacy = properties?.privacy ?? null;
+          return privacy && privacy.length > 0 && privacy.some(p => p.agree === true);
+        }),
+        tap(() => {
+          this._store.dispatch(syncUgc());
+        }),
+      );
+    },
+    {dispatch: false},
+  );
+  updatePrivacyIfNeeded$ = createEffect(
+    () => {
+      return this._actions$.pipe(
+        ofType(AuthActions.loadAuthsSuccess, AuthActions.loadSignInsSuccess),
+        switchMap(action => {
+          const user = action.user;
+          const properties = user.properties ?? null;
+          const privacy = properties?.privacy ?? null;
+          if (privacy == null || privacy.length == 0) {
+            return this._authSvc.showPrivacyAgreeAlert();
+          }
+
+          return of(null);
+        }),
+      );
+    },
+    {dispatch: false},
+  );
   logoutByError$ = createEffect(
     () => {
       return this._actions$.pipe(

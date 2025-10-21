@@ -212,7 +212,7 @@ export class UgcEffects {
     this._actions$.pipe(
       ofType(syncUgcPois),
       mergeMap(() =>
-        from(this._ugcSvc.syncUgcPois()).pipe(
+        from(this._ugcSvc.syncUgc('poi')).pipe(
           map(() => syncUgcSuccess({responseType: 'Pois'})),
           catchError(error => of(syncUgcFailure({responseType: 'Pois', error}))),
         ),
@@ -223,7 +223,7 @@ export class UgcEffects {
     this._actions$.pipe(
       ofType(syncUgcTracks),
       mergeMap(() =>
-        from(this._ugcSvc.syncUgcTracks()).pipe(
+        from(this._ugcSvc.syncUgc('track')).pipe(
           map(() => syncUgcSuccess({responseType: 'Tracks'})),
           catchError(error => of(syncUgcFailure({responseType: 'Tracks', error}))),
         ),

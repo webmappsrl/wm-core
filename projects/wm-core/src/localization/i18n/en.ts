@@ -240,4 +240,6 @@ export const wmEN = {
   'Eliminazione': 'Deletion',
   'Elimina': 'Delete',
   'Sei sicuro di voler eliminare questi dati?': 'Are you sure you want to delete this data?',
+  'Modifica consenso dati': 'Modify data consent',
+  'Dati non sincronizzati': 'Unsynchronized data',
 };
