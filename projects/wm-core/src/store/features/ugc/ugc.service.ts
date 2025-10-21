@@ -42,9 +42,7 @@ export class UgcService {
     private _http: HttpClient,
     private _store: Store,
     private _environmentSvc: EnvironmentService,
-  ) {
-
-  }
+  ) {}
 
   deleteApiMedia(id: number): Observable<any> {
     return this._http.get(`${this._environmentSvc.origin}/api/v2/ugc/media/delete/${id}`);
@@ -81,17 +79,6 @@ export class UgcService {
 
   private async _fetchUgcPois(): Promise<void> {
     try {
-      // Check if user is logged in AND has privacy agree before fetching from API
-      const isLoggedAndHasPrivacyAgree = await from(
-        this.isLoggedAndHasPrivacyAgree$.pipe(take(1)),
-      ).toPromise();
-      if (!isLoggedAndHasPrivacyAgree) {
-        console.log(
-          '🔒 User not logged in or privacy agree not given, skipping UGC POI fetch from API',
-        );
-        return;
-      }
-
       const apiUgcPois = await this._getApiPois();
       if (apiUgcPois == null) {
         return;
@@ -115,17 +102,6 @@ export class UgcService {
 
   private async _fetchUgcTracks(): Promise<void> {
     try {
-      // Check if user is logged in AND has privacy agree before fetching from API
-      const isLoggedAndHasPrivacyAgree = await from(
-        this.isLoggedAndHasPrivacyAgree$.pipe(take(1)),
-      ).toPromise();
-      if (!isLoggedAndHasPrivacyAgree) {
-        console.log(
-          '🔒 User not logged in or privacy agree not given, skipping UGC Track fetch from API',
-        );
-        return;
-      }
-
       const apiUgcTracks = await this._getApiTracks();
       if (apiUgcTracks == null) {
         return;
@@ -198,17 +174,6 @@ export class UgcService {
 
   private async _pushUgcPois(): Promise<void> {
     try {
-      // Check if user is logged in AND has privacy agree before pushing to API
-      const isLoggedAndHasPrivacyAgree = await from(
-        this.isLoggedAndHasPrivacyAgree$.pipe(take(1)),
-      ).toPromise();
-      if (!isLoggedAndHasPrivacyAgree) {
-        console.log(
-          '🔒 User not logged in or privacy agree not given, skipping UGC POI push to API',
-        );
-        return;
-      }
-
       let deviceUgcPois = await getDeviceUgcPois();
       let synchronizedUgcPois = await getSynchronizedUgcPois();
 
@@ -250,17 +215,6 @@ export class UgcService {
 
   private async _pushUgcTracks(): Promise<void> {
     try {
-      // Check if user is logged in AND has privacy agree before pushing to API
-      const isLoggedAndHasPrivacyAgree = await from(
-        this.isLoggedAndHasPrivacyAgree$.pipe(take(1)),
-      ).toPromise();
-      if (!isLoggedAndHasPrivacyAgree) {
-        console.log(
-          '🔒 User not logged in or privacy agree not given, skipping UGC Track push to API',
-        );
-        return;
-      }
-
       let deviceUgcTracks = await getDeviceUgcTracks();
       let synchronizedUgcTracks = await getSynchronizedUgcTracks();
 
@@ -345,34 +299,32 @@ export class UgcService {
    * @param type Type of UGC to synchronize ('poi', 'track', or null for both)
    */
   async syncUgc(type: SyncUgcTypes = null): Promise<void> {
-    const isLogged = await from(this.isLogged$.pipe(take(1))).toPromise();
-
-    if (isLogged) {
-      this.syncQueue = this.syncQueue.then(async () => {
-        if (isLogged) {
-          try {
-            if (type === 'poi') {
-              await this._syncUgcPois();
-            } else if (type === 'track') {
-              await this._syncUgcTracks();
-            } else {
-              // type === null - sync both
-              await this._syncUgcPois();
-              await this._syncUgcTracks();
-            }
-          } catch (error) {
-            console.error('syncUgc: Error during synchronization:', error);
-          }
-        } else {
-          from(getUgcTracks())
-            .pipe(take(1))
-            .subscribe(ugcTrackFeatures => {
-              this._store.dispatch(updateUgcTracks({ugcTrackFeatures}));
-            });
-        }
-      });
-      return this.syncQueue;
+    const isLoggedAndHasPrivacyAgree = await from(
+      this.isLoggedAndHasPrivacyAgree$.pipe(take(1)),
+    ).toPromise();
+    if (!isLoggedAndHasPrivacyAgree) {
+      console.log(
+        '🔒 User not logged in or privacy agree not given, skipping UGC POI fetch from API',
+      );
+      return;
     }
+
+    this.syncQueue = this.syncQueue.then(async () => {
+      try {
+        if (type === 'poi') {
+          await this._syncUgcPois();
+        } else if (type === 'track') {
+          await this._syncUgcTracks();
+        } else {
+          // type === null - sync both
+          await this._syncUgcPois();
+          await this._syncUgcTracks();
+        }
+      } catch (error) {
+        console.error('syncUgc: Error during synchronization:', error);
+      }
+    });
+    return this.syncQueue;
   }
 
   private async _syncUgcPois(): Promise<void> {
