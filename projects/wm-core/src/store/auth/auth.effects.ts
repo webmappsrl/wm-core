@@ -104,9 +104,6 @@ export class AuthEffects {
         this._authSvc.updatePrivacyAgree(action.agree).pipe(
           map(user => {
             saveAuth(user);
-            if (action.agree) {
-              this._store.dispatch(syncUgc());
-            }
             return AuthActions.loadAuthsSuccess({user});
           }),
           catchError(error => {
@@ -116,6 +113,23 @@ export class AuthEffects {
       ),
     );
   });
+  syncUgcAfterAuthSuccess$ = createEffect(
+    () => {
+      return this._actions$.pipe(
+        ofType(AuthActions.loadAuthsSuccess),
+        filter(action => {
+          const user = action.user;
+          const properties = user.properties ?? null;
+          const privacy = properties?.privacy ?? null;
+          return privacy && privacy.length > 0 && privacy.some(p => p.agree === true);
+        }),
+        tap(() => {
+          this._store.dispatch(syncUgc());
+        }),
+      );
+    },
+    {dispatch: false},
+  );
   updatePrivacyIfNeeded$ = createEffect(
     () => {
       return this._actions$.pipe(
