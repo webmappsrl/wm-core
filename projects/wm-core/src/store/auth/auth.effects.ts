@@ -83,7 +83,7 @@ export class AuthEffects {
     return this._actions$.pipe(
       ofType(AuthActions.loadSignUps),
       switchMap(action =>
-        this._authSvc.signUp(action.name, action.email, action.password, action.privacyAgree).pipe(
+        this._authSvc.signUp(action.name, action.email, action.password).pipe(
           tap(user => {
             saveAuth(user);
           }),
@@ -104,7 +104,7 @@ export class AuthEffects {
         this._authSvc.updatePrivacyAgree(action.agree).pipe(
           map(user => {
             saveAuth(user);
-            if(action.agree) {
+            if (action.agree) {
               this._store.dispatch(syncUgc());
             }
             return AuthActions.loadAuthsSuccess({user});
@@ -116,20 +116,24 @@ export class AuthEffects {
       ),
     );
   });
-  updatePrivacyIfNeeded$ = createEffect(() => {
-    return this._actions$.pipe(ofType(AuthActions.loadAuthsSuccess, AuthActions.loadSignInsSuccess),
-      switchMap(action => {
-        const user = action.user;
-        const properties = user.properties?? null;
-        const privacy = properties?.privacy??null;
-        if(privacy== null ||privacy.length == 0) {
-          return this._authSvc.showPrivacyAgreeAlert();
-        }
+  updatePrivacyIfNeeded$ = createEffect(
+    () => {
+      return this._actions$.pipe(
+        ofType(AuthActions.loadAuthsSuccess, AuthActions.loadSignInsSuccess),
+        switchMap(action => {
+          const user = action.user;
+          const properties = user.properties ?? null;
+          const privacy = properties?.privacy ?? null;
+          if (privacy == null || privacy.length == 0) {
+            return this._authSvc.showPrivacyAgreeAlert();
+          }
 
-        return of(null)
-      })
-    );
-  }, {dispatch: false});
+          return of(null);
+        }),
+      );
+    },
+    {dispatch: false},
+  );
   logoutByError$ = createEffect(
     () => {
       return this._actions$.pipe(

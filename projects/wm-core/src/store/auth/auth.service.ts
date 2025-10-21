@@ -52,7 +52,7 @@ export class AuthService {
     return this._http.post(`${this._environmentSvc.origin}/api/auth/logout`, {}) as Observable<any>;
   }
 
-  signUp(name: string, email: string, password: string, agree: boolean = true): Observable<IUser> {
+  signUp(name: string, email: string, password: string): Observable<IUser> {
     return this.confAPP$.pipe(
       take(1),
       switchMap(confApp => {
@@ -60,7 +60,7 @@ export class AuthService {
         const appId = confApp.id ?? confApp.geohubId;
         email = email?.toLowerCase();
         const privacy: Privacy = {
-          agree,
+          agree: true,
           date: new Date().toISOString(),
           app_id: +appId,
         };
