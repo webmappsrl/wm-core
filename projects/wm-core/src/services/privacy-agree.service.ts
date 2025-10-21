@@ -13,7 +13,7 @@ import {loadAuthsSuccess} from '@wm-core/store/auth/auth.actions';
 
 import {BehaviorSubject, Observable, from, Subject} from 'rxjs';
 
-import {filter, switchMap, take} from 'rxjs/operators';
+import {debounceTime, filter, switchMap, take} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -23,12 +23,12 @@ export class PrivacyAgreeService {
   private isManualAlertOpen = false;
 
   private privacyAgreeAcceptedSubject = new Subject<void>();
-  public privacyAgreeAccepted$ = this.privacyAgreeAcceptedSubject.asObservable();
+  privacyAgreeAccepted$ = this.privacyAgreeAcceptedSubject.asObservable();
 
-  public confAPP$: Observable<IAPP> = this._store.select(confAPP);
-  public privacyAgree$ = this.privacyAgreeSubject.asObservable();
-  public isLogged$: Observable<boolean> = this._store.select(isLogged);
-  public needsPrivacyAgree$: Observable<boolean> = this._store.select(needsPrivacyAgree);
+  confAPP$: Observable<IAPP> = this._store.select(confAPP);
+  privacyAgree$ = this.privacyAgreeSubject.asObservable();
+  isLogged$: Observable<boolean> = this._store.select(isLogged);
+  needsPrivacyAgree$: Observable<boolean> = this._store.select(needsPrivacyAgree);
 
   constructor(
     private _alertCtrl: AlertController,
@@ -43,44 +43,45 @@ export class PrivacyAgreeService {
    * @param privacyAgree Whether user accepted privacy agree
    * @param isLoggedIn Whether the user is currently logged in
    */
-  public savePrivacyAgreeForSignup(privacyAgree: boolean, isLoggedIn: boolean): void {
+  savePrivacyAgreeForSignup(privacyAgree: boolean, isLoggedIn: boolean): void {
     this._savePrivacyAgree(privacyAgree, isLoggedIn, true);
   }
 
   /**
    * Set manual alert open status to prevent automatic alerts
    */
-  public setManualAlertOpen(isOpen: boolean): void {
+  setManualAlertOpen(isOpen: boolean): void {
     this.isManualAlertOpen = isOpen;
   }
 
   /**
    * Initialize privacy agree management - call this from app component
    */
-  public initializePrivacyAgreeManagement(): void {
+  initializePrivacyAgreeManagement(): void {
     // Force sync privacy agree from backend on app startup if user is already logged in
     this.isLogged$.pipe(take(1)).subscribe(isLogged => {
       if (isLogged) {
         this._syncPrivacyAgreeFromBackendAndWait();
-      } else {
-        // If user is not logged in, check privacy agree normally
-        this._checkPrivacyAgreeAfterDelay();
       }
+      // Non-logged users don't need privacy agree check
     });
 
     // Update privacy agree status when user logs in
-    this.isLogged$.pipe(filter(isLogged => isLogged)).subscribe(() => {
-      // Sync privacy agree from backend and update status after a small delay to ensure user is fully logged in
-      setTimeout(() => {
+    this.isLogged$
+      .pipe(
+        filter(isLogged => isLogged),
+        debounceTime(100),
+      )
+      .subscribe(() => {
+        // Sync privacy agree from backend and update status after a small delay to ensure user is fully logged in
         this._syncPrivacyAgreeFromBackend();
-      }, 100);
-    });
+      });
   }
 
   /**
    * Open privacy policy modal or external link
    */
-  public openPrivacyPolicy(): Observable<any> {
+  openPrivacyPolicy(): Observable<any> {
     return this._store.select(confPRIVACY).pipe(
       take(1),
       switchMap(privacy => {
@@ -117,10 +118,7 @@ export class PrivacyAgreeService {
    * @param confPrivacy$ Observable for privacy configuration
    * @returns Observable that emits when the alert is dismissed
    */
-  public showPrivacyAgreeAlert(
-    isLoggedIn: boolean,
-    confPrivacy$: Observable<IPROJECT>,
-  ): Observable<any> {
+  showPrivacyAgreeAlert(isLoggedIn: boolean, confPrivacy$: Observable<IPROJECT>): Observable<any> {
     return new Observable(observer => {
       // Use translations
       const title = this._langSvc.instant('privacy.agree.title');
@@ -176,17 +174,8 @@ export class PrivacyAgreeService {
   /**
    * Update privacy agree status
    */
-  public updatePrivacyAgreeStatus(): void {
+  updatePrivacyAgreeStatus(): void {
     this.privacyAgreeSubject.next(this._hasPrivacyAgreeInLocalStorage());
-  }
-
-  /**
-   * Check privacy agree after a small delay for non-logged users
-   */
-  private _checkPrivacyAgreeAfterDelay(): void {
-    setTimeout(() => {
-      this._checkPrivacyAgreeStatus();
-    }, 100);
   }
 
   /**
