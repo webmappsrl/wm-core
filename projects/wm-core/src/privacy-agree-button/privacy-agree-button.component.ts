@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
 import {Observable} from 'rxjs';
 import {take, switchMap, filter} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
@@ -12,6 +12,8 @@ import {AuthService} from '@wm-core/store/auth/auth.service';
   selector: 'wm-privacy-agree-button',
   templateUrl: './privacy-agree-button.component.html',
   styleUrls: ['./privacy-agree-button.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class WmPrivacyAgreeButtonComponent {
   @Input() size: 'small' | 'default' | 'large' = 'small';
