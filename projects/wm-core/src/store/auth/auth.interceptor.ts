@@ -11,13 +11,14 @@ export class AuthInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const idToken = localStorage.getItem('access_token');
     const isOriginUrl = req.url.includes(this._environmentSvc.origin);
-    if (idToken && isOriginUrl) {
+    if (isOriginUrl) {
+      const setHeaders = {'App-id': `${this._environmentSvc.appId}`};
+      if(idToken) {
+        setHeaders['Authorization'] = `Bearer ${idToken}`;
+      }
       // Cloniamo la richiesta per aggiungere le nuove intestazioni
       const clonedReq = req.clone({
-        setHeaders: {
-          Authorization: `Bearer ${idToken}`,
-          'App-id': `${this._environmentSvc.appId}`,
-        },
+        setHeaders
       });
 
       return next.handle(clonedReq);

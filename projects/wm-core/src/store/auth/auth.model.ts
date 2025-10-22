@@ -17,5 +17,4 @@ export interface ILogoutResponse extends IUser {
 export interface Privacy {
   agree: boolean;
   date: string;
-  app_id: number;
 }

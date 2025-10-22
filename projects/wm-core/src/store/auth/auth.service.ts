@@ -57,12 +57,10 @@ export class AuthService {
       take(1),
       switchMap(confApp => {
         const sku = confApp.sku;
-        const appId = confApp.id ?? confApp.geohubId;
         email = email?.toLowerCase();
         const privacy: Privacy = {
           agree: true,
           date: new Date().toISOString(),
-          app_id: +appId,
         };
         return this._http.post(`${this._environmentSvc.origin}/api/auth/signup`, {
           name,
@@ -83,11 +81,9 @@ export class AuthService {
     return this.confAPP$.pipe(
       take(1),
       switchMap(confApp => {
-        const appId = confApp.id ?? confApp.geohubId;
         const privacy: Privacy = {
           agree,
           date: new Date().toISOString(),
-          app_id: +appId,
         };
 
         return this._http.post(`${this._environmentSvc.origin}/api/auth/user`, {
