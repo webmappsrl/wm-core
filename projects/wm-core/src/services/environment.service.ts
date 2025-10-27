@@ -24,7 +24,7 @@ export class EnvironmentService {
   private _confUrl: string;
   private _redirects: Redirects;
   private _redirect: Redirect;
-  private _oldShardName: string[] = ['geohub', 'geohubdev', 'osm2cai'];
+  private _oldShardName: string[] = ['geohub', 'geohubdev'];
   private _oldSubdomains: string[] = ['app', 'geohub', 'mobile'];
   private _shareLink: string;
   init$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
