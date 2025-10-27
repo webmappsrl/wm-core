@@ -380,6 +380,13 @@ export async function saveImgInsideTrack(
     return Promise.resolve(totalSize);
   }
   const urls = findImgInsideProperties(properties) || [];
+  if (urls.length == 0) {
+    callBackStatusFn({
+      finish: false,
+      media: 1,
+    });
+    return Promise.resolve(totalSize);
+  }
   for (let i = 0; i < urls.length; i++) {
     const url = urls[i];
     const d = await downloadFile(url);
