@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {of} from 'rxjs';
-import {catchError, filter, map, switchMap, withLatestFrom} from 'rxjs/operators';
+import {catchError, filter, map, switchMap, withLatestFrom, take} from 'rxjs/operators';
 import {loadConf, loadConfFail, loadConfSuccess, updateMapWithUgc} from './conf.actions';
 import {ConfService} from './conf.service';
 import {select, Store} from '@ngrx/store';
@@ -34,8 +34,12 @@ export class ConfEffects {
   updateLayer$ = createEffect(() =>
     this._actions$.pipe(
       ofType(currentEcLayerId),
-      withLatestFrom(
-        this._store.select(confHOME).pipe(filter(home => home != null && home.length > 0)),
+      switchMap(action =>
+        this._store.select(confHOME).pipe(
+          filter(home => home != null && home.length > 0),
+          take(1),
+          map(home => [action, home] as const),
+        ),
       ),
       switchMap(([action, home]) => {
         const id = +action.currentEcLayerId;
