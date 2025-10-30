@@ -58,7 +58,7 @@ export class WmLangSelectorComponent {
     if (!available.length) return;
     const current = this.langForm.value?.lang;
     const alert = await this._alertCtrl.create({
-      header: 'Language',
+      header: this._langSvc.instant('Lingua'),
       inputs: available.map(l => ({
         type: 'radio',
         label: l,
@@ -66,9 +66,9 @@ export class WmLangSelectorComponent {
         checked: l === current,
       })),
       buttons: [
-        {text: 'Cancel', role: 'cancel'},
+        {text: this._langSvc.instant('Annulla'), role: 'cancel'},
         {
-          text: 'OK',
+          text: this._langSvc.instant('OK'),
           role: 'confirm',
           handler: (value: string) => {
             if (value && value !== current) {

@@ -231,4 +231,5 @@ export const wmES = {
   'Sei sicuro di voler eliminare questi dati?': '¿Está seguro de que desea eliminar estos datos?',
   'Modifica consenso dati': 'Modificar consentimiento de datos',
   'Dati non sincronizzati': 'Datos no sincronizados',
+  'Lingua': 'Idioma',
 };

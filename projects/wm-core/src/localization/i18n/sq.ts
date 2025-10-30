@@ -239,4 +239,5 @@ export const wmSQ = {
   'Sei sicuro di voler eliminare questi dati?': 'A jeni të sigurt që dëshironi të fshini këto të dhëna?',
   'Modifica consenso dati': 'Modifiko pëlqimin për të dhënat',
   'Dati non sincronizzati': 'Të dhëna të pa-sinkronizuara',
+  'Lingua': 'Gjuha',
 };

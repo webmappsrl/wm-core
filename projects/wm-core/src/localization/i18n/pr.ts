@@ -232,4 +232,5 @@ export const wmPR = {
   'Sei sicuro di voler eliminare questi dati?': 'Tem certeza de que deseja excluir estes dados?',
   'Modifica consenso dati': 'Modificar consentimento de dados',
   'Dati non sincronizzati': 'Dados não sincronizados',
+  'Lingua': 'Idioma',
 };
