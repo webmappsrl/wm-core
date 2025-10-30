@@ -12,5 +12,15 @@ wm-lang-selector {
     background: #ffffff !important;
     box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2);
     border-radius: 4px;
+    &.left {
+      justify-content: flex-start;
+    }
+    .wm-lang-title {
+      font-weight: 600;
+    }
+    .wm-lang-label {
+      text-transform: lowercase;
+      margin-left: -5px;
+    }
   }
 }
