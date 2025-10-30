@@ -1,4 +1,5 @@
 import {Component, ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
+import {AlertController} from '@ionic/angular';
 import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
@@ -21,6 +22,7 @@ export class WmLangSelectorComponent {
     private _fb: UntypedFormBuilder,
     private _langSvc: LangService,
     private _store: Store,
+    private _alertCtrl: AlertController,
   ) {
     const lang = this._langSvc.useSavedLang() || this._langSvc.defaultLang;
     this.langForm = this._fb.group({
@@ -49,5 +51,33 @@ export class WmLangSelectorComponent {
     this.langForm.valueChanges.subscribe(lang => {
       this._langSvc.use(lang.lang);
     });
+  }
+
+  async langBtnClick(): Promise<void> {
+    const available = this.langs$.value || [];
+    if (!available.length) return;
+    const current = this.langForm.value?.lang;
+    const alert = await this._alertCtrl.create({
+      header: 'Language',
+      inputs: available.map(l => ({
+        type: 'radio',
+        label: l,
+        value: l,
+        checked: l === current,
+      })),
+      buttons: [
+        {text: 'Cancel', role: 'cancel'},
+        {
+          text: 'OK',
+          role: 'confirm',
+          handler: (value: string) => {
+            if (value && value !== current) {
+              this.langForm.setValue({lang: value});
+            }
+          },
+        },
+      ],
+    });
+    await alert.present();
   }
 }

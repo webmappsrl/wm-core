@@ -1,2 +1,16 @@
 wm-lang-selector {
+  .wm-lang-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 14px;
+    gap: 10px;
+    cursor: pointer;
+    height: 40px;
+    position: relative;
+    background: #ffffff !important;
+    box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
 }
