@@ -6,8 +6,16 @@ import {WmImgComponent} from './img/img.component';
 import {UgcSynchronizedBadgeComponent} from './ugc-synchronized-badge/ugc-synchronized-badge.component';
 import {WmIconComponent} from '../wm-icon/wm-icon.component';
 import {WmPipeModule} from '../pipes/pipe.module';
+import {WmPrivacyAgreeButtonComponent} from './privacy-agree-button/privacy-agree-button.component';
+import {WmProfileDeleteButtonComponent} from './profile-delete-button/profile-delete-button.component';
 
-const declarations = [WmImgComponent, UgcSynchronizedBadgeComponent, WmIconComponent];
+const declarations = [
+  WmImgComponent,
+  UgcSynchronizedBadgeComponent,
+  WmIconComponent,
+  WmPrivacyAgreeButtonComponent,
+  WmProfileDeleteButtonComponent,
+];
 
 @NgModule({
   declarations,
