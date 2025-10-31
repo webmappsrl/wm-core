@@ -243,6 +243,7 @@ export const wmEN = {
   'Sei sicuro di voler eliminare questi dati?': 'Are you sure you want to delete this data?',
   'Modifica consenso dati': 'Modify data consent',
   'Dati non sincronizzati': 'Unsynchronized data',
+  'Lingua': 'Language',
   'Azione irreversibile': 'Irreversible action',
   'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
     'Do you really want to delete your account? It is necessary to write "delete account" to proceed.',

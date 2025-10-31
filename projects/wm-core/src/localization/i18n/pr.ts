@@ -234,6 +234,7 @@ export const wmPR = {
   'Sei sicuro di voler eliminare questi dati?': 'Tem certeza de que deseja excluir estes dados?',
   'Modifica consenso dati': 'Modificar consentimento de dados',
   'Dati non sincronizzati': 'Dados não sincronizados',
+  'Lingua': 'Idioma',
   'Azione irreversibile': 'Ação irreversível',
   'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
     'Tem certeza de que deseja excluir sua conta? É necessário escrever "excluir conta" para proceder.',

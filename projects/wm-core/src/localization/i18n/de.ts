@@ -235,6 +235,7 @@ export const wmDE = {
   'Sei sicuro di voler eliminare questi dati?': 'Sind Sie sicher, dass Sie diese Daten löschen möchten?',
   'Modifica consenso dati': 'Dateneinwilligung ändern',
   'Dati non sincronizzati': 'Nicht synchronisierte Daten',
+  'Lingua': 'Sprache',
   'Azione irreversibile': 'Unwiderrufliche Aktion',
   'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
     'Möchten Sie Ihr Konto wirklich löschen? Es ist erforderlich, "Löschen Sie das Konto" zu schreiben, um fortzufahren.',

@@ -1,2 +1,54 @@
 wm-lang-selector {
+  .wm-lang-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 14px;
+    gap: 10px;
+    cursor: pointer;
+    height: 40px;
+    position: relative;
+    background: #ffffff !important;
+    box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    justify-content: center; // Default: center when only icon
+
+    // When title is not empty, align to left and show label
+    .wm-lang-title:not(:empty) {
+      & ~ .wm-lang-label {
+        display: inline;
+      }
+    }
+
+    // When title is empty, hide title and label, keep icon centered
+    .wm-lang-title:empty {
+      display: none;
+
+      & ~ .wm-lang-label {
+        display: none;
+      }
+    }
+
+    .wm-lang-title {
+      font-weight: 600;
+    }
+
+    .wm-lang-label {
+      text-transform: lowercase;
+      margin-left: -5px;
+      display: none;
+    }
+
+    // When title has content, switch to left alignment
+    // Using :has() for modern browsers, with center as fallback for older browsers
+    &:has(.wm-lang-title:not(:empty)) {
+      justify-content: flex-start;
+      gap: 10px;
+    }
+
+    // When title is empty, ensure gap is 0
+    &:has(.wm-lang-title:empty) {
+      gap: 0;
+    }
+  }
 }

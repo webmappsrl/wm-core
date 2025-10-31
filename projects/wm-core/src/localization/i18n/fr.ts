@@ -234,6 +234,7 @@ export const wmFR = {
   'Sei sicuro di voler eliminare questi dati?': 'Êtes-vous sûr de vouloir supprimer ces données ?',
   'Modifica consenso dati': 'Modifier le consentement aux données',
   'Dati non sincronizzati': 'Données non synchronisées',
+  'Lingua': 'Langue',
   'Azione irreversibile': 'Action irréversible',
   'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
     'Voulez-vous vraiment supprimer votre compte ? Il est nécessaire d\'écrire "delete account" pour procéder.',
