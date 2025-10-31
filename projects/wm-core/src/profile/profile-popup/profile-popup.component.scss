@@ -33,6 +33,15 @@ wm-profile-popup {
 
     ion-button {
       text-transform: none;
+      margin: 16px;
+      --border-radius: 20px;
+    }
+
+    wm-privacy-agree-button,
+    wm-profile-delete-button {
+      > ion-button {
+        margin: 8px 16px;
+      }
     }
   }
 }

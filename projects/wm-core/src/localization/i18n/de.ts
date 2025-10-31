@@ -235,4 +235,12 @@ export const wmDE = {
   'Sei sicuro di voler eliminare questi dati?': 'Sind Sie sicher, dass Sie diese Daten löschen möchten?',
   'Modifica consenso dati': 'Dateneinwilligung ändern',
   'Dati non sincronizzati': 'Nicht synchronisierte Daten',
+  'Azione irreversibile': 'Unwiderrufliche Aktion',
+  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
+    'Möchten Sie Ihr Konto wirklich löschen? Es ist erforderlich, "Löschen Sie das Konto" zu schreiben, um fortzufahren.',
+  'Digita "delete account"': 'Schreiben Sie "Löschen Sie das Konto"',
+  'Conferma': 'Bestätigen',
+  'La conferma non corrisponde. Digita "delete account" per procedere.':
+    'Die Bestätigung stimmt nicht mit dem oben eingegebenen Passwort überein. Schreiben Sie "Löschen Sie das Konto" um fortzufahren.',
+  'Elimina account': 'Löschen Sie das Konto',
 };

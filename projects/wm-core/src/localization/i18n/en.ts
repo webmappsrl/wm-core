@@ -232,14 +232,23 @@ export const wmEN = {
   'Esci': 'Exit',
   'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.':
     'You have saved the waypoint correctly. You can view it by accessing your profile.',
-  'Cliccando su \"Registrati\" accetti la nostra privacy e i termini e condizioni': 'By clicking on \"Register\" you accept our privacy and terms and conditions',
-  "culture-history": "Culture and History",
-  "environmental-education": "Environmental Education",
-  "eating-sleeping": "Eating and Sleeping",
-  "by-car": "By Car",
+  'Cliccando su "Registrati" accetti la nostra privacy e i termini e condizioni':
+    'By clicking on "Register" you accept our privacy and terms and conditions',
+  'culture-history': 'Culture and History',
+  'environmental-education': 'Environmental Education',
+  'eating-sleeping': 'Eating and Sleeping',
+  'by-car': 'By Car',
   'Eliminazione': 'Deletion',
   'Elimina': 'Delete',
   'Sei sicuro di voler eliminare questi dati?': 'Are you sure you want to delete this data?',
   'Modifica consenso dati': 'Modify data consent',
   'Dati non sincronizzati': 'Unsynchronized data',
+  'Azione irreversibile': 'Irreversible action',
+  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
+    'Do you really want to delete your account? It is necessary to write "delete account" to proceed.',
+  'Digita "delete account"': 'Enter "delete account"',
+  'Conferma': 'Confirm',
+  'La conferma non corrisponde. Digita "delete account" per procedere.':
+    'The confirmation does not match. Enter "delete account" to proceed.',
+  'Elimina account': 'Delete account',
 };

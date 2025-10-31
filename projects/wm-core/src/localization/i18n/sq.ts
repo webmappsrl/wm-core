@@ -239,4 +239,12 @@ export const wmSQ = {
   'Sei sicuro di voler eliminare questi dati?': 'A jeni të sigurt që dëshironi të fshini këto të dhëna?',
   'Modifica consenso dati': 'Modifiko pëlqimin për të dhënat',
   'Dati non sincronizzati': 'Të dhëna të pa-sinkronizuara',
+  'Azione irreversibile': 'Aksion i pakthyeshëm',
+  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
+    'A jeni të sigurt që dëshironi të fshini kontin tuaj? Është e nevojshme të shkruani "delete account" për të vazhduar.',
+  'Digita "delete account"': 'Shkruani "delete account"',
+  'Conferma': 'Confirm',
+  'La conferma non corrisponde. Digita "delete account" per procedere.':
+    'Konfirmimi nuk përputhet. Shkruani "delete account" për të vazhduar.',
+  'Elimina account': 'Fshij kontin',
 };
