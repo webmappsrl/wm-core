@@ -79,20 +79,20 @@
     (wmMapTilesZoomDisableDownloadButton)="setWmMapTilesDisableDownloadButton($event)"
     (wmMapTilesDelete)="deleteBoundingBox($event)"
   >
-    <wm-filters
-      top-right
-      #filterCmp
-      [wmFiltersClose]="wmap.wmMapCloseTopRightBtnsEVT$|async"
-      (lastFilterTypeEvt)="updateLastFilterType($event)"
-      (filterPoisEvt)="updatePoiFilter($event)"
-      (filterTracksEvt)="updateTrackFilter($event)"
-      (removefilterTracksEvt)="removeTrackFilter($event)"
-      (removefilterPoiEvt)="updatePoiFilter($event)"
-      (resetFiltersEvt)="resetFilters()"
-      (click)="wmap.wmMapCloseTopRightBtns = 'wm-filters'"
-    ></wm-filters>
-    <wm-profile-popup top-right></wm-profile-popup>
-    <wm-lang-selector top-right></wm-lang-selector>
+  <wm-profile-popup top-right></wm-profile-popup>
+  <wm-lang-selector top-right></wm-lang-selector>
+  <wm-filters
+    top-right
+    #filterCmp
+    [wmFiltersClose]="wmap.wmMapCloseTopRightBtnsEVT$|async"
+    (lastFilterTypeEvt)="updateLastFilterType($event)"
+    (filterPoisEvt)="updatePoiFilter($event)"
+    (filterTracksEvt)="updateTrackFilter($event)"
+    (removefilterTracksEvt)="removeTrackFilter($event)"
+    (removefilterPoiEvt)="updatePoiFilter($event)"
+    (resetFiltersEvt)="resetFilters()"
+    (click)="wmap.wmMapCloseTopRightBtns = 'wm-filters'"
+  ></wm-filters>
     <wm-draw-ugc-button
       *ngIf="(confShowDraw$|async) && !(isMobile$|async)"
       top-right
