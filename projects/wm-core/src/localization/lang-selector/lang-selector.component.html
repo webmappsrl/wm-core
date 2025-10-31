@@ -1,12 +1,9 @@
 <ng-container *ngIf="langs$|async as langs">
-  <div
-    class="wm-lang-button"
-    *ngIf="langs.length > 0"
-    (click)="langBtnClick()"
-    [class.left]="showSelectedLang"
-  >
+  <div class="wm-lang-button" *ngIf="langs.length > 0" (click)="langBtnClick()">
     <i class="icon-outline-globe"></i>
-    <span *ngIf="showSelectedLang" class="wm-lang-title">{{ labelText }}</span>
-    <span *ngIf="showSelectedLang" class="wm-lang-label">{{ langForm?.value?.lang }}</span>
+    <span class="wm-lang-title">
+      <ng-content></ng-content>
+    </span>
+    <span class="wm-lang-label">{{ langForm?.value?.lang }}</span>
   </div>
 </ng-container>

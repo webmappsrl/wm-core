@@ -2,7 +2,6 @@ import {
   Component,
   ChangeDetectionStrategy,
   ViewEncapsulation,
-  Input,
   ChangeDetectorRef,
   OnDestroy,
 } from '@angular/core';
@@ -24,8 +23,6 @@ export class WmLangSelectorComponent implements OnDestroy {
   langs$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   languages$ = this._store.select(confLANGUAGES);
   langForm: UntypedFormGroup;
-  @Input() showSelectedLang: boolean = false;
-  labelText: string = '';
   private _langChangeSub: Subscription = Subscription.EMPTY;
   private _formChangeSub: Subscription = Subscription.EMPTY;
 
@@ -40,7 +37,6 @@ export class WmLangSelectorComponent implements OnDestroy {
     this.langForm = this._fb.group({
       lang,
     });
-    this.labelText = this._langSvc.instant('Lingua');
 
     this._langSvc.isInit$
       .pipe(
@@ -50,7 +46,6 @@ export class WmLangSelectorComponent implements OnDestroy {
       .subscribe(() => {
         const lang = this._langSvc.useSavedLang() || this._langSvc.defaultLang;
         this.langForm.setValue({lang});
-        this.labelText = this._langSvc.instant('Lingua');
         this._cdr.markForCheck();
       });
     this.languages$
@@ -74,7 +69,6 @@ export class WmLangSelectorComponent implements OnDestroy {
       if (event?.lang && this.langForm?.value?.lang !== event.lang) {
         this.langForm.setValue({lang: event.lang});
       }
-      this.labelText = this._langSvc.instant('Lingua');
       this._cdr.markForCheck();
     });
   }
