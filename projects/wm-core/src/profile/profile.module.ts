@@ -6,6 +6,7 @@ import {ProfileAuthComponent} from './profile-auth/profile-auth.component';
 import {ProfileUserComponent} from './profile-user/profile-user.component';
 import {ProfileDataComponent} from './profile-data/profile-data.component';
 import {WmProfilePopupComponent} from './profile-popup/profile-popup.component';
+import {WmSharedModule} from '../shared/shared.module';
 const components = [
   ProfileAuthComponent,
   ProfileUserComponent,
@@ -14,7 +15,7 @@ const components = [
 ];
 @NgModule({
   declarations: components,
-  imports: [CommonModule, IonicModule, WmPipeModule],
+  imports: [CommonModule, IonicModule, WmPipeModule, WmSharedModule],
   exports: components,
 })
 export class WmProfileModule {}

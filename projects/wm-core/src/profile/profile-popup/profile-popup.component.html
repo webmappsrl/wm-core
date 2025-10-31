@@ -7,18 +7,20 @@
     <i class="icon-outline-user"></i>
   </div>
 
-  <div class="wm-profile-content" *ngIf="(toggle$|async)">
-    <ng-container *ngIf="isLogged$|async;">
-      <wm-profile-user class="ion-margin-end"></wm-profile-user>
-      <ion-button
-        class="ion-margin"
-        fill="outline"
-        shape="round"
-        expand="full"
-        color="danger"
-        (click)="logout()"
-        >{{'Logout'|wmtrans}}</ion-button
-      >
-    </ng-container>
+  <div class="wm-profile-content" *ngIf="(isLogged$|async) && (toggle$|async)">
+    <wm-profile-user class="ion-margin-end"></wm-profile-user>
+    <wm-privacy-agree-button>
+      {{'Modifica consenso dati'|wmtrans}}
+    </wm-privacy-agree-button>
+    <wm-profile-delete-button></wm-profile-delete-button>
+    <ion-button
+      class="ion-margin"
+      fill="solid"
+      shape="round"
+      expand="full"
+      color="danger"
+      (click)="logout()"
+      >{{'Logout'|wmtrans}}</ion-button
+    >
   </div>
 </ng-container>

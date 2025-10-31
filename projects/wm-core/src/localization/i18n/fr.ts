@@ -235,4 +235,12 @@ export const wmFR = {
   'Modifica consenso dati': 'Modifier le consentement aux données',
   'Dati non sincronizzati': 'Données non synchronisées',
   'Lingua': 'Langue',
+  'Azione irreversibile': 'Action irréversible',
+  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
+    'Voulez-vous vraiment supprimer votre compte ? Il est nécessaire d\'écrire "delete account" pour procéder.',
+  'Digita "delete account"': 'Entrez "delete account"',
+  'Conferma': 'Confirmer',
+  'La conferma non corrisponde. Digita "delete account" per procedere.':
+    'La confirmation ne correspond pas. Entrez "delete account" pour procéder.',
+  'Elimina account': 'Supprimer le compte',
 };

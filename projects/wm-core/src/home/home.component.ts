@@ -94,10 +94,7 @@ export class WmHomeComponent implements AfterContentInit {
         debounceTime(1800),
       )
       .subscribe(([home, params]) => {
-        if (params.layer != null && home[params.layer] != null) {
-          const layerBox: ILAYERBOX = home[+params.layer] as ILAYERBOX;
-          this.setLayer(layerBox.layer);
-        } else if (params.filter != null && home[params.filter] != null) {
+        if (params.filter != null && home[params.filter] != null) {
           const filterBox: IPOITYPEFILTERBOX = home[+params.filter] as IPOITYPEFILTERBOX;
           this.togglePoiFilter(filterBox.identifier);
         }
