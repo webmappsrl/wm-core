@@ -1,11 +1,12 @@
 <ion-content>
-  <div class="wm-modal-release-update-app">
+  <div class="wm-modal-release-update-app" e2e-release-update-modal>
     <div class="ios-filling"></div>
 
     <div class="wm-modal-release-update-app-header ripple-parent ion-activatable">
       <ion-icon
         name="close-outline"
         class="wm-modal-release-update-app-closebtn"
+        e2e-release-update-modal-closebtn
         (click)="close()"
       ></ion-icon>
       <ion-ripple-effect></ion-ripple-effect>
@@ -14,26 +15,36 @@
     <div class="wm-modal-release-update-app-content">
       <ion-icon name="cloud-download-outline" class="wm-modal-release-update-app-icon"></ion-icon>
 
-      <ion-label class="wm-modal-release-update-app-title">
+      <ion-label class="wm-modal-release-update-app-title" e2e-release-update-modal-title>
         {{ 'Aggiornamento disponibile' | wmtrans }}
       </ion-label>
 
-      <ion-label class="wm-modal-release-update-app-message">
+      <ion-label class="wm-modal-release-update-app-message" e2e-release-update-modal-message>
         {{ "È disponibile una nuova versione dell'app. Aggiorna per ottenere le ultime funzionalità e miglioramenti." | wmtrans }}
       </ion-label>
 
-      <ion-label *ngIf="productionVersion" class="wm-modal-release-update-app-version">
+      <ion-label
+        *ngIf="productionVersion"
+        class="wm-modal-release-update-app-version"
+        e2e-release-update-modal-version
+      >
         {{ 'Versione disponibile' | wmtrans }}: {{ productionVersion }}
       </ion-label>
 
       <div class="wm-modal-release-update-app-buttoncontainer">
-        <ion-button expand="block" class="wm-modal-release-update-app-button" (click)="openStore()">
+        <ion-button
+          expand="block"
+          class="wm-modal-release-update-app-button"
+          e2e-release-update-modal-button
+          (click)="openStore()"
+        >
           {{ 'Aggiorna ora' | wmtrans }}
         </ion-button>
         <ion-button
           expand="block"
           class="wm-modal-release-update-app-button-close"
           fill="outline"
+          e2e-release-update-modal-button-close
           (click)="close()"
         >
           {{ 'Più tardi' | wmtrans }}

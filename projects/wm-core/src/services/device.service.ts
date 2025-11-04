@@ -191,8 +191,6 @@ export class DeviceService {
    * Checks for updates only when online and retries when connection is restored
    */
   private _initReleaseUpdatePopupCheck(): void {
-    console.log('[RELEASE UPDATE POPUP] Initializing release update check...');
-
     // Combine app config and network status
     combineLatest([this._store.select(confAPP), this._store.select(online)])
       .pipe(
@@ -221,24 +219,12 @@ export class DeviceService {
         takeUntil(this._destroy$),
       )
       .subscribe(([appConfig, isOnline]) => {
-        console.log('[RELEASE UPDATE POPUP] APP config received:', {
-          appConfig,
-          isOnline,
-        });
-
         if (!isOnline) {
-          console.log('[RELEASE UPDATE POPUP] Device is offline, skipping update check');
           return;
         }
 
         if (appConfig != null && appConfig.forceToReleaseUpdate === true) {
-          console.log('[RELEASE UPDATE POPUP] forceToReleaseUpdate is true, checking popup...');
           this._checkAndShowReleaseUpdatePopup(appConfig);
-        } else {
-          console.log('[RELEASE UPDATE POPUP] forceToReleaseUpdate is false or appConfig null', {
-            forceToReleaseUpdate: appConfig?.forceToReleaseUpdate,
-            appConfig: appConfig,
-          });
         }
       });
   }
@@ -248,9 +234,13 @@ export class DeviceService {
    * @param appConfig APP configuration from backend
    */
   private async _checkAndShowReleaseUpdatePopup(appConfig: IAPP): Promise<void> {
+    // Show popup only on mobile devices (not on browser)
+    if (!this.isMobile) {
+      return;
+    }
+
     // Prevent multiple modals from opening
     if (this._hasOpenReleaseUpdateModal) {
-      console.log('[RELEASE UPDATE POPUP] Modal already open, skipping...');
       return;
     }
 
@@ -263,7 +253,6 @@ export class DeviceService {
         take(1),
         takeUntil(this._destroy$),
         catchError(error => {
-          console.error('[RELEASE UPDATE POPUP] Error in release update check:', error);
           return of([false, null]);
         }),
       )
@@ -271,12 +260,6 @@ export class DeviceService {
         if (shouldShow && lastVersion) {
           const storeUrl = this.getStoreUrl(appConfig);
           if (storeUrl) {
-            console.log(
-              '[RELEASE UPDATE POPUP] Creating and presenting modal with URL:',
-              storeUrl,
-              'and version:',
-              lastVersion,
-            );
             const modal = await this._modalController.create({
               component: ModalReleaseUpdateComponent,
               componentProps: {
@@ -293,11 +276,9 @@ export class DeviceService {
             // Reset flag when modal is dismissed
             modal.onWillDismiss().then(() => {
               this._hasOpenReleaseUpdateModal = false;
-              console.log('[RELEASE UPDATE POPUP] Modal dismissed, flag reset');
             });
 
             await modal.present();
-            console.log('[RELEASE UPDATE POPUP] Modal presented');
           }
         }
       });
@@ -354,21 +335,17 @@ export class DeviceService {
       'https://raw.githubusercontent.com/webmappsrl/webmapp-app/refs/heads/main/package.json';
     const timeoutMs = 5000; // 5 seconds timeout
 
-    console.log('[RELEASE UPDATE POPUP] Retrieving version from GitHub:', githubUrl);
-
     // Check network status first
     return this._store.select(online).pipe(
       take(1),
       mergeMap(isOnline => {
         if (!isOnline) {
-          console.warn('[RELEASE UPDATE POPUP] Device is offline, cannot retrieve version');
           return of(null);
         }
 
         return this._http.get<{version: string}>(githubUrl).pipe(
           timeout(timeoutMs),
           map(response => {
-            console.log('[RELEASE UPDATE POPUP] GitHub response received:', response);
             const baseVersion = response.version || null;
 
             if (!baseVersion) return null;
@@ -376,12 +353,6 @@ export class DeviceService {
             // If it's a wrong sku version, add "1" to the GitHub version
             if (this._isWrongSkuVersion(appConfig)) {
               const adjustedVersion = '1' + baseVersion;
-              console.log('[RELEASE UPDATE POPUP] wrong sku version detected, adjusted version:', {
-                baseVersion,
-                adjustedVersion,
-                appVersion: this.appVersion,
-                sku: appConfig.sku,
-              });
               return adjustedVersion;
             }
 
@@ -399,13 +370,11 @@ export class DeviceService {
                   error.name === 'TimeoutError' ||
                   (error.status && error.status >= 400 && error.status < 500)
                 ) {
-                  console.error('[RELEASE UPDATE POPUP] Non-retryable error:', error);
                   return throwError(error);
                 }
 
                 // Check if we should retry
                 if (retryAttempt > maxRetries) {
-                  console.error('[RELEASE UPDATE POPUP] Max retries reached, giving up');
                   return throwError(error);
                 }
 
@@ -414,36 +383,19 @@ export class DeviceService {
 
                 if (isNetworkError) {
                   // For network errors, wait for connection to be restored
-                  console.log(
-                    `[RELEASE UPDATE POPUP] Network error detected, waiting for connection. Retry attempt ${retryAttempt}/${maxRetries}`,
-                  );
                   return this._store.select(online).pipe(
                     filter(isOnline => isOnline),
                     take(1),
                     delay(retryDelayBaseMs * retryAttempt), // Exponential backoff
-                    tap(() =>
-                      console.log('[RELEASE UPDATE POPUP] Connection restored, retrying...'),
-                    ),
                   );
                 } else {
                   // For other errors (e.g., 5xx), retry with backoff without waiting for connection
-                  console.log(
-                    `[RELEASE UPDATE POPUP] Server error (${error.status}), retrying with backoff. Retry attempt ${retryAttempt}/${maxRetries}`,
-                  );
-                  return of(null).pipe(
-                    delay(retryDelayBaseMs * retryAttempt),
-                    tap(() => console.log('[RELEASE UPDATE POPUP] Retrying after backoff...')),
-                  );
+                  return of(null).pipe(delay(retryDelayBaseMs * retryAttempt));
                 }
               }),
             ),
           ),
-          catchError(error => {
-            if (error.name === 'TimeoutError') {
-              console.error('[RELEASE UPDATE POPUP] Request timeout after', timeoutMs, 'ms');
-            } else {
-              console.error('[RELEASE UPDATE POPUP] GitHub call error:', error);
-            }
+          catchError(() => {
             return of(null);
           }),
         );
@@ -458,18 +410,12 @@ export class DeviceService {
    */
   getStoreUrl(appConfig: IAPP): string | null {
     if (this.isAndroid && appConfig.androidStore) {
-      console.log(
-        '[RELEASE UPDATE POPUP] Android device, using androidStore:',
-        appConfig.androidStore,
-      );
       return appConfig.androidStore;
     } else if (this.isIos && appConfig.iosStore) {
-      console.log('[RELEASE UPDATE POPUP] iOS device, using iosStore:', appConfig.iosStore);
       return appConfig.iosStore;
     } else {
       // Fallback: if not Android nor iOS, try iOS then Android
       const fallbackUrl = appConfig.iosStore || appConfig.androidStore;
-      console.log('[RELEASE UPDATE POPUP] Device not recognized, using fallback:', fallbackUrl);
       return fallbackUrl || null;
     }
   }
