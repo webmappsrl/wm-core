@@ -243,4 +243,10 @@ export const wmPR = {
   'La conferma non corrisponde. Digita "delete account" per procedere.':
     'A confirmação não corresponde. Digite "delete account" para proceder.',
   'Elimina account': 'Excluir conta',
+  'Aggiornamento disponibile': 'Atualização disponível',
+  "È disponibile una nuova versione dell'app. Aggiorna per ottenere le ultime funzionalità e miglioramenti.":
+    'Uma nova versão do aplicativo está disponível. Atualize agora para obter os últimos recursos e melhorias.',
+  'Aggiorna ora': 'Atualizar agora',
+  'Più tardi': 'Mais tarde',
+  'Versione disponibile': 'Versão disponível'
 };

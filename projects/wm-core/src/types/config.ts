@@ -95,10 +95,13 @@ export interface Filter {
 
 export interface IAPP {
   appStoreUrl?: string;
+  androidStore?: string;
   customerName?: string;
+  forceToReleaseUpdate?: boolean;
   geohubId?: number;
   googlePlayUrl?: string;
   id?: string;
+  iosStore?: string;
   sku?: string;
   name: string;
   poi_acquisition_form?: any;

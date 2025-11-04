@@ -204,9 +204,9 @@ export const wmDE = {
   'joelette': 'joelette',
   'mtb': 'MTB',
   'mountain-bike': 'Mountainbike',
-  "Ottieni le indicazioni su Google Maps": "Indikationen auf Google Maps erhalten",
-  "Per il punto di partenza": "Für den Startpunkt",
-  "Per il punto più vicino in linea d'aria": "Für den nächsten Punkt in Luftlinie",
+  'Ottieni le indicazioni su Google Maps': 'Indikationen auf Google Maps erhalten',
+  'Per il punto di partenza': 'Für den Startpunkt',
+  "Per il punto più vicino in linea d'aria": 'Für den nächsten Punkt in Luftlinie',
   'Tipo di form': 'Formularart',
   'massimo': 'maximal',
   'foto': 'Fotos',
@@ -224,15 +224,18 @@ export const wmDE = {
   'Attenzione': 'Achtung',
   'Disegna': 'Zeichnen',
   'Esci': 'Aus',
-  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Sie haben Ihren Wegpunkt erfolgreich gespeichert. Sie können ihn anzeigen, indem Sie sich in Ihr Profil einloggen.',
-  'Cliccando su \"Registrati\" accetti la nostra privacy e i termini e condizioni': 'Mit dem Klick auf \"Registrieren\" akzeptieren Sie unsere Datenschutzrichtlinie und unsere Geschäftsbedingungen',
-  "culture-history": "Kultur und Geschichte",
-  "environmental-education": "Umweltbildung",
-  "eating-sleeping": "Essen und Schlafen",
-  "by-car": "Auto",
+  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.':
+    'Sie haben Ihren Wegpunkt erfolgreich gespeichert. Sie können ihn anzeigen, indem Sie sich in Ihr Profil einloggen.',
+  'Cliccando su "Registrati" accetti la nostra privacy e i termini e condizioni':
+    'Mit dem Klick auf "Registrieren" akzeptieren Sie unsere Datenschutzrichtlinie und unsere Geschäftsbedingungen',
+  'culture-history': 'Kultur und Geschichte',
+  'environmental-education': 'Umweltbildung',
+  'eating-sleeping': 'Essen und Schlafen',
+  'by-car': 'Auto',
   'Eliminazione': 'Löschen',
   'Elimina': 'Löschen',
-  'Sei sicuro di voler eliminare questi dati?': 'Sind Sie sicher, dass Sie diese Daten löschen möchten?',
+  'Sei sicuro di voler eliminare questi dati?':
+    'Sind Sie sicher, dass Sie diese Daten löschen möchten?',
   'Modifica consenso dati': 'Dateneinwilligung ändern',
   'Dati non sincronizzati': 'Nicht synchronisierte Daten',
   'Lingua': 'Sprache',
@@ -244,4 +247,10 @@ export const wmDE = {
   'La conferma non corrisponde. Digita "delete account" per procedere.':
     'Die Bestätigung stimmt nicht mit dem oben eingegebenen Passwort überein. Schreiben Sie "Löschen Sie das Konto" um fortzufahren.',
   'Elimina account': 'Löschen Sie das Konto',
+  'Aggiornamento disponibile': 'Update verfügbar',
+  "È disponibile una nuova versione dell'app. Aggiorna per ottenere le ultime funzionalità e miglioramenti.":
+    'Eine neue Version der App ist verfügbar. Aktualisieren Sie jetzt, um die neuesten Funktionen und Verbesserungen zu erhalten.',
+  'Aggiorna ora': 'Jetzt aktualisieren',
+  'Più tardi': 'Später',
+  'Versione disponibile': 'Verfügbare Version'
 };
