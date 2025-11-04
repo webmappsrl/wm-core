@@ -31,7 +31,7 @@ import {confAPP} from '@wm-core/store/conf/conf.selector';
 import {online} from '@wm-core/store/network/network.selector';
 import {WmDeviceInfo} from '@wm-types/feature';
 import {IAPP} from '@wm-core/types/config';
-import {ModalUpdateAppComponent} from '../../../../../../../app/components/modal-update-app/modal-update-app.component';
+import {ModalReleaseUpdateComponent} from '../modal-release-update/modal-release-update.component';
 
 @Injectable({
   providedIn: 'root',
@@ -278,7 +278,7 @@ export class DeviceService {
               lastVersion,
             );
             const modal = await this._modalController.create({
-              component: ModalUpdateAppComponent,
+              component: ModalReleaseUpdateComponent,
               componentProps: {
                 storeUrl,
                 productionVersion: lastVersion,

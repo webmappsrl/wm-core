@@ -1,0 +1,87 @@
+.wm-modal-release-update-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background: var(--ion-background-color);
+  position: relative;
+
+  .ios-filling {
+    height: env(safe-area-inset-top);
+    background: var(--ion-background-color);
+  }
+
+  .wm-modal-release-update-app-header {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 16px;
+    min-height: 60px;
+
+    .wm-modal-release-update-app-closebtn {
+      font-size: 28px;
+      color: var(--ion-color-medium);
+      cursor: pointer;
+      z-index: 10;
+    }
+  }
+
+  .wm-modal-release-update-app-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 24px;
+    text-align: center;
+
+    .wm-modal-release-update-app-icon {
+      font-size: 80px;
+      color: var(--ion-color-primary);
+      margin-bottom: 24px;
+    }
+
+    .wm-modal-release-update-app-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--ion-color-dark);
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .wm-modal-release-update-app-message {
+      font-size: 16px;
+      color: var(--ion-color-medium);
+      margin-bottom: 16px;
+      display: block;
+      line-height: 1.5;
+    }
+
+    .wm-modal-release-update-app-version {
+      font-size: 14px;
+      color: var(--ion-color-primary);
+      margin-bottom: 32px;
+      display: block;
+      font-weight: 500;
+    }
+
+    .wm-modal-release-update-app-buttoncontainer {
+      width: 100%;
+      max-width: 400px;
+
+      .wm-modal-release-update-app-button {
+        margin-bottom: 12px;
+        --border-radius: 8px;
+        height: 48px;
+        font-weight: 600;
+      }
+
+      .wm-modal-release-update-app-button-close {
+        --border-radius: 8px;
+        height: 48px;
+        font-weight: 500;
+      }
+    }
+  }
+}
