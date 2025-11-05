@@ -413,10 +413,7 @@ export class DeviceService {
       return appConfig.androidStore;
     } else if (this.isIos && appConfig.iosStore) {
       return appConfig.iosStore;
-    } else {
-      // Fallback: if not Android nor iOS, try iOS then Android
-      const fallbackUrl = appConfig.iosStore || appConfig.androidStore;
-      return fallbackUrl || null;
     }
+    return null;
   }
 }
