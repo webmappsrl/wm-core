@@ -19,13 +19,7 @@ export class ModalReleaseUpdateComponent implements OnInit {
   ngOnInit() {}
 
   async openStore() {
-    console.log('[RELEASE UPDATE POPUP] openStore called with URL:', this.storeUrl);
-    console.log('[RELEASE UPDATE POPUP] isIos:', this._deviceService.isIos);
-    console.log('[RELEASE UPDATE POPUP] isAndroid:', this._deviceService.isAndroid);
-    console.log('[RELEASE UPDATE POPUP] isBrowser:', this._deviceService.isBrowser);
-
     if (!this.storeUrl) {
-      console.warn('[RELEASE UPDATE POPUP] storeUrl not available');
       this.close();
       return;
     }
@@ -36,19 +30,12 @@ export class ModalReleaseUpdateComponent implements OnInit {
       this._deviceService.isBrowser ||
       !this._deviceService.isMobile
     ) {
-      console.log('[RELEASE UPDATE POPUP] Using window.open (iOS simulator/browser)');
       window.open(this.storeUrl, '_blank', 'noopener,noreferrer');
     } else {
       // On native device, try Browser.open
       try {
-        console.log('[RELEASE UPDATE POPUP] Trying Browser.open on native platform');
         await Browser.open({url: this.storeUrl});
-        console.log('[RELEASE UPDATE POPUP] Browser.open completed');
       } catch (error) {
-        console.error(
-          '[RELEASE UPDATE POPUP] Browser.open error, using window.open as fallback:',
-          error,
-        );
         window.open(this.storeUrl, '_blank', 'noopener,noreferrer');
       }
     }
