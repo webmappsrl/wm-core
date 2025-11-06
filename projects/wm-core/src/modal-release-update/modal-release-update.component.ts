@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {ModalController} from '@ionic/angular';
-import {Browser} from '@capacitor/browser';
 import {DeviceService} from '@wm-core/services/device.service';
 
 @Component({
@@ -24,22 +23,7 @@ export class ModalReleaseUpdateComponent implements OnInit {
       return;
     }
 
-    // On iOS simulator or browser, use window.open directly
-    if (
-      this._deviceService.isIos ||
-      this._deviceService.isBrowser ||
-      !this._deviceService.isMobile
-    ) {
-      window.open(this.storeUrl, '_blank', 'noopener,noreferrer');
-    } else {
-      // On native device, try Browser.open
-      try {
-        await Browser.open({url: this.storeUrl});
-      } catch (error) {
-        window.open(this.storeUrl, '_blank', 'noopener,noreferrer');
-      }
-    }
-
+    await this._deviceService.openStoreUrl(this.storeUrl);
     this.close();
   }
 

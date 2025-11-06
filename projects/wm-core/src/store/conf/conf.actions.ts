@@ -12,3 +12,5 @@ export const updateMapWithUgc = createAction(
   '[conf] Update Map With UGC',
   props<{activableUgc: boolean}>(),
 );
+
+export const checkAppVersion = createAction('[conf] Check App Version');
