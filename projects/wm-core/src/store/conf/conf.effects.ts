@@ -19,8 +19,6 @@ import {currentEcLayerId} from '../features/ec/ec.actions';
 import {IHOME, ILAYER, ILAYERBOX, IAPP} from '@wm-core/types/config';
 import {setLayer} from '../user-activity/user-activity.action';
 import {DeviceService} from '@wm-core/services/device.service';
-import {ModalController} from '@ionic/angular';
-import {ModalReleaseUpdateComponent} from '../../modal-release-update/modal-release-update.component';
 import {APP_VERSION} from './conf.token';
 @Injectable({
   providedIn: 'root',
@@ -87,42 +85,7 @@ export class ConfEffects {
             ),
           this._store.select(isConfLoaded).pipe(filter(loaded => loaded === true)),
         ),
-        switchMap(([_, appConfig]) =>
-          from(
-            (async () => {
-              try {
-                const updateNeeded = await this._deviceService.checkIfUpdateNeeded(appConfig);
-                if (updateNeeded === true) {
-                  const storeUrl = this._deviceService.isAndroid
-                    ? appConfig.androidStore
-                    : this._deviceService.isIos
-                    ? appConfig.iosStore
-                    : null;
-
-                  if (storeUrl) {
-                    const productionVersion = await this._deviceService.getLastReleaseVersion(
-                      appConfig,
-                    );
-                    if (productionVersion) {
-                      const modal = await this._modalController.create({
-                        component: ModalReleaseUpdateComponent,
-                        componentProps: {
-                          storeUrl,
-                          productionVersion,
-                        },
-                        backdropDismiss: true,
-                        showBackdrop: true,
-                      });
-                      await modal.present();
-                    }
-                  }
-                }
-              } catch (error) {
-                // Silently fail
-              }
-            })(),
-          ),
-        ),
+        switchMap(([_, appConfig]) => this._deviceService.openUpdateModalIfNeeded(appConfig)),
       ),
     {dispatch: false},
   );
@@ -132,7 +95,6 @@ export class ConfEffects {
     private _actions$: Actions,
     private _store: Store,
     private _deviceService: DeviceService,
-    private _modalController: ModalController,
     @Inject(APP_VERSION) private _appVersion: string,
   ) {}
 }

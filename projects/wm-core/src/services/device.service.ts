@@ -8,7 +8,7 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Platform} from '@ionic/angular';
+import {Platform, ModalController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {Observable, ReplaySubject} from 'rxjs';
 import {Device} from '@capacitor/device';
@@ -16,6 +16,7 @@ import {Browser} from '@capacitor/browser';
 import {APP_VERSION} from '@wm-core/store/conf/conf.token';
 import {WmDeviceInfo} from '@wm-types/feature';
 import {IAPP} from '@wm-core/types/config';
+import {ModalReleaseUpdateComponent} from '../modal-release-update/modal-release-update.component';
 
 @Injectable({
   providedIn: 'root',
@@ -82,6 +83,7 @@ export class DeviceService {
     private _platform: Platform,
     private _http: HttpClient,
     private _store: Store<any>,
+    private _modalController: ModalController,
     @Inject(APP_VERSION) public appVersion: string,
   ) {
     this._onResize = new ReplaySubject(1);
@@ -207,6 +209,43 @@ export class DeviceService {
     } catch (error) {
       return null;
     }
+  }
+
+  /**
+   * Opens the update modal if update is needed
+   * Assumes all prerequisites have been checked (mobile, forceToReleaseUpdate, store URLs)
+   * @param appConfig APP configuration from backend
+   * @returns Promise that resolves when the check is complete
+   */
+  async openUpdateModalIfNeeded(appConfig: IAPP): Promise<void> {
+    try {
+      const updateNeeded = await this.checkIfUpdateNeeded(appConfig);
+      if (updateNeeded === true) {
+        // Get the appropriate store URL based on device
+        const storeUrl = this.isAndroid
+          ? appConfig.androidStore
+          : this.isIos
+          ? appConfig.iosStore
+          : null;
+
+        if (storeUrl) {
+          // Get production version to show in modal
+          const productionVersion = await this.getLastReleaseVersion(appConfig);
+          if (productionVersion) {
+            const modal = await this._modalController.create({
+              component: ModalReleaseUpdateComponent,
+              componentProps: {
+                storeUrl,
+                productionVersion,
+              },
+              backdropDismiss: true,
+              showBackdrop: true,
+            });
+            await modal.present();
+          }
+        }
+      }
+    } catch (error) {}
   }
 
   /**
