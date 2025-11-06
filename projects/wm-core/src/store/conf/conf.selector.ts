@@ -160,6 +160,13 @@ export const confZoomFeaturesInViewport = createSelector(confOPTIONS, state => {
   };
 });
 
+export const confReleaseUpdate = createSelector(confAPP, app => ({
+  forceToReleaseUpdate: app?.forceToReleaseUpdate ?? false,
+  androidStore: app?.androidStore ?? null,
+  iosStore: app?.iosStore ?? null,
+  sku: app?.sku ?? null,
+}));
+
 const getLayers = (layersID: number[], layers: ILAYER[], tracks: Hit[]): ILAYER[] => {
   return layers
     .filter(l => layersID.indexOf(+l.id) > -1)

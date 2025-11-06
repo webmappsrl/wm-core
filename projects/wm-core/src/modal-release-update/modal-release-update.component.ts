@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {ModalController} from '@ionic/angular';
 import {Browser} from '@capacitor/browser';
-import {Capacitor} from '@capacitor/core';
 import {DeviceService} from '@wm-core/services/device.service';
 
 @Component({
@@ -21,9 +20,9 @@ export class ModalReleaseUpdateComponent implements OnInit {
 
   async openStore() {
     console.log('[RELEASE UPDATE POPUP] openStore called with URL:', this.storeUrl);
-    console.log('[RELEASE UPDATE POPUP] Platform:', Capacitor.getPlatform());
     console.log('[RELEASE UPDATE POPUP] isIos:', this._deviceService.isIos);
     console.log('[RELEASE UPDATE POPUP] isAndroid:', this._deviceService.isAndroid);
+    console.log('[RELEASE UPDATE POPUP] isBrowser:', this._deviceService.isBrowser);
 
     if (!this.storeUrl) {
       console.warn('[RELEASE UPDATE POPUP] storeUrl not available');
@@ -32,8 +31,11 @@ export class ModalReleaseUpdateComponent implements OnInit {
     }
 
     // On iOS simulator or browser, use window.open directly
-    const platform = Capacitor.getPlatform();
-    if (platform === 'ios' || platform === 'web' || !Capacitor.isNativePlatform()) {
+    if (
+      this._deviceService.isIos ||
+      this._deviceService.isBrowser ||
+      !this._deviceService.isMobile
+    ) {
       console.log('[RELEASE UPDATE POPUP] Using window.open (iOS simulator/browser)');
       window.open(this.storeUrl, '_blank', 'noopener,noreferrer');
     } else {

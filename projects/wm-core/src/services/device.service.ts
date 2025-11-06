@@ -8,30 +8,15 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {ModalController, Platform} from '@ionic/angular';
+import {Platform} from '@ionic/angular';
 import {Store} from '@ngrx/store';
-import {Observable, ReplaySubject, of, combineLatest, Subject, throwError} from 'rxjs';
-import {
-  catchError,
-  filter,
-  map,
-  take,
-  shareReplay,
-  distinctUntilChanged,
-  takeUntil,
-  timeout,
-  retryWhen,
-  delay,
-  mergeMap,
-  tap,
-} from 'rxjs/operators';
+import {Observable, ReplaySubject, of, throwError} from 'rxjs';
+import {catchError, filter, map, take, timeout, retryWhen, delay, mergeMap} from 'rxjs/operators';
 import {Device} from '@capacitor/device';
 import {APP_VERSION} from '@wm-core/store/conf/conf.token';
-import {confAPP} from '@wm-core/store/conf/conf.selector';
 import {online} from '@wm-core/store/network/network.selector';
 import {WmDeviceInfo} from '@wm-types/feature';
 import {IAPP} from '@wm-core/types/config';
-import {ModalReleaseUpdateComponent} from '../modal-release-update/modal-release-update.component';
 
 @Injectable({
   providedIn: 'root',
@@ -50,8 +35,6 @@ export class DeviceService {
     height: number;
   }>;
   private _width: number;
-  private _hasOpenReleaseUpdateModal: boolean = false;
-  private _destroy$: Subject<void> = new Subject<void>();
 
   get height(): number {
     return this._height;
@@ -100,7 +83,6 @@ export class DeviceService {
     private _platform: Platform,
     private _http: HttpClient,
     private _store: Store<any>,
-    private _modalController: ModalController,
     @Inject(APP_VERSION) public appVersion: string,
   ) {
     this._onResize = new ReplaySubject(1);
@@ -149,9 +131,6 @@ export class DeviceService {
       },
       false,
     );
-
-    // Initialize release update popup check
-    this._initReleaseUpdatePopupCheck();
   }
 
   /**
@@ -184,135 +163,6 @@ export class DeviceService {
     // If version starts with "1" followed by a digit, it's a wrong sku version
     // Example: "13.1.6" -> true, "3.1.6" -> false, "1.0.0" -> false
     return /^1\d\./.test(this.appVersion);
-  }
-
-  /**
-   * Initializes the release update popup check
-   * Checks for updates only when online and retries when connection is restored
-   */
-  private _initReleaseUpdatePopupCheck(): void {
-    // Combine app config and network status
-    combineLatest([this._store.select(confAPP), this._store.select(online)])
-      .pipe(
-        distinctUntilChanged((prev, curr) => {
-          const [prevConfig, prevOnline] = prev as [IAPP | null, boolean];
-          const [currConfig, currOnline] = curr as [IAPP | null, boolean];
-
-          // If appConfig changes from null to non-null or vice versa, emit
-          if ((prevConfig === null) !== (currConfig === null)) {
-            return false;
-          }
-
-          // If both are null, compare only online status
-          if (!prevConfig || !currConfig) {
-            return prevConfig === currConfig && prevOnline === currOnline;
-          }
-
-          // Only emit if forceToReleaseUpdate changes, appConfig changes significantly, or online status changes
-          return (
-            prevConfig.forceToReleaseUpdate === currConfig.forceToReleaseUpdate &&
-            prevConfig.androidStore === currConfig.androidStore &&
-            prevConfig.iosStore === currConfig.iosStore &&
-            prevOnline === currOnline
-          );
-        }),
-        takeUntil(this._destroy$),
-      )
-      .subscribe(([appConfig, isOnline]) => {
-        if (!isOnline) {
-          return;
-        }
-
-        if (appConfig != null && appConfig.forceToReleaseUpdate === true) {
-          this._checkAndShowReleaseUpdatePopup(appConfig);
-        }
-      });
-  }
-
-  /**
-   * Checks and shows the release update popup if necessary
-   * @param appConfig APP configuration from backend
-   */
-  private async _checkAndShowReleaseUpdatePopup(appConfig: IAPP): Promise<void> {
-    // Show popup only on mobile devices (not on browser)
-    if (!this.isMobile) {
-      return;
-    }
-
-    // Prevent multiple modals from opening
-    if (this._hasOpenReleaseUpdateModal) {
-      return;
-    }
-
-    // Use shareReplay to avoid duplicate calls to getLastReleaseVersion
-    const lastVersion$ = this.getLastReleaseVersion(appConfig).pipe(shareReplay(1));
-
-    // Combine async calls
-    combineLatest([this._checkReleaseUpdateConditions(appConfig, lastVersion$), lastVersion$])
-      .pipe(
-        take(1),
-        takeUntil(this._destroy$),
-        catchError(error => {
-          return of([false, null]);
-        }),
-      )
-      .subscribe(async ([shouldShow, lastVersion]) => {
-        if (shouldShow && lastVersion) {
-          const storeUrl = this.getStoreUrl(appConfig);
-          if (storeUrl) {
-            const modal = await this._modalController.create({
-              component: ModalReleaseUpdateComponent,
-              componentProps: {
-                storeUrl,
-                productionVersion: lastVersion,
-              },
-              backdropDismiss: true,
-              showBackdrop: true,
-            });
-
-            // Set flag to prevent multiple modals
-            this._hasOpenReleaseUpdateModal = true;
-
-            // Reset flag when modal is dismissed
-            modal.onWillDismiss().then(() => {
-              this._hasOpenReleaseUpdateModal = false;
-            });
-
-            await modal.present();
-          }
-        }
-      });
-  }
-
-  /**
-   * Checks conditions to show release update popup using the already retrieved version
-   * @param appConfig APP configuration from backend
-   * @param lastVersion$ Observable with the last version
-   * @returns Observable with true if popup should be shown
-   */
-  private _checkReleaseUpdateConditions(
-    appConfig: IAPP,
-    lastVersion$: Observable<string | null>,
-  ): Observable<boolean> {
-    // Check if forceToReleaseUpdate is active
-    if (!appConfig.forceToReleaseUpdate) {
-      return of(false);
-    }
-
-    // Check if BOTH store URLs are present
-    if (!appConfig.androidStore || !appConfig.iosStore) {
-      return of(false);
-    }
-
-    // Check if installed version is different from last version
-    return lastVersion$.pipe(
-      map(lastVersion => {
-        if (!lastVersion) {
-          return false;
-        }
-        return lastVersion !== this.appVersion;
-      }),
-    );
   }
 
   async getInfo(): Promise<WmDeviceInfo> {
