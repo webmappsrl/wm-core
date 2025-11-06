@@ -20,7 +20,6 @@ import {
   confMAP,
 } from '@wm-core/store/conf/conf.selector';
 import {
-  IAPP,
   IHOME,
   ILAYER,
   ILAYERBOX,
@@ -29,6 +28,7 @@ import {
   IPOITYPEFILTERBOX,
   ISLUGBOX,
 } from '@wm-core/types/config';
+import {APP} from '@wm-types/config';
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
 import {countUgcAll, countUgcTracks} from '@wm-core/store/features/ugc/ugc.selector';
 import {
@@ -61,7 +61,7 @@ import {online} from '@wm-core/store/network/network.selector';
 export class WmHomeComponent implements AfterContentInit {
   @ViewChild('searchCmp') searchCmp: WmSearchBarComponent;
 
-  confAPP$: Observable<IAPP> = this._store.select(confAPP);
+  confAPP$: Observable<APP> = this._store.select(confAPP);
   confMAP$: Observable<IMAP> = this._store.select(confMAP);
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
@@ -186,11 +186,14 @@ export class WmHomeComponent implements AfterContentInit {
     this._store.dispatch(openUgc());
     this._store.dispatch(setMapDetailsStatus({status: 'open'}));
     //TODO: Da effettuare refactor spostare logica nell'effect
-    this._store.select(countUgcTracks).pipe(take(1)).subscribe(countTracks => {
-      if (countTracks > 0) {
-        this._store.dispatch(setHomeResultTabSelected({tab: 'tracks'}));
-      }
-    });
+    this._store
+      .select(countUgcTracks)
+      .pipe(take(1))
+      .subscribe(countTracks => {
+        if (countTracks > 0) {
+          this._store.dispatch(setHomeResultTabSelected({tab: 'tracks'}));
+        }
+      });
   }
 
   togglePoiFilter(filterIdentifier: string, idx?: number): void {

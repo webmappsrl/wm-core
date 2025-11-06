@@ -1,4 +1,5 @@
 import {Hit} from '@wm-types/elastic';
+import {APP} from '@wm-types/config';
 
 export type IBASEBOX = IBOX & {
   box_type: 'base';
@@ -93,22 +94,6 @@ export interface Filter {
   upper?: number;
 }
 
-export interface IAPP {
-  appStoreUrl?: string;
-  androidStore?: string;
-  customerName?: string;
-  forceToReleaseUpdate?: boolean;
-  geohubId?: number;
-  googlePlayUrl?: string;
-  id?: string;
-  iosStore?: string;
-  sku?: string;
-  name: string;
-  poi_acquisition_form?: any;
-  track_acquisition_form?: any;
-  welcome?: string;
-}
-
 export interface IAPPDOWNLOADBUTTONS {
   all: boolean;
   poi: boolean;
@@ -137,7 +122,7 @@ export interface ICLUSTERING {
 }
 
 export interface ICONF {
-  APP: IAPP;
+  APP: APP;
   AUTH?: IAUTH;
   CREDITS?: IPROJECT;
   DISCLAIMER?: IPROJECT;
@@ -178,7 +163,7 @@ export interface ICONTROLSTITLE extends ICONTROL {
 }
 
 export interface IConfig {
-  APP: IAPP;
+  APP: APP;
   GEOLOCATION?: IGEOLOCATION;
   PROJECT: IPROJECT;
 }

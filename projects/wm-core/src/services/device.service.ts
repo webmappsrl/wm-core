@@ -15,7 +15,7 @@ import {Device} from '@capacitor/device';
 import {Browser} from '@capacitor/browser';
 import {APP_VERSION} from '@wm-core/store/conf/conf.token';
 import {WmDeviceInfo} from '@wm-types/feature';
-import {IAPP} from '@wm-core/types/config';
+import {APP} from '@wm-types/config';
 import {ModalReleaseUpdateComponent} from '../modal-release-update/modal-release-update.component';
 
 @Injectable({
@@ -154,7 +154,7 @@ export class DeviceService {
    * @param appConfig APP configuration from backend
    * @returns true if the app is a wrong sku version
    */
-  private _isWrongSkuVersion(appConfig: IAPP): boolean {
+  private _isWrongSkuVersion(appConfig: APP): boolean {
     return !!(appConfig.sku && this._wrongSkuVersion.includes(appConfig.sku));
   }
 
@@ -172,7 +172,7 @@ export class DeviceService {
    * @param appConfig APP configuration from backend
    * @returns Promise with the version (possibly modified) or null in case of error
    */
-  async getLastReleaseVersion(appConfig: IAPP): Promise<string | null> {
+  async getLastReleaseVersion(appConfig: APP): Promise<string | null> {
     const githubUrl =
       'https://raw.githubusercontent.com/webmappsrl/webmapp-app/refs/heads/main/package.json';
 
@@ -198,7 +198,7 @@ export class DeviceService {
    * @param appConfig APP configuration from backend
    * @returns Promise that resolves to true if update is needed, false otherwise, or null in case of error
    */
-  async checkIfUpdateNeeded(appConfig: IAPP): Promise<boolean | null> {
+  async checkIfUpdateNeeded(appConfig: APP): Promise<boolean | null> {
     try {
       const githubVersion = await this.getLastReleaseVersion(appConfig);
       if (!githubVersion) {
@@ -217,7 +217,7 @@ export class DeviceService {
    * @param appConfig APP configuration from backend
    * @returns Promise that resolves when the check is complete
    */
-  async openUpdateModalIfNeeded(appConfig: IAPP): Promise<void> {
+  async openUpdateModalIfNeeded(appConfig: APP): Promise<void> {
     try {
       const updateNeeded = await this.checkIfUpdateNeeded(appConfig);
       if (updateNeeded === true) {
