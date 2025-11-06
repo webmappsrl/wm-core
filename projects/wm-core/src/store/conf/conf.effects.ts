@@ -6,10 +6,9 @@ import {loadConf, loadConfFail, loadConfSuccess, updateMapWithUgc} from './conf.
 import {ConfService} from './conf.service';
 import {select, Store} from '@ngrx/store';
 import {activableUgc} from '@wm-core/store/features/ugc/ugc.selector';
-import {isConfLoaded} from './conf.selector';
+import {confMAP, isConfLoaded} from './conf.selector';
 import {currentEcLayerId} from '../features/ec/ec.actions';
-import {confHOME} from '@wm-core/store/conf/conf.selector';
-import {IHOME, ILAYER, ILAYERBOX} from '@wm-core/types/config';
+import {ILAYER} from '@wm-core/types/config';
 import {setLayer} from '../user-activity/user-activity.action';
 import {DeviceService} from '@wm-core/services/device.service';
 @Injectable({
@@ -35,19 +34,15 @@ export class ConfEffects {
     this._actions$.pipe(
       ofType(currentEcLayerId),
       switchMap(action =>
-        this._store.select(confHOME).pipe(
-          filter(home => home != null && home.length > 0),
+        this._store.select(confMAP).pipe(
+          filter(map => map != null && map.layers != null && map.layers.length > 0),
           take(1),
-          map(home => [action, home] as const),
+          map(map => [action, map] as const),
         ),
       ),
-      switchMap(([action, home]) => {
-        const id = +action.currentEcLayerId;
-        const layer: ILAYER =
-          home
-            .filter((item: IHOME) => item?.box_type === 'layer' && item.layer) // Filtra solo i box_type 'Layer'
-            .map((item: ILAYERBOX) => item.layer) // Estrae il layer
-            .find((layer: ILAYER) => +layer.id === +id) ?? null; // Trova il layer con id corrispondente
+      switchMap(([action, map]) => {
+        const id = action.currentEcLayerId;
+        const layer: ILAYER = map.layers.find(layer => +layer.id === +id) ?? null;
 
         return of(setLayer({layer})).pipe(catchError(() => of(setLayer({layer: null}))));
       }),
