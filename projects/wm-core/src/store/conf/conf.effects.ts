@@ -12,11 +12,9 @@ import {
 import {ConfService} from './conf.service';
 import {select, Store} from '@ngrx/store';
 import {activableUgc} from '@wm-core/store/features/ugc/ugc.selector';
-import {confMAP, isConfLoaded} from './conf.selector';
-import {isConfLoaded, confReleaseUpdate} from './conf.selector';
-import {isConfLoaded, confAPP} from './conf.selector';
+import {confMAP, isConfLoaded, confAPP} from './conf.selector';
 import {currentEcLayerId} from '../features/ec/ec.actions';
-import {IHOME, ILAYER, ILAYERBOX, IAPP} from '@wm-core/types/config';
+import {ILAYER} from '@wm-core/types/config';
 import {setLayer} from '../user-activity/user-activity.action';
 import {DeviceService} from '@wm-core/services/device.service';
 import {APP_VERSION} from './conf.token';
