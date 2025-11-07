@@ -195,6 +195,10 @@ export class DeviceService {
 
   /**
    * Checks if the current version is different from the GitHub version
+   * For wrong sku versions, both versions are normalized (with "1" prefix) before comparison:
+   * - this.appVersion already has "1" prefix (set during build process in gulpfile.js)
+   * - githubVersion gets "1" prefix added by getLastReleaseVersion if it's a wrong sku version
+   * This ensures correct comparison between app version and GitHub version for all instances
    * @param appConfig APP configuration from backend
    * @returns Promise that resolves to true if update is needed, false otherwise, or null in case of error
    */
@@ -205,6 +209,7 @@ export class DeviceService {
         return null;
       }
       // Compare current version with GitHub version
+      // For wrong sku versions, both versions are already normalized (with "1" prefix)
       return this.appVersion !== githubVersion;
     } catch (error) {
       return null;
