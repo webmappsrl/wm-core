@@ -28,7 +28,11 @@ export class ConfEffects {
         this._configSVC.getConf().pipe(
           filter(conf => conf != null),
           map(conf => {
-            conf = {...conf, isMobile: this._deviceService.isMobile};
+            conf = {
+              ...conf,
+              isMobile: this._deviceService.isMobile,
+              isAppMobile: this._deviceService.isAppMobile,
+            };
             return loadConfSuccess({conf});
           }),
           catchError((_: any) => of(loadConfFail())),
@@ -72,7 +76,7 @@ export class ConfEffects {
             filter(
               app =>
                 !!app &&
-                this._deviceService.isMobile &&
+                this._deviceService.isAppMobile &&
                 app.forceToReleaseUpdate === true &&
                 !!app.androidStore &&
                 !!app.iosStore,

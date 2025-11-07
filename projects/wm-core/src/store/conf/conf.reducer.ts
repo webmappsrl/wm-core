@@ -152,6 +152,7 @@ const initialConfState: ICONF = {
   },
   loaded: false,
   isMobile: false,
+  isAppMobile: false,
 };
 
 export const confReducer = createReducer(

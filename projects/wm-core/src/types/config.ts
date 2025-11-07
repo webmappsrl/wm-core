@@ -138,6 +138,7 @@ export interface ICONF {
   TRANSLATIONS?: {[lang: string]: {[key: string]: string}};
   WEBAPP?: IWEBAPP;
   isMobile: boolean;
+  isAppMobile: boolean;
   loaded: boolean;
 }
 

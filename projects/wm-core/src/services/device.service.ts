@@ -68,6 +68,10 @@ export class DeviceService {
     return this.isAndroid || this.isIos;
   }
 
+  get isAppMobile(): boolean {
+    return this.isMobile && !this.isBrowser;
+  }
+
   get width(): number {
     return this._width;
   }
