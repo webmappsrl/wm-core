@@ -11,7 +11,12 @@ import {
 import {currentUgcPoiId, currentUgcTrackId} from '@wm-core/store/features/ugc/ugc.actions';
 import {Params} from '@angular/router';
 import {debounceTime, skip, take} from 'rxjs/operators';
-import {closeDownloads, closeUgc, openUgc} from '@wm-core/store/user-activity/user-activity.action';
+import {
+  closeDownloads,
+  closeUgc,
+  inputTyped,
+  openUgc,
+} from '@wm-core/store/user-activity/user-activity.action';
 import {BehaviorSubject} from 'rxjs';
 import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
 
@@ -72,6 +77,7 @@ export class UrlHandlerService {
           currentEcImageGalleryIndex: params.gallery_index ? +params.gallery_index : null,
         }),
       );
+      this._store.dispatch(inputTyped({inputTyped: this._decodeQueryParam(params.search)}));
       this._checkIfUgcIsOpened(params);
       this._currentQueryParams$.next(params);
     });
@@ -136,6 +142,19 @@ export class UrlHandlerService {
         : {track: id ? id : undefined};
       this.updateURL(queryParams, ['map']);
     });
+  }
+
+  /**
+   * Decodifica un parametro query in modo sicuro.
+   * Gestisce il caso in cui il valore sia già decodificato o contenga caratteri speciali.
+   */
+  private _decodeQueryParam(value: string): string {
+    if (!value) return value;
+    try {
+      return decodeURIComponent(value);
+    } catch {
+      return value;
+    }
   }
 
   private _checkIfUgcIsOpened(queryParams: Params): void {

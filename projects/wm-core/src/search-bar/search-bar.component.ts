@@ -1,4 +1,7 @@
-import {EmptyInputTyped} from '@wm-core/store/user-activity/user-activity.selector';
+import {
+  EmptyInputTyped,
+  inputTyped as inputTypedSelector,
+} from '@wm-core/store/user-activity/user-activity.selector';
 import {Subscription} from 'rxjs/internal/Subscription';
 import {
   Component,
@@ -11,8 +14,9 @@ import {
 } from '@angular/core';
 import {FormBuilder, FormGroup, FormControl} from '@angular/forms';
 import {Store} from '@ngrx/store';
-import {debounceTime, filter} from 'rxjs/operators';
+import {debounceTime, filter, distinctUntilChanged} from 'rxjs/operators';
 import {inputTyped} from '@wm-core/store/user-activity/user-activity.action';
+import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 
 interface SearchForm {
   search: FormControl<string>;
@@ -27,6 +31,7 @@ interface SearchForm {
 })
 export class WmSearchBarComponent implements OnDestroy {
   private _searchSub$: Subscription = Subscription.EMPTY;
+  private _inputTypedSub$: Subscription = Subscription.EMPTY;
 
   @Input('initSearch') set setSearch(init: string) {
     this.searchForm.controls.search.setValue(init);
@@ -37,7 +42,11 @@ export class WmSearchBarComponent implements OnDestroy {
   emptyInputTyped$ = this._store.select(EmptyInputTyped);
   searchForm: FormGroup<SearchForm>;
 
-  constructor(fb: FormBuilder, private _store: Store<any>) {
+  constructor(
+    fb: FormBuilder,
+    private _store: Store<any>,
+    private _urlHandlerSvc: UrlHandlerService,
+  ) {
     this.searchForm = fb.group<SearchForm>({
       search: new FormControl<string>(''),
     });
@@ -55,10 +64,10 @@ export class WmSearchBarComponent implements OnDestroy {
       const search = value.search;
       console.log(search);
       if (search != null && search !== '') {
-        this._store.dispatch(inputTyped({inputTyped: search}));
+        this._urlHandlerSvc.updateURL({search});
         this.isTypingsEVT.emit(true);
       } else {
-        this._store.dispatch(inputTyped({inputTyped: ''}));
+        this._urlHandlerSvc.updateURL({search: undefined});
         this.isTypingsEVT.emit(false);
       }
     });
@@ -69,10 +78,21 @@ export class WmSearchBarComponent implements OnDestroy {
         this.searchForm.reset();
         this.isTypingsEVT.emit(false);
       });
+    this._inputTypedSub$ = this._store
+      .select(inputTypedSelector)
+      .pipe(distinctUntilChanged())
+      .subscribe(value => {
+        const currentValue = this.searchForm.controls.search.value;
+        const newValue = value || '';
+        if (currentValue !== newValue) {
+          this.searchForm.controls.search.setValue(newValue);
+        }
+      });
   }
 
   ngOnDestroy(): void {
     this._searchSub$.unsubscribe();
+    this._inputTypedSub$.unsubscribe();
   }
 
   /**
