@@ -1,6 +1,6 @@
-import {Inject, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {of, from} from 'rxjs';
+import {of} from 'rxjs';
 import {catchError, filter, map, switchMap, withLatestFrom, take} from 'rxjs/operators';
 import {
   loadConf,
@@ -17,7 +17,6 @@ import {currentEcLayerId} from '../features/ec/ec.actions';
 import {ILAYER} from '@wm-core/types/config';
 import {setLayer} from '../user-activity/user-activity.action';
 import {DeviceService} from '@wm-core/services/device.service';
-import {APP_VERSION} from './conf.token';
 @Injectable({
   providedIn: 'root',
 })
@@ -69,19 +68,17 @@ export class ConfEffects {
       this._actions$.pipe(
         ofType(checkAppVersion),
         withLatestFrom(
-          this._store
-            .select(confAPP)
-            .pipe(
-              filter(
-                app =>
-                  !!app &&
-                  this._deviceService.isMobile &&
-                  app.forceToReleaseUpdate === true &&
-                  !!app.androidStore &&
-                  !!app.iosStore,
-              ),
+          this._store.select(confAPP).pipe(
+            filter(
+              app =>
+                !!app &&
+                this._deviceService.isMobile &&
+                app.forceToReleaseUpdate === true &&
+                !!app.androidStore &&
+                !!app.iosStore,
             ),
-          this._store.select(isConfLoaded).pipe(filter(loaded => loaded === true)),
+            take(1),
+          ),
         ),
         switchMap(([_, appConfig]) => this._deviceService.openUpdateModalIfNeeded(appConfig)),
       ),
@@ -93,6 +90,5 @@ export class ConfEffects {
     private _actions$: Actions,
     private _store: Store,
     private _deviceService: DeviceService,
-    @Inject(APP_VERSION) private _appVersion: string,
   ) {}
 }

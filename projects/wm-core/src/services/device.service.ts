@@ -202,17 +202,17 @@ export class DeviceService {
    * @param appConfig APP configuration from backend
    * @returns Promise that resolves to true if update is needed, false otherwise, or null in case of error
    */
-  async checkIfUpdateNeeded(appConfig: APP): Promise<boolean | null> {
+  async checkIfUpdateNeeded(appConfig: APP): Promise<boolean> {
     try {
       const githubVersion = await this.getLastReleaseVersion(appConfig);
       if (!githubVersion) {
-        return null;
+        return false;
       }
       // Compare current version with GitHub version
       // For wrong sku versions, both versions are already normalized (with "1" prefix)
       return this.appVersion !== githubVersion;
     } catch (error) {
-      return null;
+      return false;
     }
   }
 
@@ -225,7 +225,7 @@ export class DeviceService {
   async openUpdateModalIfNeeded(appConfig: APP): Promise<void> {
     try {
       const updateNeeded = await this.checkIfUpdateNeeded(appConfig);
-      if (updateNeeded === true) {
+      if (updateNeeded) {
         // Get the appropriate store URL based on device
         const storeUrl = this.isAndroid
           ? appConfig.androidStore
@@ -235,19 +235,17 @@ export class DeviceService {
 
         if (storeUrl) {
           // Get production version to show in modal
-          const productionVersion = await this.getLastReleaseVersion(appConfig);
-          if (productionVersion) {
-            const modal = await this._modalController.create({
-              component: ModalReleaseUpdateComponent,
-              componentProps: {
-                storeUrl,
-                productionVersion,
-              },
-              backdropDismiss: true,
-              showBackdrop: true,
-            });
-            await modal.present();
-          }
+          const gitVersion = await this.getLastReleaseVersion(appConfig);
+          const modal = await this._modalController.create({
+            component: ModalReleaseUpdateComponent,
+            componentProps: {
+              storeUrl,
+              gitVersion,
+            },
+            backdropDismiss: true,
+            showBackdrop: true,
+          });
+          await modal.present();
         }
       }
     } catch (error) {}
@@ -264,17 +262,10 @@ export class DeviceService {
       return;
     }
 
-    // On browser, non-mobile, iOS, or non-Android mobile, use window.open directly
-    // Only on native Android device, try Browser.open
-    if (this.isBrowser || !this.isMobile || !this.isAndroid) {
+    try {
       window.open(storeUrl, '_blank', 'noopener,noreferrer');
-    } else {
-      // On native Android device, try Browser.open
-      try {
-        await Browser.open({url: storeUrl});
-      } catch (error) {
-        window.open(storeUrl, '_blank', 'noopener,noreferrer');
-      }
+    } catch (error) {
+      await Browser.open({url: storeUrl});
     }
   }
 }

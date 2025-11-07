@@ -11,7 +11,7 @@ import {DeviceService} from '@wm-core/services/device.service';
 })
 export class ModalReleaseUpdateComponent implements OnInit {
   @Input() storeUrl: string;
-  @Input() productionVersion: string | null;
+  @Input() gitVersion: string | null;
 
   constructor(private _modalController: ModalController, private _deviceService: DeviceService) {}
 

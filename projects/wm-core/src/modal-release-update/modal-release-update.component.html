@@ -24,11 +24,11 @@
       </ion-label>
 
       <ion-label
-        *ngIf="productionVersion"
+        *ngIf="gitVersion"
         class="wm-modal-release-update-app-version"
         e2e-release-update-modal-version
       >
-        {{ 'Versione disponibile' | wmtrans }}: {{ productionVersion }}
+        {{ 'Versione disponibile' | wmtrans }}: {{ gitVersion }}
       </ion-label>
 
       <div class="wm-modal-release-update-app-buttoncontainer">
