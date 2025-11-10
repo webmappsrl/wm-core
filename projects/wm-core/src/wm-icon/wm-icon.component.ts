@@ -12,16 +12,18 @@ import {Observable} from 'rxjs';
       appBuildSvg
       *ngIf="icons?.[iconData?.icon_name] as icon; else legacyIcon"
       [svg]="icon"
+      [color]="useColor ? iconData?.color : null"
     ></div>
   </ng-container>
     <ng-template #legacyIcon>
-      <div appBuildSvg *ngIf="iconData?.icon != null" [svg]="iconData.icon"></div>
+      <div appBuildSvg *ngIf="iconData?.icon != null" [svg]="iconData.icon" [color]="useColor ? iconData?.color : null"></div>
     </ng-template>
   `,
   styles: [],
 })
 export class WmIconComponent {
   @Input() iconData: any;
+  @Input() useColor: boolean = true;
 
   icons$: Observable<ICONS> = this._store.select(icons);
 

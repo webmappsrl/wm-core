@@ -20,7 +20,7 @@
                 <ng-container
                   *ngIf="(option?.icon_name != null) || (option?.icon != null); else imgT"
                 >
-                  <wm-icon [iconData]="option"></wm-icon>
+                  <wm-icon [iconData]="option" [useColor]="false"></wm-icon>
                 </ng-container>
                 <ng-template #imgT>
                   <img [src]="option.identifier" />
