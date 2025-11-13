@@ -223,12 +223,14 @@ export const wmFR = {
   'Attenzione': 'Attention',
   'Disegna': 'Dessiner',
   'Esci': 'Quitter',
-  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Vous avez enregistré votre waypoint avec succès. Vous pouvez le visualiser en accédant à votre profil.',
-  'Cliccando su \"Registrati\" accetti la nostra privacy e i termini e condizioni': 'En cliquant sur \"S\'inscrire\", vous acceptez notre politique de confidentialité et nos conditions d\'utilisation',
-  "culture-history": "Culture et histoire",
-  "environmental-education": "Éducation environnementale",
-  "eating-sleeping": "Manger et dormir",
-  "by-car": "En voiture",
+  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.':
+    'Vous avez enregistré votre waypoint avec succès. Vous pouvez le visualiser en accédant à votre profil.',
+  'Cliccando su "Registrati" accetti la nostra privacy e i termini e condizioni':
+    'En cliquant sur "S\'inscrire", vous acceptez notre politique de confidentialité et nos conditions d\'utilisation',
+  'culture-history': 'Culture et histoire',
+  'environmental-education': 'Éducation environnementale',
+  'eating-sleeping': 'Manger et dormir',
+  'by-car': 'En voiture',
   'Eliminazione': 'Suppression',
   'Elimina': 'Supprimer',
   'Sei sicuro di voler eliminare questi dati?': 'Êtes-vous sûr de vouloir supprimer ces données ?',
@@ -243,4 +245,10 @@ export const wmFR = {
   'La conferma non corrisponde. Digita "delete account" per procedere.':
     'La confirmation ne correspond pas. Entrez "delete account" pour procéder.',
   'Elimina account': 'Supprimer le compte',
+  'Aggiornamento disponibile': 'Mise à jour disponible',
+  "È disponibile una nuova versione dell'app. Aggiorna per ottenere le ultime funzionalità e miglioramenti.":
+    "Une nouvelle version de l'application est disponible. Mettez à jour maintenant pour obtenir les dernières fonctionnalités et améliorations.",
+  'Aggiorna ora': 'Mettre à jour maintenant',
+  'Più tardi': 'Plus tard',
+  'Versione disponibile': 'Version disponible'
 };

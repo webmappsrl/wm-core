@@ -76,6 +76,7 @@ import {WmFeaturesInViewportComponent} from './features-in-viewport/features-in-
 import {WmDifficultyComponent} from './difficulty/difficulty.component';
 import {WmImagePickerComponent} from './image-picker/image-picker.component';
 import {ModalGetDirectionsComponent} from './modal-get-directions/modal-get-directions.component';
+import {ModalReleaseUpdateComponent} from './modal-release-update/modal-release-update.component';
 import {WmDrawUgcComponent} from './draw-ugc/draw-ugc.component';
 import {WmDrawUgcButtonComponent} from './draw-ugc-button/draw-ugc-button.component';
 import {iconsReducer} from './store/icons/icons.reducer';
@@ -126,6 +127,7 @@ export const declarations = [
   WmDifficultyComponent,
   WmImagePickerComponent,
   ModalGetDirectionsComponent,
+  ModalReleaseUpdateComponent,
   WmDrawUgcComponent,
   WmDrawUgcButtonComponent,
 ];

@@ -200,9 +200,9 @@ export const wmES = {
   'joelette': 'Joëlette',
   'mtb': 'MTB',
   'mountain-bike': 'Bicicleta de montaña',
-  "Ottieni le indicazioni su Google Maps": "Obtener indicaciones en Google Maps",
-  "Per il punto di partenza": "Para el punto de partida",
-  "Per il punto più vicino in linea d'aria": "Para el punto más cercano en línea de vista",
+  'Ottieni le indicazioni su Google Maps': 'Obtener indicaciones en Google Maps',
+  'Per il punto di partenza': 'Para el punto de partida',
+  "Per il punto più vicino in linea d'aria": 'Para el punto más cercano en línea de vista',
   'Tipo di form': 'Tipo de formulario',
   'massimo': 'máximo',
   'foto': 'fotos',
@@ -220,12 +220,14 @@ export const wmES = {
   'Attenzione': 'Atención',
   'Disegna': 'Dibujar',
   'Esci': 'Salir',
-  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Has guardado correctamente tu waypoint. Puedes verlo accediendo a tu perfil.',
-  'Cliccando su \"Registrati\" accetti la nostra privacy e i termini e condizioni': 'Al hacer clic en \"Registrarse\" acepta nuestra política de privacidad y nuestros términos y condiciones',
-  "culture-history": "Cultura y historia",
-  "environmental-education": "Educación ambiental",
-  "eating-sleeping": "Comer y dormir",
-  "by-car": "En coche",
+  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.':
+    'Has guardado correctamente tu waypoint. Puedes verlo accediendo a tu perfil.',
+  'Cliccando su "Registrati" accetti la nostra privacy e i termini e condizioni':
+    'Al hacer clic en "Registrarse" acepta nuestra política de privacidad y nuestros términos y condiciones',
+  'culture-history': 'Cultura y historia',
+  'environmental-education': 'Educación ambiental',
+  'eating-sleeping': 'Comer y dormir',
+  'by-car': 'En coche',
   'Eliminazione': 'Eliminación',
   'Elimina': 'Eliminar',
   'Sei sicuro di voler eliminare questi dati?': '¿Está seguro de que desea eliminar estos datos?',
@@ -240,4 +242,10 @@ export const wmES = {
   'La conferma non corrisponde. Digita "delete account" per procedere.':
     'La confirmación no coincide. Escribe "delete account" para proceder.',
   'Elimina account': 'Eliminar cuenta',
+  'Aggiornamento disponibile': 'Actualización disponible',
+  "È disponibile una nuova versione dell'app. Aggiorna per ottenere le ultime funzionalità e miglioramenti.":
+    'Una nueva versión de la aplicación está disponible. Actualiza ahora para obtener las últimas funciones y mejoras.',
+  'Aggiorna ora': 'Actualizar ahora',
+  'Più tardi': 'Más tarde',
+  'Versione disponibile': 'Versión disponible'
 };

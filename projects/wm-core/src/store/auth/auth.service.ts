@@ -4,7 +4,7 @@ import {EnvironmentService} from '@wm-core/services/environment.service';
 import {from, Observable} from 'rxjs';
 import {IUser, Privacy} from './auth.model';
 import {Store} from '@ngrx/store';
-import {IAPP} from '@wm-core/types/config';
+import {APP} from '@wm-types/config';
 import {confAPP, confPRIVACY} from '@wm-core/store/conf/conf.selector';
 import {switchMap, take} from 'rxjs/operators';
 import {LangService} from '@wm-core/localization/lang.service';
@@ -16,7 +16,7 @@ import {DEFAULT_PRIVACY_POLICY_URL} from '@wm-core/constants/links';
   providedIn: 'root',
 })
 export class AuthService {
-  confAPP$: Observable<IAPP> = this._store.select(confAPP);
+  confAPP$: Observable<APP> = this._store.select(confAPP);
   constructor(
     private _http: HttpClient,
     private _environmentSvc: EnvironmentService,

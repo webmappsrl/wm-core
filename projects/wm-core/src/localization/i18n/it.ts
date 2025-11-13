@@ -242,7 +242,7 @@ export const wmIT = {
   'Sei sicuro di voler eliminare questi dati?': 'Sei sicuro di voler eliminare questi dati?',
   'Modifica consenso dati': 'Modifica consenso dati',
   'Dati non sincronizzati': 'Dati non sincronizzati',
-  "Lingua": "Lingua",
+  'Lingua': 'Lingua',
   'Azione irreversibile': 'Azione irreversibile',
   'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
     'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.',
@@ -251,4 +251,10 @@ export const wmIT = {
   'La conferma non corrisponde. Digita "delete account" per procedere.':
     'La conferma non corrisponde. Digita "delete account" per procedere.',
   'Elimina account': 'Elimina account',
+  'Aggiornamento disponibile': 'Aggiornamento disponibile',
+  "È disponibile una nuova versione dell'app. Aggiorna per ottenere le ultime funzionalità e miglioramenti.":
+    "È disponibile una nuova versione dell'app. Aggiorna per ottenere le ultime funzionalità e miglioramenti.",
+  'Aggiorna ora': 'Aggiorna ora',
+  'Più tardi': 'Più tardi',
+  'Versione disponibile': 'Versione disponibile'
 };

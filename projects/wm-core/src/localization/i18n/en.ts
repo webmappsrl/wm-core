@@ -252,4 +252,10 @@ export const wmEN = {
   'La conferma non corrisponde. Digita "delete account" per procedere.':
     'The confirmation does not match. Enter "delete account" to proceed.',
   'Elimina account': 'Delete account',
+  'Aggiornamento disponibile': 'Update available',
+  "È disponibile una nuova versione dell'app. Aggiorna per ottenere le ultime funzionalità e miglioramenti.":
+    'A new version of the app is available. Update now to get the latest features and improvements.',
+  'Aggiorna ora': 'Update now',
+  'Più tardi': 'Later',
+  'Versione disponibile': 'Available version'
 };

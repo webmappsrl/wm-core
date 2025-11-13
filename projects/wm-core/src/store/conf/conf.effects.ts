@@ -2,11 +2,17 @@ import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {of} from 'rxjs';
 import {catchError, filter, map, switchMap, withLatestFrom, take} from 'rxjs/operators';
-import {loadConf, loadConfFail, loadConfSuccess, updateMapWithUgc} from './conf.actions';
+import {
+  loadConf,
+  loadConfFail,
+  loadConfSuccess,
+  updateMapWithUgc,
+  checkAppVersion,
+} from './conf.actions';
 import {ConfService} from './conf.service';
 import {select, Store} from '@ngrx/store';
 import {activableUgc} from '@wm-core/store/features/ugc/ugc.selector';
-import {confMAP, isConfLoaded} from './conf.selector';
+import {confMAP, isConfLoaded, confAPP} from './conf.selector';
 import {currentEcLayerId} from '../features/ec/ec.actions';
 import {ILAYER} from '@wm-core/types/config';
 import {setLayer} from '../user-activity/user-activity.action';
@@ -22,7 +28,11 @@ export class ConfEffects {
         this._configSVC.getConf().pipe(
           filter(conf => conf != null),
           map(conf => {
-            conf = {...conf, isMobile: this._deviceService.isMobile};
+            conf = {
+              ...conf,
+              isMobile: this._deviceService.isMobile,
+              isAppMobile: this._deviceService.isAppMobile,
+            };
             return loadConfSuccess({conf});
           }),
           catchError((_: any) => of(loadConfFail())),
@@ -55,6 +65,28 @@ export class ConfEffects {
       filter(([_, isLoaded]) => isLoaded),
       map(([activableUgc]) => updateMapWithUgc({activableUgc})), // Dispatch dell'azione con il valore del selettore
     ),
+  );
+
+  checkAppVersion$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(checkAppVersion),
+        withLatestFrom(
+          this._store.select(confAPP).pipe(
+            filter(
+              app =>
+                !!app &&
+                this._deviceService.isAppMobile &&
+                app.forceToReleaseUpdate === true &&
+                !!app.androidStore &&
+                !!app.iosStore,
+            ),
+            take(1),
+          ),
+        ),
+        switchMap(([_, appConfig]) => this._deviceService.openUpdateModalIfNeeded(appConfig)),
+      ),
+    {dispatch: false},
   );
 
   constructor(

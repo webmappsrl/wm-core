@@ -208,9 +208,9 @@ export const wmSQ = {
   'joelette': 'Joëlette',
   'mtb': 'MTB',
   'mountain-bike': 'Biçikletë malore',
-  "Ottieni le indicazioni su Google Maps": "Merr hulumtime në Google Maps",
-  "Per il punto di partenza": "Për pikën e nisjes",
-  "Per il punto più vicino in linea d'aria": "Për pikën më të afërt në vijë të shikimit",
+  'Ottieni le indicazioni su Google Maps': 'Merr hulumtime në Google Maps',
+  'Per il punto di partenza': 'Për pikën e nisjes',
+  "Per il punto più vicino in linea d'aria": 'Për pikën më të afërt në vijë të shikimit',
   'Tipo di form': 'Lloji i formularit',
   'massimo': 'maksimum',
   'foto': 'foto',
@@ -228,15 +228,18 @@ export const wmSQ = {
   'Attenzione': 'Vëmendje',
   'Disegna': 'Dhëni',
   'Esci': 'Dil',
-  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Keni ruajtur me sukses pikën tuaj të ndalimit. Mund ta shihni duke hyrë në profilin tuaj.',
-  'Cliccando su \"Registrati\" accetti la nostra privacy e i termini e condizioni': 'Duke klikuar \"Regjistrohu\", pranoni tonën',
-  "culture-history": "Kultura dhe historia",
-  "environmental-education": "Edukimi ambientale",
-  "eating-sleeping": "Mëngjes dhe mëngjes",
-  "by-car": "Me makinë",
+  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.':
+    'Keni ruajtur me sukses pikën tuaj të ndalimit. Mund ta shihni duke hyrë në profilin tuaj.',
+  'Cliccando su "Registrati" accetti la nostra privacy e i termini e condizioni':
+    'Duke klikuar "Regjistrohu", pranoni tonën',
+  'culture-history': 'Kultura dhe historia',
+  'environmental-education': 'Edukimi ambientale',
+  'eating-sleeping': 'Mëngjes dhe mëngjes',
+  'by-car': 'Me makinë',
   'Eliminazione': 'Fshirje',
   'Elimina': 'Fshij',
-  'Sei sicuro di voler eliminare questi dati?': 'A jeni të sigurt që dëshironi të fshini këto të dhëna?',
+  'Sei sicuro di voler eliminare questi dati?':
+    'A jeni të sigurt që dëshironi të fshini këto të dhëna?',
   'Modifica consenso dati': 'Modifiko pëlqimin për të dhënat',
   'Dati non sincronizzati': 'Të dhëna të pa-sinkronizuara',
   'Lingua': 'Gjuha',
@@ -248,4 +251,10 @@ export const wmSQ = {
   'La conferma non corrisponde. Digita "delete account" per procedere.':
     'Konfirmimi nuk përputhet. Shkruani "delete account" për të vazhduar.',
   'Elimina account': 'Fshij kontin',
+  'Aggiornamento disponibile': 'Përditësim i disponueshëm',
+  "È disponibile una nuova versione dell'app. Aggiorna per ottenere le ultime funzionalità e miglioramenti.":
+    'Një version i ri i aplikacionit është i disponueshëm. Përditëso tani për të marrë veçoritë dhe përmirësimet e fundit.',
+  'Aggiorna ora': 'Përditëso tani',
+  'Più tardi': 'Më vonë',
+  'Versione disponibile': 'Versione disponibile'
 };
