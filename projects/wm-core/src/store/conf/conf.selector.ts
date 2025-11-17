@@ -146,9 +146,9 @@ export const confOPTIONSShowEmbeddedHtml = createSelector(
   confOPTIONS,
   state => state.showEmbeddedHtml,
 );
-export const confOPTIONSShowDownloadTilesButton = createSelector(
+export const confOPTIONSShowDownloadTiles = createSelector(
   confOPTIONS,
-  state => state.showDownloadTilesButton,
+  state => state.showDownloadTiles || state.showDownloadTilesButton,
 );
 
 export const confZoomFeaturesInViewport = createSelector(confOPTIONS, state => {

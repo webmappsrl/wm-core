@@ -331,6 +331,7 @@ export interface IOPTIONS {
   showDescent: boolean;
   showDifficultyLegend: boolean;
   showDistance: boolean;
+  showDownloadTiles: boolean;
   showDownloadTilesButton: boolean;
   showDurationBackward: boolean;
   showDurationForward: boolean;
