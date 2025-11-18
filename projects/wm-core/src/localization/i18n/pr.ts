@@ -248,5 +248,8 @@ export const wmPR = {
     'Uma nova versão do aplicativo está disponível. Atualize agora para obter os últimos recursos e melhorias.',
   'Aggiorna ora': 'Atualizar agora',
   'Più tardi': 'Mais tarde',
-  'Versione disponibile': 'Versão disponível'
+  'Versione disponibile': 'Versão disponível',
+  'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
+    'Foi detectada uma gravação interrompida. Deseja continuar?',
+  'Riprendi': 'Continuar',
 };

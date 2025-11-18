@@ -256,5 +256,8 @@ export const wmIT = {
     "È disponibile una nuova versione dell'app. Aggiorna per ottenere le ultime funzionalità e miglioramenti.",
   'Aggiorna ora': 'Aggiorna ora',
   'Più tardi': 'Più tardi',
-  'Versione disponibile': 'Versione disponibile'
+  'Versione disponibile': 'Versione disponibile',
+  'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
+    'È stata rilevata una registrazione interrotta. Vuoi riprenderla?',
+  'Riprendi': 'Riprendi',
 };

@@ -256,5 +256,8 @@ export const wmSQ = {
     'Një version i ri i aplikacionit është i disponueshëm. Përditëso tani për të marrë veçoritë dhe përmirësimet e fundit.',
   'Aggiorna ora': 'Përditëso tani',
   'Più tardi': 'Më vonë',
-  'Versione disponibile': 'Versione disponibile'
+  'Versione disponibile': 'Versione disponibile',
+  'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
+    'Është një regjistrim i ndalur. Dëshironi të vazhdohet?',
+  'Riprendi': 'Vazhdo',
 };

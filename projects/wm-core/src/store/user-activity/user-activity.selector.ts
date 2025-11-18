@@ -234,3 +234,7 @@ export const wmMapTilesBoundingBox = createSelector(
   userActivity,
   state => state.wmMapTilesBoundingBox,
 );
+export const currentUgcTrackRecording = createSelector(
+  userActivity,
+  state => state.currentUgcTrackRecording,
+);

@@ -250,5 +250,8 @@ export const wmFR = {
     "Une nouvelle version de l'application est disponible. Mettez à jour maintenant pour obtenir les dernières fonctionnalités et améliorations.",
   'Aggiorna ora': 'Mettre à jour maintenant',
   'Più tardi': 'Plus tard',
-  'Versione disponibile': 'Version disponible'
+  'Versione disponibile': 'Version disponible',
+  'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
+    'Une enregistrement a été interrompu. Voulez-vous le reprendre ?',
+  'Riprendi': 'Reprendre',
 };

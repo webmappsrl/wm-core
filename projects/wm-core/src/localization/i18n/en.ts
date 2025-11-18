@@ -257,5 +257,8 @@ export const wmEN = {
     'A new version of the app is available. Update now to get the latest features and improvements.',
   'Aggiorna ora': 'Update now',
   'Più tardi': 'Later',
-  'Versione disponibile': 'Available version'
+  'Versione disponibile': 'Available version',
+  'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
+    'A recording has been interrupted. Do you want to resume it?',
+  'Riprendi': 'Resume',
 };

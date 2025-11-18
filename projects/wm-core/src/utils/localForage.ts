@@ -225,6 +225,20 @@ export async function getUgcTrack(
   return a ?? b ?? c;
 }
 
+export async function getCurrentUgcTrack(): Promise<WmFeature<LineString>> {
+  return handleAsync(
+    deviceCurrentUgcTrack.getItem<WmFeature<LineString>>('current-ugc-track'),
+    'getCurrentUgcTrack: Failed',
+  );
+}
+
+export async function getCurrentUgcTrackTime(): Promise<number> {
+  return handleAsync(
+    deviceCurrentUgcTrack.getItem<number>('current-ugc-track-time'),
+    'getCurrentUgcTrackTime: Failed',
+  );
+}
+
 export async function getUgcTracks(): Promise<WmFeature<LineString>[]> {
   const deviceUgcTracks = await getDeviceUgcTracks();
   const synchronizedUgcTracks = await getSynchronizedUgcTracks();
@@ -322,6 +336,17 @@ export async function removeUgcTrack(track: WmFeature<LineString>): Promise<void
   await handleAsync(storage.removeItem(`${featureId}`), 'removeUgcTrack: Failed');
 }
 
+export async function removeCurrentUgcTrack(): Promise<void> {
+  await handleAsync(
+    deviceCurrentUgcTrack.removeItem('current-ugc-track'),
+    'removeCurrentUgcTrack: Failed',
+  );
+  await handleAsync(
+    deviceCurrentUgcTrack.removeItem('current-ugc-track-time'),
+    'removeCurrentUgcTrack: Failed',
+  );
+}
+
 export function saveAuth(user: IUser): void {
   deviceAuth.setItem('user', user);
 }
@@ -414,6 +439,7 @@ export async function saveUgcTrack(feature: WmFeature<LineString>): Promise<void
   const featureId = properties.id ?? properties.uuid;
   const storage = properties.id ? synchronizedUgcTrack : deviceUgcTrack;
   await handleAsync(storage.setItem(`${featureId}`, feature), 'saveUgcTrack: Failed');
+  await removeCurrentUgcTrack();
 }
 
 export async function saveUgc(feature: WmFeature<LineString | Point>): Promise<void> {
@@ -424,6 +450,20 @@ export async function saveUgc(feature: WmFeature<LineString | Point>): Promise<v
   } else {
     await saveUgcPoi(feature as WmFeature<Point>);
   }
+}
+
+export async function saveCurrentUgcTrack(
+  track: WmFeature<LineString>,
+  time: number,
+): Promise<void> {
+  await handleAsync(
+    deviceCurrentUgcTrack.setItem('current-ugc-track', track),
+    'saveCurrentUgcTrack: Failed',
+  );
+  await handleAsync(
+    deviceCurrentUgcTrack.setItem('current-ugc-track-time', time),
+    'saveCurrentUgcTrack: Failed',
+  );
 }
 
 export function updateStatus(status: {
@@ -470,4 +510,8 @@ export const deviceImg = localforage.createInstance({
 export const deviceAuth = localforage.createInstance({
   name: 'device',
   storeName: 'auth',
+});
+export const deviceCurrentUgcTrack = localforage.createInstance({
+  name: 'device',
+  storeName: 'current-ugc-track',
 });

@@ -247,5 +247,8 @@ export const wmES = {
     'Una nueva versión de la aplicación está disponible. Actualiza ahora para obtener las últimas funciones y mejoras.',
   'Aggiorna ora': 'Actualizar ahora',
   'Più tardi': 'Más tarde',
-  'Versione disponibile': 'Versión disponible'
+  'Versione disponibile': 'Versión disponible',
+  'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
+    'Se ha detectado una grabación interrumpida. ¿Quieres continuar?',
+  'Riprendi': 'Continuar',
 };
