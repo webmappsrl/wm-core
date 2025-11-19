@@ -21,7 +21,6 @@ import {
   toggleTrackFilterByIdentifier,
   updateTrackFilter,
   setHomeResultTabSelected,
-  openUgc,
   getDirections,
   startGetDirections,
   setFocusPosition,
@@ -382,9 +381,10 @@ export class UserActivityEffects {
   checkCurrentUgcTrack$ = createEffect(() =>
     this._actions$.pipe(
       ofType(checkCurrentUgcTrack),
-      switchMap(() => from(getCurrentUgcTrack())),
-      switchMap(currentUgcTrack => {
-        if (currentUgcTrack) {
+      switchMap(() => this._geolocationSvc.hasCurrentUgcTrack$),
+      filter(hasCurrentUgcTrack => hasCurrentUgcTrack === true),
+      switchMap(hasCurrentUgcTrack => {
+        if (hasCurrentUgcTrack) {
           return from(
             this._alertCtrl.create({
               message: this._langSvc.instant(
@@ -422,15 +422,9 @@ export class UserActivityEffects {
         }
 
         // Recupera sia la traccia che il tempo salvati
-        return from(Promise.all([getCurrentUgcTrack(), getCurrentUgcTrackTime()])).pipe(
-          tap(([track, time]) => {
-            if (track && time != null) {
-              this._urlHandlerSvc.changeURL('map');
-            }
-          }),
-          delay(200),
-          mergeMap(([track, time]) => {
-            this._geolocationSvc.resumeRecordingFromSaved(track, time);
+        return from(this._geolocationSvc.resumeRecordingFromSaved()).pipe(
+          mergeMap(() => {
+            this._urlHandlerSvc.changeURL('map');
 
             return [setEnableTrackRecorderPanel({enable: true})];
           }),

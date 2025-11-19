@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
+import {BehaviorSubject, from, Observable, of, ReplaySubject} from 'rxjs';
 import {
   BackgroundGeolocationPlugin,
   Location,
@@ -21,6 +21,7 @@ import {
   setOnRecord,
 } from '@wm-core/store/user-activity/user-activity.action';
 import {onRecord} from '@wm-core/store/user-activity/user-activity.selector';
+import {getCurrentUgcTrack, getCurrentUgcTrackTime} from '@wm-core/utils/localForage';
 
 @Injectable({
   providedIn: 'root',
@@ -111,7 +112,15 @@ export class GeolocationService {
     }
   }
 
-  resumeRecordingFromSaved(savedFeature: WmFeature<LineString>, savedTime: number): void {
+  get hasCurrentUgcTrack$(): Observable<Boolean> {
+    return from(getCurrentUgcTrack()).pipe(map(currentUgcTrack => currentUgcTrack != null));
+  }
+
+  async resumeRecordingFromSaved(): Promise<void> {
+    const [savedFeature, savedTime] = await Promise.all([
+      getCurrentUgcTrack(),
+      getCurrentUgcTrackTime(),
+    ]);
     if (this._mode === 'recording') return;
 
     this._mode = 'recording';
