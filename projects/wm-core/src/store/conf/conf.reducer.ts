@@ -125,7 +125,7 @@ const initialConfState: ICONF = {
     showMediaName: false,
     showEmbeddedHtml: false,
     showFeaturesInViewport: false,
-    showDownloadTilesButton: false,
+    showDownloadTiles: false,
   },
   THEME: {
     primary: '#3880ff',
