@@ -383,31 +383,57 @@ export class UserActivityEffects {
       ofType(checkCurrentUgcTrack),
       switchMap(() => this._geolocationSvc.hasCurrentUgcTrack$),
       filter(hasCurrentUgcTrack => hasCurrentUgcTrack === true),
-      switchMap(hasCurrentUgcTrack => {
-        if (hasCurrentUgcTrack) {
-          return from(
-            this._alertCtrl.create({
-              message: this._langSvc.instant(
-                'È stata rilevata una registrazione interrotta. Vuoi riprenderla?',
+      switchMap(_ => {
+        return from(
+          this._alertCtrl.create({
+            message: this._langSvc.instant(
+              'È stata rilevata una registrazione interrotta. Vuoi riprenderla?',
+            ),
+            buttons: [
+              {
+                text: this._langSvc.instant('Annulla'),
+                role: 'cancel',
+              },
+              {
+                text: this._langSvc.instant('Riprendi'),
+                role: 'confirm',
+              },
+            ],
+          }),
+        ).pipe(
+          concatMap(alert => from(alert.present()).pipe(map(() => alert))),
+          concatMap(alert => from(alert.onDidDismiss())),
+          switchMap(result => {
+            // Se ha cliccato su "Riprendi", riprendi direttamente
+            if (result.role === 'confirm') {
+              return of(resumeCurrentUgcTrack({resume: true}));
+            }
+            // Se ha cliccato su "Annulla", mostra popup di conferma
+            return from(
+              this._alertCtrl.create({
+                message: this._langSvc.instant(
+                  'Sei sicuro di voler annullare? Questa operazione comporterà la perdita dei dati della registrazione.',
+                ),
+                buttons: [
+                  {
+                    text: this._langSvc.instant('Recupera'),
+                    role: 'resume',
+                  },
+                  {
+                    text: this._langSvc.instant('Cancella'),
+                    role: 'cancel',
+                  },
+                ],
+              }),
+            ).pipe(
+              concatMap(confirmAlert => from(confirmAlert.present()).pipe(map(() => confirmAlert))),
+              concatMap(confirmAlert => from(confirmAlert.onDidDismiss())),
+              map(confirmResult =>
+                resumeCurrentUgcTrack({resume: confirmResult.role === 'resume'}),
               ),
-              buttons: [
-                {
-                  text: this._langSvc.instant('Annulla'),
-                  role: 'cancel',
-                },
-                {
-                  text: this._langSvc.instant('Riprendi'),
-                  role: 'confirm',
-                },
-              ],
-            }),
-          ).pipe(
-            concatMap(alert => from(alert.present()).pipe(map(() => alert))),
-            concatMap(alert => from(alert.onDidDismiss())),
-            map(result => resumeCurrentUgcTrack({resume: result.role === 'confirm'})),
-          );
-        }
-        return of(resumeCurrentUgcTrack({resume: false}));
+            );
+          }),
+        );
       }),
     ),
   );
