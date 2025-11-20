@@ -2,7 +2,7 @@ import {createAction, props} from '@ngrx/store';
 import {Filter, ILAYER} from '@wm-core/types/config';
 import {WmFeature} from '@wm-types/feature';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
-import {MultiPolygon, Point} from 'geojson';
+import {LineString, MultiPolygon, Point} from 'geojson';
 import {mapDetailsStatus} from './user-activity.reducer';
 import {Hit} from '@wm-types/elastic';
 import {Location} from '@capacitor-community/background-geolocation';
@@ -146,7 +146,10 @@ export const startGetDirections = createAction('[User Activity] get directions')
 export const getDirections = createAction('[User Activity] get directions success', props<{coordinates: number[]}>());
 export const openLoginModal = createAction('[User Activity] open login modal');
 
-export const setEnableTrackRecorderPanel = createAction('[User Activity] set enable register panel', props<{enable: boolean}>());
+export const setEnableTrackRecorderPanel = createAction(
+  '[User Activity] set enable register panel',
+  props<{enable: boolean; currentUgcTrackRecording?: WmFeature<LineString> | null}>(),
+);
 export const setOnRecord = createAction('[User Activity] set on record', props<{onRecord: boolean}>());
 export const setFocusPosition = createAction('[User Activity] set focus position', props<{focusPosition: boolean}>());
 export const setEnablePoiRecorderPanel = createAction('[User Activity] set enable poi recorder panel', props<{enable: boolean}>());
@@ -159,4 +162,13 @@ export const setDisableTilesDownloadButton = createAction(
 export const setWmMapTilesBoundingBox = createAction(
   '[User Activity] set wm map tiles bounding box',
   props<{wmMapTilesBoundingBox: WmFeature<MultiPolygon> | null}>(),
+);
+export const checkCurrentUgcTrack = createAction('[User Activity] check current ugc track');
+export const resumeCurrentUgcTrack = createAction(
+  '[User Activity] resume current ugc track',
+  props<{resume: boolean}>(),
+);
+export const setCurrentUgcTrackRecording = createAction(
+  '[User Activity] set current ugc track recording',
+  props<{currentUgcTrackRecording: WmFeature<LineString> | null; recordTime?: number | null}>(),
 );

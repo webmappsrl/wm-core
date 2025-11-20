@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
+import {BehaviorSubject, from, Observable, of, ReplaySubject} from 'rxjs';
 import {
   BackgroundGeolocationPlugin,
   Location,
@@ -14,8 +14,14 @@ import {CStopwatch} from '@wm-core/utils/cstopwatch';
 import {getDistance} from 'ol/sphere';
 import {map, startWith} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
-import {setCurrentLocation, setFocusPosition, setOnRecord} from '@wm-core/store/user-activity/user-activity.action';
+import {
+  setCurrentLocation,
+  setCurrentUgcTrackRecording,
+  setFocusPosition,
+  setOnRecord,
+} from '@wm-core/store/user-activity/user-activity.action';
 import {onRecord} from '@wm-core/store/user-activity/user-activity.selector';
+import {getCurrentUgcTrack, getCurrentUgcTrackTime} from '@wm-core/utils/localForage';
 
 @Injectable({
   providedIn: 'root',
@@ -106,6 +112,41 @@ export class GeolocationService {
     }
   }
 
+  get hasCurrentUgcTrack$(): Observable<Boolean> {
+    return from(getCurrentUgcTrack()).pipe(map(currentUgcTrack => currentUgcTrack != null));
+  }
+
+  async resumeRecordingFromSaved(): Promise<void> {
+    const [savedFeature, savedTime] = await Promise.all([
+      getCurrentUgcTrack(),
+      getCurrentUgcTrackTime(),
+    ]);
+    if (this._mode === 'recording') return;
+
+    this._mode = 'recording';
+    this.onModeChange.next(this._mode);
+    this._store.dispatch(setOnRecord({onRecord: true}));
+
+    // Ripristina il cronometro con il tempo salvato
+    this._recordStopwatch = new CStopwatch(
+      JSON.stringify({
+        startTime: Date.now(),
+        totalTime: savedTime,
+        isPaused: false,
+      }),
+    );
+    // Crea una copia profonda per evitare problemi con oggetti non estensibili
+    this._recordedFeature = savedFeature;
+
+    this.pauseRecording();
+
+    if (this._deviceService.isBrowser) {
+      this._startWebWatcher('high');
+    } else {
+      this._startWatcher();
+    }
+  }
+
   async stopRecording(): Promise<WmFeature<LineString> | null> {
     if (this._mode !== 'recording') return null;
 
@@ -150,10 +191,7 @@ export class GeolocationService {
   }
 
   getDistanceFromCurrentLocation$(destinationPosition: Position): Observable<number | null> {
-    if (
-      destinationPosition == null
-      || destinationPosition.length < 2
-    ) return of(null);
+    if (destinationPosition == null || destinationPosition.length < 2) return of(null);
 
     return this.onLocationChange.pipe(
       startWith(null),
@@ -181,12 +219,27 @@ export class GeolocationService {
         this._onLocationUpdate(location);
 
         if (this._mode === 'recording' && this._recordedFeature) {
-          this._recordedFeature.geometry.coordinates.push([
-            location.longitude,
-            location.latitude,
-            location.altitude ?? 0,
-          ]);
-          this._recordedFeature.properties.locations.push(location);
+          this._recordedFeature = {
+            ...this._recordedFeature,
+            geometry: {
+              ...this._recordedFeature.geometry,
+              coordinates: [
+                ...this._recordedFeature.geometry.coordinates,
+                [location.longitude, location.latitude, location.altitude ?? 0],
+              ],
+            },
+            properties: {
+              ...this._recordedFeature.properties,
+              locations: [...this._recordedFeature.properties.locations, location],
+            },
+          };
+
+          this._store.dispatch(
+            setCurrentUgcTrackRecording({
+              currentUgcTrackRecording: this._recordedFeature,
+              recordTime: this.recordTime,
+            }),
+          );
         }
       })
       .then(id => (this._watcherId = id));
@@ -201,14 +254,26 @@ export class GeolocationService {
           altitude: res.coords.altitude ?? 0,
           accuracy: res.coords.accuracy,
           time: res.timestamp,
-        } as any);
+        } as Location);
 
         if (this._mode === 'recording' && this._recordedFeature) {
-          this._recordedFeature.geometry.coordinates.push([
-            res.coords.longitude,
-            res.coords.latitude,
-            res.coords.altitude ?? 0,
-          ]);
+          this._recordedFeature = {
+            ...this._recordedFeature,
+            geometry: {
+              ...this._recordedFeature.geometry,
+              coordinates: [
+                ...this._recordedFeature.geometry.coordinates,
+                [res.coords.longitude, res.coords.latitude, res.coords.altitude ?? 0],
+              ],
+            },
+          };
+
+          this._store.dispatch(
+            setCurrentUgcTrackRecording({
+              currentUgcTrackRecording: this._recordedFeature,
+              recordTime: this.recordTime,
+            }),
+          );
         }
       },
       () => {},
@@ -259,8 +324,17 @@ export class GeolocationService {
   private _getEmptyWmFeature(): WmFeature<LineString> {
     return {
       type: 'Feature',
-      geometry: {type: 'LineString', coordinates: []},
-      properties: {locations: []},
+      geometry: {
+        type: 'LineString',
+        coordinates: [
+          [
+            this._currentLocation.longitude,
+            this._currentLocation.latitude,
+            this._currentLocation.altitude ?? 0,
+          ],
+        ],
+      },
+      properties: {locations: [this._currentLocation]},
     };
   }
 }

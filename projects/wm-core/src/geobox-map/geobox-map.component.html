@@ -16,11 +16,11 @@
     (wmMapFeatureCollectionLayerSelected)="selectedLayerById($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
     (wmMapFeatureCollectionPopup)="openPopup($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
     (wmMapEmptyClickEVT$)="openPopup(null)"
-    [wmMapGeojson]="(enableTrackRecorderPanel$|async) ? (recordedTrack$|async) : null"
+    [wmMapGeojson]="(enableTrackRecorderPanel$|async) ? (currentUgcTrackRecording$|async) : null"
     wmMapPosition
     [wmMapPositioncurrentLocation]="currentPosition$|async"
     [wmMapPositionCenter]="centerPositionEvt$|async"
-    [wmMapPositionZoomCurrentLocation]="enablePoiRecorderPanel$|async"
+    [wmMapPositionZoomCurrentLocation]="(enablePoiRecorderPanel$|async) || (enableTrackRecorderPanel$|async)"
     [wmMapPositionfocus]="wmMapPositionfocus$|async"
     wmMapCustomTracks
     [wmMapCustomTrackDrawTrack]="drawTrackOpened$|async"
@@ -79,20 +79,20 @@
     (wmMapTilesZoomDisableDownloadButton)="setWmMapTilesDisableDownloadButton($event)"
     (wmMapTilesDelete)="deleteBoundingBox($event)"
   >
-  <wm-profile-popup top-right></wm-profile-popup>
-  <wm-lang-selector top-right></wm-lang-selector>
-  <wm-filters
-    top-right
-    #filterCmp
-    [wmFiltersClose]="wmap.wmMapCloseTopRightBtnsEVT$|async"
-    (lastFilterTypeEvt)="updateLastFilterType($event)"
-    (filterPoisEvt)="updatePoiFilter($event)"
-    (filterTracksEvt)="updateTrackFilter($event)"
-    (removefilterTracksEvt)="removeTrackFilter($event)"
-    (removefilterPoiEvt)="updatePoiFilter($event)"
-    (resetFiltersEvt)="resetFilters()"
-    (click)="wmap.wmMapCloseTopRightBtns = 'wm-filters'"
-  ></wm-filters>
+    <wm-profile-popup top-right></wm-profile-popup>
+    <wm-lang-selector top-right></wm-lang-selector>
+    <wm-filters
+      top-right
+      #filterCmp
+      [wmFiltersClose]="wmap.wmMapCloseTopRightBtnsEVT$|async"
+      (lastFilterTypeEvt)="updateLastFilterType($event)"
+      (filterPoisEvt)="updatePoiFilter($event)"
+      (filterTracksEvt)="updateTrackFilter($event)"
+      (removefilterTracksEvt)="removeTrackFilter($event)"
+      (removefilterPoiEvt)="updatePoiFilter($event)"
+      (resetFiltersEvt)="resetFilters()"
+      (click)="wmap.wmMapCloseTopRightBtns = 'wm-filters'"
+    ></wm-filters>
     <wm-draw-ugc-button
       *ngIf="(confShowDraw$|async) && !(isMobile$|async)"
       top-right

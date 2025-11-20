@@ -252,5 +252,8 @@ export const wmDE = {
     'Eine neue Version der App ist verfügbar. Aktualisieren Sie jetzt, um die neuesten Funktionen und Verbesserungen zu erhalten.',
   'Aggiorna ora': 'Jetzt aktualisieren',
   'Più tardi': 'Später',
-  'Versione disponibile': 'Verfügbare Version'
+  'Versione disponibile': 'Verfügbare Version',
+  'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
+    'Eine unterbrochene Aufzeichnung wurde erkannt. Möchten Sie sie fortsetzen?',
+  'Riprendi': 'Fortsetzen',
 };

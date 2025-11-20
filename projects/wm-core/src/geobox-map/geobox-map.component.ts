@@ -73,6 +73,7 @@ import {
   take,
   tap,
   takeUntil,
+  withLatestFrom,
 } from 'rxjs/operators';
 import {
   confJIDOUPDATETIME,
@@ -101,6 +102,7 @@ import {
   ugcOpened,
   wmMapHitMapChangeFeatureId,
   enableTilesDownload,
+  currentUgcTrackRecording,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {WmFeature} from '@wm-types/feature';
 import {LineString, MultiPolygon, Point} from 'geojson';
@@ -132,6 +134,7 @@ import {FeatureLike} from 'ol/Feature';
 import {ZoomFeaturesInViewport} from '@wm-types/config';
 import {fromLonLat} from 'ol/proj';
 import {Collection, Feature} from 'ol';
+import {getCurrentUgcTrack} from '@wm-core/utils/localForage';
 
 const initPadding = [10, 10, 10, 10];
 const initMenuOpened = true;
@@ -203,7 +206,8 @@ export class WmGeoboxMapComponent implements OnDestroy {
   drawPoiOpened$: Observable<boolean> = this._store.select(drawPoiOpened);
   enableTilesDownload$: Observable<boolean> = this._store.select(enableTilesDownload);
   showFeaturesInViewport$: Observable<boolean> = this._store.select(showFeaturesInViewport);
-  recordedTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  currentUgcTrackRecording$: Observable<WmFeature<LineString> | null> =
+    this._store.select(currentUgcTrackRecording);
   geohubId$ = this._store.select(confGeohubId);
   graphhopperHost$: Observable<string> = of(this._environmentSvc.graphhopperHost);
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
@@ -388,31 +392,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
       this.isLogged$.pipe(startWith(false)),
       this.toggleUgcDirective$.pipe(startWith(true)),
     ]).pipe(map(([isLogged, toggleUgcDirective]) => !(isLogged && toggleUgcDirective)));
-
-    this.enableTrackRecorderPanel$
-      .pipe(
-        distinctUntilChanged(),
-        switchMap(enableTrackRecorderPanel => {
-          if (!enableTrackRecorderPanel) {
-            this._linestring = new olLinestring([]);
-            this.recordedTrack$.next(null);
-            return EMPTY;
-          }
-          return this.currentPosition$.pipe(
-            takeUntil(this.enableTrackRecorderPanel$.pipe(filter(enabled => !enabled))),
-          );
-        }),
-      )
-      .subscribe(loc => {
-        if (loc == null) return;
-        const coordinate = fromLonLat([loc.longitude, loc.latitude]);
-        this._linestring.appendCoordinate(coordinate);
-        const featureCollection = new Collection([new Feature({geometry: this._linestring})]);
-        const geojson = new GeoJSON({featureProjection: 'EPSG:3857'}).writeFeaturesObject(
-          featureCollection.getArray(),
-        );
-        this.recordedTrack$.next(geojson);
-      });
   }
 
   featuresInViewport(features: FeatureLike[]): void {

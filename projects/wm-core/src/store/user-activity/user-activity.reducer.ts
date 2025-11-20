@@ -1,7 +1,7 @@
 import {createReducer, on} from '@ngrx/store';
 import {ILAYER, Filter} from '@wm-core/types/config';
 import {WmFeature} from '@wm-types/feature';
-import {MultiPolygon, Point} from 'geojson';
+import {LineString, MultiPolygon, Point} from 'geojson';
 import {
   applyWhere,
   closeUgc,
@@ -37,6 +37,7 @@ import {
   setEnableTilesDownload,
   setWmMapTilesBoundingBox,
   setDisableTilesDownloadButton,
+  setCurrentUgcTrackRecording,
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
@@ -75,6 +76,7 @@ export interface UserActivityState {
   enableTilesDownload: boolean;
   disableTilesDownloadButton: boolean;
   wmMapTilesBoundingBox?: WmFeature<MultiPolygon>;
+  currentUgcTrackRecording?: WmFeature<LineString>;
 }
 
 export interface UserAcitivityRootState {
@@ -380,6 +382,12 @@ export const userActivityReducer = createReducer(
     return {
       ...state,
       disableTilesDownloadButton,
+    };
+  }),
+  on(setCurrentUgcTrackRecording, (state, {currentUgcTrackRecording}) => {
+    return {
+      ...state,
+      currentUgcTrackRecording,
     };
   }),
 );

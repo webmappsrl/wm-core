@@ -21,11 +21,14 @@ import {
   toggleTrackFilterByIdentifier,
   updateTrackFilter,
   setHomeResultTabSelected,
-  openUgc,
   getDirections,
   startGetDirections,
   setFocusPosition,
   setOnRecord,
+  checkCurrentUgcTrack,
+  resumeCurrentUgcTrack,
+  setEnableTrackRecorderPanel,
+  setCurrentUgcTrackRecording,
 } from './user-activity.action';
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
@@ -55,11 +58,12 @@ import {
   startWith,
   catchError,
   concatMap,
+  delay,
 } from 'rxjs/operators';
-import {combineLatest, from, of} from 'rxjs';
+import {combineLatest, EMPTY, from, of} from 'rxjs';
 import {Filter} from '@wm-core/types/config';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
-import {ModalController} from '@ionic/angular';
+import {AlertController, ModalController} from '@ionic/angular';
 import {ModalUgcUploaderComponent} from '@wm-core/modal-ugc-uploader/modal-ugc-uploader.component';
 import {HttpClient} from '@angular/common/http';
 import {WmFeature, WmFeatureCollection} from '@wm-types/feature';
@@ -76,6 +80,14 @@ import {ProfileAuthComponent} from '@wm-core/profile/profile-auth/profile-auth.c
 import {currentCustomTrack} from '@wm-core/store/features/ugc/ugc.actions';
 import {confAUTHEnable} from '../conf/conf.selector';
 import {isLogged} from '../auth/auth.selectors';
+import {
+  getCurrentUgcTrack,
+  getCurrentUgcTrackTime,
+  removeCurrentUgcTrack,
+  saveCurrentUgcTrack,
+} from '@wm-core/utils/localForage';
+import {GeolocationService} from '@wm-core/services/geolocation.service';
+import {LangService} from '@wm-core/localization/lang.service';
 
 @Injectable()
 export class UserActivityEffects {
@@ -251,6 +263,20 @@ export class UserActivityEffects {
     ),
   );
 
+  setCurrentUgcTrackRecording$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(setCurrentUgcTrackRecording),
+        map(({currentUgcTrackRecording, recordTime}) => {
+          if (currentUgcTrackRecording && recordTime) {
+            saveCurrentUgcTrack(currentUgcTrackRecording, recordTime);
+          }
+          return of(null);
+        }),
+      ),
+    {dispatch: false},
+  );
+
   //TODO: refactor, gestire in un unico effect la logica dell'homeResultTabSelected
   setHomeResultTabWhenLastFilterTypeChanged$ = createEffect(() =>
     this._store.select(lastFilterType).pipe(
@@ -352,11 +378,110 @@ export class UserActivityEffects {
     ),
   );
 
+  checkCurrentUgcTrack$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(checkCurrentUgcTrack),
+      switchMap(() => this._geolocationSvc.hasCurrentUgcTrack$),
+      filter(hasCurrentUgcTrack => hasCurrentUgcTrack === true),
+      switchMap(_ => {
+        return from(
+          this._alertCtrl.create({
+            message: this._langSvc.instant(
+              'È stata rilevata una registrazione interrotta. Vuoi riprenderla?',
+            ),
+            buttons: [
+              {
+                text: this._langSvc.instant('Annulla'),
+                role: 'cancel',
+              },
+              {
+                text: this._langSvc.instant('Riprendi'),
+                role: 'confirm',
+              },
+            ],
+          }),
+        ).pipe(
+          concatMap(alert => from(alert.present()).pipe(map(() => alert))),
+          concatMap(alert => from(alert.onDidDismiss())),
+          switchMap(result => {
+            // Se ha cliccato su "Riprendi", riprendi direttamente
+            if (result.role === 'confirm') {
+              return of(resumeCurrentUgcTrack({resume: true}));
+            }
+            // Se ha cliccato su "Annulla", mostra popup di conferma
+            return from(
+              this._alertCtrl.create({
+                message: this._langSvc.instant(
+                  'Sei sicuro di voler annullare? Questa operazione comporterà la perdita dei dati della registrazione.',
+                ),
+                buttons: [
+                  {
+                    text: this._langSvc.instant('Recupera'),
+                    role: 'resume',
+                  },
+                  {
+                    text: this._langSvc.instant('Cancella'),
+                    role: 'cancel',
+                  },
+                ],
+              }),
+            ).pipe(
+              concatMap(confirmAlert => from(confirmAlert.present()).pipe(map(() => confirmAlert))),
+              concatMap(confirmAlert => from(confirmAlert.onDidDismiss())),
+              map(confirmResult =>
+                resumeCurrentUgcTrack({resume: confirmResult.role === 'resume'}),
+              ),
+            );
+          }),
+        );
+      }),
+    ),
+  );
+
+  resumeCurrentUgcTrack$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(resumeCurrentUgcTrack),
+      switchMap(({resume}) => {
+        if (!resume) {
+          removeCurrentUgcTrack();
+          return EMPTY;
+        }
+
+        // Recupera sia la traccia che il tempo salvati
+        return from(this._geolocationSvc.resumeRecordingFromSaved()).pipe(
+          mergeMap(() => {
+            this._urlHandlerSvc.changeURL('map');
+
+            return [setEnableTrackRecorderPanel({enable: true})];
+          }),
+        );
+      }),
+    ),
+  );
+
+  setEnableTrackRecorderPanel$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(setEnableTrackRecorderPanel),
+      switchMap(({enable, currentUgcTrackRecording}) => {
+        if (enable && currentUgcTrackRecording) {
+          return of(setCurrentUgcTrackRecording({currentUgcTrackRecording}));
+        } else if (!enable) {
+          return of(setCurrentUgcTrackRecording({currentUgcTrackRecording: null}));
+        } else {
+          return EMPTY;
+        }
+      }),
+    ),
+  );
+
   constructor(
     private _actions$: Actions,
     private _store: Store,
     private _urlHandlerSvc: UrlHandlerService,
     private _modalCtrl: ModalController,
+    private _alertCtrl: AlertController,
     private _http: HttpClient,
+    private _geolocationSvc: GeolocationService,
+    private _langSvc: LangService,
   ) {}
 }
