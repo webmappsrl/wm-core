@@ -248,13 +248,14 @@ export class GeolocationService {
   private _startWebWatcher(accuracy: 'high' | 'low'): void {
     this._webWatcherId = navigator.geolocation.watchPosition(
       res => {
-        this._onLocationUpdate({
+        const location = {
           latitude: res.coords.latitude,
           longitude: res.coords.longitude,
           altitude: res.coords.altitude ?? 0,
           accuracy: res.coords.accuracy,
           time: res.timestamp,
-        } as Location);
+        };
+        this._onLocationUpdate(location as Location);
 
         if (this._mode === 'recording' && this._recordedFeature) {
           this._recordedFeature = {
@@ -265,6 +266,10 @@ export class GeolocationService {
                 ...this._recordedFeature.geometry.coordinates,
                 [res.coords.longitude, res.coords.latitude, res.coords.altitude ?? 0],
               ],
+            },
+            properties: {
+              ...this._recordedFeature.properties,
+              locations: [...this._recordedFeature.properties.locations, location],
             },
           };
 
