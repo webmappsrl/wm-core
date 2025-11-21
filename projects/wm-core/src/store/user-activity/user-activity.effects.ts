@@ -384,6 +384,7 @@ export class UserActivityEffects {
       switchMap(() => this._geolocationSvc.hasCurrentUgcTrack$),
       filter(hasCurrentUgcTrack => hasCurrentUgcTrack === true),
       switchMap(_ => {
+        this._urlHandlerSvc.changeURL('map');
         return from(
           this._alertCtrl.create({
             message: this._langSvc.instant(
@@ -450,8 +451,6 @@ export class UserActivityEffects {
         // Recupera sia la traccia che il tempo salvati
         return from(this._geolocationSvc.resumeRecordingFromSaved()).pipe(
           mergeMap(() => {
-            this._urlHandlerSvc.changeURL('map');
-
             return [setEnableTrackRecorderPanel({enable: true})];
           }),
         );
