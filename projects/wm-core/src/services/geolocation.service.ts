@@ -117,6 +117,8 @@ export class GeolocationService {
   }
 
   async resumeRecordingFromSaved(): Promise<void> {
+    this.startNavigation();
+
     const [savedFeature, savedTime] = await Promise.all([
       getCurrentUgcTrack(),
       getCurrentUgcTrackTime(),
@@ -126,6 +128,9 @@ export class GeolocationService {
     this._mode = 'recording';
     this.onModeChange.next(this._mode);
     this._store.dispatch(setOnRecord({onRecord: true}));
+    this._store.dispatch(
+      setCurrentUgcTrackRecording({currentUgcTrackRecording: savedFeature, recordTime: savedTime}),
+    );
 
     // Ripristina il cronometro con il tempo salvato
     this._recordStopwatch = new CStopwatch(

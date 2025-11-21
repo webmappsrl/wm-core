@@ -459,21 +459,6 @@ export class UserActivityEffects {
     ),
   );
 
-  setEnableTrackRecorderPanel$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(setEnableTrackRecorderPanel),
-      switchMap(({enable, currentUgcTrackRecording}) => {
-        if (enable && currentUgcTrackRecording) {
-          return of(setCurrentUgcTrackRecording({currentUgcTrackRecording}));
-        } else if (!enable) {
-          return of(setCurrentUgcTrackRecording({currentUgcTrackRecording: null}));
-        } else {
-          return EMPTY;
-        }
-      }),
-    ),
-  );
-
   constructor(
     private _actions$: Actions,
     private _store: Store,
