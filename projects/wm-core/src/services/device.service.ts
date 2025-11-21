@@ -138,30 +138,6 @@ export class DeviceService {
     );
   }
 
-  /**
-   * List of SKUs for special instances that have version with "1" prefix
-   * Special instances have version like "13.1.6" instead of "3.1.6"
-   * Aligned with wrongInstanceVersion in gulpfile.js
-   */
-  private readonly _wrongSkuVersion = [
-    'it.webmapp.fumaiolosentieri',
-    'it.webmapp.pec',
-    'it.webmapp.cammini',
-    'it.webmapp.ucvs',
-    'it.webmapp.gavorrano',
-    'it.webmapp.sicai',
-  ];
-
-  /**
-   * Checks if the current app is a wrong sku version (has version with "1" prefix)
-   * Wrong sku versions have version like "13.1.6" instead of "3.1.6"
-   * @param appConfig APP configuration from backend
-   * @returns true if the app is a wrong sku version
-   */
-  private _isWrongSkuVersion(appConfig: APP): boolean {
-    return !!(appConfig.sku && this._wrongSkuVersion.includes(appConfig.sku));
-  }
-
   async getInfo(): Promise<WmDeviceInfo> {
     const info = await Device.getInfo();
     return {
@@ -185,11 +161,6 @@ export class DeviceService {
       const gitVersion = response?.version || null;
 
       if (!gitVersion) return null;
-
-      // If it's a wrong sku version, add "1" to the GitHub version
-      if (this._isWrongSkuVersion(appConfig)) {
-        return '1' + gitVersion;
-      }
 
       return gitVersion;
     } catch (error) {
