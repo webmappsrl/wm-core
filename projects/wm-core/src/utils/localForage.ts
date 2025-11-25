@@ -439,7 +439,6 @@ export async function saveUgcTrack(feature: WmFeature<LineString>): Promise<void
   const featureId = properties.id ?? properties.uuid;
   const storage = properties.id ? synchronizedUgcTrack : deviceUgcTrack;
   await handleAsync(storage.setItem(`${featureId}`, feature), 'saveUgcTrack: Failed');
-  await removeCurrentUgcTrack();
 }
 
 export async function saveUgc(feature: WmFeature<LineString | Point>): Promise<void> {

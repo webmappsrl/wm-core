@@ -143,8 +143,6 @@ export class GeolocationService {
     // Crea una copia profonda per evitare problemi con oggetti non estensibili
     this._recordedFeature = savedFeature;
 
-    this.pauseRecording();
-
     if (this._deviceService.isBrowser) {
       this._startWebWatcher('high');
     } else {
@@ -162,6 +160,9 @@ export class GeolocationService {
     this._recordedFeature = null;
     this._isPaused = false;
     this._store.dispatch(setOnRecord({onRecord: false}));
+    this._store.dispatch(
+      setCurrentUgcTrackRecording({currentUgcTrackRecording: null, recordTime: 0}),
+    );
     this._mode = 'stopped';
     this.onModeChange.next(this._mode);
 
