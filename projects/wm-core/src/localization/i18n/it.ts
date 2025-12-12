@@ -230,4 +230,5 @@ export const wmIT = {
   'Disegna': 'Disegna',
   'Esci': 'Esci',
   'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.',
+  'Seleziona la lingua': 'Seleziona la lingua',
 };

@@ -232,4 +232,5 @@ export const wmEN = {
   'Esci': 'Exit',
   'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.':
     'You have saved the waypoint correctly. You can view it by accessing your profile.',
+  'Seleziona la lingua': 'Select language',
 };

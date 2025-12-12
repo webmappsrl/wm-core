@@ -204,9 +204,9 @@ export const wmDE = {
   'joelette': 'joelette',
   'mtb': 'MTB',
   'mountain-bike': 'Mountainbike',
-  "Ottieni le indicazioni su Google Maps": "Indikationen auf Google Maps erhalten",
-  "Per il punto di partenza": "Für den Startpunkt",
-  "Per il punto più vicino in linea d'aria": "Für den nächsten Punkt in Luftlinie",
+  'Ottieni le indicazioni su Google Maps': 'Indikationen auf Google Maps erhalten',
+  'Per il punto di partenza': 'Für den Startpunkt',
+  "Per il punto più vicino in linea d'aria": 'Für den nächsten Punkt in Luftlinie',
   'Tipo di form': 'Formularart',
   'massimo': 'maximal',
   'foto': 'Fotos',
@@ -224,5 +224,7 @@ export const wmDE = {
   'Attenzione': 'Achtung',
   'Disegna': 'Zeichnen',
   'Esci': 'Aus',
-  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Sie haben Ihren Wegpunkt erfolgreich gespeichert. Sie können ihn anzeigen, indem Sie sich in Ihr Profil einloggen.'
+  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.':
+    'Sie haben Ihren Wegpunkt erfolgreich gespeichert. Sie können ihn anzeigen, indem Sie sich in Ihr Profil einloggen.',
+  'Seleziona la lingua': 'Sprache auswählen',
 };

@@ -224,4 +224,5 @@ export const wmFR = {
   'Disegna': 'Dessiner',
   'Esci': 'Quitter',
   'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Vous avez enregistré votre waypoint avec succès. Vous pouvez le visualiser en accédant à votre profil.',
+  'Seleziona la lingua': 'Sélectionner la langue',
 };

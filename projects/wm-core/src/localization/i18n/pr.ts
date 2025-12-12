@@ -222,4 +222,5 @@ export const wmPR = {
   'Disegna': 'Desenhar',
   'Esci': 'Sair',
   'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Você salvou corretamente o seu waypoint. Você pode visualizá-lo acessando o seu perfil.',
+  'Seleziona la lingua': 'Selecionar idioma',
 };

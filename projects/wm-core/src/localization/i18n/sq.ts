@@ -208,9 +208,9 @@ export const wmSQ = {
   'joelette': 'Joëlette',
   'mtb': 'MTB',
   'mountain-bike': 'Biçikletë malore',
-  "Ottieni le indicazioni su Google Maps": "Merr hulumtime në Google Maps",
-  "Per il punto di partenza": "Për pikën e nisjes",
-  "Per il punto più vicino in linea d'aria": "Për pikën më të afërt në vijë të shikimit",
+  'Ottieni le indicazioni su Google Maps': 'Merr hulumtime në Google Maps',
+  'Per il punto di partenza': 'Për pikën e nisjes',
+  "Per il punto più vicino in linea d'aria": 'Për pikën më të afërt në vijë të shikimit',
   'Tipo di form': 'Lloji i formularit',
   'massimo': 'maksimum',
   'foto': 'foto',
@@ -228,5 +228,7 @@ export const wmSQ = {
   'Attenzione': 'Vëmendje',
   'Disegna': 'Dhëni',
   'Esci': 'Dil',
-  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.': 'Keni ruajtur me sukses pikën tuaj të ndalimit. Mund ta shihni duke hyrë në profilin tuaj.'
+  'Hai salvato correttamente il tuo waypoint. Puoi visualizzarlo accedendo al tuo profilo.':
+    'Keni ruajtur me sukses pikën tuaj të ndalimit. Mund ta shihni duke hyrë në profilin tuaj.',
+  'Seleziona la lingua': 'Zgjidh gjuhën',
 };
