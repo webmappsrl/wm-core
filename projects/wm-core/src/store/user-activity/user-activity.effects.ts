@@ -60,6 +60,7 @@ import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {ModalController} from '@ionic/angular';
 import {ModalUgcUploaderComponent} from '@wm-core/modal-ugc-uploader/modal-ugc-uploader.component';
 import {HttpClient} from '@angular/common/http';
+import {Browser} from '@capacitor/browser';
 import {WmFeature, WmFeatureCollection} from '@wm-types/feature';
 import {MultiPolygon} from 'geojson';
 import {setCurrentUgcPoiDrawn} from '../features/ugc/ugc.actions';
@@ -315,9 +316,18 @@ export class UserActivityEffects {
     () =>
       this._actions$.pipe(
         ofType(getDirections),
-        map(({coordinates}) => {
+        switchMap(({coordinates}) => {
           const url = `https://www.google.com/maps/dir/?api=1&destination=${coordinates[1]},${coordinates[0]}`;
-          window.open(url, '_blank');
+
+          // Usa Browser.open() di Capacitor che funziona meglio su iOS
+          // Fallback a window.open() se Capacitor non è disponibile
+          return from(Browser.open({url})).pipe(
+            catchError(() => {
+              // Fallback per browser web o se Browser non è disponibile
+              window.open(url, '_blank');
+              return of(null);
+            }),
+          );
         }),
       ),
     {dispatch: false},
