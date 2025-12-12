@@ -31,7 +31,8 @@ import {confLANGUAGES, confTRANSLATIONS} from '@wm-core/store/conf/conf.selector
 import {filter, take} from 'rxjs/operators';
 import {APP_TRANSLATION} from '@wm-core/store/conf/conf.token';
 import {WmTranslations} from '@wm-types/language';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, combineLatest} from 'rxjs';
+import {DeviceService} from '@wm-core/services/device.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -49,6 +50,7 @@ export class LangService extends TranslateService implements TranslateService {
     @Inject(USE_DEFAULT_LANG) useDefaultLang: boolean = true,
     @Inject(USE_STORE) isolate: boolean = false,
     @Inject(APP_TRANSLATION) public appTranslation: WmTranslations,
+    private _deviceService: DeviceService,
     private _store: Store<any>,
   ) {
     super(
@@ -91,16 +93,28 @@ export class LangService extends TranslateService implements TranslateService {
           }
         });
       });
-    this._confLANGUAGES$.subscribe(l => {
-      if (l && l.available) {
-        this.addLangs(l.available);
-      }
-      if (l && l.default) {
-        this.setDefaultLang(l.default);
-      }
-      this.useSavedLang();
-      this.isInit$.next(true);
-    });
+    combineLatest([this._confLANGUAGES$, this._deviceService.getLanguageCode$()])
+      .pipe(
+        filter(([l]) => l != null),
+        take(1),
+      )
+      .subscribe(([l, deviceLang]) => {
+        if (l && l.available) {
+          this.addLangs(l.available);
+        }
+
+        // Se la lingua del dispositivo è disponibile, usala come default
+        if (deviceLang && l && l.available && l.available.includes(deviceLang)) {
+          console.log('use device lang', deviceLang);
+          this.setDefaultLang(deviceLang);
+        } else if (l && l.default) {
+          // Altrimenti usa la lingua di default dalla configurazione
+          this.setDefaultLang(l.default);
+        }
+
+        this.useSavedLang();
+        this.isInit$.next(true);
+      });
   }
 
   useSavedLang(): string {

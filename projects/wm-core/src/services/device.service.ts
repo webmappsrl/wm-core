@@ -10,7 +10,8 @@ import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Platform, ModalController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
-import {Observable, ReplaySubject} from 'rxjs';
+import {from, Observable, of, ReplaySubject} from 'rxjs';
+import {catchError, map} from 'rxjs/operators';
 import {Device} from '@capacitor/device';
 import {Browser} from '@capacitor/browser';
 import {APP_VERSION} from '@wm-core/store/conf/conf.token';
@@ -242,5 +243,19 @@ export class DeviceService {
     } catch (error) {
       await Browser.open({url: storeUrl});
     }
+  }
+
+  /**
+   * Recupera il codice lingua di default del dispositivo (es. "it", "en")
+   * @returns Observable con il codice lingua in formato ISO 639-1
+   */
+  getLanguageCode$(): Observable<string | null> {
+    return from(Device.getLanguageCode()).pipe(
+      map(result => result.value || null),
+      catchError(() => {
+        // Fallback al browser se Capacitor non è disponibile
+        return of(navigator.language.split('-')[0] || null);
+      }),
+    );
   }
 }
