@@ -104,7 +104,7 @@ export class UrlHandlerService {
     const excluseField = ['track', 'poi', 'ugc_track', 'ugc_poi'];
     const oldParams = {...this._emptyParams, ...this.getCurrentQueryParams()};
     const newParams = {...oldParams, ...queryParams};
-
+    
     for (let i = 0; i < excluseField.length; i++) {
       const field = excluseField[i];
       if (queryParams[field] != null) {
@@ -114,6 +114,11 @@ export class UrlHandlerService {
         });
       }
     }
+
+    if((newParams.from == 'home' && (newParams.poi == undefined || (oldParams.poi != newParams.poi && oldParams.poi != undefined)))) {
+      newParams.from = undefined;
+    }
+
     if (JSON.stringify(newParams) !== JSON.stringify(oldParams)) {
       this._checkIfUgcIsOpened(newParams);
       this.navigateTo(routes, newParams);
@@ -127,6 +132,10 @@ export class UrlHandlerService {
         : {poi: id ? id : undefined, ugc_poi: undefined};
       this.updateURL(queryParams, ['map']);
     });
+  }
+
+  setPoifromHome(id: string | number): void {
+    this.updateURL({poi: id ? id : undefined, from: 'home'}, ['map']);
   }
 
   setTrack(id: string | number): void {
@@ -164,6 +173,9 @@ export class UrlHandlerService {
     } else if (queryParams.ugc_track != null || queryParams.ugc_poi != null) {
       this.updateURL({ugc_track: undefined, ugc_poi: undefined});
       return false;
+    } else if (queryParams.from == 'home') {
+      this.updateURL({from: undefined, poi: undefined}, ['home']);
+      return true;
     } else {
       this.resetURL();
       return true;

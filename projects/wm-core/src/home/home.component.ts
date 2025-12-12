@@ -177,6 +177,10 @@ export class WmHomeComponent implements AfterContentInit {
     this._urlHandlerSvc.setPoi(id);
   }
 
+  setPoifromHome(id: string | number): void {
+    this._urlHandlerSvc.setPoifromHome(id);
+  }
+
   setSearch(value: string): void {
     this._store.dispatch(inputTyped({inputTyped: value}));
   }
