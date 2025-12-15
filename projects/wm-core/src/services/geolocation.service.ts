@@ -37,7 +37,8 @@ export class GeolocationService {
   onRecord$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(private _deviceService: DeviceService, private _store: Store) {
-    if (!this._deviceService.isBrowser) {
+    if (false) {
+      //geolocation disabled only for Ville Geohub app id 75
       App.addListener('appStateChange', async ({isActive}) => {
         if (isActive) {
           this._startWatcher();
@@ -80,7 +81,8 @@ export class GeolocationService {
     this._mode = 'navigation';
     this.onModeChange.next(this._mode);
 
-    if (this._deviceService.isBrowser) {
+    if (true) {
+      //geolocation disabled only for Ville Geohub app id 75
       this._startWebWatcher('low');
     } else {
       this._startWatcher();
@@ -98,7 +100,8 @@ export class GeolocationService {
     this._recordedFeature = this._getEmptyWmFeature();
     this._isPaused = false;
 
-    if (this._deviceService.isBrowser) {
+    if (true) {
+      //geolocation disabled only for Ville Geohub app id 75
       this._startWebWatcher('high');
     } else {
       this._startWatcher();
@@ -141,16 +144,14 @@ export class GeolocationService {
   }
 
   openAppSettings(): void {
-    if (!this._deviceService.isBrowser) {
+    if (false) {
+      //geolocation disabled only for Ville Geohub app id 75
       backgroundGeolocation.openSettings();
     }
   }
 
   getDistanceFromCurrentLocation$(destinationPosition: Position): Observable<number | null> {
-    if (
-      destinationPosition == null
-      || destinationPosition.length < 2
-    ) return of(null);
+    if (destinationPosition == null || destinationPosition.length < 2) return of(null);
 
     return this.onLocationChange.pipe(
       startWith(null),
