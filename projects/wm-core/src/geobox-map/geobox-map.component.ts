@@ -105,6 +105,7 @@ import {
   currentUgcTrackRecording,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {WmFeature} from '@wm-types/feature';
+import {FilterType} from '@wm-types/home-result-tab';
 import {LineString, MultiPolygon, Point} from 'geojson';
 import {LineString as olLinestring} from 'ol/geom';
 import GeoJSON from 'ol/format/GeoJSON.js';
@@ -622,7 +623,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
     this._urlHandlerSvc.updateURL({ugc_track: undefined, track});
   }
 
-  updateLastFilterType(filter: 'tracks' | 'pois'): void {
+  updateLastFilterType(filter: FilterType): void {
     this._store.dispatch(setLastFilterType({filter}));
   }
 

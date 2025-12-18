@@ -27,6 +27,7 @@ import {
   tracks,
 } from '@wm-core/store/features/features.selector';
 import {WmFeature} from '@wm-types/feature';
+import {HomeResultTab} from '@wm-types/home-result-tab';
 import {Point} from 'geojson';
 import {Hit} from '@wm-types/elastic';
 import {getEcTracks, removeEcTrack} from '@wm-core/utils/localForage';
@@ -89,7 +90,7 @@ export class WmHomeResultComponent {
   ]).pipe(
     map(([countTracks, countPois, userSelectedTab, lastFilterType]) => {
       // Use lastFilterType as priority if available, otherwise use userSelectedTab
-      const preferredTab = lastFilterType ?? (userSelectedTab as 'tracks' | 'pois' | null);
+      const preferredTab = lastFilterType ?? (userSelectedTab as HomeResultTab);
 
       // If user manually selected a tab and that tab has results, respect the selection
       if (preferredTab === 'tracks' && countTracks > 0) {
@@ -111,7 +112,7 @@ export class WmHomeResultComponent {
       return null;
     }),
     distinctUntilChanged(), // Avoid duplicate emissions
-  ) as Observable<'tracks' | 'pois' | null>;
+  ) as Observable<HomeResultTab>;
   showTracks$ = this._store.select(showTracks);
   tracks$: Observable<Hit[]>;
   tracksLoading$: Observable<boolean> = this._store.select(ecTracksLoading);

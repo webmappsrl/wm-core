@@ -2,6 +2,7 @@ import {createAction, props} from '@ngrx/store';
 import {Filter, ILAYER} from '@wm-core/types/config';
 import {WmFeature} from '@wm-types/feature';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
+import {FilterType, HomeResultTab} from '@wm-types/home-result-tab';
 import {LineString, MultiPolygon, Point} from 'geojson';
 import {mapDetailsStatus} from './user-activity.reducer';
 import {Hit} from '@wm-types/elastic';
@@ -62,7 +63,7 @@ export const resetMap = createAction('[User Activity] Reset Map');
 export const setLayer = createAction('[User Activity] set Layer', props<{layer: any | null}>());
 export const setLastFilterType = createAction(
   '[User Activity] set last filter type',
-  props<{filter: 'tracks' | 'pois' | null}>(),
+  props<{filter: HomeResultTab}>(),
 );
 export const toggleTrackFilter = createAction(
   '[User Activity] toggle track filter',
@@ -138,7 +139,10 @@ export const startDrawUgcPoi = createAction(
 );
 export const stopDrawUgcPoi = createAction('[User Activity] stop edit ugc poi');
 
-export const setHomeResultTabSelected = createAction('[User Activity] set home result tab selected', props<{tab: 'tracks' | 'pois' | null}>());
+export const setHomeResultTabSelected = createAction(
+  '[User Activity] set home result tab selected',
+  props<{tab: HomeResultTab}>(),
+);
 
 export const setCurrentLocation = createAction('[User Activity] set current location', props<{location: Location}>());
 

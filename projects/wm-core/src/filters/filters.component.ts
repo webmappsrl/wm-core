@@ -19,6 +19,7 @@ import {
 } from '../store/features/ec/ec.selector';
 import {confFILTERS} from '../store/conf/conf.selector';
 import {SelectFilterOption, SliderFilter, Filter} from '../types/config';
+import {FilterType} from '@wm-types/home-result-tab';
 import {countPois, countTracks} from '@wm-core/store/features/features.selector';
 import {filterTracks} from '@wm-core/store/user-activity/user-activity.selector';
 import {
@@ -45,7 +46,7 @@ export class FiltersComponent implements OnChanges {
     new EventEmitter<SelectFilterOption | SliderFilter | Filter>();
   @Output() filterTracksEvt: EventEmitter<SelectFilterOption | SliderFilter | Filter> =
     new EventEmitter<SelectFilterOption | SliderFilter | Filter>();
-  @Output() lastFilterTypeEvt: EventEmitter<'tracks' | 'pois'> = new EventEmitter();
+  @Output() lastFilterTypeEvt: EventEmitter<FilterType> = new EventEmitter();
   @Output() removefilterPoiEvt: EventEmitter<SelectFilterOption | SliderFilter | Filter> =
     new EventEmitter<SelectFilterOption | SliderFilter | Filter>();
   @Output() removefilterTracksEvt: EventEmitter<Filter> = new EventEmitter<Filter>();
