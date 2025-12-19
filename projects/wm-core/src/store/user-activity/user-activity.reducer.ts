@@ -41,7 +41,7 @@ import {
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
-import {HomeResultTab} from '@wm-types/home-result-tab';
+import {FilterType, HomeResultTab} from '@wm-types/user-activity';
 import {Hit} from '@wm-types/elastic';
 import {Location} from '@capacitor-community/background-geolocation';
 
@@ -59,7 +59,7 @@ export interface UserActivityState {
   currentFilters?: any[];
   poisSelectedFilterIdentifiers?: string[];
   layer?: any;
-  lastFilterType?: HomeResultTab;
+  lastFilterType?: FilterType;
   loading: {pois: boolean; layer: boolean};
   drawTrackOpened: boolean;
   drawPoiOpened: boolean;

@@ -105,7 +105,7 @@ import {
   currentUgcTrackRecording,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {WmFeature} from '@wm-types/feature';
-import {FilterType} from '@wm-types/home-result-tab';
+import {FilterType} from '@wm-types/user-activity';
 import {LineString, MultiPolygon, Point} from 'geojson';
 import {LineString as olLinestring} from 'ol/geom';
 import GeoJSON from 'ol/format/GeoJSON.js';

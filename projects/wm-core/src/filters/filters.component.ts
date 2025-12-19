@@ -19,7 +19,7 @@ import {
 } from '../store/features/ec/ec.selector';
 import {confFILTERS} from '../store/conf/conf.selector';
 import {SelectFilterOption, SliderFilter, Filter} from '../types/config';
-import {FilterType} from '@wm-types/home-result-tab';
+import {FilterType} from '@wm-types/user-activity';
 import {countPois, countTracks} from '@wm-core/store/features/features.selector';
 import {filterTracks} from '@wm-core/store/user-activity/user-activity.selector';
 import {
