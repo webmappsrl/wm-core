@@ -41,6 +41,7 @@ import {
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
+import {FilterType, HomeResultTab} from '@wm-types/user-activity';
 import {Hit} from '@wm-types/elastic';
 import {Location} from '@capacitor-community/background-geolocation';
 
@@ -58,7 +59,7 @@ export interface UserActivityState {
   currentFilters?: any[];
   poisSelectedFilterIdentifiers?: string[];
   layer?: any;
-  lastFilterType?: 'tracks' | 'pois' | null;
+  lastFilterType?: FilterType;
   loading: {pois: boolean; layer: boolean};
   drawTrackOpened: boolean;
   drawPoiOpened: boolean;
@@ -67,7 +68,7 @@ export interface UserActivityState {
   wmMapHitMapChangeFeatureById?: number;
   featuresInViewport: Hit[];
   wmMapHitmapFeatures: WmFeature<MultiPolygon>[];
-  homeResultTabSelected: 'tracks' | 'pois' | null;
+  homeResultTabSelected: HomeResultTab;
   currentLocation?: Location;
   enableTrackRecoderPanel: boolean;
   enablePoiRecorderPanel: boolean;

@@ -2,6 +2,7 @@ import {createAction, props} from '@ngrx/store';
 import {Filter, ILAYER} from '@wm-core/types/config';
 import {WmFeature} from '@wm-types/feature';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
+import {FilterType, HomeResultTab} from '@wm-types/user-activity';
 import {LineString, MultiPolygon, Point} from 'geojson';
 import {mapDetailsStatus} from './user-activity.reducer';
 import {Hit} from '@wm-types/elastic';
@@ -62,7 +63,7 @@ export const resetMap = createAction('[User Activity] Reset Map');
 export const setLayer = createAction('[User Activity] set Layer', props<{layer: any | null}>());
 export const setLastFilterType = createAction(
   '[User Activity] set last filter type',
-  props<{filter: 'tracks' | 'pois' | null}>(),
+  props<{filter: FilterType}>(),
 );
 export const toggleTrackFilter = createAction(
   '[User Activity] toggle track filter',
@@ -138,23 +139,44 @@ export const startDrawUgcPoi = createAction(
 );
 export const stopDrawUgcPoi = createAction('[User Activity] stop edit ugc poi');
 
-export const setHomeResultTabSelected = createAction('[User Activity] set home result tab selected', props<{tab: 'tracks' | 'pois' | null}>());
+export const setHomeResultTabSelected = createAction(
+  '[User Activity] set home result tab selected',
+  props<{tab: HomeResultTab}>(),
+);
 
-export const setCurrentLocation = createAction('[User Activity] set current location', props<{location: Location}>());
+export const setCurrentLocation = createAction(
+  '[User Activity] set current location',
+  props<{location: Location}>(),
+);
 
 export const startGetDirections = createAction('[User Activity] get directions');
-export const getDirections = createAction('[User Activity] get directions success', props<{coordinates: number[]}>());
+export const getDirections = createAction(
+  '[User Activity] get directions success',
+  props<{coordinates: number[]}>(),
+);
 export const openLoginModal = createAction('[User Activity] open login modal');
 
 export const setEnableTrackRecorderPanel = createAction(
   '[User Activity] set enable register panel',
   props<{enable: boolean; currentUgcTrackRecording?: WmFeature<LineString> | null}>(),
 );
-export const setOnRecord = createAction('[User Activity] set on record', props<{onRecord: boolean}>());
-export const setFocusPosition = createAction('[User Activity] set focus position', props<{focusPosition: boolean}>());
-export const setEnablePoiRecorderPanel = createAction('[User Activity] set enable poi recorder panel', props<{enable: boolean}>());
+export const setOnRecord = createAction(
+  '[User Activity] set on record',
+  props<{onRecord: boolean}>(),
+);
+export const setFocusPosition = createAction(
+  '[User Activity] set focus position',
+  props<{focusPosition: boolean}>(),
+);
+export const setEnablePoiRecorderPanel = createAction(
+  '[User Activity] set enable poi recorder panel',
+  props<{enable: boolean}>(),
+);
 
-export const setEnableTilesDownload = createAction('[User Activity] set enable tiles download', props<{enableTilesDownload: boolean}>());
+export const setEnableTilesDownload = createAction(
+  '[User Activity] set enable tiles download',
+  props<{enableTilesDownload: boolean}>(),
+);
 export const setDisableTilesDownloadButton = createAction(
   '[User Activity] set disable tiles download button',
   props<{disableTilesDownloadButton: boolean}>(),

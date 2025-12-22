@@ -44,7 +44,6 @@ import {
   ecLayer,
   filterTracks,
   inputTyped as inputTypedSelector,
-  lastFilterType,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {
   debounceTime,
@@ -70,7 +69,6 @@ import {WmFeature, WmFeatureCollection} from '@wm-types/feature';
 import {MultiPolygon} from 'geojson';
 import {setCurrentUgcPoiDrawn, setCurrentUgcPoiDrawnSuccess} from '../features/ugc/ugc.actions';
 import {
-  countTracks,
   poiFirstCoordinates,
   trackFirstCoordinates,
   trackNearestCoordinates,
@@ -275,29 +273,6 @@ export class UserActivityEffects {
         }),
       ),
     {dispatch: false},
-  );
-
-  //TODO: refactor, gestire in un unico effect la logica dell'homeResultTabSelected
-  setHomeResultTabWhenLastFilterTypeChanged$ = createEffect(() =>
-    this._store.select(lastFilterType).pipe(
-      filter(lastFilterType => lastFilterType != null),
-      map(lastFilterType => setHomeResultTabSelected({tab: lastFilterType})),
-    ),
-  );
-
-  setHomeResultTabWhenTracksCountIsZero$ = createEffect(() =>
-    this._store.select(countTracks).pipe(
-      skip(1), // Utilizzato per evitare di tener conto del primo valore emesso da countTracks che sarà sempre 0 all'avvio dell'app
-      filter(trackCount => trackCount === 0),
-      map(() => setHomeResultTabSelected({tab: 'pois'})),
-    ),
-  );
-
-  setHomeResultTabToTracksWhenOpenDownloads$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(openDownloads),
-      map(() => setHomeResultTabSelected({tab: 'tracks'})),
-    ),
   );
 
   startGetDirections$ = createEffect(() =>

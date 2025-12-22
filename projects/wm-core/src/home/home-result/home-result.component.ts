@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable, combineLatest, from, of} from 'rxjs';
-import {map, startWith, switchMap} from 'rxjs/operators';
+import {distinctUntilChanged, map, startWith, switchMap} from 'rxjs/operators';
 import {ecTracksLoading, poisInitCount} from '@wm-core/store/features/ec/ec.selector';
 
 import {
@@ -27,6 +27,7 @@ import {
   tracks,
 } from '@wm-core/store/features/features.selector';
 import {WmFeature} from '@wm-types/feature';
+import {HomeResultTab} from '@wm-types/user-activity';
 import {Point} from 'geojson';
 import {Hit} from '@wm-types/elastic';
 import {getEcTracks, removeEcTrack} from '@wm-core/utils/localForage';
@@ -81,7 +82,37 @@ export class WmHomeResultComponent {
         : of([]),
     ),
   );
-  showResultTabSelected$ = this._store.select(homeResultTabSelected);
+  showResultTabSelected$ = combineLatest([
+    this.countTracks$,
+    this.countPois$,
+    this._store.select(homeResultTabSelected),
+    this.lastFilterType$,
+  ]).pipe(
+    map(([countTracks, countPois, userSelectedTab, lastFilterType]) => {
+      // Use lastFilterType as priority if available, otherwise use userSelectedTab
+      const preferredTab = lastFilterType ?? userSelectedTab;
+
+      // If user manually selected a tab and that tab has results, respect the selection
+      if (preferredTab === 'tracks' && countTracks > 0) {
+        return 'tracks';
+      }
+      if (preferredTab === 'pois' && countPois > 0) {
+        return 'pois';
+      }
+
+      // Otherwise, automatic selection based on availability
+      if (countTracks > 0) {
+        return 'tracks'; // Priority to tracks if available
+      }
+      if (countPois > 0) {
+        return 'pois'; // If there are no tracks but there are pois
+      }
+
+      // No results available
+      return null;
+    }),
+    distinctUntilChanged(), // Avoid duplicate emissions
+  ) as Observable<HomeResultTab>;
   showTracks$ = this._store.select(showTracks);
   tracks$: Observable<Hit[]>;
   tracksLoading$: Observable<boolean> = this._store.select(ecTracksLoading);

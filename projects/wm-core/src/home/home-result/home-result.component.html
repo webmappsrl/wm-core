@@ -25,7 +25,11 @@
   <ng-container *ngIf="(countAll$|async)>0;">
     <ion-segment [value]="showResultTabSelected$|async" (ionChange)="changeResultType($event)">
       <ng-container *ngIf="tracks$|async as tracks">
-        <ion-segment-button value="tracks" *ngIf="tracks.length > 0 &&  showTracks$|async">
+        <ion-segment-button
+          value="tracks"
+          *ngIf="tracks.length > 0 &&  showTracks$|async"
+          e2e-home-result-tracks-tab
+        >
           <ion-label>
             {{'Sentieri'|wmtrans}}
             <ng-container *ngIf="tracksLoading$|async;else count">
@@ -40,7 +44,7 @@
         </ion-segment-button>
       </ng-container>
       <ng-container *ngIf="countPois$|async as countPois">
-        <ion-segment-button value="pois" *ngIf="countPois > 0">
+        <ion-segment-button value="pois" *ngIf="countPois > 0" e2e-home-result-pois-tab>
           <ion-label>
             {{'Punti di interesse'|wmtrans}}
             <span>
