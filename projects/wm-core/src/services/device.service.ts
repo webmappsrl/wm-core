@@ -13,7 +13,6 @@ import {Store} from '@ngrx/store';
 import {from, Observable, of, ReplaySubject} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
 import {Device} from '@capacitor/device';
-import {Browser} from '@capacitor/browser';
 import {APP_VERSION} from '@wm-core/store/conf/conf.token';
 import {WmDeviceInfo} from '@wm-types/feature';
 import {APP} from '@wm-types/config';
@@ -238,11 +237,7 @@ export class DeviceService {
       return;
     }
 
-    try {
-      window.open(storeUrl, '_blank', 'noopener,noreferrer');
-    } catch (error) {
-      await Browser.open({url: storeUrl});
-    }
+    window.open(storeUrl, '_blank', 'noopener,noreferrer');
   }
 
   /**
