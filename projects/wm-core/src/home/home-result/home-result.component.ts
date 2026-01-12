@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable, combineLatest, from, of} from 'rxjs';
-import {distinctUntilChanged, map, startWith, switchMap} from 'rxjs/operators';
+import {distinctUntilChanged, map, startWith, switchMap, throttleTime} from 'rxjs/operators';
 import {ecTracksLoading, poisInitCount} from '@wm-core/store/features/ec/ec.selector';
 
 import {
@@ -69,6 +69,7 @@ export class WmHomeResultComponent {
         ? combineLatest([
             ...pois.map(poi =>
               this._geolocationSvc.getDistanceFromCurrentLocation$(poi.geometry?.coordinates).pipe(
+                throttleTime(10000), // Calcola distanza max ogni 10 secondi
                 map(distance => ({
                   ...poi,
                   properties: {
@@ -141,6 +142,7 @@ export class WmHomeResultComponent {
           ? combineLatest(
               tracks.map(track =>
                 this._geolocationSvc.getDistanceFromCurrentLocation$(track.start).pipe(
+                  throttleTime(10000), // Calcola distanza max ogni 10 secondi
                   map(distance => ({
                     ...track,
                     distanceFromCurrentLocation: distance,

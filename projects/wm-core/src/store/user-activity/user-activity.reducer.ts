@@ -29,7 +29,6 @@ import {
   wmMapFeaturesInViewportSuccess,
   drawPoiOpened,
   setHomeResultTabSelected,
-  setCurrentLocation,
   setEnableTrackRecorderPanel,
   setOnRecord,
   setFocusPosition,
@@ -37,13 +36,11 @@ import {
   setEnableTilesDownload,
   setWmMapTilesBoundingBox,
   setDisableTilesDownloadButton,
-  setCurrentUgcTrackRecording,
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {FilterType, HomeResultTab} from '@wm-types/user-activity';
 import {Hit} from '@wm-types/elastic';
-import {Location} from '@capacitor-community/background-geolocation';
 
 export const key = 'userActivity';
 export type mapDetailsStatus = 'open' | 'onlyTitle' | 'background' | 'full';
@@ -332,13 +329,6 @@ export const userActivityReducer = createReducer(
     };
   }),
 
-  on(setCurrentLocation, (state, {location}) => {
-    return {
-      ...state,
-      currentLocation: location,
-    };
-  }),
-
   on(setEnableTrackRecorderPanel, (state, {enable}) => {
     return {
       ...state,
@@ -383,12 +373,6 @@ export const userActivityReducer = createReducer(
     return {
       ...state,
       disableTilesDownloadButton,
-    };
-  }),
-  on(setCurrentUgcTrackRecording, (state, {currentUgcTrackRecording}) => {
-    return {
-      ...state,
-      currentUgcTrackRecording,
     };
   }),
 );

@@ -9,7 +9,6 @@ import {
   loadHitmapFeatures,
   loadHitmapFeaturesFail,
   loadHitmapFeaturesSuccess,
-  openDownloads,
   openLoginModal,
   openUgcUploader,
   resetPoiFilters,
@@ -20,15 +19,10 @@ import {
   toggleTrackFilter,
   toggleTrackFilterByIdentifier,
   updateTrackFilter,
-  setHomeResultTabSelected,
   getDirections,
   startGetDirections,
   setFocusPosition,
   setOnRecord,
-  checkCurrentUgcTrack,
-  resumeCurrentUgcTrack,
-  setEnableTrackRecorderPanel,
-  setCurrentUgcTrackRecording,
 } from './user-activity.action';
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
@@ -57,35 +51,33 @@ import {
   startWith,
   catchError,
   concatMap,
-  delay,
 } from 'rxjs/operators';
 import {combineLatest, EMPTY, from, of} from 'rxjs';
 import {Filter} from '@wm-core/types/config';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
-import {AlertController, ModalController} from '@ionic/angular';
+import {ModalController} from '@ionic/angular';
 import {ModalUgcUploaderComponent} from '@wm-core/modal-ugc-uploader/modal-ugc-uploader.component';
 import {HttpClient} from '@angular/common/http';
 import {WmFeature, WmFeatureCollection} from '@wm-types/feature';
 import {MultiPolygon} from 'geojson';
-import {setCurrentUgcPoiDrawn, setCurrentUgcPoiDrawnSuccess} from '../features/ugc/ugc.actions';
+import {
+  setCurrentUgcPoiDrawn,
+  setCurrentUgcPoiDrawnSuccess,
+  enableSyncInterval,
+  disableSyncInterval,
+} from '../features/ugc/ugc.actions';
 import {
   poiFirstCoordinates,
+  track,
   trackFirstCoordinates,
-  trackNearestCoordinates,
 } from '@wm-core/store/features/features.selector';
+import {getClosestPoint} from '@map-core/utils/geometry';
 import {ModalGetDirectionsComponent} from '@wm-core/modal-get-directions/modal-get-directions.component';
 import {ProfileAuthComponent} from '@wm-core/profile/profile-auth/profile-auth.component';
 import {currentCustomTrack} from '@wm-core/store/features/ugc/ugc.actions';
 import {confAUTHEnable} from '../conf/conf.selector';
 import {isLogged} from '../auth/auth.selectors';
-import {
-  getCurrentUgcTrack,
-  getCurrentUgcTrackTime,
-  removeCurrentUgcTrack,
-  saveCurrentUgcTrack,
-} from '@wm-core/utils/localForage';
 import {GeolocationService} from '@wm-core/services/geolocation.service';
-import {LangService} from '@wm-core/localization/lang.service';
 
 @Injectable()
 export class UserActivityEffects {
@@ -261,19 +253,6 @@ export class UserActivityEffects {
     ),
   );
 
-  setCurrentUgcTrackRecording$ = createEffect(
-    () =>
-      this._actions$.pipe(
-        ofType(setCurrentUgcTrackRecording),
-        map(({currentUgcTrackRecording, recordTime}) => {
-          if (currentUgcTrackRecording && recordTime) {
-            saveCurrentUgcTrack(currentUgcTrackRecording, recordTime);
-          }
-          return of(null);
-        }),
-      ),
-    {dispatch: false},
-  );
 
   startGetDirections$ = createEffect(() =>
     this._actions$.pipe(
@@ -281,12 +260,19 @@ export class UserActivityEffects {
       withLatestFrom(
         this._store.select(poiFirstCoordinates),
         this._store.select(trackFirstCoordinates),
-        this._store.select(trackNearestCoordinates),
+        this._store.select(track),
+        this._geolocationSvc.onLocationChange$,
       ),
-      switchMap(([_, poiFirstCoords, trackStartCoords, trackNearestCoords]) => {
+      switchMap(([_, poiFirstCoords, trackStartCoords, currentTrack, currentLocation]) => {
         if (poiFirstCoords) {
           return of(getDirections({coordinates: poiFirstCoords}));
         }
+
+        // Calcola il punto più vicino sulla traccia rispetto alla posizione corrente
+        const trackNearestCoords =
+          currentTrack && currentLocation
+            ? getClosestPoint(currentTrack, [currentLocation.longitude, currentLocation.latitude])
+            : null;
 
         return from(
           this._modalCtrl.create({
@@ -349,87 +335,10 @@ export class UserActivityEffects {
   setOnRecord$ = createEffect(() =>
     this._actions$.pipe(
       ofType(setOnRecord),
-      map(({onRecord}) => setFocusPosition({focusPosition: onRecord})),
-    ),
-  );
-
-  checkCurrentUgcTrack$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(checkCurrentUgcTrack),
-      switchMap(() => this._geolocationSvc.hasCurrentUgcTrack$),
-      filter(hasCurrentUgcTrack => hasCurrentUgcTrack === true),
-      switchMap(_ => {
-        this._urlHandlerSvc.changeURL('map');
-        return from(
-          this._alertCtrl.create({
-            message: this._langSvc.instant(
-              'È stata rilevata una registrazione interrotta. Vuoi riprenderla?',
-            ),
-            buttons: [
-              {
-                text: this._langSvc.instant('Annulla'),
-                role: 'cancel',
-              },
-              {
-                text: this._langSvc.instant('Riprendi'),
-                role: 'confirm',
-              },
-            ],
-          }),
-        ).pipe(
-          concatMap(alert => from(alert.present()).pipe(map(() => alert))),
-          concatMap(alert => from(alert.onDidDismiss())),
-          switchMap(result => {
-            // Se ha cliccato su "Riprendi", riprendi direttamente
-            if (result.role === 'confirm') {
-              return of(resumeCurrentUgcTrack({resume: true}));
-            }
-            // Se ha cliccato su "Annulla", mostra popup di conferma
-            return from(
-              this._alertCtrl.create({
-                message: this._langSvc.instant(
-                  'Sei sicuro di voler annullare? Questa operazione comporterà la perdita dei dati della registrazione.',
-                ),
-                buttons: [
-                  {
-                    text: this._langSvc.instant('Recupera'),
-                    role: 'resume',
-                  },
-                  {
-                    text: this._langSvc.instant('Cancella'),
-                    role: 'cancel',
-                  },
-                ],
-              }),
-            ).pipe(
-              concatMap(confirmAlert => from(confirmAlert.present()).pipe(map(() => confirmAlert))),
-              concatMap(confirmAlert => from(confirmAlert.onDidDismiss())),
-              map(confirmResult =>
-                resumeCurrentUgcTrack({resume: confirmResult.role === 'resume'}),
-              ),
-            );
-          }),
-        );
-      }),
-    ),
-  );
-
-  resumeCurrentUgcTrack$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(resumeCurrentUgcTrack),
-      switchMap(({resume}) => {
-        if (!resume) {
-          removeCurrentUgcTrack();
-          return EMPTY;
-        }
-
-        // Recupera sia la traccia che il tempo salvati
-        return from(this._geolocationSvc.resumeRecordingFromSaved()).pipe(
-          mergeMap(() => {
-            return [setEnableTrackRecorderPanel({enable: true})];
-          }),
-        );
-      }),
+      mergeMap(({onRecord}) => [
+        setFocusPosition({focusPosition: onRecord}),
+        onRecord ? disableSyncInterval() : enableSyncInterval(),
+      ]),
     ),
   );
 
@@ -438,9 +347,7 @@ export class UserActivityEffects {
     private _store: Store,
     private _urlHandlerSvc: UrlHandlerService,
     private _modalCtrl: ModalController,
-    private _alertCtrl: AlertController,
     private _http: HttpClient,
     private _geolocationSvc: GeolocationService,
-    private _langSvc: LangService,
   ) {}
 }

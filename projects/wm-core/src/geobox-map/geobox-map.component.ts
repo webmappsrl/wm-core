@@ -71,9 +71,10 @@ import {
   startWith,
   switchMap,
   take,
-  tap,
   takeUntil,
-  withLatestFrom,
+  tap,
+  throttleTime,
+  share,
 } from 'rxjs/operators';
 import {
   confJIDOUPDATETIME,
@@ -87,7 +88,6 @@ import {
 import {IDATALAYER} from '@map-core/types/layer';
 import {
   chartHoverElements,
-  currentLocation,
   drawPoiOpened,
   drawTrackOpened,
   ecLayer,
@@ -102,13 +102,11 @@ import {
   ugcOpened,
   wmMapHitMapChangeFeatureId,
   enableTilesDownload,
-  currentUgcTrackRecording,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {WmFeature} from '@wm-types/feature';
 import {FilterType} from '@wm-types/user-activity';
 import {LineString, MultiPolygon, Point} from 'geojson';
 import {LineString as olLinestring} from 'ol/geom';
-import GeoJSON from 'ol/format/GeoJSON.js';
 import {
   currentCustomTrack,
   currentUgcPoi,
@@ -133,9 +131,6 @@ import {GeolocationService} from '@wm-core/services/geolocation.service';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 import {FeatureLike} from 'ol/Feature';
 import {ZoomFeaturesInViewport} from '@wm-types/config';
-import {fromLonLat} from 'ol/proj';
-import {Collection, Feature} from 'ol';
-import {getCurrentUgcTrack} from '@wm-core/utils/localForage';
 
 const initPadding = [10, 10, 10, 10];
 const initMenuOpened = true;
@@ -149,7 +144,7 @@ const maxWidth = 600;
 })
 export class WmGeoboxMapComponent implements OnDestroy {
   private _confMAPLAYERS$: Observable<ILAYER[]> = this._store.select(confMAPLAYERS);
-  private _linestring = new olLinestring([]);
+  private readonly _destroy$ = new Subject<void>();
 
   readonly ecTrack$: Observable<WmFeature<LineString> | null>;
   readonly ecTrackID$: BehaviorSubject<number | string> = new BehaviorSubject<number | string>(
@@ -196,7 +191,18 @@ export class WmGeoboxMapComponent implements OnDestroy {
   currentPoi$ = this._store.select(poi);
   currentPoiNextID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiPrevID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
-  currentPosition$: Observable<any> = this._store.select(currentLocation);
+  currentPosition$: Observable<any> = this._geolocationSvc.onLocationChange$.pipe(
+    throttleTime(500),
+    distinctUntilChanged((prev, curr) => {
+      // Evita emissioni duplicate se lat/lon non cambiano significativamente
+      if (!prev || !curr) return false;
+      const latDiff = Math.abs(prev.latitude - curr.latitude);
+      const lonDiff = Math.abs(prev.longitude - curr.longitude);
+      // Considera uguali se la differenza è < 0.00001 gradi (~1 metro)
+      return latDiff < 0.00001 && lonDiff < 0.00001;
+    }),
+    share(), // Condividi la subscription
+  );
   currentRelatedPoi$ = this._store.select(currentEcRelatedPoi);
   currentRelatedPoiID$ = this._store.select(currentEcRelatedPoiId);
   currentUgcPoiIDToMap$: Observable<number | string | null>;
@@ -207,8 +213,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
   drawPoiOpened$: Observable<boolean> = this._store.select(drawPoiOpened);
   enableTilesDownload$: Observable<boolean> = this._store.select(enableTilesDownload);
   showFeaturesInViewport$: Observable<boolean> = this._store.select(showFeaturesInViewport);
-  currentUgcTrackRecording$: Observable<WmFeature<LineString> | null> =
-    this._store.select(currentUgcTrackRecording);
   geohubId$ = this._store.select(confGeohubId);
   graphhopperHost$: Observable<string> = of(this._environmentSvc.graphhopperHost);
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
@@ -304,7 +308,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
     private _geolocationSvc: GeolocationService,
     private _environmentSvc: EnvironmentService,
   ) {
-    this._actions$.pipe(ofType(resetMap)).subscribe(() => {
+    this._actions$.pipe(ofType(resetMap), takeUntil(this._destroy$)).subscribe(() => {
       this.mapCmp?.resetView();
       this.mapCmp?.wmMapControls?.reset();
       this._store.dispatch(wmMapHitMapChangeFeatureById({id: null}));
@@ -345,6 +349,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
         switchMap(_ => this._route.queryParams),
         filter(params => params != null),
         debounceTime(500),
+        takeUntil(this._destroy$),
       )
       .subscribe(params => {
         this.setCurrentPoi(params.poi);
@@ -366,7 +371,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
     );
 
     this.currentUgcPoiIDToMap$ = this._store.select(currentUgcPoiId);
-    this._actions$.pipe(ofType(goToHome)).subscribe(() => {
+    this._actions$.pipe(ofType(goToHome), takeUntil(this._destroy$)).subscribe(() => {
       this.unselectPOI();
       this.mapCmp.resetView();
     });
@@ -392,7 +397,12 @@ export class WmGeoboxMapComponent implements OnDestroy {
     this.wmMapUgcDisableLayers$ = combineLatest([
       this.isLogged$.pipe(startWith(false)),
       this.toggleUgcDirective$.pipe(startWith(true)),
-    ]).pipe(map(([isLogged, toggleUgcDirective]) => !(isLogged && toggleUgcDirective)));
+    ]).pipe(
+      map(
+        ([isLogged, toggleUgcDirective]) =>
+          !(isLogged && toggleUgcDirective),
+      ),
+    );
   }
 
   featuresInViewport(features: FeatureLike[]): void {
@@ -405,6 +415,8 @@ export class WmGeoboxMapComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.setCurrentPoiSub$.unsubscribe();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   navigation(): void {

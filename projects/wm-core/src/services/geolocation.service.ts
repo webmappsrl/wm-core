@@ -12,16 +12,10 @@ import {WmFeature} from '@wm-types/feature';
 import {DeviceService} from './device.service';
 import {CStopwatch} from '@wm-core/utils/cstopwatch';
 import {getDistance} from 'ol/sphere';
-import {map, startWith} from 'rxjs/operators';
+import {distinctUntilChanged, map, startWith} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
-import {
-  setCurrentLocation,
-  setCurrentUgcTrackRecording,
-  setFocusPosition,
-  setOnRecord,
-} from '@wm-core/store/user-activity/user-activity.action';
+import {setFocusPosition, setOnRecord} from '@wm-core/store/user-activity/user-activity.action';
 import {onRecord} from '@wm-core/store/user-activity/user-activity.selector';
-import {getCurrentUgcTrack, getCurrentUgcTrackTime} from '@wm-core/utils/localForage';
 
 @Injectable({
   providedIn: 'root',
@@ -37,7 +31,7 @@ export class GeolocationService {
   private _mode: 'navigation' | 'recording' | 'stopped' = 'stopped';
   private _isPaused = false;
 
-  onLocationChange: ReplaySubject<Location> = new ReplaySubject<Location>(1);
+  onLocationChange$: ReplaySubject<Location> = new ReplaySubject<Location>(1);
   onModeChange: BehaviorSubject<'navigation' | 'recording' | 'stopped'> = new BehaviorSubject(
     this._mode,
   );
@@ -112,44 +106,6 @@ export class GeolocationService {
     }
   }
 
-  get hasCurrentUgcTrack$(): Observable<Boolean> {
-    return from(getCurrentUgcTrack()).pipe(map(currentUgcTrack => currentUgcTrack != null));
-  }
-
-  async resumeRecordingFromSaved(): Promise<void> {
-    this.startNavigation();
-
-    const [savedFeature, savedTime] = await Promise.all([
-      getCurrentUgcTrack(),
-      getCurrentUgcTrackTime(),
-    ]);
-    if (this._mode === 'recording') return;
-
-    this._mode = 'recording';
-    this.onModeChange.next(this._mode);
-    this._store.dispatch(setOnRecord({onRecord: true}));
-    this._store.dispatch(
-      setCurrentUgcTrackRecording({currentUgcTrackRecording: savedFeature, recordTime: savedTime}),
-    );
-
-    // Ripristina il cronometro con il tempo salvato
-    this._recordStopwatch = new CStopwatch(
-      JSON.stringify({
-        startTime: Date.now(),
-        totalTime: savedTime,
-        isPaused: false,
-      }),
-    );
-    // Crea una copia profonda per evitare problemi con oggetti non estensibili
-    this._recordedFeature = savedFeature;
-
-    if (this._deviceService.isBrowser) {
-      this._startWebWatcher('high');
-    } else {
-      this._startWatcher();
-    }
-  }
-
   async stopRecording(): Promise<WmFeature<LineString> | null> {
     if (this._mode !== 'recording') return null;
 
@@ -160,9 +116,6 @@ export class GeolocationService {
     this._recordedFeature = null;
     this._isPaused = false;
     this._store.dispatch(setOnRecord({onRecord: false}));
-    this._store.dispatch(
-      setCurrentUgcTrackRecording({currentUgcTrackRecording: null, recordTime: 0}),
-    );
     this._mode = 'stopped';
     this.onModeChange.next(this._mode);
 
@@ -199,7 +152,7 @@ export class GeolocationService {
   getDistanceFromCurrentLocation$(destinationPosition: Position): Observable<number | null> {
     if (destinationPosition == null || destinationPosition.length < 2) return of(null);
 
-    return this.onLocationChange.pipe(
+    return this.onLocationChange$.pipe(
       startWith(null),
       map(currentLocation => {
         if (
@@ -214,6 +167,11 @@ export class GeolocationService {
         }
         return null;
       }),
+      distinctUntilChanged((prev, curr) => {
+        // Emetti solo se la differenza è > 50m per evitare aggiornamenti inutili
+        if (prev == null || curr == null) return false;
+        return Math.abs(prev - curr) < 50;
+      }),
     );
   }
 
@@ -225,27 +183,14 @@ export class GeolocationService {
         this._onLocationUpdate(location);
 
         if (this._mode === 'recording' && this._recordedFeature) {
-          this._recordedFeature = {
-            ...this._recordedFeature,
-            geometry: {
-              ...this._recordedFeature.geometry,
-              coordinates: [
-                ...this._recordedFeature.geometry.coordinates,
-                [location.longitude, location.latitude, location.altitude ?? 0],
-              ],
-            },
-            properties: {
-              ...this._recordedFeature.properties,
-              locations: [...this._recordedFeature.properties.locations, location],
-            },
-          };
-
-          this._store.dispatch(
-            setCurrentUgcTrackRecording({
-              currentUgcTrackRecording: this._recordedFeature,
-              recordTime: this.recordTime,
-            }),
-          );
+          if (!this._isLocationAlreadyRecorded(location)) {
+            this._recordedFeature.geometry.coordinates.push([
+              location.longitude,
+              location.latitude,
+              location.altitude ?? 0,
+            ]);
+            this._recordedFeature.properties.locations.push(location);
+          }
         }
       })
       .then(id => (this._watcherId = id));
@@ -254,37 +199,34 @@ export class GeolocationService {
   private _startWebWatcher(accuracy: 'high' | 'low'): void {
     this._webWatcherId = navigator.geolocation.watchPosition(
       res => {
-        const location = {
+        if (!res || !res.coords) {
+          console.warn('WebGeolocation: invalid position data');
+          return;
+        }
+
+        const location: Location = {
           latitude: res.coords.latitude,
           longitude: res.coords.longitude,
           altitude: res.coords.altitude ?? 0,
           accuracy: res.coords.accuracy,
+          altitudeAccuracy: res.coords.altitudeAccuracy ?? null,
+          bearing: res.coords.heading ?? null,
+          speed: res.coords.speed ?? null,
+          simulated: false,
           time: res.timestamp,
         };
-        this._onLocationUpdate(location as Location);
+
+        this._onLocationUpdate(location);
 
         if (this._mode === 'recording' && this._recordedFeature) {
-          this._recordedFeature = {
-            ...this._recordedFeature,
-            geometry: {
-              ...this._recordedFeature.geometry,
-              coordinates: [
-                ...this._recordedFeature.geometry.coordinates,
-                [res.coords.longitude, res.coords.latitude, res.coords.altitude ?? 0],
-              ],
-            },
-            properties: {
-              ...this._recordedFeature.properties,
-              locations: [...this._recordedFeature.properties.locations, location],
-            },
-          };
-
-          this._store.dispatch(
-            setCurrentUgcTrackRecording({
-              currentUgcTrackRecording: this._recordedFeature,
-              recordTime: this.recordTime,
-            }),
-          );
+          if (!this._isLocationAlreadyRecorded(location)) {
+            this._recordedFeature.geometry.coordinates.push([
+              location.longitude,
+              location.latitude,
+              location.altitude ?? 0,
+            ]);
+            this._recordedFeature.properties.locations.push(location);
+          }
         }
       },
       () => {},
@@ -316,9 +258,22 @@ export class GeolocationService {
         ? location.speed * 3.6
         : this._calculateSpeed(this._currentLocation, location);
     this._currentLocation = location;
-    this.onLocationChange.next(location);
-    //TODO: fare refactor utilizzando currentLocation dello store e non onLocationChange
-    this._store.dispatch(setCurrentLocation({location}));
+    this.onLocationChange$.next(location);
+  }
+
+  private _isLocationAlreadyRecorded(location: Location): boolean {
+    const coords = this._recordedFeature?.geometry?.coordinates;
+    if (!coords?.length) {
+      return false;
+    }
+
+    const lastCoord = coords[coords.length - 1];
+    const altitude = location.altitude ?? 0;
+    return (
+      lastCoord[0] === location.longitude &&
+      lastCoord[1] === location.latitude &&
+      lastCoord[2] === altitude
+    );
   }
 
   private _getWatcherOptions(accuracy: 'high' | 'low'): WatcherOptions {
@@ -333,20 +288,37 @@ export class GeolocationService {
   }
 
   private _getEmptyWmFeature(): WmFeature<LineString> {
-    return {
-      type: 'Feature',
-      geometry: {
-        type: 'LineString',
-        coordinates: [
-          [
-            this._currentLocation.longitude,
-            this._currentLocation.latitude,
-            this._currentLocation.altitude ?? 0,
-          ],
-        ],
-      },
-      properties: {locations: [this._currentLocation]},
-    };
+    try {
+      // Validazione della location corrente
+      const lon = this._currentLocation?.longitude ?? 0;
+      const lat = this._currentLocation?.latitude ?? 0;
+      const alt = this._currentLocation?.altitude ?? 0;
+
+      // Se non c'è una location valida, usa coordinate di default (0,0)
+      const isValidLocation = this._currentLocation && !isNaN(lon) && !isNaN(lat);
+
+      return {
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: isValidLocation ? [[lon, lat, alt]] : [[0, 0, 0]], // Coordinate di default se non valide
+        },
+        properties: {
+          locations: isValidLocation ? [this._currentLocation] : [],
+        },
+      };
+    } catch (error) {
+      console.error('Error creating empty WmFeature:', error);
+      // Ritorna una feature vuota di fallback
+      return {
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: [[0, 0, 0]],
+        },
+        properties: {locations: []},
+      };
+    }
   }
 }
 

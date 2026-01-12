@@ -16,7 +16,8 @@
     (wmMapFeatureCollectionLayerSelected)="selectedLayerById($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
     (wmMapFeatureCollectionPopup)="openPopup($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
     (wmMapEmptyClickEVT$)="openPopup(null)"
-    [wmMapGeojson]="(enableTrackRecorderPanel$|async) ? (currentUgcTrackRecording$|async) : null"
+    [WmMapTrackRecord]="enableTrackRecorderPanel$|async"
+    [WmMapTrackRecordLocation]="currentPosition$|async"
     wmMapPosition
     [wmMapPositioncurrentLocation]="currentPosition$|async"
     [wmMapPositionCenter]="centerPositionEvt$|async"
