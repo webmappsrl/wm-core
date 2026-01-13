@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable, combineLatest, from, of} from 'rxjs';
-import {distinctUntilChanged, map, startWith, switchMap} from 'rxjs/operators';
+import {distinctUntilChanged, map, startWith, switchMap, throttleTime} from 'rxjs/operators';
 import {ecTracksLoading, poisInitCount} from '@wm-core/store/features/ec/ec.selector';
 
 import {

@@ -11,7 +11,7 @@ import {
   withLatestFrom,
   take,
 } from 'rxjs/operators';
-import {of, from, interval, EMPTY} from 'rxjs';
+import {of, from, interval, EMPTY, combineLatest} from 'rxjs';
 import {
   currentUgcPoiId,
   currentUgcTrackId,
@@ -189,19 +189,19 @@ export class UgcEffects {
     ),
   );
   syncOnInterval$ = createEffect(() =>
-    this._store.pipe(
-      select(activableUgc),
-      withLatestFrom(this._store.pipe(select(syncUgcIntervalEnabled))),
+    combineLatest([
+      this._store.pipe(select(activableUgc)),
+      this._store.pipe(select(syncUgcIntervalEnabled)),
+    ]).pipe(
       filter(([activable, syncEnabled]) => activable && syncEnabled),
       switchMap(() =>
         interval(SYNC_INTERVAL).pipe(
           startWith(0),
           takeUntil(
-            this._store.pipe(
-              select(activableUgc),
-              withLatestFrom(this._store.pipe(select(syncUgcIntervalEnabled))),
-              filter(([activable, syncEnabled]) => !activable || !syncEnabled),
-            ),
+            combineLatest([
+              this._store.pipe(select(activableUgc)),
+              this._store.pipe(select(syncUgcIntervalEnabled)),
+            ]).pipe(filter(([activable, syncEnabled]) => !activable || !syncEnabled)),
           ),
           map(() => syncUgc()),
         ),
@@ -332,31 +332,30 @@ export class UgcEffects {
     this._actions$.pipe(
       ofType(deleteUgcMedia),
       mergeMap(({media}) => {
-        if(media?.id) {
-          return from(this._alertCtrl.create({
-            header: this._langSvc.instant('Conferma eliminazione'),
-            message: this._langSvc.instant('Sei sicuro di voler eliminare questo media?'),
-            buttons: [
-              {
-                text: this._langSvc.instant('Annulla'),
-                role: 'cancel',
-              },
-              {
-                text: this._langSvc.instant('Elimina'),
-                role: 'destructive',
-              },
-            ],
-          })).pipe(
-            switchMap(modal => from(modal.present()).pipe(
-              switchMap(() => from(modal.onDidDismiss()))
-            )),
-            switchMap((result) => {
+        if (media?.id) {
+          return from(
+            this._alertCtrl.create({
+              header: this._langSvc.instant('Conferma eliminazione'),
+              message: this._langSvc.instant('Sei sicuro di voler eliminare questo media?'),
+              buttons: [
+                {
+                  text: this._langSvc.instant('Annulla'),
+                  role: 'cancel',
+                },
+                {
+                  text: this._langSvc.instant('Elimina'),
+                  role: 'destructive',
+                },
+              ],
+            }),
+          ).pipe(
+            switchMap(modal =>
+              from(modal.present()).pipe(switchMap(() => from(modal.onDidDismiss()))),
+            ),
+            switchMap(result => {
               if (result.role === 'destructive') {
                 return from(this._ugcSvc.deleteApiMedia(media.id)).pipe(
-                  mergeMap(() => [
-                    deleteUgcMediaSuccess({media}),
-                    syncUgc(),
-                  ]),
+                  mergeMap(() => [deleteUgcMediaSuccess({media}), syncUgc()]),
                   catchError(error => of(deleteUgcMediaFailure({error: error.error.message}))),
                 );
               }
@@ -370,17 +369,18 @@ export class UgcEffects {
     ),
   );
 
-  deleteUgcMediaSuccess$ = createEffect(() =>
-    this._actions$.pipe(
-      ofType(deleteUgcMediaSuccess),
-      switchMap(() => {
-        return this._alertCtrl.create({
-          message: this._langSvc.instant('Eliminazione effettuata con successo'),
-          buttons: ['OK'],
-        });
-      }),
-      switchMap(alert => alert.present()),
-    ),
+  deleteUgcMediaSuccess$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(deleteUgcMediaSuccess),
+        switchMap(() => {
+          return this._alertCtrl.create({
+            message: this._langSvc.instant('Eliminazione effettuata con successo'),
+            buttons: ['OK'],
+          });
+        }),
+        switchMap(alert => alert.present()),
+      ),
     {dispatch: false},
   );
 

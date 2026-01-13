@@ -12,7 +12,7 @@ import {
 import {AlertController, IonContent, IonSlides} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, from, Observable} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {take, tap} from 'rxjs/operators';
 import {LineString} from 'geojson';
 import {Media, WmFeature} from '@wm-types/feature';
 import {LangService} from '@wm-core/localization/lang.service';
@@ -87,7 +87,10 @@ export class UgcTrackPropertiesComponent {
 
   clickPhoto(): void {
     from(this.slider.getActiveIndex())
-      .pipe(tap(index => this.currentImage$.next(this.track.properties.photos[index - 1].photoURL)))
+      .pipe(
+        take(1),
+        tap(index => this.currentImage$.next(this.track.properties.photos[index - 1].photoURL)),
+      )
       .subscribe();
   }
 

@@ -6,7 +6,6 @@ import {FilterType, HomeResultTab} from '@wm-types/user-activity';
 import {LineString, MultiPolygon, Point} from 'geojson';
 import {mapDetailsStatus} from './user-activity.reducer';
 import {Hit} from '@wm-types/elastic';
-import {Location} from '@capacitor-community/background-geolocation';
 
 export const openUgc = createAction('[User Activity] Open User Generated Content');
 export const closeUgc = createAction('[User Activity] Close User Generated Content');
@@ -184,13 +183,4 @@ export const setDisableTilesDownloadButton = createAction(
 export const setWmMapTilesBoundingBox = createAction(
   '[User Activity] set wm map tiles bounding box',
   props<{wmMapTilesBoundingBox: WmFeature<MultiPolygon> | null}>(),
-);
-export const checkCurrentUgcTrack = createAction('[User Activity] check current ugc track');
-export const resumeCurrentUgcTrack = createAction(
-  '[User Activity] resume current ugc track',
-  props<{resume: boolean}>(),
-);
-export const setCurrentUgcTrackRecording = createAction(
-  '[User Activity] set current ugc track recording',
-  props<{currentUgcTrackRecording: WmFeature<LineString> | null; recordTime?: number | null}>(),
 );
