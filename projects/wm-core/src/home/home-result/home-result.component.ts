@@ -69,7 +69,6 @@ export class WmHomeResultComponent {
         ? combineLatest([
             ...pois.map(poi =>
               this._geolocationSvc.getDistanceFromCurrentLocation$(poi.geometry?.coordinates).pipe(
-                throttleTime(10000), // Calcola distanza max ogni 10 secondi
                 map(distance => ({
                   ...poi,
                   properties: {
@@ -142,7 +141,6 @@ export class WmHomeResultComponent {
           ? combineLatest(
               tracks.map(track =>
                 this._geolocationSvc.getDistanceFromCurrentLocation$(track.start).pipe(
-                  throttleTime(10000), // Calcola distanza max ogni 10 secondi
                   map(distance => ({
                     ...track,
                     distanceFromCurrentLocation: distance,

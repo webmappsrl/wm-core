@@ -12,10 +12,13 @@ import {WmFeature} from '@wm-types/feature';
 import {DeviceService} from './device.service';
 import {CStopwatch} from '@wm-core/utils/cstopwatch';
 import {getDistance} from 'ol/sphere';
-import {distinctUntilChanged, map, startWith} from 'rxjs/operators';
+import {distinctUntilChanged, map, startWith, throttleTime} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
 import {setFocusPosition, setOnRecord} from '@wm-core/store/user-activity/user-activity.action';
 import {onRecord} from '@wm-core/store/user-activity/user-activity.selector';
+
+const THROTTLE_TIME_DISTANCE = 10000; //10 seconds
+const DIFFERENCE_THRESHOLD_DISTANCE = 20 ; //20 meters
 
 @Injectable({
   providedIn: 'root',
@@ -154,6 +157,7 @@ export class GeolocationService {
 
     return this.onLocationChange$.pipe(
       startWith(null),
+      throttleTime(THROTTLE_TIME_DISTANCE), // Calcola distanza max ogni THROTTLE_TIME_DISTANCE seconds
       map(currentLocation => {
         if (
           currentLocation != null &&
@@ -168,9 +172,9 @@ export class GeolocationService {
         return null;
       }),
       distinctUntilChanged((prev, curr) => {
-        // Emetti solo se la differenza è > 50m per evitare aggiornamenti inutili
+        // Emetti solo se la differenza è > DIFFERENCE_THRESHOLD_DISTANCE per evitare aggiornamenti inutili
         if (prev == null || curr == null) return false;
-        return Math.abs(prev - curr) < 50;
+        return Math.abs(prev - curr) < DIFFERENCE_THRESHOLD_DISTANCE;
       }),
     );
   }

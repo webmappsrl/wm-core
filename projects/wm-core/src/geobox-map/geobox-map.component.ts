@@ -135,6 +135,8 @@ import {ZoomFeaturesInViewport} from '@wm-types/config';
 const initPadding = [10, 10, 10, 10];
 const initMenuOpened = true;
 const maxWidth = 600;
+const DIFFERENCE_THRESHOLD_LAT_LON = 0.00001; // 0.00001 gradi (~1 metro)
+
 @Component({
   selector: 'wm-geobox-map',
   templateUrl: './geobox-map.component.html',
@@ -142,6 +144,7 @@ const maxWidth = 600;
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
+
 export class WmGeoboxMapComponent implements OnDestroy {
   private _confMAPLAYERS$: Observable<ILAYER[]> = this._store.select(confMAPLAYERS);
   private readonly _destroy$ = new Subject<void>();
@@ -192,14 +195,13 @@ export class WmGeoboxMapComponent implements OnDestroy {
   currentPoiNextID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiPrevID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPosition$: Observable<any> = this._geolocationSvc.onLocationChange$.pipe(
-    throttleTime(500),
     distinctUntilChanged((prev, curr) => {
       // Evita emissioni duplicate se lat/lon non cambiano significativamente
       if (!prev || !curr) return false;
       const latDiff = Math.abs(prev.latitude - curr.latitude);
       const lonDiff = Math.abs(prev.longitude - curr.longitude);
-      // Considera uguali se la differenza è < 0.00001 gradi (~1 metro)
-      return latDiff < 0.00001 && lonDiff < 0.00001;
+      // Considera uguali se la differenza è < DIFFERENCE_THRESHOLD_LAT_LON
+      return latDiff < DIFFERENCE_THRESHOLD_LAT_LON && lonDiff < DIFFERENCE_THRESHOLD_LAT_LON;
     }),
     share(), // Condividi la subscription
   );
