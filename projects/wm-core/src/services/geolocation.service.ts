@@ -95,11 +95,7 @@ export class GeolocationService {
     this._mode = 'navigation';
     this.onModeChange.next(this._mode);
 
-    if (this._deviceService.isBrowser) {
-      this._startWebWatcher('low');
-    } else {
-      this._startWatcher();
-    }
+    this._startLocationWatcher('low');
   }
 
   startRecording(): void {
@@ -113,11 +109,7 @@ export class GeolocationService {
     this._recordedFeature = this._getEmptyWmFeature();
     this._isPaused = false;
 
-    if (this._deviceService.isBrowser) {
-      this._startWebWatcher('high');
-    } else {
-      this._startWatcher();
-    }
+    this._startLocationWatcher('high');
   }
 
   async resumeRecordingFromSaved(): Promise<void> {
@@ -145,11 +137,7 @@ export class GeolocationService {
     this._recordedFeature = this._createRecordedFeatureFromLocations(savedLocations);
     this._isPaused = false;
 
-    if (this._deviceService.isBrowser) {
-      this._startWebWatcher('high');
-    } else {
-      this._startWatcher();
-    }
+    this._startLocationWatcher('high');
   }
 
   async stopRecording(): Promise<WmFeature<LineString> | null> {
@@ -221,6 +209,18 @@ export class GeolocationService {
         return Math.abs(prev - curr) < DIFFERENCE_THRESHOLD_DISTANCE;
       }),
     );
+  }
+
+  /**
+   * Avvia il watcher appropriato in base alla piattaforma (browser o nativa).
+   * @param accuracy Livello di accuratezza richiesto ('high' o 'low')
+   */
+  private _startLocationWatcher(accuracy: 'high' | 'low'): void {
+    if (this._deviceService.isBrowser) {
+      this._startWebWatcher(accuracy);
+    } else {
+      this._startWatcher();
+    }
   }
 
   private _startWatcher(): void {
