@@ -39,7 +39,7 @@ export class GeolocationService {
   private _isPaused = false;
 
   onLocationChange$: ReplaySubject<Location> = new ReplaySubject<Location>(1);
-  onLocationsChange$: ReplaySubject<Location[]> = new ReplaySubject<Location[]>(1);
+  onResumeRecording$: ReplaySubject<Location[]> = new ReplaySubject<Location[]>(1);
   onModeChange: BehaviorSubject<'navigation' | 'recording' | 'stopped'> = new BehaviorSubject(
     this._mode,
   );
@@ -121,11 +121,16 @@ export class GeolocationService {
   }
 
   async resumeRecordingFromSaved(): Promise<void> {
+    const savedLocations = await getCurrentUgcTrackLocations();
+    // Emette le locations salvate per aggiornare la direttiva che mostra la traccia
+    if (savedLocations && savedLocations.length > 0) {
+      this.onResumeRecording$.next(savedLocations);
+    }
+
     this._mode = 'recording';
     this.onModeChange.next(this._mode);
     this._store.dispatch(setOnRecord({onRecord: true}));
 
-    const savedLocations = await getCurrentUgcTrackLocations();
     const elapsedTime = this._calculateElapsedTimeFromLocations(savedLocations);
 
     // Inizializza lo stopwatch con il tempo già trascorso
@@ -139,11 +144,6 @@ export class GeolocationService {
 
     this._recordedFeature = this._createRecordedFeatureFromLocations(savedLocations);
     this._isPaused = false;
-
-    // Emette le locations salvate per aggiornare la direttiva che mostra la traccia
-    if (savedLocations && savedLocations.length > 0) {
-      this.onLocationsChange$.next(savedLocations);
-    }
 
     if (this._deviceService.isBrowser) {
       this._startWebWatcher('high');
@@ -164,7 +164,7 @@ export class GeolocationService {
     this._store.dispatch(setOnRecord({onRecord: false}));
     this._mode = 'stopped';
     this.onModeChange.next(this._mode);
-    this.onLocationChange$.next(null);
+    this.onResumeRecording$.next(null);
 
     this.startNavigation();
 

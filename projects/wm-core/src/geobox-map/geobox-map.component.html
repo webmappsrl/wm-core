@@ -17,9 +17,10 @@
     (wmMapFeatureCollectionPopup)="openPopup($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
     (wmMapEmptyClickEVT$)="openPopup(null)"
     [WmMapTrackRecord]="enableTrackRecorderPanel$|async"
-    [WmMapTrackRecordLocation]="locationsRecording$|async"
+    [WmMapTrackRecordLocation]="currentPosition$|async"
+    [WmMapTrackRecordInitLocations]="recordInitLocations$|async"
     wmMapPosition
-    [wmMapPositioncurrentLocation]="currentLocation$|async"
+    [wmMapPositioncurrentLocation]="currentPosition$|async"
     [wmMapPositionCenter]="centerPositionEvt$|async"
     [wmMapPositionZoomCurrentLocation]="(enablePoiRecorderPanel$|async) || (enableTrackRecorderPanel$|async)"
     [wmMapPositionfocus]="wmMapPositionfocus$|async"

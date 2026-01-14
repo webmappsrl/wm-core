@@ -194,7 +194,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   currentPoi$ = this._store.select(poi);
   currentPoiNextID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiPrevID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
-  currentLocation$: Observable<any> = this._geolocationSvc.onLocationChange$.pipe(
+  currentPosition$: Observable<any> = this._geolocationSvc.onLocationChange$.pipe(
     distinctUntilChanged((prev, curr) => {
       // Evita emissioni duplicate se lat/lon non cambiano significativamente
       if (!prev || !curr) return false;
@@ -205,11 +205,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
     }),
     share(), // Condividi la subscription
   );
-  currentLocations$: Observable<Location[]> = this._geolocationSvc.onLocationsChange$;
-  locationsRecording$: Observable<Location | Location[]> = merge(
-    this.currentLocation$,
-    this.currentLocations$,
-  );
+  recordInitLocations$: Observable<Location[]> = this._geolocationSvc.onResumeRecording$;
   currentRelatedPoi$ = this._store.select(currentEcRelatedPoi);
   currentRelatedPoiID$ = this._store.select(currentEcRelatedPoiId);
   currentUgcPoiIDToMap$: Observable<number | string | null>;
