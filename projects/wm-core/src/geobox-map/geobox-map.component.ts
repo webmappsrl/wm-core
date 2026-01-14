@@ -131,6 +131,7 @@ import {GeolocationService} from '@wm-core/services/geolocation.service';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 import {FeatureLike} from 'ol/Feature';
 import {ZoomFeaturesInViewport} from '@wm-types/config';
+import {Location} from '@capacitor-community/background-geolocation';
 
 const initPadding = [10, 10, 10, 10];
 const initMenuOpened = true;
@@ -144,7 +145,6 @@ const DIFFERENCE_THRESHOLD_LAT_LON = 0.00001; // 0.00001 gradi (~1 metro)
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-
 export class WmGeoboxMapComponent implements OnDestroy {
   private _confMAPLAYERS$: Observable<ILAYER[]> = this._store.select(confMAPLAYERS);
   private readonly _destroy$ = new Subject<void>();
@@ -194,7 +194,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   currentPoi$ = this._store.select(poi);
   currentPoiNextID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiPrevID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
-  currentPosition$: Observable<any> = this._geolocationSvc.onLocationChange$.pipe(
+  currentLocation$: Observable<any> = this._geolocationSvc.onLocationChange$.pipe(
     distinctUntilChanged((prev, curr) => {
       // Evita emissioni duplicate se lat/lon non cambiano significativamente
       if (!prev || !curr) return false;
@@ -204,6 +204,11 @@ export class WmGeoboxMapComponent implements OnDestroy {
       return latDiff < DIFFERENCE_THRESHOLD_LAT_LON && lonDiff < DIFFERENCE_THRESHOLD_LAT_LON;
     }),
     share(), // Condividi la subscription
+  );
+  currentLocations$: Observable<Location[]> = this._geolocationSvc.onLocationsChange$;
+  locationsRecording$: Observable<Location | Location[]> = merge(
+    this.currentLocation$,
+    this.currentLocations$,
   );
   currentRelatedPoi$ = this._store.select(currentEcRelatedPoi);
   currentRelatedPoiID$ = this._store.select(currentEcRelatedPoiId);
