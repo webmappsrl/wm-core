@@ -16,9 +16,13 @@ import {distinctUntilChanged, map, startWith, throttleTime} from 'rxjs/operators
 import {Store} from '@ngrx/store';
 import {setFocusPosition, setOnRecord} from '@wm-core/store/user-activity/user-activity.action';
 import {onRecord} from '@wm-core/store/user-activity/user-activity.selector';
+import {
+  getCurrentUgcTrackLocations,
+  saveCurrentUgcTrackLocations,
+} from '@wm-core/utils/localForage';
 
 const THROTTLE_TIME_DISTANCE = 10000; //10 seconds
-const DIFFERENCE_THRESHOLD_DISTANCE = 20 ; //20 meters
+const DIFFERENCE_THRESHOLD_DISTANCE = 20; //20 meters
 
 @Injectable({
   providedIn: 'root',
@@ -35,6 +39,7 @@ export class GeolocationService {
   private _isPaused = false;
 
   onLocationChange$: ReplaySubject<Location> = new ReplaySubject<Location>(1);
+  onResumeRecording$: ReplaySubject<Location[]> = new ReplaySubject<Location[]>(1);
   onModeChange: BehaviorSubject<'navigation' | 'recording' | 'stopped'> = new BehaviorSubject(
     this._mode,
   );
@@ -78,17 +83,19 @@ export class GeolocationService {
     return this._mode;
   }
 
+  get hasCurrentUgcTrack$(): Observable<Boolean> {
+    return from(getCurrentUgcTrackLocations()).pipe(
+      map(currentUgcTrackLocations => currentUgcTrackLocations != null),
+    );
+  }
+
   startNavigation(): void {
     if (this._mode === 'navigation' || this._mode === 'recording') return;
 
     this._mode = 'navigation';
     this.onModeChange.next(this._mode);
 
-    if (this._deviceService.isBrowser) {
-      this._startWebWatcher('low');
-    } else {
-      this._startWatcher();
-    }
+    this._startLocationWatcher('low');
   }
 
   startRecording(): void {
@@ -102,11 +109,35 @@ export class GeolocationService {
     this._recordedFeature = this._getEmptyWmFeature();
     this._isPaused = false;
 
-    if (this._deviceService.isBrowser) {
-      this._startWebWatcher('high');
-    } else {
-      this._startWatcher();
+    this._startLocationWatcher('high');
+  }
+
+  async resumeRecordingFromSaved(): Promise<void> {
+    const savedLocations = await getCurrentUgcTrackLocations();
+    // Emette le locations salvate per aggiornare la direttiva che mostra la traccia
+    if (savedLocations && savedLocations.length > 0) {
+      this.onResumeRecording$.next(savedLocations);
     }
+
+    this._mode = 'recording';
+    this.onModeChange.next(this._mode);
+    this._store.dispatch(setOnRecord({onRecord: true}));
+
+    const elapsedTime = this._calculateElapsedTimeFromLocations(savedLocations);
+
+    // Inizializza lo stopwatch con il tempo già trascorso
+    this._recordStopwatch = new CStopwatch(
+      JSON.stringify({
+        startTime: Date.now(),
+        totalTime: elapsedTime,
+        isPaused: false,
+      }),
+    );
+
+    this._recordedFeature = this._createRecordedFeatureFromLocations(savedLocations);
+    this._isPaused = false;
+
+    this._startLocationWatcher('high');
   }
 
   async stopRecording(): Promise<WmFeature<LineString> | null> {
@@ -121,6 +152,7 @@ export class GeolocationService {
     this._store.dispatch(setOnRecord({onRecord: false}));
     this._mode = 'stopped';
     this.onModeChange.next(this._mode);
+    this.onResumeRecording$.next(null);
 
     this.startNavigation();
 
@@ -179,23 +211,25 @@ export class GeolocationService {
     );
   }
 
+  /**
+   * Avvia il watcher appropriato in base alla piattaforma (browser o nativa).
+   * @param accuracy Livello di accuratezza richiesto ('high' o 'low')
+   */
+  private _startLocationWatcher(accuracy: 'high' | 'low'): void {
+    if (this._deviceService.isBrowser) {
+      this._startWebWatcher(accuracy);
+    } else {
+      this._startWatcher();
+    }
+  }
+
   private _startWatcher(): void {
     if (this._watcherId != null) return;
     backgroundGeolocation
       .addWatcher(this._getWatcherOptions('high'), (location, error) => {
         if (error) return;
         this._onLocationUpdate(location);
-
-        if (this._mode === 'recording' && this._recordedFeature) {
-          if (!this._isLocationAlreadyRecorded(location)) {
-            this._recordedFeature.geometry.coordinates.push([
-              location.longitude,
-              location.latitude,
-              location.altitude ?? 0,
-            ]);
-            this._recordedFeature.properties.locations.push(location);
-          }
-        }
+        this._addLocationToRecording(location);
       })
       .then(id => (this._watcherId = id));
   }
@@ -221,17 +255,7 @@ export class GeolocationService {
         };
 
         this._onLocationUpdate(location);
-
-        if (this._mode === 'recording' && this._recordedFeature) {
-          if (!this._isLocationAlreadyRecorded(location)) {
-            this._recordedFeature.geometry.coordinates.push([
-              location.longitude,
-              location.latitude,
-              location.altitude ?? 0,
-            ]);
-            this._recordedFeature.properties.locations.push(location);
-          }
-        }
+        this._addLocationToRecording(location);
       },
       () => {},
       {enableHighAccuracy: accuracy === 'high'},
@@ -280,6 +304,32 @@ export class GeolocationService {
     );
   }
 
+  /**
+   * Aggiunge una location alla registrazione corrente e salva su localForage.
+   */
+  private _addLocationToRecording(location: Location): void {
+    if (this._mode !== 'recording' || !this._recordedFeature) {
+      return;
+    }
+
+    if (this._isLocationAlreadyRecorded(location)) {
+      return;
+    }
+
+    // Aggiunge le coordinate alla geometry
+    this._recordedFeature.geometry.coordinates.push([
+      location.longitude,
+      location.latitude,
+      location.altitude ?? 0,
+    ]);
+
+    // Aggiunge la location alle properties
+    this._recordedFeature.properties?.locations?.push(location);
+
+    // Salva su localForage ad ogni aggiornamento
+    saveCurrentUgcTrackLocations(this._recordedFeature.properties?.locations);
+  }
+
   private _getWatcherOptions(accuracy: 'high' | 'low'): WatcherOptions {
     const highDistanceFilter = +localStorage.getItem('wm-distance-filter') || 10;
     return {
@@ -323,6 +373,59 @@ export class GeolocationService {
         properties: {locations: []},
       };
     }
+  }
+
+  /**
+   * Crea la _recordedFeature a partire da un array di locations.
+   * Converte l'array di Location in geometry.coordinates e popola properties.locations.
+   */
+  private _createRecordedFeatureFromLocations(locations: Location[] | null): WmFeature<LineString> {
+    try {
+      if (!locations || locations.length === 0) {
+        console.warn('_createRecordedFeatureFromLocations: No locations provided');
+        return this._getEmptyWmFeature();
+      }
+
+      // Converte le locations in coordinate [lon, lat, alt]
+      const coordinates: Position[] = locations.map(loc => [
+        loc.longitude,
+        loc.latitude,
+        loc.altitude ?? 0,
+      ]);
+
+      return {
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates,
+        },
+        properties: {
+          locations,
+        },
+      };
+    } catch (error) {
+      console.error('Error creating recorded feature from locations:', error);
+      return this._getEmptyWmFeature();
+    }
+  }
+
+  /**
+   * Calcola il tempo trascorso tra la prima e l'ultima location.
+   * @returns tempo in millisecondi
+   */
+  private _calculateElapsedTimeFromLocations(locations: Location[] | null): number {
+    if (!locations || locations.length < 2) {
+      return 0;
+    }
+
+    const firstLocation = locations[0];
+    const lastLocation = locations[locations.length - 1];
+
+    if (firstLocation.time == null || lastLocation.time == null) {
+      return 0;
+    }
+
+    return lastLocation.time - firstLocation.time;
   }
 }
 

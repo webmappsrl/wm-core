@@ -131,6 +131,7 @@ import {GeolocationService} from '@wm-core/services/geolocation.service';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 import {FeatureLike} from 'ol/Feature';
 import {ZoomFeaturesInViewport} from '@wm-types/config';
+import {Location} from '@capacitor-community/background-geolocation';
 
 const initPadding = [10, 10, 10, 10];
 const initMenuOpened = true;
@@ -144,7 +145,6 @@ const DIFFERENCE_THRESHOLD_LAT_LON = 0.00001; // 0.00001 gradi (~1 metro)
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-
 export class WmGeoboxMapComponent implements OnDestroy {
   private _confMAPLAYERS$: Observable<ILAYER[]> = this._store.select(confMAPLAYERS);
   private readonly _destroy$ = new Subject<void>();
@@ -205,6 +205,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
     }),
     share(), // Condividi la subscription
   );
+  recordInitLocations$: Observable<Location[]> = this._geolocationSvc.onResumeRecording$;
   currentRelatedPoi$ = this._store.select(currentEcRelatedPoi);
   currentRelatedPoiID$ = this._store.select(currentEcRelatedPoiId);
   currentUgcPoiIDToMap$: Observable<number | string | null>;

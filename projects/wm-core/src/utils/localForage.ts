@@ -1,6 +1,7 @@
 import {WmFeature} from '@wm-types/feature';
 import {GeoJsonProperties, LineString, Point} from 'geojson';
 import * as localforage from 'localforage';
+import {Location} from '@capacitor-community/background-geolocation';
 import {downloadTiles, getTilesByGeometry, removeTiles} from '../../../../../map-core/src/utils';
 import {IUser} from '@wm-core/store/auth/auth.model';
 import {isValidWmFeature} from '@wm-core/utils/features';
@@ -18,6 +19,7 @@ export async function clearUgcDeviceData(): Promise<void> {
     deviceUgcTrack.clear(),
     deviceUgcPoi.clear(),
     deviceImg.clear(),
+    deviceCurrentUgcTrackLocations.clear(),
   ]);
 }
 export async function downloadEcTrack(
@@ -225,17 +227,10 @@ export async function getUgcTrack(
   return a ?? b ?? c;
 }
 
-export async function getCurrentUgcTrack(): Promise<WmFeature<LineString>> {
+export async function getCurrentUgcTrackLocations(): Promise<Location[]> {
   return handleAsync(
-    deviceCurrentUgcTrack.getItem<WmFeature<LineString>>('current-ugc-track'),
-    'getCurrentUgcTrack: Failed',
-  );
-}
-
-export async function getCurrentUgcTrackTime(): Promise<number> {
-  return handleAsync(
-    deviceCurrentUgcTrack.getItem<number>('current-ugc-track-time'),
-    'getCurrentUgcTrackTime: Failed',
+    deviceCurrentUgcTrackLocations.getItem<Location[]>('current-ugc-track-locations'),
+    'getCurrentUgcTrackLocations: Failed',
   );
 }
 
@@ -336,13 +331,9 @@ export async function removeUgcTrack(track: WmFeature<LineString>): Promise<void
   await handleAsync(storage.removeItem(`${featureId}`), 'removeUgcTrack: Failed');
 }
 
-export async function removeCurrentUgcTrack(): Promise<void> {
+export async function removeCurrentUgcTrackLocations(): Promise<void> {
   await handleAsync(
-    deviceCurrentUgcTrack.removeItem('current-ugc-track'),
-    'removeCurrentUgcTrack: Failed',
-  );
-  await handleAsync(
-    deviceCurrentUgcTrack.removeItem('current-ugc-track-time'),
+    deviceCurrentUgcTrackLocations.removeItem('current-ugc-track-locations'),
     'removeCurrentUgcTrack: Failed',
   );
 }
@@ -451,17 +442,10 @@ export async function saveUgc(feature: WmFeature<LineString | Point>): Promise<v
   }
 }
 
-export async function saveCurrentUgcTrack(
-  track: WmFeature<LineString>,
-  time: number,
-): Promise<void> {
+export async function saveCurrentUgcTrackLocations(trackLocations: Location[]): Promise<void> {
   await handleAsync(
-    deviceCurrentUgcTrack.setItem('current-ugc-track', track),
-    'saveCurrentUgcTrack: Failed',
-  );
-  await handleAsync(
-    deviceCurrentUgcTrack.setItem('current-ugc-track-time', time),
-    'saveCurrentUgcTrack: Failed',
+    deviceCurrentUgcTrackLocations.setItem('current-ugc-track-locations', trackLocations),
+    'saveCurrentUgcTrackLocations: Failed to save current UGC track locations',
   );
 }
 
@@ -510,7 +494,7 @@ export const deviceAuth = localforage.createInstance({
   name: 'device',
   storeName: 'auth',
 });
-export const deviceCurrentUgcTrack = localforage.createInstance({
+export const deviceCurrentUgcTrackLocations = localforage.createInstance({
   name: 'device',
-  storeName: 'current-ugc-track',
+  storeName: 'current-ugc-track-locations',
 });

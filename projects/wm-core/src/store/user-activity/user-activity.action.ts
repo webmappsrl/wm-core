@@ -184,3 +184,8 @@ export const setWmMapTilesBoundingBox = createAction(
   '[User Activity] set wm map tiles bounding box',
   props<{wmMapTilesBoundingBox: WmFeature<MultiPolygon> | null}>(),
 );
+export const checkCurrentUgcTrack = createAction('[User Activity] check current ugc track');
+export const resumeCurrentUgcTrack = createAction(
+  '[User Activity] resume current ugc track',
+  props<{resume: boolean}>(),
+);

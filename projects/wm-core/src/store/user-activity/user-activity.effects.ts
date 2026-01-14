@@ -23,6 +23,9 @@ import {
   startGetDirections,
   setFocusPosition,
   setOnRecord,
+  checkCurrentUgcTrack,
+  resumeCurrentUgcTrack,
+  setEnableTrackRecorderPanel,
 } from './user-activity.action';
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
@@ -41,9 +44,10 @@ import {
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {
   debounceTime,
+  delay,
+  ignoreElements,
   map,
   mergeMap,
-  skip,
   switchMap,
   tap,
   withLatestFrom,
@@ -55,7 +59,7 @@ import {
 import {combineLatest, EMPTY, from, of} from 'rxjs';
 import {Filter} from '@wm-core/types/config';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
-import {ModalController} from '@ionic/angular';
+import {AlertController, ModalController} from '@ionic/angular';
 import {ModalUgcUploaderComponent} from '@wm-core/modal-ugc-uploader/modal-ugc-uploader.component';
 import {HttpClient} from '@angular/common/http';
 import {WmFeature, WmFeatureCollection} from '@wm-types/feature';
@@ -78,6 +82,8 @@ import {currentCustomTrack} from '@wm-core/store/features/ugc/ugc.actions';
 import {confAUTHEnable} from '../conf/conf.selector';
 import {isLogged} from '../auth/auth.selectors';
 import {GeolocationService} from '@wm-core/services/geolocation.service';
+import {LangService} from '@wm-core/localization/lang.service';
+import {removeCurrentUgcTrackLocations} from '@wm-core/utils/localForage';
 
 @Injectable()
 export class UserActivityEffects {
@@ -253,6 +259,82 @@ export class UserActivityEffects {
     ),
   );
 
+  checkCurrentUgcTrack$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(checkCurrentUgcTrack),
+      switchMap(() => this._geolocationSvc.hasCurrentUgcTrack$),
+      filter(hasCurrentUgcTrack => hasCurrentUgcTrack === true),
+      tap(() => this._urlHandlerSvc.changeURL('map')),
+      delay(200),
+      switchMap(_ => {
+        this._geolocationSvc.resumeRecordingFromSaved();
+        return from(
+          this._alertCtrl.create({
+            message: this._langSvc.instant(
+              'È stata rilevata una registrazione interrotta. Vuoi riprenderla?',
+            ),
+            buttons: [
+              {
+                text: this._langSvc.instant('Annulla'),
+                role: 'cancel',
+              },
+              {
+                text: this._langSvc.instant('Riprendi'),
+                role: 'confirm',
+              },
+            ],
+          }),
+        ).pipe(
+          concatMap(alert => from(alert.present()).pipe(map(() => alert))),
+          concatMap(alert => from(alert.onDidDismiss())),
+          switchMap(result => {
+            if (result.role === 'confirm') {
+              return of(resumeCurrentUgcTrack({resume: true}));
+            }
+            // Se ha cliccato su "Annulla", mostra popup di conferma
+            return from(
+              this._alertCtrl.create({
+                message: this._langSvc.instant(
+                  'Sei sicuro di voler annullare? Questa operazione comporterà la perdita dei dati della registrazione.',
+                ),
+                buttons: [
+                  {
+                    text: this._langSvc.instant('Recupera'),
+                    role: 'resume',
+                  },
+                  {
+                    text: this._langSvc.instant('Cancella'),
+                    role: 'cancel',
+                  },
+                ],
+              }),
+            ).pipe(
+              concatMap(confirmAlert => from(confirmAlert.present()).pipe(map(() => confirmAlert))),
+              concatMap(confirmAlert => from(confirmAlert.onDidDismiss())),
+              map(confirmResult =>
+                resumeCurrentUgcTrack({resume: confirmResult.role === 'resume'}),
+              ),
+            );
+          }),
+        );
+      }),
+    ),
+  );
+
+  resumeCurrentUgcTrack$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(resumeCurrentUgcTrack),
+      switchMap(({resume}) => {
+        if (!resume) {
+          this._geolocationSvc.stopRecording();
+          removeCurrentUgcTrackLocations();
+          return EMPTY;
+        }
+
+        return of(setEnableTrackRecorderPanel({enable: true}));
+      }),
+    ),
+  );
 
   startGetDirections$ = createEffect(() =>
     this._actions$.pipe(
@@ -349,5 +431,7 @@ export class UserActivityEffects {
     private _modalCtrl: ModalController,
     private _http: HttpClient,
     private _geolocationSvc: GeolocationService,
+    private _alertCtrl: AlertController,
+    private _langSvc: LangService,
   ) {}
 }
