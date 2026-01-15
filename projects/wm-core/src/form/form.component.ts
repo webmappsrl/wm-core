@@ -12,6 +12,7 @@ import {BehaviorSubject, Subscription} from 'rxjs';
 import {distinctUntilChanged, filter} from 'rxjs/operators';
 
 @Component({
+  standalone: false,
   selector: 'wm-form',
   templateUrl: './form.component.html',
   styleUrls: ['./form.component.scss'],

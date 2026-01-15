@@ -7,6 +7,7 @@ import tokml from 'geojson-to-kml';
 import {DeviceService} from '@wm-core/services/device.service';
 import {WmFeature} from '@wm-types/feature';
 @Component({
+  standalone: false,
   selector: 'wm-feature-useful-urls',
   templateUrl: './feature-useful-urls.component.html',
   styleUrls: ['./feature-useful-urls.component.scss'],

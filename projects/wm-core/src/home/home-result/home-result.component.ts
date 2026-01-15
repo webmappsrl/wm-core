@@ -38,6 +38,7 @@ import {GeolocationService} from '@wm-core/services/geolocation.service';
 import {setHomeResultTabSelected} from '@wm-core/store/user-activity/user-activity.action';
 
 @Component({
+  standalone: false,
   selector: 'wm-home-result',
   templateUrl: './home-result.component.html',
   styleUrls: ['./home-result.component.scss'],

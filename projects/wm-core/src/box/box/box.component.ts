@@ -3,6 +3,7 @@ import {BaseBoxComponent} from '../box';
 import { IHOMEBASEITEM } from '../../types/config';
 
 @Component({
+  standalone: false,
   selector: 'wm-box',
   templateUrl: './box.component.html',
   styleUrls: ['./box.component.scss'],

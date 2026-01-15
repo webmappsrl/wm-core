@@ -13,6 +13,7 @@ import {confLANGUAGES} from '@wm-core/store/conf/conf.selector';
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 @Component({
+  standalone: false,
   selector: 'wm-lang-selector',
   templateUrl: './lang-selector.component.html',
   styleUrls: ['./lang-selector.component.scss'],

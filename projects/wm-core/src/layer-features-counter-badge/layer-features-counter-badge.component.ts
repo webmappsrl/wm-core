@@ -5,6 +5,7 @@ import {LayerFeaturesCount} from '@wm-types/feature';
 import {Observable} from 'rxjs';
 
 @Component({
+  standalone: false,
   selector: 'wm-layer-features-counter-badge',
   templateUrl: './layer-features-counter-badge.component.html',
   styleUrls: ['./layer-features-counter-badge.component.scss'],

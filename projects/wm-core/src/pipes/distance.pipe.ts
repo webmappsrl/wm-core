@@ -2,6 +2,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
   name: 'distance',
+  standalone: false,
 })
 export class DistancePipe implements PipeTransform {
   transform(value: number, distance: 'auto' | 'km' | 'm' = 'km', precision: number = 0, format: 'text' | 'html' = 'text'): string {

@@ -10,6 +10,7 @@ export declare type RangeValue =
       upper: number;
     };
 @Component({
+  standalone: false,
   selector: 'wm-slider-filter',
   templateUrl: './slider-filter.component.html',
   styleUrls: ['./slider-filter.component.scss'],

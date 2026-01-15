@@ -7,6 +7,7 @@ import {BehaviorSubject, Observable} from "rxjs";
 import {tap} from "rxjs/operators";
 
 @Component({
+  standalone: false,
   selector: 'wm-travel-mode',
   templateUrl: './travel-mode.component.html',
   styleUrls: ['./travel-mode.component.scss'],

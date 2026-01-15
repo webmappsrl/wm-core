@@ -7,6 +7,7 @@ import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 @Component({
+  standalone: false,
   selector: 'wm-features-in-viewport',
   templateUrl: './features-in-viewport.component.html',
   styleUrls: ['./features-in-viewport.component.scss'],
@@ -19,7 +20,7 @@ export class WmFeaturesInViewportComponent {
 
   constructor(private _store: Store, private _urlHandlerSvc: UrlHandlerService, private _deviceSvc: DeviceService) {
     this.sliderOptions$ = this.featuresInViewport$.pipe(
-      map(features => this._getSliderOptions(features.length))
+      map(features => this._getSliderOptions(features.length)),
     );
   }
 

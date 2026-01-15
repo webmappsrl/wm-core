@@ -17,6 +17,7 @@ import {LineString} from 'geojson';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 @Component({
+  standalone: false,
   selector: 'wm-track-properties',
   templateUrl: './track-properties.component.html',
   styleUrls: ['./track-properties.component.scss'],

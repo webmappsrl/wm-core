@@ -9,6 +9,7 @@ import {
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 
 @Component({
+  standalone: false,
   selector: 'wm-track-edges',
   templateUrl: './track-edges.component.html',
   styleUrls: ['./track-edges.component.scss'],

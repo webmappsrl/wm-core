@@ -5,6 +5,7 @@ import {WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
 
 @Component({
+  standalone: false,
   selector: 'wm-poi-box',
   templateUrl: './poi-box.component.html',
   styleUrls: ['./poi-box.component.scss'],

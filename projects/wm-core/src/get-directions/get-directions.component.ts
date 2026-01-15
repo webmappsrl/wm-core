@@ -6,6 +6,7 @@ import {Observable} from "rxjs";
 import {startGetDirections} from "@wm-core/store/user-activity/user-activity.action";
 
 @Component({
+  standalone: false,
   selector: 'wm-get-directions',
   template: `
     <ng-container *ngIf="confOPTIONS$|async as confOPTIONS">

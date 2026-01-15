@@ -15,6 +15,7 @@ export const MAX_LINES = 5;
 type TranslationValue = string | Record<string, string | null> | null | undefined;
 
 @Component({
+  standalone: false,
   selector: 'wm-tab-description',
   templateUrl: './tab-description.component.html',
   styleUrls: ['./tab-description.component.scss'],

@@ -2,6 +2,7 @@ import {confOPTIONS, confTRACKFORMS} from '@wm-core/store/conf/conf.selector';
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   EventEmitter,
   HostListener,
   Input,
@@ -9,7 +10,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {AlertController, IonContent, IonSlides} from '@ionic/angular';
+import {AlertController, IonContent} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, from, Observable} from 'rxjs';
 import {take, tap} from 'rxjs/operators';
@@ -23,6 +24,7 @@ import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {trackElevationChartHoverElemenents} from '@wm-core/store/user-activity/user-activity.action';
 
 @Component({
+  standalone: false,
   selector: 'wm-ugc-track-properties',
   templateUrl: './ugc-track-properties.component.html',
   styleUrls: ['./ugc-track-properties.component.scss'],
@@ -42,7 +44,7 @@ export class UgcTrackPropertiesComponent {
   trackElevationChartHover: EventEmitter<WmSlopeChartHoverElements> =
     new EventEmitter<WmSlopeChartHoverElements>();
   @ViewChild('content') content: IonContent;
-  @ViewChild('slider') slider: IonSlides;
+  @ViewChild('slider', {read: ElementRef}) slider: ElementRef;
 
   confOPTIONS$ = this._store.select(confOPTIONS);
   confTRACKFORMS$: Observable<any[]> = this._store.select(confTRACKFORMS);
@@ -77,21 +79,25 @@ export class UgcTrackPropertiesComponent {
 
   @HostListener('keydown.ArrowRight', ['$event'])
   public next(): void {
-    this.slider.slideNext();
+    const swiper = this.slider?.nativeElement?.swiper;
+    if (swiper) {
+      swiper.slideNext();
+    }
   }
 
   @HostListener('keydown.ArrowLeft', ['$event'])
   public prev(): void {
-    this.slider.slidePrev();
+    const swiper = this.slider?.nativeElement?.swiper;
+    if (swiper) {
+      swiper.slidePrev();
+    }
   }
 
   clickPhoto(): void {
-    from(this.slider.getActiveIndex())
-      .pipe(
-        take(1),
-        tap(index => this.currentImage$.next(this.track.properties.photos[index - 1].photoURL)),
-      )
-      .subscribe();
+    const swiper = this.slider?.nativeElement?.swiper;
+    if (swiper) {
+      this.currentImage$.next(this.track.properties.photos[swiper.activeIndex - 1]?.photoURL);
+    }
   }
 
   deleteTrack(): void {

@@ -16,8 +16,6 @@ import {
   TranslateParser,
   TranslateService,
   TranslateStore,
-  USE_DEFAULT_LANG,
-  USE_STORE,
 } from '@ngx-translate/core';
 import {wmIT} from './i18n/it';
 import {wmEN} from './i18n/en';
@@ -36,34 +34,17 @@ import {DeviceService} from '@wm-core/services/device.service';
 @Injectable({
   providedIn: 'root',
 })
-export class LangService extends TranslateService implements TranslateService {
+export class LangService extends TranslateService {
   private _confTRANSLATIONS = this._store.select(confTRANSLATIONS);
   private _confLANGUAGES$ = this._store.select(confLANGUAGES);
   isInit$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(
-    public override store: TranslateStore,
-    public override currentLoader: TranslateLoader,
-    public override compiler: TranslateCompiler,
-    public override parser: TranslateParser,
-    public override missingTranslationHandler: MissingTranslationHandler,
-    @Inject(USE_DEFAULT_LANG) useDefaultLang: boolean = true,
-    @Inject(USE_STORE) isolate: boolean = false,
     @Inject(APP_TRANSLATION) public appTranslation: WmTranslations,
     private _deviceService: DeviceService,
     private _store: Store<any>,
   ) {
-    super(
-      store,
-      currentLoader,
-      compiler,
-      parser,
-      missingTranslationHandler,
-      useDefaultLang,
-      isolate,
-      true,
-      'it',
-    );
+    super();
     this._init();
   }
 

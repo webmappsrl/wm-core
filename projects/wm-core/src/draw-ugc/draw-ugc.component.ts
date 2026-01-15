@@ -22,6 +22,7 @@ import {
 } from '@wm-core/store/features/ugc/ugc.actions';
 
 @Component({
+  standalone: false,
   selector: 'wm-draw-ugc',
   templateUrl: './draw-ugc.component.html',
   styleUrls: ['./draw-ugc.component.scss'],

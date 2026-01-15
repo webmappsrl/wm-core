@@ -1,6 +1,5 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild, ViewEncapsulation} from "@angular/core";
+import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, ViewChild, ViewEncapsulation} from "@angular/core";
 import {beforeInit, setTransition, setTranslate} from "@wm-core/image-gallery/utils";
-import {IonSlides} from "@ionic/angular";
 import {Store} from "@ngrx/store";
 import {UrlHandlerService} from "@wm-core/services/url-handler.service";
 import {currentEcImageGallery, currentEcImageGalleryIndex} from "@wm-core/store/features/ec/ec.selector";
@@ -9,6 +8,7 @@ import {map, take} from "rxjs/operators";
 import {confOPTIONSShowMediaName} from "@wm-core/store/conf/conf.selector";
 
 @Component({
+  standalone: false,
   selector: 'wm-image-detail',
   templateUrl: './image-detail.component.html',
   styleUrls: ['./image-detail.component.scss'],
@@ -16,7 +16,7 @@ import {confOPTIONSShowMediaName} from "@wm-core/store/conf/conf.selector";
   encapsulation: ViewEncapsulation.None,
 })
 export class ImageDetailComponent implements AfterViewInit{
-  @ViewChild('gallery') slider: IonSlides;
+  @ViewChild('gallery', {read: ElementRef}) slider: ElementRef;
 
   confOPTIONSShowMediaName$: Observable<boolean> = this._store.select(confOPTIONSShowMediaName);
   currentImageGallery$: Observable<any[]> = this._store.select(currentEcImageGallery);
@@ -36,27 +36,33 @@ export class ImageDetailComponent implements AfterViewInit{
 
   ngAfterViewInit(): void {
     this.currentImageGalleryIndex$.pipe(take(1)).subscribe(index => {
-      this.slider.slideTo(index - 1);
+      const swiper = this.slider?.nativeElement?.swiper;
+      if (swiper) {
+        swiper.slideTo(index - 1);
+      }
     });
   }
 
   updateIdx(): void {
-    from(this.slider.getActiveIndex()).pipe(take(1)).subscribe(async (currentIdx) => {
-      this._urlHandlerSvc.updateURL({gallery_index: currentIdx});
-    });
+    const swiper = this.slider?.nativeElement?.swiper;
+    if (swiper) {
+      this._urlHandlerSvc.updateURL({gallery_index: swiper.activeIndex});
+    }
   }
 
   prev(): void {
-    from(this.slider.slidePrev()).pipe(take(1)).subscribe(async () => {
-      const currentIdx = await this.slider.getActiveIndex();
-      this._urlHandlerSvc.updateURL({gallery_index: currentIdx});
-    });
+    const swiper = this.slider?.nativeElement?.swiper;
+    if (swiper) {
+      swiper.slidePrev();
+      this._urlHandlerSvc.updateURL({gallery_index: swiper.activeIndex});
+    }
   }
 
   next(): void {
-    from(this.slider.slideNext()).pipe(take(1)).subscribe(async () => {
-      const activeIndex = await this.slider.getActiveIndex();
-      this._urlHandlerSvc.updateURL({gallery_index: activeIndex});
-    });
+    const swiper = this.slider?.nativeElement?.swiper;
+    if (swiper) {
+      swiper.slideNext();
+      this._urlHandlerSvc.updateURL({gallery_index: swiper.activeIndex});
+    }
   }
 }

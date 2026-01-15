@@ -6,6 +6,7 @@ import {
 import {ModalController} from '@ionic/angular';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 @Component({
+  standalone: false,
   selector: 'wm-modal-image',
   templateUrl: './modal-image.component.html',
   styleUrls: ['./modal-image.component.scss'],

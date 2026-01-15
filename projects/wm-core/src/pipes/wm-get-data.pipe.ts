@@ -12,6 +12,7 @@ export interface IHIT {
 }
 
 @Pipe({
+  standalone: false,
   name: 'wmgetdata',
 })
 export class WmGetDataPipe implements PipeTransform {

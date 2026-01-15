@@ -9,6 +9,7 @@ import {LangService} from '@wm-core/localization/lang.service';
 import {Subscription} from 'rxjs';
 
 @Component({
+  standalone: false,
   selector: 'wm-home-ugc',
   templateUrl: './home-ugc.component.html',
   styleUrls: ['./home-ugc.component.scss'],

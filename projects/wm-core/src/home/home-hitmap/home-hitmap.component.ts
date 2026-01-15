@@ -19,6 +19,7 @@ import {from, Observable, of} from 'rxjs';
 import {catchError, filter, map, switchMap, take} from 'rxjs/operators';
 
 @Component({
+  standalone: false,
   selector: 'wm-home-hitmap',
   templateUrl: './home-hitmap.component.html',
   styleUrls: ['./home-hitmap.component.scss'],
@@ -40,7 +41,7 @@ export class WmHomeHitMapComponent implements OnInit {
     switchMap((url: string) => {
       return this._http.get(url) as Observable<FeatureCollection>;
     }),
-    map(featureCollection => featureCollection.features),
+    map(featureCollection => featureCollection.features as WmFeature<MultiPolygon>[]),
     catchError(err => of(null)),
   );
 

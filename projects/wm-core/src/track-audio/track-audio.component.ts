@@ -11,6 +11,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 @Component({
+  standalone: false,
   selector: 'wm-track-audio',
   templateUrl: './track-audio.component.html',
   styleUrls: ['./track-audio.component.scss'],
