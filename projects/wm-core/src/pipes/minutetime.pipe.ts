@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 @Pipe({
   name: 'minutetime',
+  standalone: false,
 })
 export class MinuteTimePipe implements PipeTransform {
 

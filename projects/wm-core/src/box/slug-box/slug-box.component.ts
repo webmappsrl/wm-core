@@ -4,6 +4,7 @@ import {BaseBoxComponent as BBaseBoxComponent} from '../box';
 import {ISLUGBOX} from '../../types/config';
 
 @Component({
+  standalone: false,
   selector: 'wm-slug-box',
   templateUrl: './slug-box.component.html',
   styleUrls: ['./slug-box.component.scss'],

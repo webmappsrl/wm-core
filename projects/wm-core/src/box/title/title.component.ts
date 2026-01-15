@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 
 @Component({
+  standalone: false,
   selector: 'webmapp-title',
   template: `<ng-content></ng-content>`,
   styles: [

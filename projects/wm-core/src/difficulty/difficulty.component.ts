@@ -6,6 +6,7 @@ export const MAX_DIFFICULTY = 3;
 export const MIN_DIFFICULTY = 1;
 
 @Component({
+  standalone: false,
   selector: 'wm-difficulty',
   template: `
     <ng-container *ngIf="difficulty$|async as difficulty">

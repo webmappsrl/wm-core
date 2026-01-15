@@ -10,6 +10,7 @@ import {
 import {filter, map, take} from 'rxjs/operators';
 
 @Component({
+  standalone: false,
   selector: 'wm-related-pois-navigator',
   template: `
     <ng-container *ngIf="currentRelatedPoisCount$|async as currentRelatedPoisCount">

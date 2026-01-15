@@ -10,6 +10,7 @@ import {Media} from '@wm-types/feature';
 import {BehaviorSubject} from 'rxjs';
 
 @Component({
+  standalone: false,
   selector: 'wm-modal-media',
   templateUrl: './wm-modal-media.component.html',
   styleUrls: ['./wm-modal-media.component.scss'],

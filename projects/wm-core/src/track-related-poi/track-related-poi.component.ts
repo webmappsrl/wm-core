@@ -20,6 +20,7 @@ import {map, switchMap} from 'rxjs/operators';
 
 export const MAX_VISIBLE_POIS = 4;
 @Component({
+  standalone: false,
   selector: 'wm-track-related-poi',
   templateUrl: './track-related-poi.component.html',
   styleUrls: ['./track-related-poi.component.scss'],

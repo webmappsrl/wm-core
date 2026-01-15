@@ -42,8 +42,8 @@ const pipes = [
   WmFilterFeaturesPipe,
 ];
 @NgModule({
-  declarations: pipes,
   imports: [CommonModule],
+  declarations: pipes,
   exports: pipes,
 })
 export class WmPipeModule {}

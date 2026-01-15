@@ -29,6 +29,7 @@ import {
 } from '@wm-core/store/user-activity/user-activity.action';
 
 @Component({
+  standalone: false,
   selector: 'wm-filters',
   templateUrl: './filters.component.html',
   styleUrls: ['./filters.component.scss'],

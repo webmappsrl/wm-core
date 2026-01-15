@@ -14,6 +14,7 @@ import {Observable} from 'rxjs';
 import {confOPTIONS} from '@wm-core/store/conf/conf.selector';
 
 @Component({
+  standalone: false,
   selector: 'wm-tab-detail',
   templateUrl: './tab-detail.component.html',
   styleUrls: ['./tab-detail.component.scss'],

@@ -11,6 +11,7 @@ import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
 import {needsPrivacyAgree} from '@wm-core/store/auth/auth.selectors';
 
 @Component({
+  standalone: false,
   selector: 'wm-ugc-box',
   templateUrl: './ugc-box.component.html',
   styleUrls: ['./ugc-box.component.scss'],

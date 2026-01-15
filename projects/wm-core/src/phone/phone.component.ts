@@ -1,6 +1,7 @@
 /* eslint-disable @angular-eslint/template/eqeqeq */
 import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
 @Component({
+  standalone: false,
   selector: 'wm-phone',
   template: `
             <ion-item

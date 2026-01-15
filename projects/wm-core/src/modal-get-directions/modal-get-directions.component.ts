@@ -3,6 +3,7 @@ import {Store} from "@ngrx/store";
 import {ModalController} from "@ionic/angular";
 
 @Component({
+  standalone: false,
   selector: 'wm-modal-get-directions',
   template: `
     <ion-content>

@@ -27,6 +27,7 @@ import {Location, WmFeature} from '@wm-types/feature';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 
 @Component({
+  standalone: false,
   selector: 'wm-slope-chart',
   templateUrl: './slope-chart.component.html',
   styleUrls: ['./slope-chart.component.scss'],

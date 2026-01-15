@@ -3,6 +3,7 @@ import {ModalController} from '@ionic/angular';
 import {DeviceService} from '@wm-core/services/device.service';
 
 @Component({
+  standalone: false,
   selector: 'wm-modal-release-update-app',
   templateUrl: './modal-release-update.component.html',
   styleUrls: ['./modal-release-update.component.scss'],

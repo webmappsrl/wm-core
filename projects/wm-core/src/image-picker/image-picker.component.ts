@@ -10,6 +10,7 @@ import { Store } from '@ngrx/store';
 import { deleteUgcMedia } from '@wm-core/store/features/ugc/ugc.actions';
 
 @Component({
+  standalone: false,
   selector: 'wm-image-picker',
   templateUrl: './image-picker.component.html',
   styleUrls: ['./image-picker.component.scss'],

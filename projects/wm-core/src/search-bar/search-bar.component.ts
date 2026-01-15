@@ -23,6 +23,7 @@ interface SearchForm {
 }
 
 @Component({
+  standalone: false,
   selector: 'wm-searchbar',
   templateUrl: './search-bar.component.html',
   styleUrls: ['./search-bar.component.scss'],

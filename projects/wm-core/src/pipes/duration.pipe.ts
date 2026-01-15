@@ -5,7 +5,8 @@ export const HOUR_UNIT = 'h';
 export const MINUTE_UNIT = 'm';
 
 @Pipe({
-  name: 'duration'
+  name: 'duration',
+  standalone: false,
 })
 export class DurationPipe implements PipeTransform {
   constructor(private sanitizer: DomSanitizer) {}

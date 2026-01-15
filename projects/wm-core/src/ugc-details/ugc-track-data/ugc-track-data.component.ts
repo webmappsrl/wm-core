@@ -5,6 +5,7 @@ import {LineString} from 'geojson';
 import {BehaviorSubject} from 'rxjs';
 
 @Component({
+  standalone: false,
   selector: 'wm-ugc-track-data',
   templateUrl: './ugc-track-data.component.html',
   styleUrls: ['./ugc-track-data.component.scss'],

@@ -7,7 +7,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {AlertController, IonContent, IonSlides} from '@ionic/angular';
+import {AlertController, IonContent} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, from, Observable, of} from 'rxjs';
 import {switchMap, take} from 'rxjs/operators';
@@ -20,6 +20,7 @@ import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {currentUgcPoi, currentUgcPoiProperties} from '@wm-core/store/features/ugc/ugc.selector';
 
 @Component({
+  standalone: false,
   selector: 'wm-ugc-poi-properties',
   templateUrl: './ugc-poi-properties.component.html',
   styleUrls: ['./ugc-poi-properties.component.scss'],
@@ -30,7 +31,6 @@ export class UgcPoiPropertiesComponent {
   @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
   @ViewChild('content') content: IonContent;
-  @ViewChild('slider') slider: IonSlides;
 
   confOPTIONS$ = this._store.select(confOPTIONS);
   confPOIFORMS$: Observable<any[]> = this._store.select(confPOIFORMS);

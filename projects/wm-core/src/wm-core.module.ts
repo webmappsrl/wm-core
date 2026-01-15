@@ -1,6 +1,6 @@
 import {CommonModule} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient} from '@angular/common/http';
-import {NgModule} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {IonicModule} from '@ionic/angular';
 import {EffectsModule} from '@ngrx/effects';
 import {Store, StoreModule} from '@ngrx/store';
@@ -178,6 +178,7 @@ const modules = [
   ],
   providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
   exports: [...declarations, ...modules, TranslateModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class WmCoreModule {}
 

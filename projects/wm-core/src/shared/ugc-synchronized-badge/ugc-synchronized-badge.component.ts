@@ -4,6 +4,7 @@ import {WmProperties} from '@wm-types/feature';
 
 @Component({
   selector: 'wm-ugc-synchronized-badge',
+  standalone: false,
   template: `
     <ng-container *ngIf="properties?.id; else onlyUuid">
       <ion-icon name="cloud-done-outline"></ion-icon>

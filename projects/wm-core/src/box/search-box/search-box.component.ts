@@ -5,6 +5,7 @@ import {icons} from '@wm-core/store/icons/icons.selector';
 import {Observable} from 'rxjs';
 
 @Component({
+  standalone: false,
   selector: 'wm-search-box',
   templateUrl: './search-box.component.html',
   styleUrls: ['./search-box.component.scss'],

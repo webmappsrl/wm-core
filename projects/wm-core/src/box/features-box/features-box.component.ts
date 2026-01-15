@@ -10,6 +10,7 @@ import {BaseBoxComponent} from '../box';
 import {IBASEBOX, IHOMEITEMFEATURE} from '../../types/config';
 
 @Component({
+  standalone: false,
   selector: 'wm-features-box',
   templateUrl: './features-box.component.html',
   styleUrls: ['./features-box.component.scss'],

@@ -2,6 +2,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 import { SelectFilterOption } from '../types/config';
 
 @Pipe({
+  standalone: false,
   name: 'isSelected',
   pure: false,
 })

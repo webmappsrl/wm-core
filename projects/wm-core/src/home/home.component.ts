@@ -52,6 +52,7 @@ import {loadEcPois} from '@wm-core/store/features/ec/ec.actions';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {online} from '@wm-core/store/network/network.selector';
 @Component({
+  standalone: false,
   selector: 'wm-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],

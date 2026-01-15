@@ -1,11 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   Input,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {IonModal, IonSlides, ModalController} from '@ionic/angular';
+import {IonModal, ModalController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {ModalImageComponent} from '@wm-core/modal-image/modal-image.component';
 import {confIsMobile} from '@wm-core/store/conf/conf.selector';
@@ -14,6 +15,7 @@ import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {DeviceService} from '@wm-core/services/device.service';
 import {confOPTIONSShowMediaName} from '@wm-core/store/conf/conf.selector';
 @Component({
+  standalone: false,
   selector: 'wm-image-gallery',
   templateUrl: './image-gallery.component.html',
   styleUrls: ['./image-gallery.component.scss'],
@@ -36,7 +38,7 @@ export class ImageGalleryComponent {
   }
 
   @ViewChild(IonModal) modal: IonModal;
-  @ViewChild('slider') slider: IonSlides;
+  @ViewChild('slider', {read: ElementRef}) slider: ElementRef;
 
   imageGallery$: BehaviorSubject<null | any[]> = new BehaviorSubject<null | any[]>(null);
   confOPTIONSShowMediaName$: Observable<boolean> = this._store.select(confOPTIONSShowMediaName);
@@ -55,11 +57,17 @@ export class ImageGalleryComponent {
   ) {}
 
   next(): void {
-    this.slider.slideNext();
+    const swiper = this.slider?.nativeElement?.swiper;
+    if (swiper) {
+      swiper.slideNext();
+    }
   }
 
   prev(): void {
-    this.slider.slidePrev();
+    const swiper = this.slider?.nativeElement?.swiper;
+    if (swiper) {
+      swiper.slidePrev();
+    }
   }
 
   async showPhoto(idx) {

@@ -8,6 +8,7 @@ import {WmLoadingService} from '@wm-core/services/loading.service';
 import {Share} from '@capacitor/share';
 import {Feature, LineString, Point} from 'geojson';
 @Component({
+  standalone: false,
   selector: 'wm-export-to-btn',
   templateUrl: './export-to.component.html',
   styleUrls: ['./export-to.component.scss'],

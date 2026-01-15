@@ -3,6 +3,7 @@ import {BaseBoxComponent} from '../box';
 import { IEXTERNALURLBOX } from '../../types/config';
 
 @Component({
+  standalone: false,
   selector: 'wm-external-url-box',
   templateUrl: './external-url-box.component.html',
   styleUrls: ['./external-url-box.component.scss'],

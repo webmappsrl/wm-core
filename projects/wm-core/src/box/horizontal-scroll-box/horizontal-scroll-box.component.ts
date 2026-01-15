@@ -11,6 +11,7 @@ import {BaseBoxComponent} from '../box';
 import { IHORIZONTALSCROLLBOX } from '../../types/config';
 
 @Component({
+  standalone: false,
   selector: 'wm-horizontal-scroll-box',
   templateUrl: './horizontal-scroll-box.component.html',
   styleUrls: ['./horizontal-scroll-box.component.scss'],

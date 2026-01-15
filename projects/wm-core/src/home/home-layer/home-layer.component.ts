@@ -11,6 +11,7 @@ import {ecLayer} from '@wm-core/store/user-activity/user-activity.selector';
 import {Subscription} from 'rxjs';
 
 @Component({
+  standalone: false,
   selector: 'wm-home-layer',
   templateUrl: './home-layer.component.html',
   styleUrls: ['./home-layer.component.scss'],

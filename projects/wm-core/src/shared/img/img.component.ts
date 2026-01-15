@@ -12,6 +12,7 @@ import {getImg} from '@wm-core/utils/localForage';
   styleUrls: ['./img.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class WmImgComponent {
   private _loadSrcEVT$: BehaviorSubject<IWmImage | string | null> = new BehaviorSubject<

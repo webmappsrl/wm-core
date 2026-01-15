@@ -12,6 +12,7 @@ import {deleteUser} from '@wm-core/store/auth/auth.actions';
   styleUrls: ['./profile-delete-button.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class WmProfileDeleteButtonComponent {
   constructor(

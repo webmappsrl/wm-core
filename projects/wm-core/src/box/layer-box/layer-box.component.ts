@@ -3,6 +3,7 @@ import {BaseBoxComponent} from '../box';
 import { ILAYERBOX } from '../../types/config';
 
 @Component({
+  standalone: false,
   selector: 'wm-layer-box',
   templateUrl: './layer-box.component.html',
   styleUrls: ['./layer-box.component.scss'],

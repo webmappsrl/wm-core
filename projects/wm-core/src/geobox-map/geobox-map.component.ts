@@ -139,6 +139,7 @@ const maxWidth = 600;
 const DIFFERENCE_THRESHOLD_LAT_LON = 0.00001; // 0.00001 gradi (~1 metro)
 
 @Component({
+  standalone: false,
   selector: 'wm-geobox-map',
   templateUrl: './geobox-map.component.html',
   styleUrls: ['./geobox-map.component.scss'],

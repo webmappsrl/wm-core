@@ -18,6 +18,7 @@ import {countUgcAll} from '@wm-core/store/features/ugc/ugc.selector';
 import {offline} from '@wm-core/store/network/network.selector';
 
 @Component({
+  standalone: false,
   selector: 'wm-home-landing',
   templateUrl: './home-landing.component.html',
   styleUrls: ['./home-landing.component.scss'],

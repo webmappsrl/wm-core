@@ -1,5 +1,5 @@
-import {Component, ViewEncapsulation, Input, ViewChild} from '@angular/core';
-import {IonSlides} from '@ionic/angular';
+import {Component, ViewEncapsulation, Input, ViewChild, ElementRef} from '@angular/core';
+import {} from '@ionic/angular';
 import {Media, WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
 import {BehaviorSubject, from, merge, of} from 'rxjs';
@@ -11,6 +11,7 @@ import {
 } from '@wm-core/store/features/ugc/ugc.selector';
 
 @Component({
+  standalone: false,
   selector: 'wm-ugc-medias',
   templateUrl: './wm-ugc-medias.component.html',
   styleUrls: ['./wm-ugc-medias.component.scss'],
@@ -18,7 +19,7 @@ import {
 })
 export class WmUgcMediasComponent {
   @Input() showArrows = false;
-  @ViewChild('slider') slider: IonSlides;
+  @ViewChild('slider', {read: ElementRef}) slider: ElementRef;
 
   currentMedia$: BehaviorSubject<null | Media> = new BehaviorSubject<null | Media>(null);
   currentPoiProperties$ = this._store.select(currentUgcPoiProperties);
@@ -27,7 +28,6 @@ export class WmUgcMediasComponent {
   showMedia$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   sliderOptions = {
     slidesPerView: 1,
-    slidesPerColumn: 1,
     slidesPerGroup: 1,
     centeredSlides: true,
     watchSlidesProgress: true,
@@ -57,15 +57,19 @@ export class WmUgcMediasComponent {
   }
 
   async next(): Promise<void> {
-    this.slider.slideNext();
-    const index = await this.slider.getActiveIndex();
-    this.currentMedia$.next(this.medias$.value[index]);
+    const swiper = this.slider?.nativeElement?.swiper;
+    if (swiper) {
+      swiper.slideNext();
+      this.currentMedia$.next(this.medias$.value[swiper.activeIndex]);
+    }
   }
 
   async prev(): Promise<void> {
-    this.slider.slidePrev();
-    const index = await this.slider.getActiveIndex();
-    this.currentMedia$.next(this.medias$.value[index]);
+    const swiper = this.slider?.nativeElement?.swiper;
+    if (swiper) {
+      swiper.slidePrev();
+      this.currentMedia$.next(this.medias$.value[swiper.activeIndex]);
+    }
   }
 
   async showMedia(media: Media) {

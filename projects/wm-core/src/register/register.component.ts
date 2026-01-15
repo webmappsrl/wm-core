@@ -20,6 +20,7 @@ import {confPAGES, confPRIVACY} from '@wm-core/store/conf/conf.selector';
 import {DEFAULT_PRIVACY_POLICY_URL} from '@wm-core/constants/links';
 
 @Component({
+  standalone: false,
   selector: 'wm-register-component',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
@@ -99,7 +100,7 @@ export class RegisterComponent {
                 componentProps: {
                   html: privacy.html,
                 },
-                swipeToClose: true,
+                canDismiss: true,
                 mode: 'ios',
               }),
             );

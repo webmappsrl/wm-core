@@ -1,6 +1,7 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {Photo} from '@capacitor/camera';
 @Pipe({
+  standalone: false,
   name: 'wmCreateBlob',
   pure: false,
 })
