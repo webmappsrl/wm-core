@@ -6,6 +6,7 @@ import {iLocalString} from '@wm-core/types/config';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 
 @Component({
+  standalone: false,
   selector: 'wm-inner-component-html',
   templateUrl: './inner-html.component.html',
   styleUrls: ['./inner-html.component.scss'],

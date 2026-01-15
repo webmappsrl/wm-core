@@ -15,6 +15,7 @@ import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 
 @Component({
+  standalone: false,
   selector: 'wm-login-component',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],

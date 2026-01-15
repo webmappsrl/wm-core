@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angular/core';
 
 @Component({
+  standalone: false,
   selector: 'wm-modal-header',
   templateUrl: './modal-header.component.html',
   styleUrls: ['./modal-header.component.scss'],

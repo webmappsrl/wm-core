@@ -3,6 +3,7 @@ import {FiltersComponent} from '../filters.component';
 import {SelectFilter, SelectFilterOption} from '../../types/config';
 
 @Component({
+  standalone: false,
   selector: 'wm-select-filter',
   templateUrl: './select-filter.component.html',
   styleUrls: ['./select-filter.component.scss'],

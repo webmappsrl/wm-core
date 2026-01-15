@@ -2,10 +2,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  OnDestroy,
+  Inject,
+  Optional,
   Output,
   ViewEncapsulation,
 } from '@angular/core';
+import {POSTHOG_CLIENT} from '../../store/conf/conf.token';
+import {WmPosthogClient} from '@wm-types/posthog';
 import {Store} from '@ngrx/store';
 import {Observable, combineLatest, from, of} from 'rxjs';
 import {distinctUntilChanged, map, startWith, switchMap, throttleTime} from 'rxjs/operators';
@@ -38,6 +41,7 @@ import {GeolocationService} from '@wm-core/services/geolocation.service';
 import {setHomeResultTabSelected} from '@wm-core/store/user-activity/user-activity.action';
 
 @Component({
+  standalone: false,
   selector: 'wm-home-result',
   templateUrl: './home-result.component.html',
   styleUrls: ['./home-result.component.scss'],
@@ -124,6 +128,7 @@ export class WmHomeResultComponent {
     private _alertCtrl: AlertController,
     private _urlHandlerSvc: UrlHandlerService,
     private _geolocationSvc: GeolocationService,
+    @Optional() @Inject(POSTHOG_CLIENT) private _posthogClient?: WmPosthogClient,
   ) {
     this.tracks$ = combineLatest([
       this.ectracks$,
@@ -154,7 +159,11 @@ export class WmHomeResultComponent {
   }
 
   changeResultType(event): void {
-    this._store.dispatch(setHomeResultTabSelected({tab: event.target.value}));
+    const tab = event.target.value;
+    this._posthogClient?.capture('homeResultTabSelected', {
+      tab,
+    });
+    this._store.dispatch(setHomeResultTabSelected({tab}));
   }
 
   async removeDownloads(event: Event, id: string): Promise<void> {

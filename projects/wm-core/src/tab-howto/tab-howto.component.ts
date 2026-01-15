@@ -3,6 +3,7 @@ import {WmProperties} from '@wm-types/feature';
 import {Store} from '@ngrx/store';
 
 @Component({
+  standalone: false,
   selector: 'wm-tab-howto',
   templateUrl: './tab-howto.component.html',
   styleUrls: ['./tab-howto.component.scss'],

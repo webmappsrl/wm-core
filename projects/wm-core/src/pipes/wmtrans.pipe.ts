@@ -1,32 +1,42 @@
-import {ChangeDetectorRef, Pipe} from '@angular/core';
-import {TranslatePipe} from '@ngx-translate/core';
+import {ApplicationRef, ChangeDetectorRef, OnDestroy, Pipe, PipeTransform} from '@angular/core';
 import {LangService} from '../localization/lang.service';
+import {Subscription} from 'rxjs';
 
 @Pipe({
   name: 'wmtrans',
-  pure: false,
+  pure: false, // deve restare impuro
+  standalone: false,
 })
-export class WmTransPipe extends TranslatePipe {
-  constructor(private _translateSvc: LangService, private _cdr: ChangeDetectorRef) {
-    super(_translateSvc, _cdr);
+export class WmTransPipe implements PipeTransform, OnDestroy {
+  private static sub: Subscription | null = null;
+  private static readonly cdrs = new Set<ChangeDetectorRef>();
+
+  constructor(private langSvc: LangService, private cdr: ChangeDetectorRef) {
+    WmTransPipe.cdrs.add(this.cdr);
+    if (!WmTransPipe.sub) {
+      WmTransPipe.sub = this.langSvc.onLangChange.subscribe(() => {
+        WmTransPipe.cdrs.forEach(c => c.markForCheck());
+      });
+    }
   }
 
-  override transform(value: any, ...args: unknown[]): string {
+  ngOnDestroy(): void {
+    WmTransPipe.cdrs.delete(this.cdr);
+  }
+
+  transform(value: any, ...args: unknown[]): string {
+    const currentLang = this.langSvc.currentLang;
+    const defaultLang = this.langSvc.defaultLang;
+
     if (value) {
-      if (value[this._translateSvc.currentLang]) {
-        return value[this._translateSvc.currentLang];
-      }
-      if (value[this._translateSvc.defaultLang]) {
-        return value[this._translateSvc.defaultLang];
-      }
+      if (currentLang && value[currentLang]) return value[currentLang];
+      if (defaultLang && value[defaultLang]) return value[defaultLang];
+
       if (typeof value === 'string' || typeof value === 'number') {
-        return super.transform(`${value}`);
+        return this.langSvc.instant(`${value}`, ...args);
       }
-      for (const val in value) {
-        if (value[val]) {
-          return value[val];
-        }
-      }
+
+      for (const k in value) if (value[k]) return value[k];
     }
     return '';
   }

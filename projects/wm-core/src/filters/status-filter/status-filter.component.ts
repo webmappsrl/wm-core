@@ -26,6 +26,7 @@ import {
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 @Component({
+  standalone: false,
   selector: 'wm-status-filter',
   templateUrl: './status-filter.component.html',
   styleUrls: ['./status-filter.component.scss'],

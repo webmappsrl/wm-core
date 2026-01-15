@@ -1,0 +1,8 @@
+// Import diretto dal node_modules dell'app per evitare problemi con gli "exports" di Swiper 12
+@import '../../../../../../../../node_modules/swiper/swiper-bundle.min.css';
+
+:host {
+  display: block;
+  width: 100%;
+}
+

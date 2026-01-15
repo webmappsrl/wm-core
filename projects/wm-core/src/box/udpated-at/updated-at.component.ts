@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
 
 @Component({
+  standalone: false,
   selector: 'wm-updated-at',
   templateUrl: './updated-at.component.html',
   styleUrls: ['./updated-at.component.scss'],

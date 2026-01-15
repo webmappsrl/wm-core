@@ -12,6 +12,7 @@ import {isLogged, needsPrivacyAgree} from '@wm-core/store/auth/auth.selectors';
 import { map } from 'rxjs/operators';
 
 @Component({
+  standalone: false,
   selector: 'wm-ugc-box',
   templateUrl: './ugc-box.component.html',
   styleUrls: ['./ugc-box.component.scss'],

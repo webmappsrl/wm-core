@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/
 import { NavController } from '@ionic/angular';
 
 @Component({
+  standalone: false,
   selector: 'wm-profile-data',
   templateUrl: './profile-data.component.html',
   styleUrls: ['./profile-data.component.scss'],

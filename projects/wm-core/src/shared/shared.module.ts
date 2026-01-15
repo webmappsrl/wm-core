@@ -8,6 +8,7 @@ import {WmIconComponent} from '../wm-icon/wm-icon.component';
 import {WmPipeModule} from '../pipes/pipe.module';
 import {WmPrivacyAgreeButtonComponent} from './privacy-agree-button/privacy-agree-button.component';
 import {WmProfileDeleteButtonComponent} from './profile-delete-button/profile-delete-button.component';
+import {WmSwiperComponent} from '../swiper/swiper.component';
 
 const declarations = [
   WmImgComponent,
@@ -15,6 +16,7 @@ const declarations = [
   WmIconComponent,
   WmPrivacyAgreeButtonComponent,
   WmProfileDeleteButtonComponent,
+  WmSwiperComponent,
 ];
 
 @NgModule({
