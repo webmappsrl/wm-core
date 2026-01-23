@@ -25,6 +25,12 @@ export class ImageDetailComponent implements AfterViewInit{
   );
 
   slideOptions = {
+    slidesPerView: 1,
+    slidesPerColumn: 1,
+    slidesPerGroup: 1,
+    watchSlidesProgress: true,
+    spaceBetween: 0,
+    virtualTranslate: true,
     on: {
       beforeInit,
       setTranslate,

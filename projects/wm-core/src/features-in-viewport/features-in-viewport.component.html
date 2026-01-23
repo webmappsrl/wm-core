@@ -1,6 +1,11 @@
 <ng-container *ngIf="featuresInViewport$ | async as featuresInViewport">
-  <swiper-container
-    [config]="sliderOptions$|async"
+  <swiper-container *ngIf="sliderOptions$|async as sliderOptions"
+    [slidesPerView]="sliderOptions.slidesPerView"
+    [spaceBetween]="sliderOptions.spaceBetween"
+    [slidesOffsetBefore]="sliderOptions.slidesOffsetBefore"
+    [slidesOffsetAfter]="sliderOptions.slidesOffsetAfter"
+    [centeredSlides]="sliderOptions.centeredSlides"
+    [freeMode]="sliderOptions.freeMode"
     [ngClass]="{'slide-in': featuresInViewport.length > 0}"
     #slider
   >
