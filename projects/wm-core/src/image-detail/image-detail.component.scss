@@ -3,7 +3,7 @@ wm-image-detail {
 
   .gallery {
     height: calc(100% - var(--footer-height));
-    ion-slide {
+    swiper-slide {
       width: 100%;
       background-color: white;
       display: flex;
