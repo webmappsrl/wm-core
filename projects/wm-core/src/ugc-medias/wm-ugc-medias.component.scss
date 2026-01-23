@@ -13,13 +13,13 @@ wm-ugc-medias {
     font-family: var(--wm-feature-details-title-font-family);
   }
 
-  ion-slides {
+  swiper-container {
     margin-top: 16px !important;
     margin-bottom: 16px !important;
     width: -webkit-fill-available !important;
     position: relative;
     background-color: white !important;
-    ion-slide {
+    swiper-slide {
       max-height: 300px;
       overflow: hidden;
       border-radius: 15px;
