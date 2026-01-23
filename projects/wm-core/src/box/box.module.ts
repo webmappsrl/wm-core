@@ -1,5 +1,5 @@
 import {CommonModule} from '@angular/common';
-import {NgModule} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {IonicModule} from '@ionic/angular';
 import {WmPipeModule} from '../pipes/pipe.module';
 import {WmSharedModule} from '../shared/shared.module';
@@ -46,5 +46,6 @@ const boxComponents = [
   declarations: boxComponents,
   imports: [CommonModule, IonicModule, WmSharedModule, WmPipeModule],
   exports: boxComponents,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class BoxModule {}

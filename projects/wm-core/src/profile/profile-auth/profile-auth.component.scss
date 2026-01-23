@@ -8,6 +8,9 @@ wm-profile-auth{
       --bullet-background: rgba(var(--wm-color-darkgrey-rgb), 0.4);
       .wm-profile-logged-out-slide {
         padding: 0 17px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         .wm-profile-logged-out-slide-content {
           width: 100%;
           padding: 15px;

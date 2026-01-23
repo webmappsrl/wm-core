@@ -1,6 +1,8 @@
 <ng-container *ngIf="imageGallery$|async as imageGallery">
-  <swiper-container
-    [config]="sliderOptions$|async"
+  <swiper-container *ngIf="sliderOptions$|async as sliderOptions"
+    [slidesPerView]="sliderOptions.slidesPerView"
+    [spaceBetween]="sliderOptions.spaceBetween"
+    [centeredSlides]="sliderOptions.centeredSlides"
     class="webmapp-pagepoi-info-body-photoslider"
     #slider
   >

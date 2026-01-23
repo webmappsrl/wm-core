@@ -30,9 +30,7 @@ export class ProfileAuthComponent {
       slidesOffsetAfter: 0,
       slidesOffsetBefore: 0,
       slidesPerView: 1,
-      pagination: {
-        enabled: true,
-      },
+      pagination: true
     };
   }
 

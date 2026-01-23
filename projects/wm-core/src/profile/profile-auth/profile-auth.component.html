@@ -2,14 +2,16 @@
   <div class="wm-profile-logged-out-slider-container">
     <swiper-container
       class="wm-profile-logged-out-slider"
-      [config]="loggedOutSliderOptions"
-    >
+      [initialSlide]="loggedOutSliderOptions.initialSlide"
+      [speed]="loggedOutSliderOptions.speed"
+      [spaceBetween]="loggedOutSliderOptions.spaceBetween"
+      [slidesOffsetAfter]="loggedOutSliderOptions.slidesOffsetAfter"
+      [slidesOffsetBefore]="loggedOutSliderOptions.slidesOffsetBefore"
+      [slidesPerView]="loggedOutSliderOptions.slidesPerView"
+      [pagination]="loggedOutSliderOptions.pagination">
       <swiper-slide class="wm-profile-logged-out-slide">
         <div class="wm-profile-logged-out-slide-content">
-          <img
-            class="wm-profile-logged-out-slide-image"
-            src="{{slide1}}"
-          />
+          <img class="wm-profile-logged-out-slide-image" src="{{slide1}}" />
           <div class="wm-profile-logged-out-slide-text">
             {{'Accedi e scarica i tuoi percorsi preferiti' | wmtrans}}
           </div>
@@ -17,15 +19,13 @@
       </swiper-slide>
       <swiper-slide class="wm-profile-logged-out-slide">
         <div class="wm-profile-logged-out-slide-content">
-          <img
-            class="wm-profile-logged-out-slide-image"
-            src="{{slide2}}"
-          />
+          <img class="wm-profile-logged-out-slide-image" src="{{slide2}}" />
           <div class="wm-profile-logged-out-slide-text">
             {{'Puoi anche condividerli con i tuoi compagni di viaggio' | wmtrans}}
           </div>
         </div>
       </swiper-slide>
+      <swiper-pagination></swiper-pagination>
     </swiper-container>
   </div>
   <div class="wm-profile-logged-out-login-buttons-container">
