@@ -244,8 +244,8 @@ export const wmIT = {
   'Dati non sincronizzati': 'Dati non sincronizzati',
   'Lingua': 'Lingua',
   'Azione irreversibile': 'Azione irreversibile',
-  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
-    'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.',
+  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "delete account" per procedere.':
+    'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "delete account" per procedere.',
   'Digita "delete account"': 'Digita "delete account"',
   'Conferma': 'Conferma',
   'La conferma non corrisponde. Digita "delete account" per procedere.':

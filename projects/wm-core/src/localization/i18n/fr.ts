@@ -238,7 +238,7 @@ export const wmFR = {
   'Dati non sincronizzati': 'Données non synchronisées',
   'Lingua': 'Langue',
   'Azione irreversibile': 'Action irréversible',
-  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
+  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "delete account" per procedere.':
     'Voulez-vous vraiment supprimer votre compte ? Il est nécessaire d\'écrire "delete account" pour procéder.',
   'Digita "delete account"': 'Entrez "delete account"',
   'Conferma': 'Confirmer',

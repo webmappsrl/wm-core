@@ -245,7 +245,7 @@ export const wmEN = {
   'Dati non sincronizzati': 'Unsynchronized data',
   'Lingua': 'Language',
   'Azione irreversibile': 'Irreversible action',
-  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
+  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "delete account" per procedere.':
     'Do you really want to delete your account? It is necessary to write "delete account" to proceed.',
   'Digita "delete account"': 'Enter "delete account"',
   'Conferma': 'Confirm',

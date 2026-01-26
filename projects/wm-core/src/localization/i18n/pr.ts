@@ -236,8 +236,8 @@ export const wmPR = {
   'Dati non sincronizzati': 'Dados não sincronizados',
   'Lingua': 'Idioma',
   'Azione irreversibile': 'Ação irreversível',
-  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
-    'Tem certeza de que deseja excluir sua conta? É necessário escrever "excluir conta" para proceder.',
+  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "delete account" per procedere.':
+    'Tem certeza de que deseja excluir sua conta? É necessário escrever "delete account" para proceder.',
   'Digita "delete account"': 'Digite "delete account"',
   'Conferma': 'Confirmar',
   'La conferma non corrisponde. Digita "delete account" per procedere.':

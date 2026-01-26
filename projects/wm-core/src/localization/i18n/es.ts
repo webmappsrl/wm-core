@@ -235,8 +235,8 @@ export const wmES = {
   'Dati non sincronizzati': 'Datos no sincronizados',
   'Lingua': 'Idioma',
   'Azione irreversibile': 'Acción irreversible',
-  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
-    '¿Está seguro de que desea eliminar su cuenta? Es necesario escribir "eliminar cuenta" para proceder.',
+  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "delete account" per procedere.':
+    '¿Está seguro de que desea eliminar su cuenta? Es necesario escribir "delete account" para proceder.',
   'Digita "delete account"': 'Escribe "delete account"',
   'Conferma': 'Confirmar',
   'La conferma non corrisponde. Digita "delete account" per procedere.':
