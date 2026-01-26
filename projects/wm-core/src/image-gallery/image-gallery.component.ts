@@ -6,6 +6,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import {WmSwiperComponent} from '@wm-core/swiper/swiper.component';
 import {IonModal, ModalController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {ModalImageComponent} from '@wm-core/modal-image/modal-image.component';
@@ -38,7 +39,7 @@ export class ImageGalleryComponent {
   }
 
   @ViewChild(IonModal) modal: IonModal;
-  @ViewChild('slider', {read: ElementRef}) slider: ElementRef;
+  @ViewChild('slider') slider: WmSwiperComponent;
 
   imageGallery$: BehaviorSubject<null | any[]> = new BehaviorSubject<null | any[]>(null);
   confOPTIONSShowMediaName$: Observable<boolean> = this._store.select(confOPTIONSShowMediaName);
@@ -57,14 +58,14 @@ export class ImageGalleryComponent {
   ) {}
 
   next(): void {
-    const swiper = this.slider?.nativeElement?.swiper;
+    const swiper = this.slider?.swiper;
     if (swiper) {
       swiper.slideNext();
     }
   }
 
   prev(): void {
-    const swiper = this.slider?.nativeElement?.swiper;
+    const swiper = this.slider?.swiper;
     if (swiper) {
       swiper.slidePrev();
     }

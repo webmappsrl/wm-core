@@ -1,15 +1,9 @@
 <ng-container *ngIf="(currentImageGallery$ | async) as currentImageGallery">
   <ng-container *ngIf="(currentImageGalleryIndex$|async) as currentImageGalleryIndex">
-    <swiper-container
+    <wm-swiper
       #gallery
+      [options]="slideOptions"
       class="gallery"
-      [slidesPerView]="slideOptions.slidesPerView"
-      [slidesPerColumn]="slideOptions.slidesPerColumn"
-      [slidesPerGroup]="slideOptions.slidesPerGroup"
-      [watchSlidesProgress]="slideOptions.watchSlidesProgress"
-      [spaceBetween]="slideOptions.spaceBetween"
-      [virtualTranslate]="slideOptions.virtualTranslate"
-      [config]="{ on: slideOptions.on }"
       (swipertouchend)="updateIdx()">
       <swiper-slide *ngFor="let image of currentImageGallery;">
         <wm-img [src]="image.url"></wm-img>
@@ -25,7 +19,7 @@
         >
         </wm-inner-component-html>
       </swiper-slide>
-    </swiper-container>
+    </wm-swiper>
     <ng-container *ngIf="currentImageGallery.length > 1">
       <div class="footer">
         <ion-button

@@ -1,14 +1,8 @@
 <ng-container *ngIf="(isLogged$|async) === false">
   <div class="wm-profile-logged-out-slider-container">
-    <swiper-container
-      class="wm-profile-logged-out-slider"
-      [initialSlide]="loggedOutSliderOptions.initialSlide"
-      [speed]="loggedOutSliderOptions.speed"
-      [spaceBetween]="loggedOutSliderOptions.spaceBetween"
-      [slidesOffsetAfter]="loggedOutSliderOptions.slidesOffsetAfter"
-      [slidesOffsetBefore]="loggedOutSliderOptions.slidesOffsetBefore"
-      [slidesPerView]="loggedOutSliderOptions.slidesPerView"
-      [pagination]="loggedOutSliderOptions.pagination">
+    <wm-swiper
+      [options]="loggedOutSliderOptions"
+      class="wm-profile-logged-out-slider">
       <swiper-slide class="wm-profile-logged-out-slide">
         <div class="wm-profile-logged-out-slide-content">
           <img class="wm-profile-logged-out-slide-image" src="{{slide1}}" />
@@ -26,7 +20,7 @@
         </div>
       </swiper-slide>
       <swiper-pagination></swiper-pagination>
-    </swiper-container>
+    </wm-swiper>
   </div>
   <div class="wm-profile-logged-out-login-buttons-container">
     <button class="wm-profile-logged-out-login-button" (click)="login()">

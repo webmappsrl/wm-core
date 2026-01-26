@@ -1,12 +1,8 @@
 <ng-container *ngIf="medias$|async as medias">
   <ng-container *ngIf="medias.length>0">
     <div class="wm-ugc-category-title">{{"Media" | wmtrans}}</div>
-    <swiper-container
-      [slidesPerView]="sliderOptions.slidesPerView"
-      [slidesPerGroup]="sliderOptions.slidesPerGroup"
-      [centeredSlides]="sliderOptions.centeredSlides"
-      [watchSlidesProgress]="sliderOptions.watchSlidesProgress"
-      [spaceBetween]="sliderOptions.spaceBetween"
+    <wm-swiper
+      [options]="sliderOptions"
       class="webmapp-pagepoi-info-body-photoslider"
       #slider>
       <swiper-slide *ngFor="let media of medias;let idx = index">
@@ -16,7 +12,7 @@
           (click)="showMedia(media)"
         ></wm-img>
       </swiper-slide>
-    </swiper-container>
+    </wm-swiper>
     <ng-container *ngIf="showArrows && medias && medias.length > 1">
       <ion-button class="left" (click)="prev()">
         <ion-icon slot="icon-only" size="large" name="arrow-back-outline"></ion-icon>
