@@ -244,7 +244,7 @@ export const wmSQ = {
   'Dati non sincronizzati': 'Të dhëna të pa-sinkronizuara',
   'Lingua': 'Gjuha',
   'Azione irreversibile': 'Aksion i pakthyeshëm',
-  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
+  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "delete account" per procedere.':
     'A jeni të sigurt që dëshironi të fshini kontin tuaj? Është e nevojshme të shkruani "delete account" për të vazhduar.',
   'Digita "delete account"': 'Shkruani "delete account"',
   'Conferma': 'Confirm',

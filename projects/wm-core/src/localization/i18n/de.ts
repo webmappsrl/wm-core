@@ -240,12 +240,12 @@ export const wmDE = {
   'Dati non sincronizzati': 'Nicht synchronisierte Daten',
   'Lingua': 'Sprache',
   'Azione irreversibile': 'Unwiderrufliche Aktion',
-  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
-    'Möchten Sie Ihr Konto wirklich löschen? Es ist erforderlich, "Löschen Sie das Konto" zu schreiben, um fortzufahren.',
-  'Digita "delete account"': 'Schreiben Sie "Löschen Sie das Konto"',
+  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "delete account" per procedere.':
+    'Möchten Sie Ihr Konto wirklich löschen? Es ist erforderlich, "delete account" zu schreiben, um fortzufahren.',
+  'Digita "delete account"': 'Schreiben Sie "delete account"',
   'Conferma': 'Bestätigen',
   'La conferma non corrisponde. Digita "delete account" per procedere.':
-    'Die Bestätigung stimmt nicht mit dem oben eingegebenen Passwort überein. Schreiben Sie "Löschen Sie das Konto" um fortzufahren.',
+    'Die Bestätigung stimmt nicht mit dem oben eingegebenen Passwort überein. Schreiben Sie "delete account" um fortzufahren.',
   'Elimina account': 'Löschen Sie das Konto',
   'Aggiornamento disponibile': 'Update verfügbar',
   "È disponibile una nuova versione dell'app. Aggiorna per ottenere le ultime funzionalità e miglioramenti.":
