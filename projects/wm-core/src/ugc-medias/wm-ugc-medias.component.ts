@@ -1,5 +1,6 @@
 import {Component, ViewEncapsulation, Input, ViewChild, ElementRef} from '@angular/core';
 import {} from '@ionic/angular';
+import {WmSwiperComponent} from '@wm-core/swiper/swiper.component';
 import {Media, WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
 import {BehaviorSubject, from, merge, of} from 'rxjs';
@@ -19,7 +20,7 @@ import {
 })
 export class WmUgcMediasComponent {
   @Input() showArrows = false;
-  @ViewChild('slider', {read: ElementRef}) slider: ElementRef;
+  @ViewChild('slider') slider: WmSwiperComponent;
 
   currentMedia$: BehaviorSubject<null | Media> = new BehaviorSubject<null | Media>(null);
   currentPoiProperties$ = this._store.select(currentUgcPoiProperties);
@@ -57,7 +58,7 @@ export class WmUgcMediasComponent {
   }
 
   async next(): Promise<void> {
-    const swiper = this.slider?.nativeElement?.swiper;
+    const swiper = this.slider?.swiper;
     if (swiper) {
       swiper.slideNext();
       this.currentMedia$.next(this.medias$.value[swiper.activeIndex]);
@@ -65,7 +66,7 @@ export class WmUgcMediasComponent {
   }
 
   async prev(): Promise<void> {
-    const swiper = this.slider?.nativeElement?.swiper;
+    const swiper = this.slider?.swiper;
     if (swiper) {
       swiper.slidePrev();
       this.currentMedia$.next(this.medias$.value[swiper.activeIndex]);

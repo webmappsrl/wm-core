@@ -10,6 +10,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import {WmSwiperComponent} from '@wm-core/swiper/swiper.component';
 import {AlertController, IonContent} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, from, Observable} from 'rxjs';
@@ -44,7 +45,7 @@ export class UgcTrackPropertiesComponent {
   trackElevationChartHover: EventEmitter<WmSlopeChartHoverElements> =
     new EventEmitter<WmSlopeChartHoverElements>();
   @ViewChild('content') content: IonContent;
-  @ViewChild('slider', {read: ElementRef}) slider: ElementRef;
+  @ViewChild('slider') slider: WmSwiperComponent;
 
   confOPTIONS$ = this._store.select(confOPTIONS);
   confTRACKFORMS$: Observable<any[]> = this._store.select(confTRACKFORMS);
@@ -79,7 +80,7 @@ export class UgcTrackPropertiesComponent {
 
   @HostListener('keydown.ArrowRight', ['$event'])
   public next(): void {
-    const swiper = this.slider?.nativeElement?.swiper;
+    const swiper = this.slider?.swiper;
     if (swiper) {
       swiper.slideNext();
     }
@@ -87,14 +88,14 @@ export class UgcTrackPropertiesComponent {
 
   @HostListener('keydown.ArrowLeft', ['$event'])
   public prev(): void {
-    const swiper = this.slider?.nativeElement?.swiper;
+    const swiper = this.slider?.swiper;
     if (swiper) {
       swiper.slidePrev();
     }
   }
 
   clickPhoto(): void {
-    const swiper = this.slider?.nativeElement?.swiper;
+    const swiper = this.slider?.swiper;
     if (swiper) {
       this.currentImage$.next(this.track.properties.photos[swiper.activeIndex - 1]?.photoURL);
     }

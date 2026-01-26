@@ -1,14 +1,7 @@
 <div class="wm-slider-box-container">
   <h3 class="wm-slider-box-header">{{ data.title }}</h3>
   <ng-container *ngIf="sliderOptions$|async as sliderOptions">
-    <swiper-container
-      [initialSlide]="sliderOptions.initialSlide"
-      [speed]="sliderOptions.speed"
-      [spaceBetween]="sliderOptions.spaceBetween"
-      [slidesOffsetAfter]="sliderOptions.slidesOffsetAfter"
-      [slidesOffsetBefore]="sliderOptions.slidesOffsetBefore"
-      [slidesPerView]="sliderOptions.slidesPerView"
-      class="wm-slider-box">
+    <wm-swiper [options]="sliderOptions" class="wm-slider-box">
       <ng-container *ngIf="!data.items">
         <swiper-slide>
           <wm-base-box></wm-base-box>
@@ -28,6 +21,6 @@
       <ion-label *ngIf="data && !data.items.length" class="wm-slider-box-nodata">
         no data
       </ion-label>
-    </swiper-container>
+    </wm-swiper>
   </ng-container>
 </div>

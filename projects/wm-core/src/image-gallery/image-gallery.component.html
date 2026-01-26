@@ -1,11 +1,8 @@
 <ng-container *ngIf="imageGallery$|async as imageGallery">
-  <swiper-container *ngIf="sliderOptions$|async as sliderOptions"
-    [slidesPerView]="sliderOptions.slidesPerView"
-    [spaceBetween]="sliderOptions.spaceBetween"
-    [centeredSlides]="sliderOptions.centeredSlides"
+  <wm-swiper
+    [options]="sliderOptions$|async"
     class="webmapp-pagepoi-info-body-photoslider"
-    #slider
-  >
+    #slider>
     <swiper-slide *ngFor="let image of imageGallery;let idx = index">
       <wm-img
         [src]="image.url"
@@ -16,7 +13,7 @@
         {{image.name|wmtrans}}
       </ion-text>
     </swiper-slide>
-  </swiper-container>
+  </wm-swiper>
   <ng-container *ngIf="!(isMobile$|async) && imageGallery.length > 1">
     <ion-button class="left" (click)="prev()">
       <ion-icon name="arrow-back-outline"></ion-icon>
