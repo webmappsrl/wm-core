@@ -23,16 +23,10 @@ import type {SwiperOptions} from 'swiper/types';
       (swiperslidechange)="onSlideChange($event)"
       (swipertouchend)="onTouchEnd($event)">
       <ng-content></ng-content>
+      <div class="swiper-pagination" slot="container-end"></div>
     </swiper-container>
   `,
-  styles: [
-    `
-    :host {
-      display: block;
-      width: 100%;
-    }
-  `,
-  ],
+  styleUrls: ['./swiper.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
