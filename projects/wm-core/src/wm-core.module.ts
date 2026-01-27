@@ -81,6 +81,8 @@ import {WmDrawUgcComponent} from './draw-ugc/draw-ugc.component';
 import {WmDrawUgcButtonComponent} from './draw-ugc-button/draw-ugc-button.component';
 import {iconsReducer} from './store/icons/icons.reducer';
 import {IconsEffects} from './store/icons/icons.effects';
+import {register} from 'swiper/element/bundle';
+
 export const declarations = [
   WmTabDetailComponent,
   WmTabDescriptionComponent,
@@ -180,7 +182,11 @@ const modules = [
   exports: [...declarations, ...modules, TranslateModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class WmCoreModule {}
+export class WmCoreModule {
+  constructor() {
+    register();
+  }
+}
 
 export function httpTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
