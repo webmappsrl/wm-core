@@ -131,18 +131,21 @@ export class WmFormComponent implements OnDestroy {
     this.formGroupValueChangesSub.unsubscribe();
   }
 
-  selectAllTitleText(event: any): void {
-    if (this._titleFirstClick) {
-      const input = event.target;
-      if (input && input.select) {
-        input.select();
-      }
-      this._titleFirstClick = false;
+  async selectAllTitleText(event: any): Promise<void> {
+    if (!this._titleFirstClick) {
+      return;
     }
+
+    const target = event?.target as HTMLIonInputElement | null;
+    if (target?.getInputElement) {
+      const nativeInput = await target.getInputElement();
+      nativeInput?.select();
+    }
+    this._titleFirstClick = false;
   }
 
   capitalizeTitle(event: any) {
-    const inputValue = event.target.value;
+    const inputValue = event?.detail?.value ?? event?.target?.value;
     if (inputValue && inputValue.length === 1) {
       const capitalizedValue = inputValue.toUpperCase();
       this.formGroup.get('title')?.setValue(capitalizedValue, {emitEvent: false});

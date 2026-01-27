@@ -38,14 +38,18 @@ export class SliderFilterComponent implements OnDestroy {
   }
 
   onIonChange(ev: Event): void {
-    this.currentValue = (ev as RangeCustomEvent).detail.value as SliderFilter;
+    const value = (ev as RangeCustomEvent).detail.value as RangeValue;
+    this.currentValue =
+      typeof value === 'number'
+        ? {...this.filter, min: value}
+        : {...this.filter, ...value};
     this.parent.lastFilterTypeEvt.emit('tracks');
-    if (typeof this.currentValue === 'number') {
-      this.parent.filterTracksEvt.emit({...this.filter, ...{min: this.currentValue}});
+    if (typeof value === 'number') {
+      this.parent.filterTracksEvt.emit({...this.filter, ...{min: value}});
     } else {
       this.parent.filterTracksEvt.emit({
         ...this.filter,
-        ...{lower: this.currentValue.lower, upper: this.currentValue.upper},
+        ...{lower: value.lower, upper: value.upper},
       });
     }
   }
