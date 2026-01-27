@@ -9,14 +9,7 @@
  * */
 
 import {Inject, Injectable} from '@angular/core';
-import {
-  MissingTranslationHandler,
-  TranslateCompiler,
-  TranslateLoader,
-  TranslateParser,
-  TranslateService,
-  TranslateStore,
-} from '@ngx-translate/core';
+import {TranslateService} from '@ngx-translate/core';
 import {wmIT} from './i18n/it';
 import {wmEN} from './i18n/en';
 import {wmDE} from './i18n/de';
@@ -115,6 +108,7 @@ export class LangService extends TranslateService {
     key: string | Array<string> | {[lang: string]: string},
     interpolateParams?: Object,
   ): string | any {
+    if (key == null) return '';
     if (typeof key === 'object' && key.length === 0) return '';
     if (key[this.currentLang] != null) {
       return key[this.currentLang];
