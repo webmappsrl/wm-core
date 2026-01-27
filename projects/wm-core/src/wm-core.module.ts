@@ -303,16 +303,13 @@ const modules = [
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class WmCoreModule {
-  constructor() {
-    register();
-  }
-
   static forRoot(config: {
     appVersion: string;
     environment: Environment;
     posthog: WmPosthogConfig;
     translations?: any;
   }) {
+    register();
     return {
       ngModule: WmCoreModule,
       providers: [
