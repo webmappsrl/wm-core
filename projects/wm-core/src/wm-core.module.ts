@@ -1,6 +1,6 @@
 import {CommonModule} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient} from '@angular/common/http';
-import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, inject, NgModule, provideAppInitializer} from '@angular/core';
 import {IonicModule} from '@ionic/angular';
 import {EffectsModule} from '@ngrx/effects';
 import {Store, StoreModule} from '@ngrx/store';
@@ -82,6 +82,18 @@ import {WmDrawUgcButtonComponent} from './draw-ugc-button/draw-ugc-button.compon
 import {iconsReducer} from './store/icons/icons.reducer';
 import {IconsEffects} from './store/icons/icons.effects';
 import {register} from 'swiper/element/bundle';
+import {Capacitor} from '@capacitor/core';
+import {PosthogCapacitorClient} from './services/posthog-capacitor.client';
+import {EnvironmentService} from './services/environment.service';
+import {
+  APP_TRANSLATION,
+  APP_VERSION,
+  ENVIRONMENT_CONFIG,
+  POSTHOG_CLIENT,
+  POSTHOG_CONFIG,
+} from './store/conf/conf.token';
+import {WmPosthogConfig} from '@wm-types/posthog';
+import {Environment} from '@wm-types/environment';
 
 export const declarations = [
   WmTabDetailComponent,
@@ -178,13 +190,138 @@ const modules = [
     ],
     ...modules,
   ],
-  providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
+  providers: [
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+    PosthogCapacitorClient,
+    {provide: POSTHOG_CLIENT, useExisting: PosthogCapacitorClient},
+    provideAppInitializer(async () => {
+      const envSvc = inject(EnvironmentService);
+      const posthogClient = inject(POSTHOG_CLIENT, {optional: true});
+      const environment = inject(ENVIRONMENT_CONFIG, {optional: true});
+      const appVersion = inject(APP_VERSION, {optional: true});
+
+      console.log('[WM_CORE_INITIALIZER] Starting initialization...');
+
+      try {
+        // Inizializza EnvironmentService
+        if (environment) {
+          envSvc.init(environment);
+          // Aspetta che EnvironmentService sia pronto
+          await envSvc.readyPromise;
+          console.log('[WM_CORE_INITIALIZER] EnvironmentService initialized');
+        }
+
+        // Inizializza PostHog se configurato
+        if (posthogClient && environment && appVersion) {
+          // Prepara le proprietà super di PostHog con controlli e valori di default
+          const appId = envSvc.appId;
+          const shardName = envSvc.shardName;
+          const appBuild = appVersion;
+          const appPlatform = Capacitor.getPlatform();
+
+          // Log per identificare valori undefined
+          if (appId === undefined || appId === null) {
+            console.error('[PostHog] app_id is undefined/null!', {appId, envSvc});
+          }
+          if (shardName === undefined || shardName === null) {
+            console.error('[PostHog] shard_name is undefined/null!', {shardName, envSvc});
+          }
+          if (appVersion === undefined || appVersion === null) {
+            console.error('[PostHog] app_version is undefined/null!', {appVersion});
+          }
+          if (appBuild === undefined || appBuild === null) {
+            console.error('[PostHog] app_build is undefined/null!', {appBuild});
+          }
+          if (appPlatform === undefined || appPlatform === null) {
+            console.error('[PostHog] app_platform is undefined/null!', {appPlatform});
+          }
+
+          // Assicurati che tutti i valori siano definiti
+          const posthogProps: Record<string, string | number> = {};
+
+          // app_id deve essere un numero valido (non 0) - manteniamo come numero
+          if (appId !== undefined && appId !== null && appId !== 0) {
+            posthogProps['app_id'] = appId;
+          } else {
+            console.warn('[PostHog] app_id is invalid, skipping:', appId);
+          }
+
+          // shard_name deve essere una stringa non vuota
+          if (shardName && typeof shardName === 'string' && shardName.trim() !== '') {
+            posthogProps['shard_name'] = shardName;
+          } else {
+            console.warn('[PostHog] shard_name is invalid, skipping:', shardName);
+          }
+
+          // app_version deve essere una stringa non vuota
+          if (appVersion && typeof appVersion === 'string' && appVersion.trim() !== '') {
+            posthogProps['app_version'] = appVersion;
+          } else {
+            console.warn('[PostHog] app_version is invalid, skipping:', appVersion);
+          }
+
+          // app_build deve essere una stringa non vuota
+          if (appBuild && typeof appBuild === 'string' && appBuild.trim() !== '') {
+            posthogProps['app_build'] = appBuild;
+          } else {
+            console.warn('[PostHog] app_build is invalid, skipping:', appBuild);
+          }
+
+          // app_platform deve essere una stringa non vuota e valida
+          if (
+            appPlatform &&
+            typeof appPlatform === 'string' &&
+            appPlatform.trim() !== '' &&
+            appPlatform !== 'unknown'
+          ) {
+            posthogProps['app_platform'] = appPlatform;
+          } else {
+            console.warn('[PostHog] app_platform is invalid, skipping:', appPlatform);
+          }
+
+          console.log('[PostHog] Registering properties with values:', posthogProps);
+          console.log('[PostHog] Number of valid properties:', Object.keys(posthogProps).length);
+
+          // Inizializza e registra le proprietà super di PostHog in un'unica chiamata
+          if (Object.keys(posthogProps).length > 0) {
+            await posthogClient.initAndRegister(posthogProps);
+          } else {
+            console.warn('[PostHog] No valid properties to register, skipping initAndRegister call');
+          }
+        } else {
+          console.log('[WM_CORE_INITIALIZER] PostHog not configured, skipping initialization');
+        }
+
+        console.log('[WM_CORE_INITIALIZER] Initialization completed successfully');
+      } catch (error) {
+        console.error('[WM_CORE_INITIALIZER] Initialization failed:', error);
+        // Non rilanciare l'errore per permettere all'app di avviarsi comunque
+      }
+    }),
+  ],
   exports: [...declarations, ...modules, TranslateModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class WmCoreModule {
   constructor() {
     register();
+  }
+
+  static forRoot(config: {
+    appVersion: string;
+    environment: Environment;
+    posthog: WmPosthogConfig;
+    translations?: any;
+  }) {
+    return {
+      ngModule: WmCoreModule,
+      providers: [
+        {provide: APP_VERSION, useValue: config.appVersion},
+        {provide: ENVIRONMENT_CONFIG, useValue: config.environment},
+        {provide: APP_TRANSLATION, useValue: config.translations || {}},
+        {provide: POSTHOG_CONFIG, useValue: config.posthog},
+      ],
+    };
   }
 }
 
