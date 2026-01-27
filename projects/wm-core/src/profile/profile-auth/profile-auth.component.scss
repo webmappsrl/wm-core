@@ -4,8 +4,10 @@ wm-profile-auth{
     .wm-profile-logged-out-slider {
       max-height: inherit;
       height: inherit;
-      --bullet-background-active: var(--wm-color-darkgrey);
-      --bullet-background: rgba(var(--wm-color-darkgrey-rgb), 0.4);
+      // Colori dei bullet Swiper
+      --swiper-pagination-color: var(--wm-color-darkgrey); // bullet attivo
+      --swiper-pagination-bullet-inactive-color: rgba(var(--wm-color-darkgrey-rgb), 0.4); // bullet inattivo
+      --swiper-pagination-bullet-inactive-opacity: 1;
       .wm-profile-logged-out-slide {
         padding: 0 17px;
         display: flex;
