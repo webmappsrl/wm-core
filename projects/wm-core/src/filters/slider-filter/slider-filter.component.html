@@ -7,7 +7,7 @@
       [dualKnobs]="true"
       [ticks]="true"
       [snaps]="true"
-      [value]="currentValue"
+      [value]="currentValue ?? {lower: filter.min, upper: filter.min}"
       [step]="filter.steps"
       [min]="filter.min"
       [max]="filter.max"

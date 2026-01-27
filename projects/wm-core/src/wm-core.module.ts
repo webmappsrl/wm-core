@@ -79,7 +79,6 @@ import {ModalGetDirectionsComponent} from './modal-get-directions/modal-get-dire
 import {ModalReleaseUpdateComponent} from './modal-release-update/modal-release-update.component';
 import {WmDrawUgcComponent} from './draw-ugc/draw-ugc.component';
 import {WmDrawUgcButtonComponent} from './draw-ugc-button/draw-ugc-button.component';
-import {WmSwiperComponent} from './swiper/swiper.component';
 import {iconsReducer} from './store/icons/icons.reducer';
 import {IconsEffects} from './store/icons/icons.effects';
 export const declarations = [
@@ -131,7 +130,6 @@ export const declarations = [
   ModalReleaseUpdateComponent,
   WmDrawUgcComponent,
   WmDrawUgcButtonComponent,
-  WmSwiperComponent,
 ];
 const modules = [
   WmSharedModule,
