@@ -25,12 +25,14 @@ import type {SwiperOptions} from 'swiper/types';
       <ng-content></ng-content>
     </swiper-container>
   `,
-  styles: [`
+  styles: [
+    `
     :host {
       display: block;
       width: 100%;
     }
-  `],
+  `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
@@ -66,10 +68,7 @@ export class WmSwiperComponent implements OnChanges, AfterViewInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (
-      changes['options'] &&
-      !changes['options'].firstChange
-    ) {
+    if (changes['options'] && !changes['options'].firstChange) {
       this.init();
     }
   }
@@ -79,14 +78,16 @@ export class WmSwiperComponent implements OnChanges, AfterViewInit {
   }
 
   private init(): void {
-    const swiperElement = this.swiperEl.nativeElement;
-
-    if (swiperElement.swiper) {
-      swiperElement.swiper.destroy(true, true);
+    try {
+      const swiperElement = this.swiperEl.nativeElement;
+      if (swiperElement.swiper) {
+        swiperElement.swiper.destroy(true, true);
+      }
+      Object.assign(swiperElement, this.options);
+      swiperElement.initialize();
+    } catch (error) {
+      console.error('Error initializing Swiper:', error);
     }
-
-    Object.assign(swiperElement, this.options);
-    swiperElement.initialize();
   }
 
   /**
