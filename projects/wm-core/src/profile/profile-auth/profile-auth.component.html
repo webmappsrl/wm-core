@@ -1,4 +1,4 @@
-<ng-container *ngIf="(isLogged$|async) === false">
+<ng-container *ngIf="(isLogged$|async) === false" wmOnLangChange>
   <div class="wm-profile-logged-out-slider-container">
     <wm-swiper
       [options]="loggedOutSliderOptions"
