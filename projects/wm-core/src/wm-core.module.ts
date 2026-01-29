@@ -95,6 +95,8 @@ import {
 import {WmPosthogConfig} from '@wm-types/posthog';
 import {Environment} from '@wm-types/environment';
 
+register();
+
 export const declarations = [
   WmTabDetailComponent,
   WmTabDescriptionComponent,
@@ -309,7 +311,6 @@ export class WmCoreModule {
     posthog: WmPosthogConfig;
     translations?: any;
   }) {
-    register();
     return {
       ngModule: WmCoreModule,
       providers: [
