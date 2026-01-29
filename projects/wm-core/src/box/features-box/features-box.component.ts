@@ -19,7 +19,7 @@ import {IBASEBOX, IHOMEITEMFEATURE} from '../../types/config';
 export class FeaturesBoxComponent extends BaseBoxComponent<IBASEBOX> {
   @Output() public poiIdEVT: EventEmitter<number> = new EventEmitter<number>();
   @Output() public trackIdEVT: EventEmitter<number> = new EventEmitter<number>();
-  @ViewChild('tracks') tracksContent: ElementRef;
+  @ViewChild('features') featuresContent: ElementRef;
 
   clickFeature(feature: IHOMEITEMFEATURE): void {
     if (feature.track_id) {
@@ -30,10 +30,10 @@ export class FeaturesBoxComponent extends BaseBoxComponent<IBASEBOX> {
   }
 
   scrollLeft(): void {
-    this.tracksContent.nativeElement.scrollLeft -= 150;
+    this.featuresContent.nativeElement.scrollLeft -= 150;
   }
 
   scrollRight(): void {
-    this.tracksContent.nativeElement.scrollLeft += 150;
+    this.featuresContent.nativeElement.scrollLeft += 150;
   }
 }
