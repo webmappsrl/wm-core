@@ -1,42 +1,42 @@
-import {ChangeDetectorRef, OnDestroy, Pipe, PipeTransform} from '@angular/core';
-import {Subscription} from 'rxjs';
+import {ApplicationRef, ChangeDetectorRef, OnDestroy, Pipe, PipeTransform} from '@angular/core';
 import {LangService} from '../localization/lang.service';
+import {Subscription} from 'rxjs';
 
 @Pipe({
   name: 'wmtrans',
-  pure: false,
+  pure: false, // deve restare impuro
   standalone: false,
 })
 export class WmTransPipe implements PipeTransform, OnDestroy {
-  private _sub: Subscription;
+  private static sub: Subscription | null = null;
+  private static readonly cdrs = new Set<ChangeDetectorRef>();
 
-  constructor(private _translateSvc: LangService, private _cdr: ChangeDetectorRef) {
-    // Quando cambia la lingua, forziamo il ricalcolo dei componenti che usano la pipe
-    this._sub = this._translateSvc.onLangChange.subscribe(() => {
-      this._cdr.markForCheck();
-    });
+  constructor(private langSvc: LangService, private cdr: ChangeDetectorRef) {
+    WmTransPipe.cdrs.add(this.cdr);
+    if (!WmTransPipe.sub) {
+      WmTransPipe.sub = this.langSvc.onLangChange.subscribe(() => {
+        WmTransPipe.cdrs.forEach(c => c.markForCheck());
+      });
+    }
   }
 
   ngOnDestroy(): void {
-    this._sub?.unsubscribe();
+    WmTransPipe.cdrs.delete(this.cdr);
   }
 
   transform(value: any, ...args: unknown[]): string {
+    const currentLang = this.langSvc.currentLang;
+    const defaultLang = this.langSvc.defaultLang;
+
     if (value) {
-      if (value[this._translateSvc.currentLang]) {
-        return value[this._translateSvc.currentLang];
-      }
-      if (value[this._translateSvc.defaultLang]) {
-        return value[this._translateSvc.defaultLang];
-      }
+      if (currentLang && value[currentLang]) return value[currentLang];
+      if (defaultLang && value[defaultLang]) return value[defaultLang];
+
       if (typeof value === 'string' || typeof value === 'number') {
-        return this._translateSvc.instant(`${value}`, ...args);
+        return this.langSvc.instant(`${value}`, ...args);
       }
-      for (const val in value) {
-        if (value[val]) {
-          return value[val];
-        }
-      }
+
+      for (const k in value) if (value[k]) return value[k];
     }
     return '';
   }
