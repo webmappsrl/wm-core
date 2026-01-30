@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {of} from 'rxjs';
+import {of, from} from 'rxjs';
 import {catchError, filter, map, switchMap, withLatestFrom, take} from 'rxjs/operators';
 import {
   loadConf,
@@ -17,6 +17,8 @@ import {currentEcLayerId} from '../features/ec/ec.actions';
 import {ILAYER} from '@wm-core/types/config';
 import {setLayer} from '../user-activity/user-activity.action';
 import {DeviceService} from '@wm-core/services/device.service';
+import {getConfOverrides} from '@wm-core/utils/localForage';
+import {ICONF} from '@wm-core/types/config';
 @Injectable({
   providedIn: 'root',
 })
@@ -27,19 +29,60 @@ export class ConfEffects {
       switchMap(() =>
         this._configSVC.getConf().pipe(
           filter(conf => conf != null),
-          map(conf => {
+          switchMap(async (conf: ICONF) => {
             conf = {
               ...conf,
               isMobile: this._deviceService.isMobile,
               isAppMobile: this._deviceService.isAppMobile,
             };
-            return loadConfSuccess({conf});
+            // Applica gli override locali
+            const overrides = await getConfOverrides();
+            if (overrides) {
+              conf = this._applyConfOverrides(conf, overrides);
+            }
+            return conf;
           }),
+          map(conf => loadConfSuccess({conf})),
           catchError((_: any) => of(loadConfFail())),
         ),
       ),
     ),
   );
+
+  private _applyConfOverrides(conf: ICONF, overrides: {[key: string]: any}): ICONF {
+    const result = {...conf};
+    
+    // Applica override per ogni categoria
+    Object.keys(overrides).forEach(category => {
+      if (result[category] && typeof result[category] === 'object') {
+        result[category] = this._deepMerge(result[category], overrides[category]);
+      }
+    });
+    
+    return result;
+  }
+
+  private _deepMerge(target: any, source: any): any {
+    const output = {...target};
+    if (this._isObject(target) && this._isObject(source)) {
+      Object.keys(source).forEach(key => {
+        if (this._isObject(source[key])) {
+          if (!(key in target)) {
+            Object.assign(output, {[key]: source[key]});
+          } else {
+            output[key] = this._deepMerge(target[key], source[key]);
+          }
+        } else {
+          Object.assign(output, {[key]: source[key]});
+        }
+      });
+    }
+    return output;
+  }
+
+  private _isObject(item: any): boolean {
+    return item && typeof item === 'object' && !Array.isArray(item);
+  }
   updateLayer$ = createEffect(() =>
     this._actions$.pipe(
       ofType(currentEcLayerId),

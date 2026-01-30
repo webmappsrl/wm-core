@@ -1,4 +1,5 @@
 import {Component, ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
+import {DomSanitizer} from '@angular/platform-browser';
 import {Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
@@ -32,11 +33,12 @@ export class TrackPropertiesComponent {
   ecTrack$: Observable<WmFeature<LineString>> = this._store.select(currentEcTrack);
   ecTrackProperties$: Observable<LineStringProperties> =
     this._store.select(currentEcTrackProperties);
-  flowLineQuoteHtml$: Observable<string> = this._store.select(flowLineQuoteText).pipe(
+  flowLineQuoteHtml$: Observable<any> = this._store.select(flowLineQuoteText).pipe(
     map((flowLineQuoteText: WmSlopeChartFlowLineQuote) => {
-      if (!flowLineQuoteText) return '';
+      if (!flowLineQuoteText) return this._sanitizer.bypassSecurityTrustHtml('');
       const translatedText = this._langSvc.instant(flowLineQuoteText.html);
-      return translatedText.replace('{{orange}}', flowLineQuoteText.flow_line_quote_orange).replace('{{red}}', flowLineQuoteText.flow_line_quote_red);
+      const html = translatedText.replace('{{orange}}', flowLineQuoteText.flow_line_quote_orange).replace('{{red}}', flowLineQuoteText.flow_line_quote_red);
+      return this._sanitizer.bypassSecurityTrustHtml(html);
     }),
   );
   flowLineQuoteShow$: Observable<boolean> = this._store.select(flowLineQuoteShow);
@@ -45,6 +47,7 @@ export class TrackPropertiesComponent {
     private _store: Store,
     private _urlHandlerSvc: UrlHandlerService,
     private _langSvc: LangService,
+    private _sanitizer: DomSanitizer,
   ) {}
 
   close(): void {

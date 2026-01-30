@@ -498,3 +498,28 @@ export const deviceCurrentUgcTrackLocations = localforage.createInstance({
   name: 'device',
   storeName: 'current-ugc-track-locations',
 });
+export const deviceConfOverrides = localforage.createInstance({
+  name: 'device',
+  storeName: 'conf-overrides',
+});
+
+export async function getConfOverrides(): Promise<{[key: string]: any} | null> {
+  return handleAsync(
+    deviceConfOverrides.getItem<{[key: string]: any}>('overrides'),
+    'getConfOverrides: Failed',
+  );
+}
+
+export async function saveConfOverrides(overrides: {[key: string]: any}): Promise<void> {
+  await handleAsync(
+    deviceConfOverrides.setItem('overrides', overrides),
+    'saveConfOverrides: Failed to save conf overrides',
+  );
+}
+
+export async function clearConfOverrides(): Promise<void> {
+  await handleAsync(
+    deviceConfOverrides.removeItem('overrides'),
+    'clearConfOverrides: Failed to clear conf overrides',
+  );
+}
