@@ -9,7 +9,7 @@ import {filter, take} from 'rxjs/operators';
 export class EnvironmentService {
   private _environment: Environment;
   private _hostname: string;
-  private _wmpackagesRegex = /^(\d+)\.([a-zA-Z0-9-]+)(?:\.mobile)?\.[^.]+(?:\.[^.]+)?$/;
+  private _wmpackagesRegex = /^(\d+)\.([a-zA-Z0-9-]+)(?:\.mobile)?\.[^.]+(?:\.[^.]+)*$/;
   private _localHostRegex = /^localhost/;
   private _appId: number;
   private _shardName: string;
