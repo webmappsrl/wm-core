@@ -48,7 +48,10 @@ export class PosthogCapacitorClient implements WmPosthogClient {
     await this.ensureSessionRecording();
   }
 
-  async initAndRegister(props: WmPosthogProps): Promise<void> {
+  async initAndRegister(props: WmPosthogProps, enabled?: boolean): Promise<void> {
+    if (enabled) {
+      this.config.enabled = enabled;
+    }
     // Inizializza PostHog
     await this.init();
     if (!this.initialized) {
