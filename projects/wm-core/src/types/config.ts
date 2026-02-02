@@ -1,5 +1,5 @@
 import {Hit} from '@wm-types/elastic';
-import {APP} from '@wm-types/config';
+import {APP, WEBAPP} from '@wm-types/config';
 
 export type IBASEBOX = IBOX & {
   box_type: 'base';
@@ -136,7 +136,7 @@ export interface ICONF {
   PROJECT?: IPROJECT;
   THEME?: ITHEME;
   TRANSLATIONS?: {[lang: string]: {[key: string]: string}};
-  WEBAPP?: IWEBAPP;
+  WEBAPP?: WEBAPP;
   isMobile: boolean;
   isAppMobile: boolean;
   loaded: boolean;
@@ -430,14 +430,6 @@ export interface ITHEME {
   theme?: string;
   warning?: string;
 }
-
-export interface IWEBAPP {
-  draw_poi_show: boolean;
-  draw_track_show: boolean;
-  editing_inline_show: boolean;
-  splash_screen_show: boolean;
-}
-
 export interface IWmImage {
   api_url: string;
   caption: string;

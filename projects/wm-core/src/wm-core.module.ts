@@ -94,6 +94,9 @@ import {
 } from './store/conf/conf.token';
 import {WmPosthogConfig} from '@wm-types/posthog';
 import {Environment} from '@wm-types/environment';
+import {confAPP, confPosthog, isConfLoaded} from './store/conf/conf.selector';
+import {from} from 'rxjs';
+import {filter, take, withLatestFrom} from 'rxjs/operators';
 
 register();
 
@@ -201,6 +204,7 @@ const modules = [
       const posthogClient = inject(POSTHOG_CLIENT, {optional: true});
       const environment = inject(ENVIRONMENT_CONFIG, {optional: true});
       const appVersion = inject(APP_VERSION, {optional: true});
+      const store = inject(Store);
 
       console.log('[WM_CORE_INITIALIZER] Starting initialization...');
 
@@ -213,7 +217,7 @@ const modules = [
           console.log('[WM_CORE_INITIALIZER] EnvironmentService initialized');
         }
 
-        // Inizializza PostHog se configurato
+        // Inizializza PostHog tramite observable che aspetta che la config sia caricata
         if (posthogClient && environment && appVersion) {
           // Prepara le proprietà super di PostHog con controlli e valori di default
           const appId = envSvc.appId;
@@ -284,9 +288,24 @@ const modules = [
           console.log('[PostHog] Registering properties with values:', posthogProps);
           console.log('[PostHog] Number of valid properties:', Object.keys(posthogProps).length);
 
-          // Inizializza e registra le proprietà super di PostHog in un'unica chiamata
+          // Attendi che la config sia caricata e poi inizializza PostHog
           if (Object.keys(posthogProps).length > 0) {
-            await posthogClient.initAndRegister(posthogProps);
+            store
+              .select(isConfLoaded)
+              .pipe(
+                filter(loaded => loaded === true),
+                take(1),
+                withLatestFrom(store.select(confPosthog)),
+              )
+              .subscribe(async ([_, confPosthog]) => {
+                try {
+                  console.log('[PostHog] Config loaded, initializing PostHog with enabled:', confPosthog);
+                  await posthogClient.initAndRegister(posthogProps, confPosthog);
+                  console.log('[PostHog] PostHog initialized successfully via observable');
+                } catch (error) {
+                  console.error('[PostHog] Failed to initialize PostHog via observable:', error);
+                }
+              });
           } else {
             console.warn('[PostHog] No valid properties to register, skipping initAndRegister call');
           }

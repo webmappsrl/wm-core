@@ -160,6 +160,10 @@ export const confZoomFeaturesInViewport = createSelector(confOPTIONS, state => {
   };
 });
 
+export const confPosthog = createSelector(confAPP, confWEBAPP, confIsMobile, (confApp, confWebapp, isMobile) => {
+  return isMobile ? confApp.posthog : confWebapp.posthog;
+});
+
 const getLayers = (layersID: number[], layers: ILAYER[], tracks: Hit[]): ILAYER[] => {
   return layers
     .filter(l => layersID.indexOf(+l.id) > -1)
