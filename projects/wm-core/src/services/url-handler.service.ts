@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, Inject, Optional} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
@@ -19,6 +19,9 @@ import {
 } from '@wm-core/store/user-activity/user-activity.action';
 import {BehaviorSubject} from 'rxjs';
 import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
+import {POSTHOG_CLIENT} from '@wm-core/store/conf/conf.token';
+import {WmPosthogClient} from '@wm-types/posthog';
+import {DeviceService} from './device.service';
 
 @Injectable({
   providedIn: 'root',
@@ -38,7 +41,13 @@ export class UrlHandlerService {
 
   private _ugcOpened$ = this._store.select(ugcOpened);
 
-  constructor(private _route: ActivatedRoute, private _router: Router, private _store: Store) {
+  constructor(
+    private _route: ActivatedRoute,
+    private _router: Router,
+    private _store: Store,
+    private _deviceService: DeviceService,
+    @Optional() @Inject(POSTHOG_CLIENT) private _posthogClient?: WmPosthogClient,
+  ) {
     this.initialize();
   }
 
@@ -80,6 +89,9 @@ export class UrlHandlerService {
       this._store.dispatch(inputTyped({inputTyped: this._decodeQueryParam(params.search)}));
       this._checkIfUgcIsOpened(params);
       this._currentQueryParams$.next(params);
+
+      // Traccia gli eventi PostHog per i cambiamenti di URL sulla app mobile
+      this._mobileTrackUrlChange(params);
     });
   }
 
@@ -187,5 +199,32 @@ export class UrlHandlerService {
       this.resetURL();
       return true;
     }
+  }
+
+  /**
+   * Traccia gli eventi PostHog quando cambia l'URL.
+   * Invia un evento $pageview con le proprietà rilevanti.
+   * Solo su iOS/Android - su web PostHog traccia automaticamente.
+   */
+  private _mobileTrackUrlChange(params: Params): void {
+    if (!this._posthogClient || this._deviceService.isBrowser) {
+      return;
+    }
+
+    // Costruisce l'URL completo con origin e query params
+    const fullUrl = window.location.origin + this._router.url;
+
+    const props: Record<string, any> = {
+      $current_url: fullUrl,
+      path: this.getCurrentPath(),
+    };
+
+    // Aggiungi proprietà rilevanti dai parametri
+    if (params.layer != null) props.layer = params.layer;
+    if (params.track != null) props.track = params.track;
+    if (params.poi != null) props.poi = params.poi;
+    if (params.search != null) props.search = params.search;
+
+    this._posthogClient.capture('$pageview', props);
   }
 }
