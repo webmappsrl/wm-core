@@ -197,8 +197,6 @@ const modules = [
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
-    PosthogCapacitorClient,
-    {provide: POSTHOG_CLIENT, useExisting: PosthogCapacitorClient},
     provideAppInitializer(async () => {
       const envSvc = inject(EnvironmentService);
       const posthogClient = inject(POSTHOG_CLIENT, {optional: true});
@@ -337,6 +335,8 @@ export class WmCoreModule {
         {provide: ENVIRONMENT_CONFIG, useValue: config.environment},
         {provide: APP_TRANSLATION, useValue: config.translations || {}},
         {provide: POSTHOG_CONFIG, useValue: config.posthog},
+        PosthogCapacitorClient,
+        {provide: POSTHOG_CLIENT, useExisting: PosthogCapacitorClient},
       ],
     };
   }
