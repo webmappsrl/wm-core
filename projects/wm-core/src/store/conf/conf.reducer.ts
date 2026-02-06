@@ -47,14 +47,12 @@ const initialConfState: ICONF = {
         ],
       },
     ],
-    posthog: false,
   },
   WEBAPP: {
     draw_poi_show: false,
     draw_track_show: false,
     editing_inline_show: false,
     splash_screen_show: false,
-    posthog: false,
   },
   OPTIONS: {
     baseUrl: '-',
@@ -128,6 +126,12 @@ const initialConfState: ICONF = {
     showEmbeddedHtml: false,
     showFeaturesInViewport: false,
     showDownloadTiles: false,
+    analytics: {
+      appEnabled: false,
+      webappEnabled: false,
+      mobileEnabled: false,
+      recordingProbability: 0,
+    },
   },
   THEME: {
     primary: '#3880ff',

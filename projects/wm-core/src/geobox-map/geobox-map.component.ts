@@ -57,7 +57,6 @@ import {
   Filter,
   IHOME,
   ILAYER,
-  IOPTIONS,
   SelectFilterOption,
   SliderFilter,
 } from '@wm-core/types/config';
@@ -130,7 +129,7 @@ import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {GeolocationService} from '@wm-core/services/geolocation.service';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 import {FeatureLike} from 'ol/Feature';
-import {ZoomFeaturesInViewport} from '@wm-types/config';
+import {OPTIONS, ZoomFeaturesInViewport} from '@wm-types/config';
 import {Location} from '@capacitor-community/background-geolocation';
 
 const initPadding = [10, 10, 10, 10];
@@ -184,7 +183,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
   confJIDOUPDATETIME$: Observable<any> = this._store.select(confJIDOUPDATETIME);
   confMap$: Observable<any> = this._store.select(confMAP);
-  confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
+  confOPTIONS$: Observable<OPTIONS> = this._store.select(confOPTIONS);
   confOPTIONSShowFeaturesInViewport$: Observable<boolean> = this._store.select(
     confOPTIONSShowFeaturesInViewport,
   );

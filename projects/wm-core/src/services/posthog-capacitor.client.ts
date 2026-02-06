@@ -2,7 +2,7 @@ import {Inject, Injectable} from '@angular/core';
 import {Capacitor} from '@capacitor/core';
 import {Posthog, SetupOptions} from '@capawesome/capacitor-posthog';
 import {POSTHOG_CONFIG} from '@wm-core/store/conf/conf.token';
-import {WmPosthogClient, WmPosthogConfig, WmPosthogProps} from '@wm-types/posthog';
+import {WmPosthogClient, WmPosthogConfig, WmPosthogInitOptions, WmPosthogProps} from '@wm-types/posthog';
 
 @Injectable()
 export class PosthogCapacitorClient implements WmPosthogClient {
@@ -11,6 +11,7 @@ export class PosthogCapacitorClient implements WmPosthogClient {
 
   private initialized = false;
   private sessionRecordingStarted = false;
+  private recordingProbability = 0;
 
   constructor(@Inject(POSTHOG_CONFIG) private config: WmPosthogConfig) {
     this.platform = Capacitor.getPlatform();
@@ -57,9 +58,12 @@ export class PosthogCapacitorClient implements WmPosthogClient {
    * Inizializza PostHog e registra le proprietà super.
    * Questo è l'unico punto di ingresso per l'inizializzazione.
    */
-  async initAndRegister(props: WmPosthogProps, enabled?: boolean): Promise<void> {
-    if (enabled !== undefined) {
-      this.config.enabled = enabled;
+  async initAndRegister(props: WmPosthogProps, options?: WmPosthogInitOptions): Promise<void> {
+    if (options?.enabled !== undefined) {
+      this.config.enabled = options.enabled;
+    }
+    if (options?.recordingProbability !== undefined) {
+      this.recordingProbability = options.recordingProbability;
     }
 
     await this.init();
@@ -178,12 +182,30 @@ export class PosthogCapacitorClient implements WmPosthogClient {
   }
 
   /**
-   * Avvia il session recording se non è già attivo
+   * Avvia il session recording se non è già attivo e se la probabilità lo consente
    */
   private async ensureSessionRecording(): Promise<void> {
     if (!this.initialized || this.sessionRecordingStarted) {
       return;
     }
+
+    // Controlla la probabilità di registrazione (0-1, es. 0.5 = 50%)
+    if (this.recordingProbability <= 0) {
+      console.log('[PostHog] Session recording disabled (probability = 0)');
+      return;
+    }
+
+    const randomValue = Math.random();
+    if (randomValue > this.recordingProbability) {
+      console.log(
+        `[PostHog] Session recording skipped (random: ${randomValue.toFixed(3)}, probability: ${this.recordingProbability})`,
+      );
+      return;
+    }
+
+    console.log(
+      `[PostHog] Session recording enabled (random: ${randomValue.toFixed(3)}, probability: ${this.recordingProbability})`,
+    );
 
     try {
       await Posthog.startSessionRecording();

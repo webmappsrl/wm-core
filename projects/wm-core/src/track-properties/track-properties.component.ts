@@ -10,7 +10,7 @@ import {
   ecLayer,
   flowLineQuoteText,
 } from '@wm-core/store/user-activity/user-activity.selector';
-import {IOPTIONS} from '@wm-core/types/config';
+import {OPTIONS} from '@wm-types/config';
 import {LineStringProperties, WmFeature} from '@wm-types/feature';
 import {WmSlopeChartFlowLineQuote, WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {LineString} from 'geojson';
@@ -27,7 +27,7 @@ import {map} from 'rxjs/operators';
 export class TrackPropertiesComponent {
   chartHoverElements$: Observable<WmSlopeChartHoverElements> =
     this._store.select(chartHoverElements);
-  confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
+  confOPTIONS$: Observable<OPTIONS> = this._store.select(confOPTIONS);
   currentLayer$ = this._store.select(ecLayer);
   ecTrack$: Observable<WmFeature<LineString>> = this._store.select(currentEcTrack);
   ecTrackProperties$: Observable<LineStringProperties> =
