@@ -94,7 +94,7 @@ import {
 } from './store/conf/conf.token';
 import {WmPosthogConfig} from '@wm-types/posthog';
 import {Environment} from '@wm-types/environment';
-import {confAnalyticsEnabled, confRecordingProbability, isConfLoaded} from './store/conf/conf.selector';
+import {confAnalytics, isConfLoaded} from './store/conf/conf.selector';
 import {filter, take, withLatestFrom} from 'rxjs/operators';
 
 register();
@@ -293,21 +293,21 @@ const modules = [
                 filter(loaded => loaded === true),
                 take(1),
                 withLatestFrom(
-                  store.select(confAnalyticsEnabled),
-                  store.select(confRecordingProbability),
+                  store.select(confAnalytics),
                 ),
               )
-              .subscribe(async ([_, analyticsEnabled, recordingProbability]) => {
+              .subscribe(async ([_, confAnalytics]) => {
                 try {
                   console.log(
                     '[PostHog] Config loaded, initializing PostHog with enabled:',
-                    analyticsEnabled,
+                    confAnalytics?.enabled,
                     'recordingProbability:',
-                    recordingProbability,
+                    confAnalytics?.recordingProbability,
                   );
                   await posthogClient.initAndRegister(posthogProps, {
-                    enabled: analyticsEnabled,
-                    recordingProbability,
+                    enabled: confAnalytics?.enabled,
+                    recordingEnabled: confAnalytics?.recordingEnabled,
+                    recordingProbability: confAnalytics?.recordingProbability,
                   });
                   console.log('[PostHog] PostHog initialized successfully via observable');
                 } catch (error) {

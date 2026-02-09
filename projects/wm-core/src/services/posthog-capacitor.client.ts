@@ -11,6 +11,7 @@ export class PosthogCapacitorClient implements WmPosthogClient {
 
   private initialized = false;
   private sessionRecordingStarted = false;
+  private recordingEnabled = false;
   private recordingProbability = 0;
 
   constructor(@Inject(POSTHOG_CONFIG) private config: WmPosthogConfig) {
@@ -61,6 +62,9 @@ export class PosthogCapacitorClient implements WmPosthogClient {
   async initAndRegister(props: WmPosthogProps, options?: WmPosthogInitOptions): Promise<void> {
     if (options?.enabled !== undefined) {
       this.config.enabled = options.enabled;
+    }
+    if (options?.recordingEnabled !== undefined) {
+      this.recordingEnabled = options.recordingEnabled;
     }
     if (options?.recordingProbability !== undefined) {
       this.recordingProbability = options.recordingProbability;
@@ -186,6 +190,12 @@ export class PosthogCapacitorClient implements WmPosthogClient {
    */
   private async ensureSessionRecording(): Promise<void> {
     if (!this.initialized || this.sessionRecordingStarted) {
+      return;
+    }
+
+    // Controlla se il recording è abilitato dalla configurazione
+    if (!this.recordingEnabled) {
+      console.log('[PostHog] Session recording disabled (recordingEnabled = false)');
       return;
     }
 
