@@ -95,7 +95,7 @@ import {
 import {WmPosthogConfig} from '@wm-types/posthog';
 import {Environment} from '@wm-types/environment';
 import {confAnalytics, isConfLoaded} from './store/conf/conf.selector';
-import {filter, take, withLatestFrom} from 'rxjs/operators';
+import {debounceTime, filter, take, withLatestFrom} from 'rxjs/operators';
 
 register();
 
@@ -286,15 +286,16 @@ const modules = [
           console.log('[PostHog] Number of valid properties:', Object.keys(posthogProps).length);
 
           // Attendi che la config sia caricata e poi inizializza PostHog
+          // Usiamo debounceTime per aspettare che eventuali emissioni multiple (cache + API) si stabilizzino
+          // e prendere sempre l'ultimo valore di confAnalytics
           if (Object.keys(posthogProps).length > 0) {
             store
               .select(isConfLoaded)
               .pipe(
                 filter(loaded => loaded === true),
+                debounceTime(200),
                 take(1),
-                withLatestFrom(
-                  store.select(confAnalytics),
-                ),
+                withLatestFrom(store.select(confAnalytics)),
               )
               .subscribe(async ([_, confAnalytics]) => {
                 try {
