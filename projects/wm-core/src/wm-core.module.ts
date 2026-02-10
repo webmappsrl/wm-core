@@ -94,9 +94,8 @@ import {
 } from './store/conf/conf.token';
 import {WmPosthogConfig} from '@wm-types/posthog';
 import {Environment} from '@wm-types/environment';
-import {confAPP, confPosthog, isConfLoaded} from './store/conf/conf.selector';
-import {from} from 'rxjs';
-import {filter, take, withLatestFrom} from 'rxjs/operators';
+import {confAnalytics, isConfLoaded} from './store/conf/conf.selector';
+import {debounceTime, filter, take, withLatestFrom} from 'rxjs/operators';
 
 register();
 
@@ -197,8 +196,6 @@ const modules = [
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
-    PosthogCapacitorClient,
-    {provide: POSTHOG_CLIENT, useExisting: PosthogCapacitorClient},
     provideAppInitializer(async () => {
       const envSvc = inject(EnvironmentService);
       const posthogClient = inject(POSTHOG_CLIENT, {optional: true});
@@ -289,18 +286,30 @@ const modules = [
           console.log('[PostHog] Number of valid properties:', Object.keys(posthogProps).length);
 
           // Attendi che la config sia caricata e poi inizializza PostHog
+          // Usiamo debounceTime per aspettare che eventuali emissioni multiple (cache + API) si stabilizzino
+          // e prendere sempre l'ultimo valore di confAnalytics
           if (Object.keys(posthogProps).length > 0) {
             store
               .select(isConfLoaded)
               .pipe(
                 filter(loaded => loaded === true),
+                debounceTime(200),
                 take(1),
-                withLatestFrom(store.select(confPosthog)),
+                withLatestFrom(store.select(confAnalytics)),
               )
-              .subscribe(async ([_, confPosthog]) => {
+              .subscribe(async ([_, confAnalytics]) => {
                 try {
-                  console.log('[PostHog] Config loaded, initializing PostHog with enabled:', confPosthog);
-                  await posthogClient.initAndRegister(posthogProps, confPosthog);
+                  console.log(
+                    '[PostHog] Config loaded, initializing PostHog with enabled:',
+                    confAnalytics?.enabled,
+                    'recordingProbability:',
+                    confAnalytics?.recordingProbability,
+                  );
+                  await posthogClient.initAndRegister(posthogProps, {
+                    enabled: confAnalytics?.enabled,
+                    recordingEnabled: confAnalytics?.recordingEnabled,
+                    recordingProbability: confAnalytics?.recordingProbability,
+                  });
                   console.log('[PostHog] PostHog initialized successfully via observable');
                 } catch (error) {
                   console.error('[PostHog] Failed to initialize PostHog via observable:', error);
@@ -337,6 +346,8 @@ export class WmCoreModule {
         {provide: ENVIRONMENT_CONFIG, useValue: config.environment},
         {provide: APP_TRANSLATION, useValue: config.translations || {}},
         {provide: POSTHOG_CONFIG, useValue: config.posthog},
+        PosthogCapacitorClient,
+        {provide: POSTHOG_CLIENT, useExisting: PosthogCapacitorClient},
       ],
     };
   }
