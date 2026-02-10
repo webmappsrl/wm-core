@@ -2,13 +2,17 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  Inject,
   Input,
   OnChanges,
+  Optional,
   Output,
   SimpleChange,
   SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
+import {POSTHOG_CLIENT} from '../store/conf/conf.token';
+import {WmPosthogClient} from '@wm-types/posthog';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {
@@ -67,7 +71,10 @@ export class FiltersComponent implements OnChanges {
     [name: string]: {[identifier: string]: any};
   }> = this._store.select(trackStats);
 
-  constructor(private _store: Store) {}
+  constructor(
+    private _store: Store,
+    @Optional() @Inject(POSTHOG_CLIENT) private _posthogClient?: WmPosthogClient,
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     //TODO: workaround per eliminare un filtro slider dalla home,
@@ -87,11 +94,21 @@ export class FiltersComponent implements OnChanges {
   }
 
   addPoisFilter(filter: any): void {
+    this._posthogClient?.capture('filterUsed', {
+      filter_type: 'pois',
+      filter_id: `${filter?.identifier ?? filter?.id ?? ''}`,
+      filter_name: 'poi_types',
+    });
     this.lastFilterTypeEvt.emit('pois');
     this.filterPoisEvt.emit(filter);
   }
 
   addTrackFilter(filter: SelectFilterOption, taxonomy?: string): void {
+    this._posthogClient?.capture('filterUsed', {
+      filter_type: 'tracks',
+      filter_id: `${filter?.identifier ?? ''}`,
+      filter_name: taxonomy ?? '',
+    });
     this.lastFilterTypeEvt.emit('tracks');
     this.filterTracksEvt.emit({...filter, taxonomy});
   }
