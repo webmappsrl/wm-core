@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from "@angular/core";
 import {Store} from "@ngrx/store";
 import {confOPTIONS} from "@wm-core/store/conf/conf.selector";
-import {IOPTIONS} from "@wm-core/types/config";
 import {Observable} from "rxjs";
 import {startGetDirections} from "@wm-core/store/user-activity/user-activity.action";
+import {OPTIONS} from "@wm-types/config";
 
 @Component({
   standalone: false,
@@ -40,7 +40,7 @@ import {startGetDirections} from "@wm-core/store/user-activity/user-activity.act
   encapsulation: ViewEncapsulation.None,
 })
 export class GetDirectionsComponent {
-  confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
+  confOPTIONS$: Observable<OPTIONS> = this._store.select(confOPTIONS);
 
   constructor(private _store: Store) {}
 

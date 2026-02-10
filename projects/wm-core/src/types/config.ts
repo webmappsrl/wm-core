@@ -1,5 +1,5 @@
 import {Hit} from '@wm-types/elastic';
-import {APP, WEBAPP} from '@wm-types/config';
+import {APP, OPTIONS, WEBAPP} from '@wm-types/config';
 
 export type IBASEBOX = IBOX & {
   box_type: 'base';
@@ -19,7 +19,6 @@ export type IBOX = {
     | 'ugc';
   title: iLocalString | string;
 };
-export type IDETAILSMAPBEHAVIOUR = 'all' | 'track' | 'poi' | 'route';
 export type IEXTERNALURLBOX = IHOMEBASEITEM & {
   box_type: 'external_url';
   url: string;
@@ -94,13 +93,6 @@ export interface Filter {
   upper?: number;
 }
 
-export interface IAPPDOWNLOADBUTTONS {
-  all: boolean;
-  poi: boolean;
-  route: boolean;
-  track: boolean;
-}
-
 export interface IAUTH {
   customCreatePostRoles?: boolean;
   enable?: boolean;
@@ -114,13 +106,6 @@ export interface IAUTH {
   webappEnable?: boolean;
 }
 
-export interface ICLUSTERING {
-  enable: boolean;
-  highZoom?: number;
-  highZoomRadius: number;
-  radius: number;
-}
-
 export interface ICONF {
   APP: APP;
   AUTH?: IAUTH;
@@ -131,7 +116,7 @@ export interface ICONF {
   JIDO_UPDATE_TIME?: number;
   LANGUAGES?: ILANGUAGES;
   MAP?: IMAP;
-  OPTIONS: IOPTIONS;
+  OPTIONS: OPTIONS;
   PRIVACY?: IPROJECT;
   PROJECT?: IPROJECT;
   THEME?: ITHEME;
@@ -281,88 +266,6 @@ export interface IMAP {
   tiles: {[name: string]: string}[];
   tracks?: any[];
   show_track_direction_arrow?: boolean;
-}
-
-export interface IMAPATTRIBUTION {
-  label?: string;
-  url?: string;
-}
-
-export interface IOPTIONS {
-  addArrowsOverTracks: boolean;
-  baseUrl: string;
-  beBaseUrl?: string;
-  caiScaleStyleZoom: number;
-  clustering: ICLUSTERING;
-  customBackgroundImageUrl?: string;
-  detailsMapBehaviour?: IDETAILSMAPBEHAVIOUR;
-  downloadFullGemoetryRouteIndex: boolean;
-  downloadRoutesInWebapp: boolean;
-  download_track_enable?: boolean;
-  enableTrackAdoption: boolean;
-  forceDefaultFeatureColor: boolean;
-  forceWelcomePagePopup: boolean;
-  galleryAnimationType?: string;
-  hideDisclaimer: boolean;
-  hideFilters: boolean;
-  hideGlobalMap: boolean;
-  hideNewsletterInSignup: boolean;
-  hideSearch: boolean;
-  highlightMapButton: boolean;
-  highlightReadMoreButton: boolean;
-  mapAttributions?: IMAPATTRIBUTION[];
-  maxFitZoom?: number;
-  maxZoomFeaturesInViewport?: number;
-  minDynamicOverlayLayersZoom: number;
-  minZoomFeaturesInViewport?: number;
-  passwordRecoveryUrl: string;
-  poiIconRadius: number;
-  poiIconZoom: number;
-  poiLabelMinZoom: number;
-  poiMaxRadius: number;
-  poiMinRadius: number;
-  poiMinZoom: number;
-  poiSelectedRadius: number;
-  print_track_enable?: boolean;
-  privacyUrl: string;
-  resetFiltersAtStartup: boolean;
-  showAppDownloadButtons: IAPPDOWNLOADBUTTONS;
-  showAscent: boolean;
-  showDescent: boolean;
-  showDifficultyLegend: boolean;
-  showDistance: boolean;
-  showDownloadTiles: boolean;
-  showDurationBackward: boolean;
-  showDurationForward: boolean;
-  showEditLink: boolean;
-  showEleFrom: boolean;
-  showEleMax: boolean;
-  showEleMin: boolean;
-  showEleTo: boolean;
-  showEmbeddedHtml: boolean;
-  showFeaturesInViewport: boolean;
-  showGeojsonDownload: boolean;
-  showGetDirections?: boolean;
-  showGpxDownload: boolean;
-  showHelp: boolean;
-  showKmlDownload: boolean;
-  showMapViewfinder: boolean;
-  showMediaName: boolean;
-  showPoiListOffline: boolean;
-  showShapefileDownload: boolean;
-  showTrackRefLabel: boolean;
-  showTravelMode?: boolean;
-  show_searchbar?: boolean;
-  skipRouteIndexDownload: boolean;
-  startFiltersDisabled: boolean;
-  startUrl: string;
-  termsAndConditionsUrl?: string;
-  trackAdoptionUrl?: string;
-  trackReconnaissanceUrl?: string;
-  trackRefLabelZoom: number;
-  useCaiScaleStyle: boolean;
-  useFeatureClassicSelectionStyle: boolean;
-  voucherUrl?: string;
 }
 
 export interface IOVERLAYERS {
