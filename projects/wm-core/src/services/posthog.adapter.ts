@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {Capacitor} from '@capacitor/core';
 import {
   Posthog,
   SetupOptions,
@@ -7,6 +6,8 @@ import {
   IdentifyOptions,
   RegisterOptions,
 } from '@capawesome/capacitor-posthog';
+import posthog from 'posthog-js';
+import {DeviceService} from './device.service';
 
 /**
  * Adapter per il modulo Posthog di Capacitor.
@@ -20,11 +21,42 @@ import {
   providedIn: 'root',
 })
 export class PosthogAdapter {
+  constructor(private deviceService: DeviceService) {}
+
   /**
-   * Inizializza PostHog con le opzioni fornite
+   * Inizializza PostHog con le opzioni fornite.
+   * Sul web, gestisce direttamente posthog-js per rispettare enableSessionReplay.
    */
   setup(options: SetupOptions): Promise<void> {
-    return Posthog.setup(options);
+    if (this.deviceService.isAppMobile) {
+      return Posthog.setup(options);
+    }
+
+    // Web: usa posthog-js direttamente per avere controllo completo
+    return new Promise((resolve) => {
+      const host = options.host || 'https://us.i.posthog.com';
+      const config: Record<string, unknown> = {
+        api_host: host,
+      };
+
+      if (options.enableSessionReplay) {
+        // Configura il session recording se abilitato
+        config.session_recording = {
+          recordCrossOriginIframes: true,
+        };
+        if (options.sessionReplayConfig?.maskAllTextInputs !== undefined) {
+          (config.session_recording as Record<string, unknown>).maskAllInputs =
+            options.sessionReplayConfig.maskAllTextInputs;
+        }
+      } else {
+        // Disabilita esplicitamente il session recording
+        // (posthog-js altrimenti usa le impostazioni del progetto PostHog)
+        config.disable_session_recording = true;
+      }
+
+      posthog.init(options.apiKey, config);
+      resolve();
+    });
   }
 
   /**
@@ -70,9 +102,9 @@ export class PosthogAdapter {
   }
 
   /**
-   * Restituisce la piattaforma corrente (ios, android, web)
+   * Indica se siamo su piattaforma nativa (iOS/Android app)
    */
-  getPlatform(): string {
-    return Capacitor.getPlatform();
+  get isNativePlatform(): boolean {
+    return this.deviceService.isAppMobile;
   }
 }

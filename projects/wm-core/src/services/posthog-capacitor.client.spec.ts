@@ -17,17 +17,12 @@ describe('PosthogCapacitorClient', () => {
       host: 'https://posthog.example.com',
     };
 
-    // Crea mock dell'adapter
-    mockAdapter = jasmine.createSpyObj('PosthogAdapter', [
-      'setup',
-      'capture',
-      'identify',
-      'register',
-      'reset',
-      'startSessionRecording',
-      'stopSessionRecording',
-      'getPlatform',
-    ]);
+    // Crea mock dell'adapter con metodi e proprietà
+    mockAdapter = jasmine.createSpyObj(
+      'PosthogAdapter',
+      ['setup', 'capture', 'identify', 'register', 'reset', 'startSessionRecording', 'stopSessionRecording'],
+      {isNativePlatform: true}, // Default: piattaforma nativa
+    );
 
     // Default mock implementations
     mockAdapter.setup.and.returnValue(Promise.resolve());
@@ -37,7 +32,6 @@ describe('PosthogCapacitorClient', () => {
     mockAdapter.reset.and.returnValue(Promise.resolve());
     mockAdapter.startSessionRecording.and.returnValue(Promise.resolve());
     mockAdapter.stopSessionRecording.and.returnValue(Promise.resolve());
-    mockAdapter.getPlatform.and.returnValue('ios');
   });
 
   afterEach(() => {
@@ -394,44 +388,61 @@ describe('PosthogCapacitorClient', () => {
   });
 
   describe('Piattaforme diverse', () => {
-    it('dovrebbe riconoscere la piattaforma iOS come nativa e usare il workaround', async () => {
-      mockAdapter.getPlatform.and.returnValue('ios');
+    // Helper per creare mock adapter con isNativePlatform specifico
+    const createMockAdapterWithPlatform = (isNative: boolean): jasmine.SpyObj<PosthogAdapter> => {
+      const adapter = jasmine.createSpyObj(
+        'PosthogAdapter',
+        ['setup', 'capture', 'identify', 'register', 'reset', 'startSessionRecording', 'stopSessionRecording'],
+        {isNativePlatform: isNative},
+      );
+      adapter.setup.and.returnValue(Promise.resolve());
+      adapter.capture.and.returnValue(Promise.resolve());
+      adapter.identify.and.returnValue(Promise.resolve());
+      adapter.register.and.returnValue(Promise.resolve());
+      adapter.reset.and.returnValue(Promise.resolve());
+      adapter.startSessionRecording.and.returnValue(Promise.resolve());
+      adapter.stopSessionRecording.and.returnValue(Promise.resolve());
+      return adapter;
+    };
+
+    it('dovrebbe usare il workaround per piattaforma nativa (iOS/Android)', async () => {
+      const nativeAdapter = createMockAdapterWithPlatform(true);
 
       TestBed.resetTestingModule();
-      client = createClient();
-
-      await client.initAndRegister({appName: 'TestApp'});
-
-      // Verifica che il registro usi il workaround iOS
-      expect(mockAdapter.register).toHaveBeenCalledWith({
-        key: 'appName',
-        value: {_value: 'TestApp'},
+      TestBed.configureTestingModule({
+        providers: [
+          PosthogCapacitorClient,
+          {provide: POSTHOG_CONFIG, useValue: mockConfig},
+          {provide: PosthogAdapter, useValue: nativeAdapter},
+        ],
       });
-    });
-
-    it('dovrebbe riconoscere la piattaforma Android come nativa e usare il workaround', async () => {
-      mockAdapter.getPlatform.and.returnValue('android');
-
-      TestBed.resetTestingModule();
-      client = createClient();
+      client = TestBed.inject(PosthogCapacitorClient);
 
       await client.initAndRegister({appName: 'TestApp'});
 
-      expect(mockAdapter.register).toHaveBeenCalledWith({
+      // Verifica che il registro usi il workaround per piattaforme native
+      expect(nativeAdapter.register).toHaveBeenCalledWith({
         key: 'appName',
         value: {_value: 'TestApp'},
       });
     });
 
     it('dovrebbe usare valori normali per la piattaforma web', async () => {
-      mockAdapter.getPlatform.and.returnValue('web');
+      const webAdapter = createMockAdapterWithPlatform(false);
 
       TestBed.resetTestingModule();
-      client = createClient();
+      TestBed.configureTestingModule({
+        providers: [
+          PosthogCapacitorClient,
+          {provide: POSTHOG_CONFIG, useValue: mockConfig},
+          {provide: PosthogAdapter, useValue: webAdapter},
+        ],
+      });
+      client = TestBed.inject(PosthogCapacitorClient);
 
       await client.initAndRegister({appName: 'TestApp'});
 
-      expect(mockAdapter.register).toHaveBeenCalledWith({
+      expect(webAdapter.register).toHaveBeenCalledWith({
         key: 'appName',
         value: 'TestApp',
       });

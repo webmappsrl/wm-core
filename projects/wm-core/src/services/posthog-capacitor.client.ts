@@ -6,9 +6,6 @@ import {PosthogAdapter} from './posthog.adapter';
 
 @Injectable()
 export class PosthogCapacitorClient implements WmPosthogClient {
-  private readonly isNativePlatform: boolean;
-  private readonly platform: string;
-
   private initialized = false;
   private sessionRecordingStarted = false;
   private recordingEnabled = false;
@@ -17,9 +14,13 @@ export class PosthogCapacitorClient implements WmPosthogClient {
   constructor(
     @Inject(POSTHOG_CONFIG) private config: WmPosthogConfig,
     private posthogAdapter: PosthogAdapter,
-  ) {
-    this.platform = this.posthogAdapter.getPlatform();
-    this.isNativePlatform = this.platform === 'ios' || this.platform === 'android';
+  ) {}
+
+  /**
+   * Indica se siamo su piattaforma nativa (iOS/Android app)
+   */
+  private get isNativePlatform(): boolean {
+    return this.posthogAdapter.isNativePlatform;
   }
 
   /**
@@ -160,7 +161,7 @@ export class PosthogCapacitorClient implements WmPosthogClient {
 
       await this.posthogAdapter.setup(options);
       this.initialized = true;
-      
+
     } catch (error) {
       console.error('[PostHog] Initialization failed:', error);
       this.initialized = false;
