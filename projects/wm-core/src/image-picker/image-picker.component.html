@@ -29,7 +29,7 @@
 
   <ion-row *ngIf="(photos|async) as photos">
     <ng-container *ngIf="photos?.length && photos.length < maxPhotos">
-      <ion-col size="4">
+      <ion-col size="4" *ngIf="(isMobile$|async)">
         <div
           class="
           wm-image-picker-imagecontainer

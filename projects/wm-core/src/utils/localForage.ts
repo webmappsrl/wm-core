@@ -135,6 +135,14 @@ export async function getEcTracks(): Promise<WmFeature<LineString>[]> {
 }
 
 export async function getImg(url: string): Promise<ArrayBuffer | string> {
+  // Se è un blob URL, controlla prima in deviceImg, poi in synchronizedImg
+  if (isBlobUrl(url)) {
+    const deviceRes = await handleAsync(deviceImg.getItem<ArrayBuffer>(`${url}`), 'getImg: Failed to get from deviceImg');
+    if (deviceRes) {
+      return deviceRes;
+    }
+  }
+
   const res = await handleAsync(synchronizedImg.getItem<ArrayBuffer>(`${url}`), 'getImg: Failed');
   return res ?? url;
 }
@@ -271,11 +279,72 @@ export function isValidUrl(url: string): boolean {
   }
 }
 
+export function isBlobUrl(url: string): boolean {
+  return url.startsWith('blob:');
+}
+
+export async function downloadBlobUrl(blobUrl: string): Promise<ArrayBuffer | null> {
+  try {
+    const response = await fetch(blobUrl);
+    if (!response.ok) {
+      console.warn(`downloadBlobUrl: Failed to fetch ${blobUrl}`);
+      return null;
+    }
+    return response.arrayBuffer();
+  } catch (e) {
+    console.warn(`downloadBlobUrl: Failed to fetch blob URL ${blobUrl}`, e);
+    return null;
+  }
+}
+
+export function extractBlobUrlsFromMedia(media: any[] | undefined): string[] {
+  if (!media || !Array.isArray(media)) {
+    return [];
+  }
+  return media
+    .map(m => m?.webPath)
+    .filter((webPath): webPath is string => {
+      return typeof webPath === 'string' && isBlobUrl(webPath);
+    });
+}
+
+export async function saveDeviceImg(url: string, value: ArrayBuffer | null = null): Promise<void> {
+  if (!isBlobUrl(url)) {
+    return; // Salva solo blob URL in deviceImg
+  }
+
+  if (value == null) {
+    value = await downloadBlobUrl(url);
+  }
+
+  if (value == null) {
+    console.warn(`saveDeviceImg: Failed to download ${url}`);
+    return;
+  }
+
+  try {
+    await deviceImg.setItem(url, value);
+  } catch (error) {
+    console.error(`saveDeviceImg: Failed to save ${url} to deviceImg`, error);
+  }
+}
+
+export async function removeDeviceImg(url: string): Promise<void> {
+  await handleAsync(deviceImg.removeItem(url), 'removeDeviceImg: Failed');
+}
+
 export function removeAuth(): Promise<void> {
   return deviceAuth.removeItem('user');
 }
 
 export async function removeDeviceUgcPoi(uuid: string): Promise<void> {
+  // Prima recupera il POI per rimuovere le immagini blob URL da deviceImg
+  const poi = await getDeviceUgcPoi(uuid);
+  if (poi && poi.properties.media) {
+    const blobUrls = extractBlobUrlsFromMedia(poi.properties.media);
+    await Promise.all(blobUrls.map(url => removeDeviceImg(url)));
+  }
+
   await handleAsync(
     deviceUgcPoi.removeItem(uuid),
     'removeDeviceUgcPoi: Failed to remove device UGC POI',
@@ -283,6 +352,13 @@ export async function removeDeviceUgcPoi(uuid: string): Promise<void> {
 }
 
 export async function removeDeviceUgcTrack(uuid: string): Promise<void> {
+  // Prima recupera il Track per rimuovere le immagini blob URL da deviceImg
+  const track = await getDeviceUgcTrack(uuid);
+  if (track && track.properties.media) {
+    const blobUrls = extractBlobUrlsFromMedia(track.properties.media);
+    await Promise.all(blobUrls.map(url => removeDeviceImg(url)));
+  }
+
   await handleAsync(
     deviceUgcTrack.removeItem(uuid),
     'removeDeviceUgcTrack: Failed to remove device UGC track',
@@ -432,6 +508,11 @@ export async function saveUgcPoi(feature: WmFeature<Point>): Promise<void> {
   const featureId = properties.id ?? properties?.uuid;
   const storage = properties.id ? synchronizedUgcPoi : deviceUgcPoi;
   await handleAsync(storage.setItem(`${featureId}`, feature), 'saveUgcPoi: Failed');
+
+  if (!properties.id && properties.media) {
+    const blobUrls = extractBlobUrlsFromMedia(properties.media);
+    await Promise.all(blobUrls.map(url => saveDeviceImg(url)));
+  }
 }
 
 export async function saveUgcTrack(feature: WmFeature<LineString>): Promise<void> {
@@ -439,6 +520,12 @@ export async function saveUgcTrack(feature: WmFeature<LineString>): Promise<void
   const featureId = properties.id ?? properties.uuid;
   const storage = properties.id ? synchronizedUgcTrack : deviceUgcTrack;
   await handleAsync(storage.setItem(`${featureId}`, feature), 'saveUgcTrack: Failed');
+
+  // Se è un UGC device (non sincronizzato), salva le immagini blob URL in deviceImg
+  if (!properties.id && properties.media) {
+    const blobUrls = extractBlobUrlsFromMedia(properties.media);
+    await Promise.all(blobUrls.map(url => saveDeviceImg(url)));
+  }
 }
 
 export async function saveUgc(feature: WmFeature<LineString | Point>): Promise<void> {
