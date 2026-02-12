@@ -5,7 +5,7 @@
     </ion-col>
   </ion-row>
   <ion-row *ngIf="!(photos|async)?.length">
-    <ion-col size="6">
+    <ion-col size="6" *ngIf="(isMobile$|async)">
       <div class="wm-image-picker-loadphoto" (click)="takePhoto()">
         <div class="wm-image-picker-loadphoto-icon">
           <ion-icon name="camera-outline"></ion-icon>

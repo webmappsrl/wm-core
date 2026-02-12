@@ -6,8 +6,9 @@ import {BehaviorSubject, combineLatest, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Media} from '@wm-types/feature';
 import {MAX_PHOTOS} from '@wm-core/constants/media';
-import { Store } from '@ngrx/store';
-import { deleteUgcMedia } from '@wm-core/store/features/ugc/ugc.actions';
+import {Store} from '@ngrx/store';
+import {deleteUgcMedia} from '@wm-core/store/features/ugc/ugc.actions';
+import {DeviceService} from '@wm-core/services/device.service';
 
 @Component({
   selector: 'wm-image-picker',
@@ -28,10 +29,11 @@ export class WmImagePickerComponent implements OnDestroy {
   private _synchronizedPhotos$ = new BehaviorSubject<Media[]>([]);
   private _localPhotos$ = new BehaviorSubject<Media[]>([]);
   private _combinedPhotosSubscription$: Subscription;
-
+  
+  isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this._deviceSvc.isMobile);
   photos: BehaviorSubject<Media[]> = new BehaviorSubject<Media[]>([]);
 
-  constructor(private _cameraSvc: CameraService, private _cdr: ChangeDetectorRef, private _store: Store) {
+  constructor(private _cameraSvc: CameraService, private _cdr: ChangeDetectorRef, private _store: Store, private _deviceSvc: DeviceService) {
     this._combinedPhotosSubscription$ = combineLatest([
       this._localPhotos$,
       this._synchronizedPhotos$
