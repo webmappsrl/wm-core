@@ -1,22 +1,26 @@
 import {Inject, Injectable} from '@angular/core';
-import {Capacitor} from '@capacitor/core';
-import {Posthog, SetupOptions} from '@capawesome/capacitor-posthog';
+import {SetupOptions} from '@capawesome/capacitor-posthog';
 import {POSTHOG_CONFIG} from '@wm-core/store/conf/conf.token';
 import {WmPosthogClient, WmPosthogConfig, WmPosthogInitOptions, WmPosthogProps} from '@wm-types/posthog';
+import {PosthogAdapter} from './posthog.adapter';
 
 @Injectable()
 export class PosthogCapacitorClient implements WmPosthogClient {
-  private readonly isNativePlatform: boolean;
-  private readonly platform: string;
-
   private initialized = false;
   private sessionRecordingStarted = false;
   private recordingEnabled = false;
   private recordingProbability = 0;
 
-  constructor(@Inject(POSTHOG_CONFIG) private config: WmPosthogConfig) {
-    this.platform = Capacitor.getPlatform();
-    this.isNativePlatform = this.platform === 'ios' || this.platform === 'android';
+  constructor(
+    @Inject(POSTHOG_CONFIG) private config: WmPosthogConfig,
+    private posthogAdapter: PosthogAdapter,
+  ) {}
+
+  /**
+   * Indica se siamo su piattaforma nativa (iOS/Android app)
+   */
+  private get isNativePlatform(): boolean {
+    return this.posthogAdapter.isNativePlatform;
   }
 
   /**
@@ -36,7 +40,7 @@ export class PosthogCapacitorClient implements WmPosthogClient {
     }
 
     try {
-      await Posthog.capture({event, properties: props});
+      await this.posthogAdapter.capture({event, properties: props});
     } catch (error) {
       console.error(`[PostHog] Failed to capture '${event}':`, error);
     }
@@ -51,8 +55,7 @@ export class PosthogCapacitorClient implements WmPosthogClient {
       return;
     }
 
-    await Posthog.identify({distinctId, userProperties: props});
-    await this.ensureSessionRecording();
+    await this.posthogAdapter.identify({distinctId, userProperties: props});
   }
 
   /**
@@ -84,7 +87,6 @@ export class PosthogCapacitorClient implements WmPosthogClient {
     }
 
     await this.registerProps(props);
-    await this.ensureSessionRecording();
 
     // Invia evento di inizio sessione
     try {
@@ -100,13 +102,13 @@ export class PosthogCapacitorClient implements WmPosthogClient {
   async reset(): Promise<void> {
     if (this.sessionRecordingStarted && this.isNativePlatform) {
       try {
-        await Posthog.stopSessionRecording();
+        await this.posthogAdapter.stopSessionRecording();
       } catch (error) {
         console.error('[PostHog] Failed to stop session recording:', error);
       }
     }
 
-    await Posthog.reset();
+    await this.posthogAdapter.reset();
     this.initialized = false;
     this.sessionRecordingStarted = false;
   }
@@ -129,22 +131,37 @@ export class PosthogCapacitorClient implements WmPosthogClient {
     }
 
     try {
+      // Determina se abilitare il session recording
+      const shouldEnableRecording =
+        this.recordingEnabled &&
+        this.recordingProbability > 0 &&
+        (this.recordingProbability >= 1 || Math.random() <= this.recordingProbability);
+
+      console.log(`[PostHog] Session recording: ${shouldEnableRecording ? 'enabled' : 'disabled'}`);
+
+      this.sessionRecordingStarted = shouldEnableRecording;
+
       const options: SetupOptions = {
         apiKey: this.config.apiKey,
         host: this.config.host,
-        enableSessionReplay: true,
-        sessionReplayConfig: {
+        enableSessionReplay: shouldEnableRecording,
+      };
+
+      // Aggiungi sessionReplayConfig solo se il recording è abilitato
+      if (shouldEnableRecording) {
+        options.sessionReplayConfig = {
           screenshotMode: true,
           maskAllTextInputs: false,
           maskAllImages: false,
           maskAllSandboxedViews: false,
           captureNetworkTelemetry: false,
           debouncerDelay: 1.0,
-        },
-      };
+        };
+      }
 
-      await Posthog.setup(options);
+      await this.posthogAdapter.setup(options);
       this.initialized = true;
+
     } catch (error) {
       console.error('[PostHog] Initialization failed:', error);
       this.initialized = false;
@@ -178,50 +195,10 @@ export class PosthogCapacitorClient implements WmPosthogClient {
       try {
         // WORKAROUND iOS: il plugin iOS usa getObject("value") e con primitivi può fallire
         const valueToSend = this.isNativePlatform ? {_value: value} : value;
-        await Posthog.register({key, value: valueToSend});
+        await this.posthogAdapter.register({key, value: valueToSend});
       } catch (error) {
         console.error(`[PostHog] Failed to register '${key}':`, error);
       }
-    }
-  }
-
-  /**
-   * Avvia il session recording se non è già attivo e se la probabilità lo consente
-   */
-  private async ensureSessionRecording(): Promise<void> {
-    if (!this.initialized || this.sessionRecordingStarted) {
-      return;
-    }
-
-    // Controlla se il recording è abilitato dalla configurazione
-    if (!this.recordingEnabled) {
-      console.log('[PostHog] Session recording disabled (recordingEnabled = false)');
-      return;
-    }
-
-    // Controlla la probabilità di registrazione (0-1, es. 0.5 = 50%)
-    if (this.recordingProbability <= 0) {
-      console.log('[PostHog] Session recording disabled (probability = 0)');
-      return;
-    }
-
-    const randomValue = Math.random();
-    if (randomValue > this.recordingProbability) {
-      console.log(
-        `[PostHog] Session recording skipped (random: ${randomValue.toFixed(3)}, probability: ${this.recordingProbability})`,
-      );
-      return;
-    }
-
-    console.log(
-      `[PostHog] Session recording enabled (random: ${randomValue.toFixed(3)}, probability: ${this.recordingProbability})`,
-    );
-
-    try {
-      await Posthog.startSessionRecording();
-      this.sessionRecordingStarted = true;
-    } catch (error) {
-      console.error('[PostHog] Failed to start session recording:', error);
     }
   }
 }
