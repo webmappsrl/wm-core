@@ -108,7 +108,8 @@ export class UgcEffects {
       mergeMap(action =>
         of(disableSyncInterval()).pipe(
           mergeMap(() => {
-            const poiId = action.poi?.properties?.id;
+            const poi = action.poi;
+            const poiId = poi?.properties?.id;
             if (poiId) {
               return from(this._ugcSvc.deleteApiPoi(poiId)).pipe(
                 mergeMap(() => [
@@ -118,8 +119,14 @@ export class UgcEffects {
                 ]),
                 catchError(error => of(deleteUgcPoiFailure({error}), enableSyncInterval())),
               );
+            } else if(poi) {
+              return from([
+                deleteUgcPoiSuccess({poi: action.poi}),
+                syncUgcPois(),
+                enableSyncInterval(),
+              ]);
             }
-            return of(deleteUgcPoiFailure({error: 'Poi ID not found'}));
+            return of(deleteUgcPoiFailure({error: 'Poi not found'}));
           }),
         ),
       ),
@@ -152,7 +159,7 @@ export class UgcEffects {
         of(disableSyncInterval()).pipe(
           mergeMap(() => {
             const track = action.track;
-            if (track) {
+            if (track?.properties?.id) {
               return from(this._ugcSvc.deleteTrack(track)).pipe(
                 mergeMap(() => [
                   deleteUgcTrackSuccess({track: action.track}),
@@ -161,6 +168,12 @@ export class UgcEffects {
                 ]),
                 catchError(error => of(deleteUgcTrackFailure({error}), enableSyncInterval())),
               );
+            } else if(track) {
+              return from([
+                deleteUgcTrackSuccess({track: action.track}),
+                syncUgcTracks(),
+                enableSyncInterval(),
+              ]);
             }
             return of(deleteUgcTrackFailure({error: 'Track not found'}));
           }),
@@ -263,12 +276,13 @@ export class UgcEffects {
       mergeMap(([action, poiDrawnGeometry]) =>
         of(disableSyncInterval()).pipe(
           mergeMap(() => {
-            const poiId = action.poi?.properties?.id;
+            const poi = action.poi;
+            const poiId = poi?.properties?.id;
+            const updatedPoi = {
+              ...action.poi,
+              geometry: poiDrawnGeometry ?? action.poi?.geometry,
+            };
             if (poiId) {
-              const updatedPoi = {
-                ...action.poi,
-                geometry: poiDrawnGeometry ?? action.poi?.geometry,
-              };
               return from(this._ugcSvc.updateApiPoi(updatedPoi)).pipe(
                 mergeMap(() => [
                   updateUgcPoiSuccess({poi: updatedPoi}),
@@ -277,8 +291,14 @@ export class UgcEffects {
                 ]),
                 catchError(error => of(updateUgcPoiFailure({error}), enableSyncInterval())),
               );
+            } else if(poi) {
+              return from([
+                updateUgcPoiSuccess({poi: updatedPoi}),
+                syncUgcPois(),
+                enableSyncInterval(),
+              ]);
             }
-            return of(updateUgcPoiFailure({error: 'Poi ID not found'}));
+            return of(updateUgcPoiFailure({error: 'Poi not found'}));
           }),
         ),
       ),
@@ -310,7 +330,8 @@ export class UgcEffects {
       mergeMap(action =>
         of(disableSyncInterval()).pipe(
           mergeMap(() => {
-            const trackId = action.track?.properties?.id;
+            const track = action.track;
+            const trackId = track?.properties?.id;
             if (trackId) {
               return from(this._ugcSvc.updateApiTrack(action.track)).pipe(
                 mergeMap(() => [
@@ -320,8 +341,14 @@ export class UgcEffects {
                 ]),
                 catchError(error => of(updateUgcTrackFailure({error}), enableSyncInterval())),
               );
+            } else if(track) {
+              return from([
+                updateUgcTrackSuccess({track: action.track}),
+                syncUgcTracks(),
+                enableSyncInterval()
+              ]);
             }
-            return of(updateUgcTrackFailure({error: 'Track ID not found'}));
+            return of(updateUgcTrackFailure({error: 'Track not found'}));
           }),
         ),
       ),
