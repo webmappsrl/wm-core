@@ -159,7 +159,8 @@ export class UgcEffects {
         of(disableSyncInterval()).pipe(
           mergeMap(() => {
             const track = action.track;
-            if (track?.properties?.id) {
+            const trackId = track?.properties?.id;
+            if (trackId) {
               return from(this._ugcSvc.deleteTrack(track)).pipe(
                 mergeMap(() => [
                   deleteUgcTrackSuccess({track: action.track}),
