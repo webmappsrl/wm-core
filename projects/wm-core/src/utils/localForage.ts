@@ -399,16 +399,20 @@ export async function removeSynchronizedUgcTrack(id: number): Promise<void> {
 }
 
 export async function removeUgcPoi(poi: WmFeature<Point>): Promise<void> {
+  if(!poi) return;
+
   const properties = poi.properties;
-  const featureId = properties.id ?? properties.rawData?.uuid;
-  const storage = properties.id ? synchronizedUgcPoi : deviceUgcPoi;
+  const featureId = properties?.id ?? properties?.uuid;
+  const storage = properties?.id ? synchronizedUgcPoi : deviceUgcPoi;
   await handleAsync(storage.removeItem(`${featureId}`), 'removeUgcPoi: Failed');
 }
 
 export async function removeUgcTrack(track: WmFeature<LineString>): Promise<void> {
+  if(!track) return;
+
   const properties = track.properties;
-  const featureId = properties.id ?? properties.rawData?.uuid;
-  const storage = properties.id ? synchronizedUgcTrack : deviceUgcTrack;
+  const featureId = properties?.id ?? properties?.uuid;
+  const storage = properties?.id ? synchronizedUgcTrack : deviceUgcTrack;
   await handleAsync(storage.removeItem(`${featureId}`), 'removeUgcTrack: Failed');
 }
 
