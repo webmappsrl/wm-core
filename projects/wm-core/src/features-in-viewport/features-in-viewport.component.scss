@@ -3,11 +3,13 @@ wm-features-in-viewport {
   bottom: 38px;
   left: 0;
   width: 100%;
+  transition: left 0.5s ease-in-out;
 
   ion-slides {
     ion-slide {
       wm-search-box {
         width: 100%;
+        padding-left: 8px;
         margin: 0;
         ion-card {
           display: flex;
@@ -42,9 +44,9 @@ wm-features-in-viewport {
               padding-left: 28px;
             }
             .wm-search-box-property.property-distance::before {
-              content: '\e9a3';
+              content: var(--icon-distance-content,'\e9a3');
               font-size: 23px;
-              font-family: 'webmapp';
+              font-family: var(--wm-font-family,'webmapp');
               position: absolute;
               left: 0;
               top: 0;
@@ -54,6 +56,17 @@ wm-features-in-viewport {
           wm-img {
             width: 118px;
             min-height: 86px !important;
+
+            img {
+              -webkit-user-drag: none;
+              -khtml-user-drag: none;
+              -moz-user-drag: none;
+              -o-user-drag: none;
+              user-select: none;
+              -moz-user-select: none;
+              -webkit-user-select: none;
+              -ms-user-select: none;
+            }
           }
         }
       }
@@ -88,5 +101,14 @@ wm-features-in-viewport {
         opacity: 0;
       }
     }
+  }
+}
+
+// Quando details-container ha la classe details-container-visible,
+// wm-features-in-viewport si adatta per desktop
+@media (min-width: 768px) {
+  .details-container.details-container-visible ~ wm-geobox-map wm-features-in-viewport {
+    left: 400px;
+    width: calc(100% - 400px);
   }
 }
