@@ -8,7 +8,7 @@ import {Observable, of} from 'rxjs';
 import {distinctUntilChanged, shareReplay, take} from 'rxjs/operators';
 import {Response} from '@wm-types/elastic';
 import {Filter, SliderFilter} from '../../../types/config';
-import {synchronizedApi} from '@wm-core/utils/localForage';
+import {synchronizedApi, getEcTrack as getEcTrackFromLocalForage, saveEcTrack} from '@wm-core/utils/localForage';
 import {WmFeature} from '@wm-types/feature';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 @Injectable({
@@ -36,7 +36,42 @@ export class EcService {
     if (id == null) return of(null);
     if (+id > -1) {
       const url = `${this._environmentSvc.awsApi}/tracks/${id}.json`;
-      return this._http.get<WmFeature<LineString>>(url);
+
+      return new Observable<WmFeature<LineString>>(observer => {
+        // Prima cerca la track nel localForage (ec-tracks synchronized)
+        getEcTrackFromLocalForage(`${id}`).then(cachedTrack => {
+          // Se ci sono dati in cache locale, emettili subito
+          if (cachedTrack) {
+            observer.next(cachedTrack);
+          }
+
+          // Effettua la richiesta HTTP per ottenere la versione aggiornata
+          this._http
+            .get<WmFeature<LineString>>(url)
+            .pipe(take(1))
+            .subscribe(
+              remoteTrack => {
+                if (remoteTrack) {
+                  // Aggiorna il localForage solo se la track era già stata scaricata dall'utente
+                  if (cachedTrack) {
+                    saveEcTrack(`${id}`, remoteTrack).catch(err =>
+                      console.warn('getEcTrack: Failed to update localForage cache', err),
+                    );
+                  }
+                  observer.next(remoteTrack);
+                }
+                observer.complete();
+              },
+              error => {
+                if (!cachedTrack) {
+                  observer.error(error); // Errore solo se non ci sono dati in cache
+                } else {
+                  observer.complete(); // Completa senza errore se esiste la cache
+                }
+              },
+            );
+        });
+      });
     }
   }
 
