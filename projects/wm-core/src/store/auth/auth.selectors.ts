@@ -15,7 +15,7 @@ export const user = createSelector(selectAuthState, state => state.user);
 
 export const privacyUser = createSelector(user, (user)=>{
   let privacy:Privacy|null = null;
-  const properties = user.properties;
+  const properties = user?.properties;
   const privacyHistory = properties?.privacy;
   if(privacyHistory!= null && privacyHistory.length> 0) {
     privacy = privacyHistory[privacyHistory.length-1];

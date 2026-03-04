@@ -5,17 +5,17 @@
     [src]="defaultPhotoPath"
     size="225x100"
   ></wm-img>
-  <ion-button *ngIf="(ugcOpen$|async)" color="light" (click)="openUgcUploader()">
+  <ion-button *ngIf="showUgcUploaderButton$|async" color="light" (click)="openUgcUploader()">
     <ion-icon slot="icon-only" name="cloud-upload-outline"></ion-icon>
   </ion-button>
   <div
     class="wm-box-title"
-    [style.bottom]="((ugcOpen$|async) && (needsPrivacyAgree$|async)) ? '15px' : '0px'"
+    [style.bottom]="(showPrivacyAgreeButton$|async) ? '15px' : '0px'"
   >
     {{"I miei percorsi" | wmtrans}}
   </div>
   <wm-privacy-agree-button
-    *ngIf="(ugcOpen$|async) && (needsPrivacyAgree$|async)"
+    *ngIf="showPrivacyAgreeButton$|async"
     expand="block"
     color="danger"
     fill="solid"

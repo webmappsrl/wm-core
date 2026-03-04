@@ -1,7 +1,6 @@
 import {Component, ViewEncapsulation, Input, ViewChild} from '@angular/core';
 import {IonSlides} from '@ionic/angular';
-import {Media, WmFeature} from '@wm-types/feature';
-import {Point} from 'geojson';
+import {Media} from '@wm-types/feature';
 import {BehaviorSubject, from, merge, of} from 'rxjs';
 import {filter, switchMap} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
