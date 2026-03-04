@@ -61,6 +61,8 @@ import {
   SelectFilterOption,
   SliderFilter,
 } from '@wm-core/types/config';
+import {ICONS} from '@wm-types/config';
+import {icons} from '@wm-core/store/icons/icons.selector';
 import {BehaviorSubject, combineLatest, from, merge, of, Subject, Subscription, EMPTY} from 'rxjs';
 import {Observable} from 'rxjs';
 import {
@@ -291,6 +293,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
   zoomFeaturesInViewport$: Observable<ZoomFeaturesInViewport> = this._store.select(
     confZoomFeaturesInViewport,
   );
+  icons$: Observable<ICONS> = this._store.select(icons);
   constructor(
     private _route: ActivatedRoute,
     private _cdr: ChangeDetectorRef,
