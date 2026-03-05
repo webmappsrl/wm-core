@@ -36,6 +36,7 @@ export class EcService {
     if (id == null) return of(null);
     if (+id > -1) {
       const url = `${this._environmentSvc.awsApi}/tracks/${id}.json`;
+      const lastModifiedKey = `${url}-last-modified`;
 
       return new Observable<WmFeature<LineString>>(observer => {
         // Prima cerca la track nel localForage (ec-tracks synchronized)
@@ -47,19 +48,39 @@ export class EcService {
 
           // Effettua la richiesta HTTP per ottenere la versione aggiornata
           this._http
-            .get<WmFeature<LineString>>(url)
+            .get<WmFeature<LineString>>(url, {
+              observe: 'response',
+              headers: (() => {
+                const cachedLastModified = localStorage.getItem(lastModifiedKey);
+                return cachedTrack && cachedLastModified ? {'If-Modified-Since': cachedLastModified} : {};
+              })(),
+            })
             .pipe(take(1))
             .subscribe(
-              remoteTrack => {
-                if (remoteTrack) {
-                  // Aggiorna il localForage solo se la track era già stata scaricata dall'utente
-                  if (cachedTrack) {
-                    saveEcTrack(`${id}`, remoteTrack).catch(err =>
-                      console.warn('getEcTrack: Failed to update localForage cache', err),
-                    );
+              response => {
+                const lastModified = response.headers.get('last-modified');
+
+                if (response.status === 200) {
+                  const remoteTrack = response.body;
+
+                  if (remoteTrack) {
+                    // Aggiorna il localForage solo se la track era già stata scaricata dall'utente
+                    if (cachedTrack) {
+                      saveEcTrack(`${id}`, remoteTrack).catch(err =>
+                        console.warn('getEcTrack: Failed to update localForage cache', err),
+                      );
+                    }
+
+                    if (lastModified) {
+                      localStorage.setItem(lastModifiedKey, lastModified);
+                    }
+
+                    observer.next(remoteTrack);
                   }
-                  observer.next(remoteTrack);
+                } else if (response.status === 304) {
+                  console.log(`No changes detected for track ${id}, using cached data.`);
                 }
+
                 observer.complete();
               },
               error => {
