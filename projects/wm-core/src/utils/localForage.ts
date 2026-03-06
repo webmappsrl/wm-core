@@ -8,7 +8,6 @@ import {isValidWmFeature} from '@wm-core/utils/features';
 
 export async function clearUgcSynchronizedData(): Promise<void> {
   await Promise.all([
-    synchronizedImg.clear(),
     synchronizedUgcTrack.clear(),
     synchronizedUgcPoi.clear(),
   ]);
