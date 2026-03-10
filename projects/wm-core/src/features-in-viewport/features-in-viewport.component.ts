@@ -56,6 +56,9 @@ export class WmFeaturesInViewportComponent {
         2160: {
           slidesPerView: 6,
         },
+        2520: {
+          slidesPerView: 7,
+        },
       },
     };
   }
