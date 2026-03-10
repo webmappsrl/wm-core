@@ -30,14 +30,33 @@ export class WmFeaturesInViewportComponent {
 
   private _getSliderOptions(featureCount: number): any {
     const isSingleFeature = featureCount === 1;
-    const isMobile = this._deviceSvc.isMobile;
     return {
-      slidesPerView: isMobile ? 1.2 : 2.5,
+      slidesPerView: 1.2,
       spaceBetween: isSingleFeature ? 0 : 8,
       slidesOffsetBefore: isSingleFeature ? 0 : 16,
       slidesOffsetAfter: isSingleFeature ? 0 : 16,
       centeredSlides: isSingleFeature,
       freeMode: true,
+      observeParents: true,
+      observer: true,
+      breakpointsBase: 'container',
+      breakpoints: {
+        768: {
+          slidesPerView: 2,
+        },
+        1080: {
+          slidesPerView: 3,
+        },
+        1440: {
+          slidesPerView: 4,
+        },
+        1800: {
+          slidesPerView: 5,
+        },
+        2160: {
+          slidesPerView: 6,
+        },
+      },
     };
   }
 }
