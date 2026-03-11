@@ -24,12 +24,27 @@ type TranslationValue = string | Record<string, string | null> | null | undefine
   encapsulation: ViewEncapsulation.None,
 })
 export class WmTabDescriptionComponent implements AfterViewInit {
-  htmlDescription$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
+  htmlDescription$: BehaviorSubject<TranslationValue> = new BehaviorSubject<TranslationValue>(null);
 
   @Input() set description(value: TranslationValue) {
     const processedValue = this._cleanTranslationObject(value);
-    const description = this._langSvc.instant(processedValue);
-    this.htmlDescription$.next(this._addTruncationClass(description));
+
+    if (processedValue && typeof processedValue === 'object' && !Array.isArray(processedValue)) {
+      const withTruncationPerLang = Object.keys(processedValue).reduce((acc, key) => {
+        const langValue = processedValue[key];
+        acc[key] =
+          typeof langValue === 'string' && langValue.trim().length > 0
+            ? this._addTruncationClass(langValue)
+            : langValue;
+        return acc;
+      }, {} as Record<string, string | null>);
+
+      this.htmlDescription$.next(withTruncationPerLang);
+    } else if (typeof processedValue === 'string') {
+      this.htmlDescription$.next(this._addTruncationClass(processedValue));
+    } else {
+      this.htmlDescription$.next(processedValue);
+    }
   }
   @ViewChild('descriptionElement') descriptionElement: ElementRef;
 
