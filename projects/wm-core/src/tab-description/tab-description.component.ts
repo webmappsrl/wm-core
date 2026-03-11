@@ -5,6 +5,7 @@ import {
   ViewEncapsulation,
   ElementRef,
   ViewChild,
+  AfterViewInit,
 } from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {LangService} from '@wm-core/localization/lang.service';
@@ -22,7 +23,7 @@ type TranslationValue = string | Record<string, string | null> | null | undefine
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class WmTabDescriptionComponent {
+export class WmTabDescriptionComponent implements AfterViewInit {
   htmlDescription$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
   @Input() set description(value: TranslationValue) {
@@ -35,8 +36,22 @@ export class WmTabDescriptionComponent {
   isExpanded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showExpandButton$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  constructor(public domSanitazer: DomSanitizer, private _langSvc: LangService) {
+  constructor(public domSanitazer: DomSanitizer, private _langSvc: LangService) {}
+
+  ngAfterViewInit() {
+    // imposta il numero massimo di righe come variabile globale
     document.documentElement.style.setProperty('--wm-max-description-lines', `${MAX_LINES}`);
+
+    const element = this.descriptionElement?.nativeElement as HTMLElement | undefined;
+    if (element) {
+      const computedLineHeight = window.getComputedStyle(element).lineHeight;
+
+      // se la line-height è valorizzata, usala come variabile CSS locale
+      if (computedLineHeight && computedLineHeight !== 'normal') {
+        element.style.setProperty('--wm-description-line-height', computedLineHeight);
+      }
+    }
+
     this._checkIfContentIsTruncated();
   }
 
