@@ -260,4 +260,13 @@ export const wmIT = {
   'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
     'È stata rilevata una registrazione interrotta. Vuoi riprenderla?',
   'Riprendi': 'Riprendi',
+  'Info': 'Info',
+  'Chiudi': 'Chiudi',
+  'Store non disponibile': 'Store non disponibile',
+  "Non è stato possibile aprire direttamente lo store. Prova ad aprire manualmente la pagina dell'app nello store.":
+    "Non è stato possibile aprire direttamente lo store. Prova ad aprire manualmente la pagina dell'app nello store.",
+  'Aggiornamento obbligatorio': 'Aggiornamento obbligatorio',
+  "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
+    "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.",
+  "È disponibile una nuova versione dell'app.": "È disponibile una nuova versione dell'app.",
 };

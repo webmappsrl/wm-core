@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {ModalController} from '@ionic/angular';
-import {DeviceService} from '@wm-core/services/device.service';
+import {UpdateService} from '@wm-core/services/update.service';
 
 @Component({
   standalone: false,
@@ -11,24 +11,25 @@ import {DeviceService} from '@wm-core/services/device.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModalReleaseUpdateComponent implements OnInit {
-  @Input() storeUrl: string;
+  @Input() storeUrl: string | null = null;
   @Input() gitVersion: string | null;
+  @Input() mandatory: boolean = false;
+  @Input() releaseNotes: string | null = null;
 
-  constructor(private _modalController: ModalController, private _deviceService: DeviceService) {}
+  constructor(private _modalController: ModalController, private _updateService: UpdateService) {}
 
   ngOnInit() {}
 
   async openStore() {
-    if (!this.storeUrl) {
-      this.close();
-      return;
-    }
-
-    await this._deviceService.openStoreUrl(this.storeUrl);
+    await this._updateService.openStoreUrl(this.storeUrl);
     this.close();
   }
 
   close() {
+    if (this.mandatory) {
+      // In caso di aggiornamento obbligatorio il modal non deve essere chiudibile manualmente
+      return;
+    }
     this._modalController.dismiss({
       dismissed: true,
     });
