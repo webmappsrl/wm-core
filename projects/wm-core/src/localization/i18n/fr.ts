@@ -254,4 +254,13 @@ export const wmFR = {
   'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
     'Une enregistrement a été interrompu. Voulez-vous le reprendre ?',
   'Riprendi': 'Reprendre',
+  'Info': 'Info',
+  'Chiudi': 'Fermer',
+  'Store non disponibile': 'Store non disponible',
+  "Non è stato possibile aprire direttamente lo store. Prova ad aprire manualmente la pagina dell'app nello store.":
+    "Il n'a pas été possible d'ouvrir directement le store. Essayez d'ouvrir manuellement la page de l'application dans le store.",
+  'Aggiornamento obbligatorio': 'Mise à jour obligatoire',
+  "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
+    "Pour continuer à utiliser l'application, vous devez installer la dernière version disponible.",
+  "È disponibile una nuova versione dell'app.": "Une nouvelle version de l'application est disponible.",
 };

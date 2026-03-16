@@ -252,4 +252,13 @@ export const wmPR = {
   'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
     'Foi detectada uma gravação interrompida. Deseja continuar?',
   'Riprendi': 'Continuar',
+  'Info': 'Info',
+  'Chiudi': 'Fechar',
+  'Store non disponibile': 'Loja não disponível',
+  "Non è stato possibile aprire direttamente lo store. Prova ad aprire manualmente la pagina dell'app nello store.":
+    'Não foi possível abrir a loja diretamente. Tente abrir manualmente a página do aplicativo na loja.',
+  'Aggiornamento obbligatorio': 'Atualização obrigatória',
+  "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
+    'Para continuar a utilizar o aplicativo, é necessário instalar a última versão disponível.',
+  "È disponibile una nuova versione dell'app.": 'Uma nova versão do aplicativo está disponível.',
 };

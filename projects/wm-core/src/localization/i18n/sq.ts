@@ -260,4 +260,13 @@ export const wmSQ = {
   'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
     'Është një regjistrim i ndalur. Dëshironi të vazhdohet?',
   'Riprendi': 'Vazhdo',
+  'Info': 'Info',
+  'Chiudi': 'Mbyll',
+  'Store non disponibile': 'Store nuk është i disponueshëm',
+  "Non è stato possibile aprire direttamente lo store. Prova ad aprire manualmente la pagina dell'app nello store.":
+    'Nuk ishte e mundur të hapej drejtpërdrejt store-i. Provoni të hapni manualisht faqen e aplikacionit në store.',
+  'Aggiornamento obbligatorio': 'Përditësim i detyrueshëm',
+  "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
+    'Për të vazhduar përdorimin e aplikacionit, duhet të instaloni versionin e fundit të disponueshëm.',
+  "È disponibile una nuova versione dell'app.": 'Një version i ri i aplikacionit është i disponueshëm.',
 };

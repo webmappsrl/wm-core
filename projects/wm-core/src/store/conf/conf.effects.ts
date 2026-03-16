@@ -17,6 +17,7 @@ import {currentEcLayerId} from '../features/ec/ec.actions';
 import {ILAYER} from '@wm-core/types/config';
 import {setLayer} from '../user-activity/user-activity.action';
 import {DeviceService} from '@wm-core/services/device.service';
+import {UpdateService} from '@wm-core/services/update.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -76,15 +77,15 @@ export class ConfEffects {
             filter(
               app =>
                 !!app &&
-                this._deviceService.isAppMobile &&
-                app.forceToReleaseUpdate === true &&
-                !!app.androidStore &&
-                !!app.iosStore,
+                app.geohubId != null &&
+                this._deviceService.isAppMobile
             ),
             take(1),
           ),
         ),
-        switchMap(([_, appConfig]) => this._deviceService.openUpdateModalIfNeeded(appConfig)),
+        switchMap(([_, confApp]) =>
+          this._updateService.handleAppUpdateFlow(confApp),
+        ),
       ),
     {dispatch: false},
   );
@@ -94,5 +95,6 @@ export class ConfEffects {
     private _actions$: Actions,
     private _store: Store,
     private _deviceService: DeviceService,
+    private _updateService: UpdateService,
   ) {}
 }

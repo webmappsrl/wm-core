@@ -251,4 +251,13 @@ export const wmES = {
   'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
     'Se ha detectado una grabación interrumpida. ¿Quieres continuar?',
   'Riprendi': 'Continuar',
+  'Info': 'Info',
+  'Chiudi': 'Cerrar',
+  'Store non disponibile': 'Tienda no disponible',
+  "Non è stato possibile aprire direttamente lo store. Prova ad aprire manualmente la pagina dell'app nello store.":
+    'No fue posible abrir la tienda directamente. Intenta abrir manualmente la página de la app en la tienda.',
+  'Aggiornamento obbligatorio': 'Actualización obligatoria',
+  "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
+    'Para seguir utilizando la aplicación, debes instalar la última versión disponible.',
+  "È disponibile una nuova versione dell'app.": 'Una nueva versión de la aplicación está disponible.',
 };

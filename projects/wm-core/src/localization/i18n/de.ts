@@ -256,4 +256,13 @@ export const wmDE = {
   'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
     'Eine unterbrochene Aufzeichnung wurde erkannt. Möchten Sie sie fortsetzen?',
   'Riprendi': 'Fortsetzen',
+  'Info': 'Info',
+  'Chiudi': 'Schließen',
+  'Store non disponibile': 'Store nicht verfügbar',
+  "Non è stato possibile aprire direttamente lo store. Prova ad aprire manualmente la pagina dell'app nello store.":
+    'Es war nicht möglich, den Store direkt zu öffnen. Versuchen Sie, die App-Seite im Store manuell zu öffnen.',
+  'Aggiornamento obbligatorio': 'Pflichtupdate',
+  "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
+    'Um die App weiter nutzen zu können, müssen Sie die neueste verfügbare Version installieren.',
+  "È disponibile una nuova versione dell'app.": 'Eine neue Version der App ist verfügbar.',
 };
