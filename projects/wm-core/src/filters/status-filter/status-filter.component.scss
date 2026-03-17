@@ -38,8 +38,10 @@ wm-status-filter {
       }
       wm-icon {
         height: 100%;
+        margin-right: 6px;
         div[appBuildSvg] {
           height: 100%;
+          display: flex;
         }
       }
     }
