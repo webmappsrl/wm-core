@@ -269,4 +269,8 @@ export const wmIT = {
   "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
     "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.",
   "È disponibile una nuova versione dell'app.": "È disponibile una nuova versione dell'app.",
+  "Dove": "Dove",
+  "Regione": "Regione",
+  "Provincia": "Provincia",
+  "Comune": "Comune",
 };

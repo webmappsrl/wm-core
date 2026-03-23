@@ -259,5 +259,10 @@ export const wmES = {
   'Aggiornamento obbligatorio': 'Actualización obligatoria',
   "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
     'Para seguir utilizando la aplicación, debes instalar la última versión disponible.',
-  "È disponibile una nuova versione dell'app.": 'Una nueva versión de la aplicación está disponible.',
+  "È disponibile una nuova versione dell'app.":
+    'Una nueva versión de la aplicación está disponible.',
+  'Dove': 'Donde',
+  'Regione': 'Región',
+  'Provincia': 'Provincia',
+  'Comune': 'Municipio',
 };

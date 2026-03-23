@@ -269,4 +269,8 @@ export const wmSQ = {
   "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
     'Për të vazhduar përdorimin e aplikacionit, duhet të instaloni versionin e fundit të disponueshëm.',
   "È disponibile una nuova versione dell'app.": 'Një version i ri i aplikacionit është i disponueshëm.',
+  "Dove": "Vendndodhja",
+  "Regione": "Rregioni",
+  "Provincia": "Provincë",
+  "Comune": "Komuna",
 };

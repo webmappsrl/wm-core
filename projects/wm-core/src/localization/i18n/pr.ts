@@ -261,4 +261,8 @@ export const wmPR = {
   "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
     'Para continuar a utilizar o aplicativo, é necessário instalar a última versão disponível.',
   "È disponibile una nuova versione dell'app.": 'Uma nova versão do aplicativo está disponível.',
+  "Dove": "Local",
+  'Regione': 'Região',
+  'Provincia': 'Província',
+  'Comune': 'Município',
 };
