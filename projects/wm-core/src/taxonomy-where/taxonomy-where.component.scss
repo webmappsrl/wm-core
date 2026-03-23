@@ -1,0 +1,26 @@
+wm-txn-where {
+  display: block;
+  margin: var(--wm-feature-details-margin);
+
+  .wm-title {
+    font-weight: var(--wm-feature-details-title-font-weight);
+    font-size: var(--wm-feature-details-title-font-size);
+    color: var(--wm-feature-details-title-color);
+    font-family: var(--wm-feature-details-title-font-family);
+  }
+
+  .wm-pageroute-tabdetail-label {
+    color: var(--wm-color-dark);
+  }
+
+  .wm-pageroute-tabdetail-icon {
+    color: var(--wm-color-primary);
+    padding: 0 5px;
+  }
+
+  .wm-pageroute-tabdetail-value {
+    color: var(--wm-color-dark);
+    font-weight: var(--wm-font-weight-bold);
+  }
+}
+

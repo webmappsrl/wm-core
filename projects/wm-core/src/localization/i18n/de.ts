@@ -265,4 +265,8 @@ export const wmDE = {
   "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
     'Um die App weiter nutzen zu können, müssen Sie die neueste verfügbare Version installieren.',
   "È disponibile una nuova versione dell'app.": 'Eine neue Version der App ist verfügbar.',
+  "Dove": "Ort",
+  "Regione": "Region",
+  "Provincia": "Provinz",
+  "Comune": "Gemeinde",
 };

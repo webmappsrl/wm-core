@@ -262,5 +262,10 @@ export const wmFR = {
   'Aggiornamento obbligatorio': 'Mise à jour obligatoire',
   "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
     "Pour continuer à utiliser l'application, vous devez installer la dernière version disponible.",
-  "È disponibile una nuova versione dell'app.": "Une nouvelle version de l'application est disponible.",
+  "È disponibile una nuova versione dell'app.":
+    "Une nouvelle version de l'application est disponible.",
+  'Dove': 'Où',
+  'Regione': 'Région',
+  'Provincia': 'Province',
+  'Comune': 'Commune',
 };

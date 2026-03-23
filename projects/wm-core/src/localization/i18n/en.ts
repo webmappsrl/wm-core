@@ -270,4 +270,8 @@ export const wmEN = {
   "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
     'To continue using the app, you must install the latest available version.',
   "È disponibile una nuova versione dell'app.": 'A new version of the app is available.',
+  "Dove": "Where",
+  "Regione": "Region",
+  "Provincia": "Province",
+  "Comune": "Municipality",
 };

@@ -3,6 +3,8 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
 import {BaseBoxComponent} from '../box';
 import {WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
+import {icons} from '@wm-core/store/icons/icons.selector';
+import {Observable} from 'rxjs';
 
 @Component({
   standalone: false,
@@ -12,4 +14,6 @@ import {Point} from 'geojson';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class PoiBoxComponent extends BaseBoxComponent<WmFeature<Point>> {}
+export class PoiBoxComponent extends BaseBoxComponent<WmFeature<Point>> {
+  icons$: Observable<{[key: string]: string}> = this._store.select(icons);
+}

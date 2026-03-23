@@ -1,27 +1,43 @@
 <ng-container *ngIf="data.properties as properties">
   <ion-card class="wm-box" (click)="clickEVT.emit()">
-    <div *ngIf="properties.feature_image as img">
+    <div *ngIf="properties.feature_image as img; else taxonomiesDiv" class="wm-box-header">
       <wm-img [src]="img.thumbnail" size="225x100"></wm-img>
+      <ng-container *ngTemplateOutlet="taxonomies"></ng-container>
     </div>
-    <div class="wm-box-name">{{properties.name|wmtrans}}</div>
-    <ion-label *ngIf="properties.distanceFromCurrentLocation">
-      {{"Distanza da te" | wmtrans}}
-      <span>{{properties.distanceFromCurrentLocation|distance:'auto':0}}</span>
-    </ion-label>
-    <ng-container *ngIf="properties.updatedAt as updatedAt">
-      <wm-updated-at [updatedAt]="updatedAt"></wm-updated-at>
-    </ng-container>
+
+    <ion-card-header>
+      <ion-card-subtitle
+        *ngIf="properties.taxonomyWheres != null && properties.taxonomyWheres.length > 0"
+      >
+        {{ properties.taxonomyWheres[properties.taxonomyWheres.length - 1] | wmtrans }}
+      </ion-card-subtitle>
+
+      <ion-card-title>
+        {{ properties?.name | wmtrans }}
+      </ion-card-title>
+    </ion-card-header>
+
     <div class="top-right-content">
       <ng-content select="[top-right]"></ng-content>
     </div>
   </ion-card>
 
   <ng-template #taxonomies>
-    <div class="wm-box-taxonomies" *ngIf="properties.taxonomyActivities as taxonomyActivities">
-      <div class="wm-box-taxonomy" *ngFor="let item taxonomyActivities">
-        <i [class]="item|getIcn"></i>
-        <div>{{item|lowercase|wmtrans}}</div>
-      </div>
+    <div
+      class="wm-box-taxonomies"
+      *ngIf="
+        properties.taxonomyActivities != null &&
+        properties.taxonomyActivities.length > 0 &&
+        properties.taxonomyActivities != '[]'
+      "
+    >
+      <ng-container *ngIf="icons$ | async as icons">
+        <ng-container *ngFor="let item of properties.taxonomyActivities">
+          <div class="wm-box-taxonomy" *ngIf="properties.taxonomyIcons?.[item] as taxonomyIcon">
+            <wm-icon [iconData]="taxonomyIcon"></wm-icon>
+          </div>
+        </ng-container>
+      </ng-container>
     </div>
   </ng-template>
 

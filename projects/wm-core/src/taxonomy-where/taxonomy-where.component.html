@@ -1,0 +1,41 @@
+<ng-container *ngIf="hasWhereInfo()">
+  <span class="wm-title">{{ 'Dove' | wmtrans }}</span>
+
+  <ion-list>
+    <ion-item *ngIf="municipalityWheres().length">
+      <i class="icon-outline-pin wm-pageroute-tabdetail-icon"> </i>
+      <ion-label start class="wm-pageroute-tabdetail-label">
+        {{ 'Comune' | wmtrans }}:
+      </ion-label>
+      <ion-note slot="end" class="wm-pageroute-tabdetail-value">
+        <ng-container *ngFor="let where of municipalityWheres(); let last = last">
+          {{ where.label | wmtrans }}<span *ngIf="!last">, </span>
+        </ng-container>
+      </ion-note>
+    </ion-item>
+
+    <ion-item *ngIf="provinceWheres().length">
+      <i class="icon-outline-flag wm-pageroute-tabdetail-icon"> </i>
+      <ion-label start class="wm-pageroute-tabdetail-label">
+        {{ 'Provincia' | wmtrans }}:
+      </ion-label>
+      <ion-note slot="end" class="wm-pageroute-tabdetail-value">
+        <ng-container *ngFor="let where of provinceWheres(); let last = last">
+          {{ where.label | wmtrans }}<span *ngIf="!last">, </span>
+        </ng-container>
+      </ion-note>
+    </ion-item>
+
+    <ion-item *ngIf="regionWheres().length">
+      <i class="icon-outline-globe wm-pageroute-tabdetail-icon"> </i>
+      <ion-label start class="wm-pageroute-tabdetail-label">
+        {{ 'Regione' | wmtrans }}:
+      </ion-label>
+      <ion-note slot="end" class="wm-pageroute-tabdetail-value">
+        <ng-container *ngFor="let where of regionWheres(); let last = last">
+          {{ where.label | wmtrans }}<span *ngIf="!last">, </span>
+        </ng-container>
+      </ion-note>
+    </ion-item>
+  </ion-list>
+</ng-container>
