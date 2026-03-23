@@ -28,7 +28,7 @@ import {WmTabDescriptionComponent} from './tab-description/tab-description.compo
 import {WmTabDetailComponent} from './tab-detail/tab-detail.component';
 import {WmTabHowtoComponent} from './tab-howto/tab-howto.component';
 import {WmTabNearestPoiComponent} from './tab-nearest-poi/tab-nearest-poi.component';
-import {WmWhereComponent} from './where/where.component';
+import {WmTaxonomyWhereComponent} from './taxonomy-where/taxonomy-where.component';
 import {WmTrackAudioComponent} from './track-audio/track-audio.component';
 import {WmTrackEdgesComponent} from './track-edges/track-edges.component';
 import {WmInnerHtmlComponent} from './inner-html/inner-html.component';
@@ -105,7 +105,7 @@ export const declarations = [
   WmTabDescriptionComponent,
   WmTabHowtoComponent,
   WmTabNearestPoiComponent,
-  WmWhereComponent,
+  WmTaxonomyWhereComponent,
   WmTrackAudioComponent,
   WmSlopeChartComponent,
   WmRelatedUrlsComponent,

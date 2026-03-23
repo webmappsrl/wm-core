@@ -40,10 +40,10 @@
   </wm-slope-chart>
   <wm-get-directions></wm-get-directions>
   <wm-tab-detail class="webmapp-route-tab" [properties]="ecTrackProperties"></wm-tab-detail>
-  <wm-where
+  <wm-txn-where
     *ngIf="ecTrackProperties?.taxonomy_where"
     [taxonomyWheres]="ecTrackProperties?.taxonomy_where"
-  ></wm-where>
+  ></wm-txn-where>
   <wm-tab-howto
     *ngIf="ecTrackProperties?.taxonomy?.activity"
     [properties]="ecTrackProperties"

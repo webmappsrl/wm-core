@@ -9,15 +9,22 @@ interface NormalizedWhereItem {
 
 @Component({
   standalone: false,
-  selector: 'wm-where',
-  templateUrl: './where.component.html',
-  styleUrls: ['./where.component.scss'],
+  selector: 'wm-txn-where',
+  templateUrl: './taxonomy-where.component.html',
+  styleUrls: ['./taxonomy-where.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class WmWhereComponent {
+export class WmTaxonomyWhereComponent {
   taxonomyWheres = input<TaxonomyWhereMap | null | undefined>(null);
 
+  /**
+   * Normalizza l'input `taxonomyWheres` (una mappa `{ [id]: { ...lang, _admin_level } }`)
+   * in una lista più comoda per il template.
+   *
+   * Usiamo `computed()` così Angular ricalcola questa trasformazione solo quando
+   * cambia `taxonomyWheres()` (ed evita di fare lavoro ripetuto nei getter/nel rendering).
+   */
   private _normalized = computed<NormalizedWhereItem[]>(() => {
     const value = this.taxonomyWheres();
     return Object.values(value ?? {})
