@@ -1,4 +1,10 @@
-import {ChangeDetectionStrategy, Component, computed, input, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+  ViewEncapsulation,
+} from '@angular/core';
 import {TaxonomyWhereEntry, TaxonomyWhereMap} from '@wm-types/feature';
 import {Language, LANGUAGES} from '@wm-types/language';
 
@@ -25,9 +31,9 @@ export class WmTaxonomyWhereComponent {
    * Usiamo `computed()` così Angular ricalcola questa trasformazione solo quando
    * cambia `taxonomyWheres()` (ed evita di fare lavoro ripetuto nei getter/nel rendering).
    */
-  private _normalized = computed<NormalizedWhereItem[]>(() => {
-    const value = this.taxonomyWheres();
-    return Object.values(value ?? {})
+  private _normalizedWhere = computed<NormalizedWhereItem[]>(() => {
+    const value = this.taxonomyWheres() ?? {};
+    return Object.values(value)
       .map(entry => {
         const adminLevel = this._asAdminLevel(entry);
         if (adminLevel == null) return null;
@@ -36,9 +42,9 @@ export class WmTaxonomyWhereComponent {
       .filter((v): v is NormalizedWhereItem => v != null);
   });
 
-  municipalityWheres = computed(() => this._normalized().filter(w => w.adminLevel === 8));
-  provinceWheres = computed(() => this._normalized().filter(w => w.adminLevel === 6));
-  regionWheres = computed(() => this._normalized().filter(w => w.adminLevel === 4));
+  municipalityWheres = computed(() => this._normalizedWhere().filter(w => w.adminLevel === 8));
+  provinceWheres = computed(() => this._normalizedWhere().filter(w => w.adminLevel === 6));
+  regionWheres = computed(() => this._normalizedWhere().filter(w => w.adminLevel === 4));
   hasWhereInfo = computed(
     () =>
       this.municipalityWheres().length > 0 ||
