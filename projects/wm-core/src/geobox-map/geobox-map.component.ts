@@ -36,6 +36,8 @@ import {
 } from '@wm-core/store/features/ec/ec.selector';
 import {
   backOfMapDetails,
+  closeDownloads,
+  closeUgc,
   goToHome,
   openUgc,
   resetMap,
@@ -44,6 +46,7 @@ import {
   setFocusPosition,
   setLastFilterType,
   setLayer,
+  setMapDetailsStatus,
   setWmMapTilesBoundingBox,
   startLoader,
   stopLoader,
@@ -497,7 +500,10 @@ export class WmGeoboxMapComponent implements OnDestroy {
   }
 
   selectedLayer(layer: any): void {
-    this._store.dispatch(setLayer(layer));
+    this._urlHandlerSvc.updateURL({layer: layer?.id ?? undefined});
+    this._store.dispatch(closeUgc());
+    this._store.dispatch(closeDownloads());
+    this._store.dispatch(setMapDetailsStatus({status: 'open'}));
   }
 
   selectedLayerById(id: number): void {
