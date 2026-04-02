@@ -574,7 +574,8 @@ export class WmGeoboxMapComponent implements OnDestroy {
   }
 
   setWmMapFeatureCollection(overlay: any): void {
-    this._store.dispatch(setLayer(null));
+    this._urlHandlerSvc.updateURL({layer: undefined});
+    this._store.dispatch(setMapDetailsStatus({status: 'background'}));
     this.wmMapFeatureCollectionOverlay$.next(overlay);
     if (overlay != null) {
       this.overlayFeatureCollections$.pipe(take(1)).subscribe(feature => {
