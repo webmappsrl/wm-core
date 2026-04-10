@@ -128,5 +128,6 @@ export class FiltersComponent implements OnChanges {
   resetFilters(): void {
     this._store.dispatch(resetTrackFilters());
     this._store.dispatch(resetPoiFilters());
+    this.resetFiltersEvt.emit();
   }
 }
