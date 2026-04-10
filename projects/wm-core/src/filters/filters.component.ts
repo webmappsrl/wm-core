@@ -4,11 +4,8 @@ import {
   EventEmitter,
   Inject,
   Input,
-  OnChanges,
   Optional,
   Output,
-  SimpleChange,
-  SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
 import {POSTHOG_CLIENT} from '../store/conf/conf.token';
@@ -40,7 +37,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class FiltersComponent implements OnChanges {
+export class FiltersComponent {
   @Input() set wmFiltersClose(selector: string) {
     if (selector != 'wm-filters') {
       this.toggle$.next(false);
@@ -54,7 +51,6 @@ export class FiltersComponent implements OnChanges {
   @Output() lastFilterTypeEvt: EventEmitter<FilterType> = new EventEmitter();
   @Output() removefilterPoiEvt: EventEmitter<SelectFilterOption | SliderFilter | Filter> =
     new EventEmitter<SelectFilterOption | SliderFilter | Filter>();
-  @Output() removefilterTracksEvt: EventEmitter<Filter> = new EventEmitter<Filter>();
   @Output() resetFiltersEvt: EventEmitter<void> = new EventEmitter<void>();
 
   confFILTERS$: Observable<{[key: string]: any} | undefined> = this._store.select(confFILTERS);
@@ -75,23 +71,6 @@ export class FiltersComponent implements OnChanges {
     private _store: Store,
     @Optional() @Inject(POSTHOG_CLIENT) private _posthogClient?: WmPosthogClient,
   ) {}
-
-  ngOnChanges(changes: SimpleChanges): void {
-    //TODO: workaround per eliminare un filtro slider dalla home,
-    //approfondire perche si debba cancellarlo due volte migliorare il codice evitando questo changes
-    Object.keys(changes).forEach(key => {
-      const change: SimpleChange = changes[key];
-      if (key === 'trackFilters') {
-        const diff = change.previousValue?.filter(x => !change.currentValue.includes(x)) || [];
-        diff
-          .filter(d => d.type && d.type === 'slider')
-          .forEach(filter => {
-            //   this.removefilterTracksEvt.emit(filter);
-            //   this.removefilterTracksEvt.emit(filter);
-          });
-      }
-    });
-  }
 
   addPoisFilter(filter: any): void {
     this._posthogClient?.capture('filterUsed', {

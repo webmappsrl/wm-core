@@ -487,10 +487,6 @@ export class WmGeoboxMapComponent implements OnDestroy {
 
   removeActivityFilter(activity: string): void {}
 
-  removeTrackFilter(filter: Filter): void {
-    this._store.dispatch(toggleTrackFilter({filter}));
-  }
-
   resetFilters(): void {
     this._store.dispatch(goToHome());
   }

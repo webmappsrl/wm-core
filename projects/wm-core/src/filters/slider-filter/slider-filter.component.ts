@@ -1,16 +1,20 @@
 import {Component, Host, Inject, Input, OnDestroy, Optional, ViewEncapsulation} from '@angular/core';
 import {RangeCustomEvent} from '@ionic/angular';
-import {merge, Subscription} from 'rxjs';
+import {Subscription} from 'rxjs';
+import {Store} from '@ngrx/store';
 import {FiltersComponent} from '../filters.component';
 import {Filter, SliderFilter} from '../../types/config';
 import {POSTHOG_CLIENT} from '../../store/conf/conf.token';
 import {WmPosthogClient} from '@wm-types/posthog';
+import {filterTracks} from '../../store/user-activity/user-activity.selector';
+
 export declare type RangeValue =
   | number
   | {
       lower: number;
       upper: number;
     };
+
 @Component({
   standalone: false,
   selector: 'wm-slider-filter',
@@ -22,23 +26,18 @@ export class SliderFilterComponent implements OnDestroy {
   @Input() filter: SliderFilter;
   @Input() filterName: any;
 
-  currentValue: SliderFilter|null = null;
-  resetFilterSub: Subscription = Subscription.EMPTY;
-//@ts-ignore
+  currentValue: SliderFilter | null = null;
+
+  private _storeSub$: Subscription = Subscription.EMPTY;
+
   constructor(
     @Host() public parent: FiltersComponent,
+    private _store: Store,
     @Optional() @Inject(POSTHOG_CLIENT) private _posthogClient?: WmPosthogClient,
   ) {
-    this.resetFilterSub = merge(
-      this.parent.resetFiltersEvt,
-      this.parent.removefilterTracksEvt,
-    ).subscribe(filter => {
-      if (
-        filter == null ||
-        (filter != null && (filter as Filter).identifier === this.filter.identifier)
-      ) {
-        this.currentValue = null;
-      }
+    this._storeSub$ = this._store.select(filterTracks).subscribe(tracks => {
+      const match = tracks?.find((f: Filter) => f.identifier === this.filter?.identifier);
+      this.currentValue = match ? (match as SliderFilter) : null;
     });
   }
 
@@ -69,6 +68,6 @@ export class SliderFilterComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.resetFilterSub.unsubscribe();
+    this._storeSub$.unsubscribe();
   }
 }
