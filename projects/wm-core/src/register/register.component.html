@@ -1,12 +1,12 @@
 <wm-modal-header
   class="wm-login-header"
-  [title]="'Unisciti alla community di webmapp!' | wmtrans"
+  [title]="'Unisciti alla community CAI' | wmtrans"
   (dismiss)="dismiss()"
 >
 </wm-modal-header>
 
 <ion-content scrollY="false">
-  <form class="wm-registeruser-form"  [formGroup]="registerForm">
+  <form class="wm-registeruser-form" [formGroup]="registerForm">
     <div class="wm-registeruser-field-container">
       <ion-label class="wm-registeruser-label">
         {{ "Nome" | wmtrans }}
@@ -25,7 +25,9 @@
         >
         </ion-input>
       </ion-item>
-      <ng-container *ngIf="!!errorControl.name.errors && (errorControl.name.dirty || errorControl.name.touched)">
+      <ng-container
+        *ngIf="!!errorControl.name.errors && (errorControl.name.dirty || errorControl.name.touched)"
+      >
         <span class="wm-registeruser-field-error" *ngIf="errorControl.name.errors?.required">
           {{ "E' necessario inserire un nome" | wmtrans }}
         </span>
@@ -51,7 +53,9 @@
         >
         </ion-input>
       </ion-item>
-      <ng-container *ngIf="!!errorControl.email.errors && (errorControl.email.dirty || errorControl.email.touched)">
+      <ng-container
+        *ngIf="!!errorControl.email.errors && (errorControl.email.dirty || errorControl.email.touched)"
+      >
         <span class="wm-registeruser-field-error" *ngIf="errorControl.email.errors?.required">
           {{ "E' necessario inserire una email" | wmtrans }}
         </span>
@@ -84,7 +88,9 @@
         >
         </ion-input>
       </ion-item>
-      <ng-container *ngIf="!!errorControl.cf.errors && (errorControl.cf.dirty || errorControl.cf.touched)">
+      <ng-container
+        *ngIf="!!errorControl.cf.errors && (errorControl.cf.dirty || errorControl.cf.touched)"
+      >
         <span class="wm-registeruser-field-error" *ngIf="errorControl.cf.errors?.pattern">
           {{ "Il codice fiscale inserito non è valido" | wmtrans }}
         </span>
@@ -110,11 +116,10 @@
         >
         </ion-input>
       </ion-item>
-      <ng-container *ngIf="!!errorControl.password.errors && (errorControl.password.dirty || errorControl.password.touched)">
-        <span
-          class="wm-registeruser-field-error"
-          *ngIf="errorControl.password.errors?.required"
-        >
+      <ng-container
+        *ngIf="!!errorControl.password.errors && (errorControl.password.dirty || errorControl.password.touched)"
+      >
+        <span class="wm-registeruser-field-error" *ngIf="errorControl.password.errors?.required">
           {{ "E' necessario inserire la password" | wmtrans }}
         </span>
       </ng-container>
@@ -139,7 +144,9 @@
         >
         </ion-input>
       </ion-item>
-      <ng-container *ngIf="!!errorControl.confirmPassword.errors && (errorControl.confirmPassword.dirty || errorControl.confirmPassword.touched)">
+      <ng-container
+        *ngIf="!!errorControl.confirmPassword.errors && (errorControl.confirmPassword.dirty || errorControl.confirmPassword.touched)"
+      >
         <span
           class="wm-registeruser-field-error"
           *ngIf="errorControl.confirmPassword.errors?.required"
@@ -161,7 +168,11 @@
     </ion-label>
 
     <div class="wm-registeruser-buttoncontainer">
-      <ion-button [disabled]="!(isValid$|async)" (click)="register()" class="webmapp-registeruser-button">
+      <ion-button
+        [disabled]="!(isValid$|async)"
+        (click)="register()"
+        class="webmapp-registeruser-button"
+      >
         {{ "Registrati" | wmtrans }}
       </ion-button>
     </div>
