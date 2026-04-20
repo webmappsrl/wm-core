@@ -18,4 +18,8 @@ export class WmTabHowtoComponent {
   @Input() properties: WmProperties;
 
   constructor(private _store: Store) {}
+
+  hasIcon(item: any): boolean {
+    return !!(item?.icon_name || item?.icon);
+  }
 }

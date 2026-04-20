@@ -46,9 +46,14 @@
   >
     <ng-container *ngIf="icons$ | async as icons">
       <ng-container *ngFor="let item of data?.taxonomyActivities">
-        <div class="wm-box-taxonomy" *ngIf="data.taxonomyIcons?.[item] as taxonomyIcon">
-          <wm-icon [iconData]="taxonomyIcon"></wm-icon>
-        </div>
+        <ng-container *ngIf="data.taxonomyIcons?.[item] as taxonomyIcon">
+          <div
+            class="wm-box-taxonomy"
+            *ngIf="(taxonomyIcon?.icon_name && icons?.[taxonomyIcon.icon_name])"
+          >
+            <wm-icon [iconData]="taxonomyIcon"></wm-icon>
+          </div>
+        </ng-container>
       </ng-container>
     </ng-container>
   </div>
