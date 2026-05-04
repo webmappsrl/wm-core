@@ -37,6 +37,9 @@ export class TrackRelatedPoiComponent {
   defaultPhotoPath = '/assets/icon/no-photo.svg';
   isExpanded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   pois$: Observable<WmFeature<Point>[]> = this._store.select(currentEcRelatedPois).pipe(
+    map(pois =>
+      (pois ?? []).filter(p => !(p.properties as any)?.wmNotAccessibleRelated),
+    ),
     switchMap(pois =>
       pois?.length ? combineLatest([
         ...pois.map(poi =>

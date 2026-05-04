@@ -32,6 +32,7 @@ export class EcEffects {
       ofType(currentEcTrackId),
       switchMap(action =>
         from(this._ecSvc.getEcTrack(action.currentEcTrackId)).pipe(
+          map(ecTrack => this._ecSvc.decorateNotAccessibleRelatedPoi(ecTrack)),
           map(ecTrack => loadCurrentEcTrackSuccess({ecTrack})),
           catchError(error => of(loadCurrentEcTrackFailure({error}))),
         ),
