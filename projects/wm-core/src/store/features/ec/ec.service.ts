@@ -11,6 +11,8 @@ import {Filter, SliderFilter} from '../../../types/config';
 import {synchronizedApi, getEcTrack as getEcTrackFromLocalForage, saveEcTrack} from '@wm-core/utils/localForage';
 import {WmFeature} from '@wm-types/feature';
 import {EnvironmentService} from '@wm-core/services/environment.service';
+import {LangService} from '@wm-core/localization/lang.service';
+import {EC_NOT_PASSABLE_ONLY_LABEL, EC_NOT_PASSABLE_SUFFIX} from '@wm-core/constants/ec';
 @Injectable({
   providedIn: 'root',
 })
@@ -32,7 +34,7 @@ export class EcService {
    * @param {HttpClient} _http
    * @memberof ElasticService
    */
-  constructor(private _http: HttpClient, private _environmentSvc: EnvironmentService) {}
+  constructor(private _http: HttpClient, private _environmentSvc: EnvironmentService, private _langSvc: LangService) {}
 
   public decorateNotAccessibleRelatedPoi(
     track: WmFeature<LineString> | null | undefined,
@@ -235,9 +237,51 @@ export class EcService {
     return null;
   }
 
-  private _getTrackDisplayName(track: WmFeature<LineString> | null | undefined): string {
-    const rawName = (track as any)?.properties?.name;
-    return this._pickFirstStringValue(rawName) ?? '';
+  private _trackNameForLang(
+    rawName: unknown,
+    lang: string,
+    defaultLang: string,
+  ): string {
+    if (rawName && typeof rawName === 'object' && !Array.isArray(rawName)) {
+      const o = rawName as Record<string, unknown>;
+      const direct = o[lang];
+      if (typeof direct === 'string' && direct.trim().length > 0) {
+        return direct.trim();
+      }
+      const fromDefault = o[defaultLang];
+      if (typeof fromDefault === 'string' && fromDefault.trim().length > 0) {
+        return fromDefault.trim();
+      }
+      return this._pickFirstStringValue(rawName)?.trim() ?? '';
+    }
+    if (typeof rawName === 'string' && rawName.trim().length > 0) {
+      return rawName.trim();
+    }
+    return '';
+  }
+
+  private _notPassableRelatedPoiName(rawName: unknown): Record<string, string> {
+    const defaultLang =
+      this._langSvc.defaultLang || this._langSvc.getFallbackLang() || 'it';
+    const langs = [...(this._langSvc.getLangs() ?? [])];
+    if (langs.length === 0) {
+      const cur = this._langSvc.getCurrentLang();
+      if (cur) {
+        langs.push(cur);
+      }
+      const fb = this._langSvc.getFallbackLang();
+      if (fb && !langs.includes(fb)) {
+        langs.push(fb);
+      }
+    }
+    const out: Record<string, string> = {};
+    for (const lang of langs) {
+      const base = this._trackNameForLang(rawName, lang, defaultLang);
+      const suffix = EC_NOT_PASSABLE_SUFFIX[lang] ?? EC_NOT_PASSABLE_SUFFIX['en'];
+      const only = EC_NOT_PASSABLE_ONLY_LABEL[lang] ?? EC_NOT_PASSABLE_ONLY_LABEL['en'];
+      out[lang] = base.length > 0 ? `${base} ${suffix}` : only;
+    }
+    return out;
   }
 
   private _getLineStringMidpoint(
@@ -269,15 +313,15 @@ export class EcService {
     );
     if (alreadyThere) return track;
 
-    const trackName = this._getTrackDisplayName(track);
     const message = props?.not_accessible_message ?? '';
+    const name = this._notPassableRelatedPoiName(props?.name);
 
     const poi: WmFeature<Point> = {
       type: 'Feature',
       properties: {
         id: EcService.NOT_ACCESSIBLE_RELATED_POI_ID,
         wmNotAccessibleRelated: true,
-        name: trackName ? `${trackName} non accessibile` : 'Non accessibile',
+        name,
         description: message,
         feature_image: {
           sizes: {
