@@ -25,10 +25,11 @@ export async function downloadEcTrack(
   trackid: string,
   track: WmFeature<LineString>,
   callBackStatusFn = updateStatus,
+  tileUrlTemplate?: string,
 ): Promise<number> {
   let totalSize = 0;
   const tiles = getTilesByGeometry(track.geometry);
-  totalSize += await downloadTiles(tiles, trackid, callBackStatusFn);
+  totalSize += await downloadTiles(tiles, trackid, callBackStatusFn, tileUrlTemplate);
   totalSize += await saveEcTrack(trackid, track, callBackStatusFn, totalSize);
 
   return Promise.resolve(totalSize);
