@@ -2,25 +2,49 @@ wm-txn-where {
   display: block;
   margin: var(--wm-feature-details-margin);
 
-  .wm-title {
-    font-weight: var(--wm-feature-details-title-font-weight);
+  .wm-txn-where-title {
+    display: flex;
+    align-items: center;
+    gap: 3px;
     font-size: var(--wm-feature-details-title-font-size);
+    font-weight: var(--wm-feature-details-title-font-weight);
     color: var(--wm-feature-details-title-color);
     font-family: var(--wm-feature-details-title-font-family);
   }
 
-  .wm-pageroute-tabdetail-label {
-    color: var(--wm-color-dark);
-  }
+  .wm-txn-where-item {
+    font-size: var(--wm-font-mf);
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: space-between;
 
-  .wm-pageroute-tabdetail-icon {
-    color: var(--wm-color-primary);
-    padding: 0 5px;
-  }
+    .wm-txn-where-label {
+      font-weight: 400;
+      font-family: var(--wm-font-family-content);
+      flex-shrink: 0;
+      min-width: 30%;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      white-space: normal;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
 
-  .wm-pageroute-tabdetail-value {
-    color: var(--wm-color-dark);
-    font-weight: var(--wm-font-weight-bold);
+    .wm-txn-where-icon {
+      color: var(--wm-color-primary);
+      flex-shrink: 0;
+    }
+
+    .wm-txn-where-value {
+      font-weight: 600;
+      font-family: var(--wm-font-family-content);
+      flex: 1;
+      text-align: right;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      white-space: normal;
+    }
   }
 }
-

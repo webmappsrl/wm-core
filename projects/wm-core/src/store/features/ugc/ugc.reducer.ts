@@ -166,11 +166,11 @@ export function wmFeatureToHits(features: WmFeature<LineString | Point>[]): Hit[
     const hit: Hit = {
       id: `${feature.properties.id ?? feature.properties.uuid}`,
       taxonomyActivities: activity ? [activity] : [],
-      taxonomyWheres: [],
+      taxonomyWheres: feature.properties?.taxonomyWheres ?? [],
       taxonomyIcons: {},
       cai_scale: '',
       distance: '',
-      feature_image: null,
+      feature_image: feature.properties?.feature_image ?? null,
       layers: [],
       name: feature.properties.name,
       properties: feature.properties,
