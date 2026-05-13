@@ -56,6 +56,8 @@ import {
   getUgcPoi,
   getUgcTrack,
   removeUgcPoi,
+  removeSynchronizedUgcPoi,
+  removeSynchronizedUgcTrack,
   removeUgcTrack,
   saveUgcPoi,
   saveUgcTrack,
@@ -88,16 +90,17 @@ export class UgcEffects {
     () =>
       this._actions$.pipe(
         ofType(deleteUgcTrackFailure, deleteUgcPoiFailure, deleteUgcMediaFailure),
-        switchMap(({error}) =>
-          this._alertCtrl.create({
+        switchMap(({error}) => {
+          const baseMessage = this._langSvc.instant(
+            'Non è stato possibile eliminare, riprova più tardi.',
+          );
+          const message = error ? `[${error}] ${baseMessage}` : baseMessage;
+          return this._alertCtrl.create({
             header: this._langSvc.instant('Ops!'),
-            message: this._langSvc.instant(`
-              Non è stato possibile eliminare, riprova più tardi.
-              ${error}
-              `),
+            message,
             buttons: ['OK'],
-          }),
-        ),
+          });
+        }),
         switchMap(alert => alert.present()),
       ),
     {dispatch: false},
@@ -110,21 +113,26 @@ export class UgcEffects {
           mergeMap(() => {
             const poi = action.poi;
             const poiId = poi?.properties?.id;
+            const successActions = [
+              deleteUgcPoiSuccess({poi: action.poi}),
+              syncUgcPois(),
+              enableSyncInterval(),
+            ];
             if (poiId) {
               return from(this._ugcSvc.deleteApiPoi(poiId)).pipe(
-                mergeMap(() => [
-                  deleteUgcPoiSuccess({poi: action.poi}),
-                  syncUgcPois(),
-                  enableSyncInterval(),
-                ]),
-                catchError(error => of(deleteUgcPoiFailure({error}), enableSyncInterval())),
+                mergeMap(() => successActions),
+                catchError(error => {
+                  if (error?.status === 404) {
+                    return of(...successActions);
+                  }
+                  return of(
+                    deleteUgcTrackFailure({error: error?.status}),
+                    enableSyncInterval(),
+                  );
+                }),
               );
             } else if(poi) {
-              return from([
-                deleteUgcPoiSuccess({poi: action.poi}),
-                syncUgcPois(),
-                enableSyncInterval(),
-              ]);
+              return from(successActions);
             }
             return of(deleteUgcPoiFailure({error: 'Poi not found'}));
           }),
@@ -160,21 +168,26 @@ export class UgcEffects {
           mergeMap(() => {
             const track = action.track;
             const trackId = track?.properties?.id;
+            const successActions = [
+              deleteUgcTrackSuccess({track: action.track}),
+              syncUgcTracks(),
+              enableSyncInterval(),
+            ];
             if (trackId) {
               return from(this._ugcSvc.deleteTrack(track)).pipe(
-                mergeMap(() => [
-                  deleteUgcTrackSuccess({track: action.track}),
-                  syncUgcTracks(),
-                  enableSyncInterval(),
-                ]),
-                catchError(error => of(deleteUgcTrackFailure({error}), enableSyncInterval())),
+                mergeMap(() => successActions),
+                catchError(error => {
+                  if (error?.status === 404) {
+                    return of(...successActions);
+                  }
+                  return of(
+                    deleteUgcTrackFailure({error: error?.status}),
+                    enableSyncInterval(),
+                  );
+                }),
               );
             } else if(track) {
-              return from([
-                deleteUgcTrackSuccess({track: action.track}),
-                syncUgcTracks(),
-                enableSyncInterval(),
-              ]);
+              return from(successActions);
             }
             return of(deleteUgcTrackFailure({error: 'Track not found'}));
           }),
@@ -259,13 +272,17 @@ export class UgcEffects {
     () =>
       this._actions$.pipe(
         ofType(updateUgcTrackFailure, updateUgcPoiFailure),
-        switchMap(() =>
-          this._alertCtrl.create({
+        switchMap(({error}) => {
+          const baseMessage = this._langSvc.instant(
+            'Non è stato possibile aggiornare, riprova più tardi',
+          );
+          const message = error ? `[${error}] ${baseMessage}` : baseMessage;
+          return this._alertCtrl.create({
             header: this._langSvc.instant('Ops!'),
-            message: this._langSvc.instant('Non è stato possibile aggiornare, riprova più tardi'),
+            message,
             buttons: ['OK'],
-          }),
-        ),
+          });
+        }),
         switchMap(alert => alert.present()),
       ),
     {dispatch: false},
@@ -279,25 +296,41 @@ export class UgcEffects {
           mergeMap(() => {
             const poi = action.poi;
             const poiId = poi?.properties?.id;
+            const successActions = [
+              updateUgcPoiSuccess({poi: action.poi}),
+              syncUgcPois(),
+              enableSyncInterval(),
+            ];
             const updatedPoi = {
               ...action.poi,
               geometry: poiDrawnGeometry ?? action.poi?.geometry,
             };
             if (poiId) {
               return from(this._ugcSvc.updateApiPoi(updatedPoi)).pipe(
-                mergeMap(() => [
-                  updateUgcPoiSuccess({poi: updatedPoi}),
-                  syncUgcPois(),
-                  enableSyncInterval(),
-                ]),
-                catchError(error => of(updateUgcPoiFailure({error}), enableSyncInterval())),
+                mergeMap(() => successActions),
+                catchError(error => {
+                  if (error?.status === 404) {
+                    const devicePoi = {
+                      ...updatedPoi,
+                      properties: {
+                        ...updatedPoi.properties,
+                        id: undefined,
+                        media: updatedPoi.properties?.media?.map(m => ({
+                          ...m,
+                          id: undefined,
+                        })),
+                      },
+                    };
+                    return from(removeSynchronizedUgcPoi(poiId)).pipe(
+                      mergeMap(() => of(...successActions)),
+                      catchError(() => of(...successActions)),
+                    );
+                  }
+                  return of(updateUgcPoiFailure({error: error?.status}), enableSyncInterval());
+                }),
               );
             } else if(poi) {
-              return from([
-                updateUgcPoiSuccess({poi: updatedPoi}),
-                syncUgcPois(),
-                enableSyncInterval(),
-              ]);
+              return from(successActions);
             }
             return of(updateUgcPoiFailure({error: 'Poi not found'}));
           }),
@@ -333,21 +366,40 @@ export class UgcEffects {
           mergeMap(() => {
             const track = action.track;
             const trackId = track?.properties?.id;
+            const successActions = [
+              updateUgcTrackSuccess({track: action.track}),
+              syncUgcTracks(),
+              enableSyncInterval(),
+            ];
             if (trackId) {
               return from(this._ugcSvc.updateApiTrack(action.track)).pipe(
-                mergeMap(() => [
-                  updateUgcTrackSuccess({track: action.track}),
-                  syncUgcTracks(),
-                  enableSyncInterval(),
-                ]),
-                catchError(error => of(updateUgcTrackFailure({error}), enableSyncInterval())),
+                mergeMap(() => successActions),
+                catchError(error => {
+                  if (error?.status === 404) {
+                    const deviceTrack = {
+                      ...action.track,
+                      properties: {
+                        ...action.track?.properties,
+                        id: undefined,
+                        media: action.track?.properties?.media?.map(m => ({
+                          ...m,
+                          id: undefined,
+                        })),
+                      },
+                    };
+                    return from(removeSynchronizedUgcTrack(trackId)).pipe(
+                      mergeMap(() => of(...successActions)),
+                      catchError(() => of(...successActions)),
+                    );
+                  }
+                  return of(
+                    updateUgcTrackFailure({error: error?.status}),
+                    enableSyncInterval(),
+                  );
+                }),
               );
             } else if(track) {
-              return from([
-                updateUgcTrackSuccess({track: action.track}),
-                syncUgcTracks(),
-                enableSyncInterval()
-              ]);
+              return from(successActions);
             }
             return of(updateUgcTrackFailure({error: 'Track not found'}));
           }),
@@ -384,7 +436,7 @@ export class UgcEffects {
               if (result.role === 'destructive') {
                 return from(this._ugcSvc.deleteApiMedia(media.id)).pipe(
                   mergeMap(() => [deleteUgcMediaSuccess({media}), syncUgc()]),
-                  catchError(error => of(deleteUgcMediaFailure({error: error.error.message}))),
+                  catchError(error => of(deleteUgcMediaFailure({error: error?.status}))),
                 );
               }
               return EMPTY;
