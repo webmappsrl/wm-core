@@ -1,4 +1,5 @@
 import {EGeojsonGeometryTypes} from './egeojson-geometry-types.enum';
+import {WmImage} from '@wm-types/image';
 
 export type IPoint = [number, number, number?];
 export type ILineString = Array<IPoint>;
@@ -48,13 +49,13 @@ export interface IGeojsonProperties {
   ele_min?: number;
   ele_to?: number;
   excerpt?: iLocalString;
-  feature_image?: IWmImage;
+  feature_image?: WmImage;
   geojson_url?: string;
   gpx_url?: string;
   // allow to work with custom properties when needed
   id: number;
-  image?: IWmImage;
-  image_gallery?: IWmImage[];
+  image?: WmImage;
+  image_gallery?: WmImage[];
   import_method?: string;
   kml_url?: string;
   mbtiles?: string[];
@@ -83,25 +84,6 @@ export interface IGeojsonFeature {
 
 export interface IGeojsonFeatureDownloaded extends IGeojsonFeature {
   size: number;
-}
-
-export interface IWmImage {
-  api_url: string;
-  caption: string;
-  id: number;
-  sizes: {
-    '108x148': string;
-    '108x137': string;
-    '225x100': string;
-    '250x150': string;
-    '118x138': string;
-    '108x139': string;
-    '118x117': string;
-    '335x250': string;
-    '400x200': string;
-    '1440x500': string;
-  };
-  url: string;
 }
 
 export interface IGeojsonGeneric {

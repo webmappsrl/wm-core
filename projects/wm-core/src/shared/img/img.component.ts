@@ -3,7 +3,7 @@ import {BehaviorSubject, from, Observable, of} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 
 import {defaultImageB64} from './defaultImageB64';
-import {IWmImage} from '../../types/model';
+import {WmImage} from '@wm-types/image';
 import {OfflineCallbackManager} from './offlineCallBackManager';
 import {getImg} from '@wm-core/utils/localForage';
 @Component({
@@ -15,12 +15,12 @@ import {getImg} from '@wm-core/utils/localForage';
   standalone: false,
 })
 export class WmImgComponent {
-  private _loadSrcEVT$: BehaviorSubject<IWmImage | string | null> = new BehaviorSubject<
-    IWmImage | string | null
+  private _loadSrcEVT$: BehaviorSubject<WmImage | string | null> = new BehaviorSubject<
+    WmImage | string | null
   >(null);
   private networkStatus$ = new BehaviorSubject<boolean>(navigator.onLine);
 
-  @Input('src') set setSrc(src: IWmImage | string | null) {
+  @Input('src') set setSrc(src: WmImage | string | null) {
     if (src == null) {
       src = './assets/images/photosuccess.png';
     }
