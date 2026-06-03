@@ -238,7 +238,7 @@ export const wmFR = {
   'Dati non sincronizzati': 'Données non synchronisées',
   'Lingua': 'Langue',
   'Azione irreversibile': 'Action irréversible',
-  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
+  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "delete account" per procedere.':
     'Voulez-vous vraiment supprimer votre compte ? Il est nécessaire d\'écrire "delete account" pour procéder.',
   'Digita "delete account"': 'Entrez "delete account"',
   'Conferma': 'Confirmer',
@@ -254,4 +254,18 @@ export const wmFR = {
   'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
     'Une enregistrement a été interrompu. Voulez-vous le reprendre ?',
   'Riprendi': 'Reprendre',
+  'Info': 'Info',
+  'Chiudi': 'Fermer',
+  'Store non disponibile': 'Store non disponible',
+  "Non è stato possibile aprire direttamente lo store. Prova ad aprire manualmente la pagina dell'app nello store.":
+    "Il n'a pas été possible d'ouvrir directement le store. Essayez d'ouvrir manuellement la page de l'application dans le store.",
+  'Aggiornamento obbligatorio': 'Mise à jour obligatoire',
+  "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
+    "Pour continuer à utiliser l'application, vous devez installer la dernière version disponible.",
+  "È disponibile una nuova versione dell'app.":
+    "Une nouvelle version de l'application est disponible.",
+  'Dove': 'Où',
+  'Regione': 'Région',
+  'Provincia': 'Province',
+  'Comune': 'Commune',
 };

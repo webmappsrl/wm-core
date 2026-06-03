@@ -2,7 +2,10 @@ import {ChangeDetectorRef, Directive, EventEmitter, Input, Output} from '@angula
 import {Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
 
-@Directive({selector: 'basebox'})
+@Directive({
+  standalone: false,
+  selector: 'basebox',
+})
 export class BaseBoxComponent<T> {
   @Input() data: T;
   @Output() public clickEVT: EventEmitter<void | number | string> = new EventEmitter<

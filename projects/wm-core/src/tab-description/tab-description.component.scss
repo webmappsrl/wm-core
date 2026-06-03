@@ -3,6 +3,8 @@ wm-tab-description{
   margin: var(--wm-feature-details-margin);
 
   .webmapp-pageroute-tabdescription-description {
+    // default line-height (0.875rem) sovrascrivibile via variabile CSS
+    --wm-description-line-height: 0.875rem;
     // padding: 10px;
     // padding-bottom: 0;
     padding-top: 10px;
@@ -10,13 +12,13 @@ wm-tab-description{
     color: var(--wm-feature-details-description-color);
     overflow: hidden;
     transition: max-height .4s ease-in-out;
-    max-height: calc(var(--wm-max-description-lines) * 16.8px);
+    max-height: calc(var(--wm-max-description-lines) * var(--wm-description-line-height));
     display: -webkit-box;
     -webkit-line-clamp: var(--wm-max-description-lines);
     -webkit-box-orient: vertical;
 
     &.expanded {
-      max-height: 2000px !important;
+      max-height: 5000px !important;
       -webkit-line-clamp: unset;
     }
   }

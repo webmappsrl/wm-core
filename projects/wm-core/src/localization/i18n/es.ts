@@ -235,8 +235,8 @@ export const wmES = {
   'Dati non sincronizzati': 'Datos no sincronizados',
   'Lingua': 'Idioma',
   'Azione irreversibile': 'Acción irreversible',
-  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
-    '¿Está seguro de que desea eliminar su cuenta? Es necesario escribir "eliminar cuenta" para proceder.',
+  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "delete account" per procedere.':
+    '¿Está seguro de que desea eliminar su cuenta? Es necesario escribir "delete account" para proceder.',
   'Digita "delete account"': 'Escribe "delete account"',
   'Conferma': 'Confirmar',
   'La conferma non corrisponde. Digita "delete account" per procedere.':
@@ -251,4 +251,18 @@ export const wmES = {
   'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
     'Se ha detectado una grabación interrumpida. ¿Quieres continuar?',
   'Riprendi': 'Continuar',
+  'Info': 'Info',
+  'Chiudi': 'Cerrar',
+  'Store non disponibile': 'Tienda no disponible',
+  "Non è stato possibile aprire direttamente lo store. Prova ad aprire manualmente la pagina dell'app nello store.":
+    'No fue posible abrir la tienda directamente. Intenta abrir manualmente la página de la app en la tienda.',
+  'Aggiornamento obbligatorio': 'Actualización obligatoria',
+  "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
+    'Para seguir utilizando la aplicación, debes instalar la última versión disponible.',
+  "È disponibile una nuova versione dell'app.":
+    'Una nueva versión de la aplicación está disponible.',
+  'Dove': 'Donde',
+  'Regione': 'Región',
+  'Provincia': 'Provincia',
+  'Comune': 'Municipio',
 };

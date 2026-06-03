@@ -7,6 +7,7 @@ import {Observable} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 
 @Component({
+  standalone: false,
   selector: 'webmapp-meta',
   template: `
     <meta charset="utf-8" />

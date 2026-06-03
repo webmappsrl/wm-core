@@ -1,33 +1,26 @@
 <ng-container *ngIf="(isLogged$|async) === false">
   <div class="wm-profile-logged-out-slider-container">
-    <ion-slides
-      class="wm-profile-logged-out-slider"
+    <wm-swiper
       [options]="loggedOutSliderOptions"
-      pager="true"
-    >
-      <ion-slide class="wm-profile-logged-out-slide">
+      class="wm-profile-logged-out-slider">
+      <swiper-slide class="wm-profile-logged-out-slide">
         <div class="wm-profile-logged-out-slide-content">
-          <img
-            class="wm-profile-logged-out-slide-image"
-            src="{{slide1}}"
-          />
+          <img class="wm-profile-logged-out-slide-image" src="{{slide1}}" />
           <div class="wm-profile-logged-out-slide-text">
             {{'Accedi e scarica i tuoi percorsi preferiti' | wmtrans}}
           </div>
         </div>
-      </ion-slide>
-      <ion-slide class="wm-profile-logged-out-slide">
+      </swiper-slide>
+      <swiper-slide class="wm-profile-logged-out-slide">
         <div class="wm-profile-logged-out-slide-content">
-          <img
-            class="wm-profile-logged-out-slide-image"
-            src="{{slide2}}"
-          />
+          <img class="wm-profile-logged-out-slide-image" src="{{slide2}}" />
           <div class="wm-profile-logged-out-slide-text">
             {{'Puoi anche condividerli con i tuoi compagni di viaggio' | wmtrans}}
           </div>
         </div>
-      </ion-slide>
-    </ion-slides>
+      </swiper-slide>
+      <swiper-pagination></swiper-pagination>
+    </wm-swiper>
   </div>
   <div class="wm-profile-logged-out-login-buttons-container">
     <button class="wm-profile-logged-out-login-button" (click)="login()">

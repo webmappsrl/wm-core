@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@ang
 import {DomSanitizer} from '@angular/platform-browser';
 
 @Component({
+  standalone: false,
   selector: 'wm-poi-types-badges',
   template: `
     <ng-container *ngIf="poiTypes as poiTypes">

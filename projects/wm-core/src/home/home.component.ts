@@ -22,13 +22,11 @@ import {
 import {
   IHOME,
   ILAYER,
-  ILAYERBOX,
   IMAP,
-  IOPTIONS,
   IPOITYPEFILTERBOX,
   ISLUGBOX,
 } from '@wm-core/types/config';
-import {APP} from '@wm-types/config';
+import {APP, OPTIONS} from '@wm-types/config';
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
 import {countUgcAll, countUgcTracks} from '@wm-core/store/features/ugc/ugc.selector';
 import {
@@ -52,6 +50,7 @@ import {loadEcPois} from '@wm-core/store/features/ec/ec.actions';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {online} from '@wm-core/store/network/network.selector';
 @Component({
+  standalone: false,
   selector: 'wm-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
@@ -64,7 +63,7 @@ export class WmHomeComponent implements AfterContentInit {
   confAPP$: Observable<APP> = this._store.select(confAPP);
   confMAP$: Observable<IMAP> = this._store.select(confMAP);
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
-  confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
+  confOPTIONS$: Observable<OPTIONS> = this._store.select(confOPTIONS);
   countAll$: Observable<number>;
   countEcAll$: Observable<number> = this._store.select(countEcAll);
   countUgcAll$: Observable<number> = this._store.select(countUgcAll);

@@ -3,6 +3,7 @@ import {WmProperties} from '@wm-types/feature';
 import {Store} from '@ngrx/store';
 
 @Component({
+  standalone: false,
   selector: 'wm-tab-howto',
   templateUrl: './tab-howto.component.html',
   styleUrls: ['./tab-howto.component.scss'],
@@ -17,4 +18,8 @@ export class WmTabHowtoComponent {
   @Input() properties: WmProperties;
 
   constructor(private _store: Store) {}
+
+  hasIcon(item: any): boolean {
+    return !!(item?.icon_name || item?.icon);
+  }
 }

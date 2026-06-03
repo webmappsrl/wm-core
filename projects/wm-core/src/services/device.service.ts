@@ -7,16 +7,12 @@
  * */
 
 import {Inject, Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Platform, ModalController} from '@ionic/angular';
-import {Store} from '@ngrx/store';
+import {Platform} from '@ionic/angular';
 import {from, Observable, of, ReplaySubject} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
 import {Device} from '@capacitor/device';
 import {APP_VERSION} from '@wm-core/store/conf/conf.token';
 import {WmDeviceInfo} from '@wm-types/feature';
-import {APP} from '@wm-types/config';
-import {ModalReleaseUpdateComponent} from '../modal-release-update/modal-release-update.component';
 
 @Injectable({
   providedIn: 'root',
@@ -85,9 +81,6 @@ export class DeviceService {
 
   constructor(
     private _platform: Platform,
-    private _http: HttpClient,
-    private _store: Store<any>,
-    private _modalController: ModalController,
     @Inject(APP_VERSION) public appVersion: string,
   ) {
     this._onResize = new ReplaySubject(1);
@@ -147,97 +140,12 @@ export class DeviceService {
   }
 
   /**
-   * Retrieves the last release version of the app from GitHub
-   * For wrong sku versions, adds "1" to the version for comparison and display
-   * @param appConfig APP configuration from backend
-   * @returns Promise with the version (possibly modified) or null in case of error
+   * Deprecated: la logica di update è stata spostata in `UpdateService`.
+   * Questo metodo è mantenuto solo per retrocompatibilità e verrà rimosso in futuro.
    */
-  async getLastReleaseVersion(appConfig: APP): Promise<string | null> {
-    const githubUrl =
-      'https://raw.githubusercontent.com/webmappsrl/webmapp-app/refs/heads/main/package.json';
-
-    try {
-      const response = await this._http.get<{version: string}>(githubUrl).toPromise();
-      const gitVersion = response?.version || null;
-
-      if (!gitVersion) return null;
-
-      return gitVersion;
-    } catch (error) {
-      return null;
-    }
-  }
-
-  /**
-   * Checks if the current version is different from the GitHub version
-   * For wrong sku versions, both versions are normalized (with "1" prefix) before comparison:
-   * - this.appVersion already has "1" prefix (set during build process in gulpfile.js)
-   * - githubVersion gets "1" prefix added by getLastReleaseVersion if it's a wrong sku version
-   * This ensures correct comparison between app version and GitHub version for all instances
-   * @param appConfig APP configuration from backend
-   * @returns Promise that resolves to true if update is needed, false otherwise, or null in case of error
-   */
-  async checkIfUpdateNeeded(appConfig: APP): Promise<boolean> {
-    try {
-      const githubVersion = await this.getLastReleaseVersion(appConfig);
-      if (!githubVersion) {
-        return false;
-      }
-      // Compare current version with GitHub version
-      // For wrong sku versions, both versions are already normalized (with "1" prefix)
-      return this.appVersion !== githubVersion;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  /**
-   * Opens the update modal if update is needed
-   * Assumes all prerequisites have been checked (mobile, forceToReleaseUpdate, store URLs)
-   * @param appConfig APP configuration from backend
-   * @returns Promise that resolves when the check is complete
-   */
-  async openUpdateModalIfNeeded(appConfig: APP): Promise<void> {
-    try {
-      const updateNeeded = await this.checkIfUpdateNeeded(appConfig);
-      if (updateNeeded) {
-        // Get the appropriate store URL based on device
-        const storeUrl = this.isAndroid
-          ? appConfig.androidStore
-          : this.isIos
-          ? appConfig.iosStore
-          : null;
-
-        if (storeUrl) {
-          // Get production version to show in modal
-          const gitVersion = await this.getLastReleaseVersion(appConfig);
-          const modal = await this._modalController.create({
-            component: ModalReleaseUpdateComponent,
-            componentProps: {
-              storeUrl,
-              gitVersion,
-            },
-            backdropDismiss: true,
-            showBackdrop: true,
-          });
-          await modal.present();
-        }
-      }
-    } catch (error) {}
-  }
-
-  /**
-   * Opens the store URL in the appropriate way based on the device
-   * On iOS simulator or browser, uses window.open directly
-   * On native device, tries Browser.open with fallback to window.open
-   * @param storeUrl The store URL to open
-   */
-  async openStoreUrl(storeUrl: string): Promise<void> {
-    if (!storeUrl) {
-      return;
-    }
-
-    window.open(storeUrl, '_blank', 'noopener,noreferrer');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async handleAppUpdateFlow(): Promise<void> {
+    return Promise.resolve();
   }
 
   /**

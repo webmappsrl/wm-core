@@ -2,6 +2,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {Feature} from 'geojson';
 
 @Pipe({
+  standalone: false,
   name: 'wmFilterFeatures',
   pure: false, // opzionale, se vuoi che il filtro si aggiorni dinamicamente
 })

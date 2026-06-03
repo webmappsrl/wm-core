@@ -202,8 +202,6 @@ export const homeResultTabSelected = createSelector(
   state => state.homeResultTabSelected,
 );
 
-export const currentLocation = createSelector(userActivity, state => state.currentLocation);
-
 export const currentDrawFormType = createSelector(
   confTRACKFORMS,
   confPOIFORMS,
@@ -233,8 +231,4 @@ export const disableTilesDownloadButton = createSelector(
 export const wmMapTilesBoundingBox = createSelector(
   userActivity,
   state => state.wmMapTilesBoundingBox,
-);
-export const currentUgcTrackRecording = createSelector(
-  userActivity,
-  state => state.currentUgcTrackRecording,
 );

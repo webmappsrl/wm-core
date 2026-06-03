@@ -20,6 +20,7 @@ import {map, switchMap} from 'rxjs/operators';
 
 export const MAX_VISIBLE_POIS = 4;
 @Component({
+  standalone: false,
   selector: 'wm-track-related-poi',
   templateUrl: './track-related-poi.component.html',
   styleUrls: ['./track-related-poi.component.scss'],
@@ -36,6 +37,9 @@ export class TrackRelatedPoiComponent {
   defaultPhotoPath = '/assets/icon/no-photo.svg';
   isExpanded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   pois$: Observable<WmFeature<Point>[]> = this._store.select(currentEcRelatedPois).pipe(
+    map(pois =>
+      (pois ?? []).filter(p => !(p.properties as any)?.wmNotAccessibleRelated),
+    ),
     switchMap(pois =>
       pois?.length ? combineLatest([
         ...pois.map(poi =>

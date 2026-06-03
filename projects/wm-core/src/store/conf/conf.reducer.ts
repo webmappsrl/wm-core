@@ -47,12 +47,22 @@ const initialConfState: ICONF = {
         ],
       },
     ],
+    analytics: {
+      enabled: false,
+      recordingEnabled: false,
+      recordingProbability: 0,
+    },
   },
   WEBAPP: {
     draw_poi_show: false,
     draw_track_show: false,
     editing_inline_show: false,
     splash_screen_show: false,
+    analytics: {
+      enabled: false,
+      recordingEnabled: false,
+      recordingProbability: 0,
+    },
   },
   OPTIONS: {
     baseUrl: '-',

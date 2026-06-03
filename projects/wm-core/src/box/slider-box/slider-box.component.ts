@@ -12,6 +12,7 @@ import {BaseBoxComponent} from '../box';
 import { IBASEBOX } from '../../types/config';
 
 @Component({
+  standalone: false,
   selector: 'wm-slider-box',
   templateUrl: './slider-box.component.html',
   styleUrls: ['./slider-box.component.scss'],

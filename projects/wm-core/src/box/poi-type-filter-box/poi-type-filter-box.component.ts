@@ -5,6 +5,7 @@ import {BehaviorSubject} from 'rxjs';
 import {IPOITYPEFILTERBOX} from '../../types/config';
 
 @Component({
+  standalone: false,
   selector: 'wm-poi-type-filter-box',
   templateUrl: './poi-type-filter-box.component.html',
   styleUrls: ['./poi-type-filter-box.component.scss'],

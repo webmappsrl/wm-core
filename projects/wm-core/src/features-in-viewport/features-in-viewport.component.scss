@@ -5,8 +5,9 @@ wm-features-in-viewport {
   width: 100%;
   transition: left 0.5s ease-in-out;
 
-  ion-slides {
-    ion-slide {
+  wm-swiper,
+  swiper-container {
+    swiper-slide {
       wm-search-box {
         width: 100%;
         padding-left: 8px;

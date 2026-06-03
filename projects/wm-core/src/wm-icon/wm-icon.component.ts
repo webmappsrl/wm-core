@@ -6,6 +6,7 @@ import {Observable} from 'rxjs';
 
 @Component({
   selector: 'wm-icon',
+  standalone: false,
   template: `
   <ng-container *ngIf="icons$ | async as icons; else legacyIcon">
     <div

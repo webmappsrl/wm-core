@@ -32,6 +32,7 @@
           (formGroupEvt)="fg = $event"
         ></wm-form>
       </ng-container>
+      <wm-txn-where [taxonomyWheres]="currentUgcPoiProperties?.taxonomy_where"></wm-txn-where>
       <wm-ugc-medias [showArrows]="true" class="wm-ugc-poi-media-content"></wm-ugc-medias>
     </ng-template>
     <ng-container *ngIf="!(isEditing$|async); else editingButtons">

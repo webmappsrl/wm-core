@@ -244,7 +244,7 @@ export const wmSQ = {
   'Dati non sincronizzati': 'Të dhëna të pa-sinkronizuara',
   'Lingua': 'Gjuha',
   'Azione irreversibile': 'Aksion i pakthyeshëm',
-  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
+  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "delete account" per procedere.':
     'A jeni të sigurt që dëshironi të fshini kontin tuaj? Është e nevojshme të shkruani "delete account" për të vazhduar.',
   'Digita "delete account"': 'Shkruani "delete account"',
   'Conferma': 'Confirm',
@@ -260,4 +260,17 @@ export const wmSQ = {
   'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
     'Është një regjistrim i ndalur. Dëshironi të vazhdohet?',
   'Riprendi': 'Vazhdo',
+  'Info': 'Info',
+  'Chiudi': 'Mbyll',
+  'Store non disponibile': 'Store nuk është i disponueshëm',
+  "Non è stato possibile aprire direttamente lo store. Prova ad aprire manualmente la pagina dell'app nello store.":
+    'Nuk ishte e mundur të hapej drejtpërdrejt store-i. Provoni të hapni manualisht faqen e aplikacionit në store.',
+  'Aggiornamento obbligatorio': 'Përditësim i detyrueshëm',
+  "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
+    'Për të vazhduar përdorimin e aplikacionit, duhet të instaloni versionin e fundit të disponueshëm.',
+  "È disponibile una nuova versione dell'app.": 'Një version i ri i aplikacionit është i disponueshëm.',
+  "Dove": "Vendndodhja",
+  "Regione": "Rregioni",
+  "Provincia": "Provincë",
+  "Comune": "Komuna",
 };

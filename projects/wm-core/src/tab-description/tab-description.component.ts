@@ -5,6 +5,7 @@ import {
   ViewEncapsulation,
   ElementRef,
   ViewChild,
+  AfterViewInit,
 } from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {LangService} from '@wm-core/localization/lang.service';
@@ -15,27 +16,57 @@ export const MAX_LINES = 5;
 type TranslationValue = string | Record<string, string | null> | null | undefined;
 
 @Component({
+  standalone: false,
   selector: 'wm-tab-description',
   templateUrl: './tab-description.component.html',
   styleUrls: ['./tab-description.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class WmTabDescriptionComponent {
-  htmlDescription$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
+export class WmTabDescriptionComponent implements AfterViewInit {
+  htmlDescription$: BehaviorSubject<TranslationValue> = new BehaviorSubject<TranslationValue>(null);
 
   @Input() set description(value: TranslationValue) {
     const processedValue = this._cleanTranslationObject(value);
-    const description = this._langSvc.instant(processedValue);
-    this.htmlDescription$.next(this._addTruncationClass(description));
+
+    if (processedValue && typeof processedValue === 'object' && !Array.isArray(processedValue)) {
+      const withTruncationPerLang = Object.keys(processedValue).reduce((acc, key) => {
+        const langValue = processedValue[key];
+        acc[key] =
+          typeof langValue === 'string' && langValue.trim().length > 0
+            ? this._addTruncationClass(langValue)
+            : langValue;
+        return acc;
+      }, {} as Record<string, string | null>);
+
+      this.htmlDescription$.next(withTruncationPerLang);
+    } else if (typeof processedValue === 'string') {
+      this.htmlDescription$.next(this._addTruncationClass(processedValue));
+    } else {
+      this.htmlDescription$.next(processedValue);
+    }
   }
   @ViewChild('descriptionElement') descriptionElement: ElementRef;
 
   isExpanded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showExpandButton$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  constructor(public domSanitazer: DomSanitizer, private _langSvc: LangService) {
+  constructor(public domSanitazer: DomSanitizer, private _langSvc: LangService) {}
+
+  ngAfterViewInit() {
+    // imposta il numero massimo di righe come variabile globale
     document.documentElement.style.setProperty('--wm-max-description-lines', `${MAX_LINES}`);
+
+    const element = this.descriptionElement?.nativeElement as HTMLElement | undefined;
+    if (element) {
+      const computedLineHeight = window.getComputedStyle(element).lineHeight;
+
+      // se la line-height è valorizzata, usala come variabile CSS locale
+      if (computedLineHeight && computedLineHeight !== 'normal') {
+        element.style.setProperty('--wm-description-line-height', computedLineHeight);
+      }
+    }
+
     this._checkIfContentIsTruncated();
   }
 

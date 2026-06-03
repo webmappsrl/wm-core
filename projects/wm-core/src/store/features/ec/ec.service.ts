@@ -2,19 +2,23 @@ import {HttpClient} from '@angular/common/http';
 
 /* eslint-disable quote-props */
 import {Injectable} from '@angular/core';
-import {FeatureCollection, LineString} from 'geojson';
+import {FeatureCollection, LineString, Point} from 'geojson';
 import {Observable, of} from 'rxjs';
 // @ts-ignore
 import {distinctUntilChanged, shareReplay, take} from 'rxjs/operators';
 import {Response} from '@wm-types/elastic';
 import {Filter, SliderFilter} from '../../../types/config';
-import {synchronizedApi} from '@wm-core/utils/localForage';
+import {synchronizedApi, getEcTrack as getEcTrackFromLocalForage, saveEcTrack} from '@wm-core/utils/localForage';
 import {WmFeature} from '@wm-types/feature';
 import {EnvironmentService} from '@wm-core/services/environment.service';
+import {LangService} from '@wm-core/localization/lang.service';
+import {EC_NOT_PASSABLE_ONLY_LABEL, EC_NOT_PASSABLE_SUFFIX} from '@wm-core/constants/ec';
 @Injectable({
   providedIn: 'root',
 })
 export class EcService {
+  private static readonly NOT_ACCESSIBLE_RELATED_POI_ID = -999999;
+
   private _queryDic: {[query: string]: any} = {};
   private _shard = 'geohub_app';
 
@@ -30,13 +34,75 @@ export class EcService {
    * @param {HttpClient} _http
    * @memberof ElasticService
    */
-  constructor(private _http: HttpClient, private _environmentSvc: EnvironmentService) {}
+  constructor(private _http: HttpClient, private _environmentSvc: EnvironmentService, private _langSvc: LangService) {}
+
+  public decorateNotAccessibleRelatedPoi(
+    track: WmFeature<LineString> | null | undefined,
+  ): WmFeature<LineString> | null | undefined {
+    return this._ensureNotAccessibleRelatedPoi(track);
+  }
 
   public getEcTrack(id: string | number): Observable<WmFeature<LineString>> {
     if (id == null) return of(null);
     if (+id > -1) {
       const url = `${this._environmentSvc.awsApi}/tracks/${id}.json`;
-      return this._http.get<WmFeature<LineString>>(url);
+      const lastModifiedKey = `${url}-last-modified`;
+
+      return new Observable<WmFeature<LineString>>(observer => {
+        // Prima cerca la track nel localForage (ec-tracks synchronized)
+        getEcTrackFromLocalForage(`${id}`).then(cachedTrack => {
+          // Se ci sono dati in cache locale, emettili subito
+          if (cachedTrack) {
+            observer.next(cachedTrack);
+          }
+
+          // Effettua la richiesta HTTP per ottenere la versione aggiornata
+          this._http
+            .get<WmFeature<LineString>>(url, {
+              observe: 'response',
+              headers: (() => {
+                const cachedLastModified = localStorage.getItem(lastModifiedKey);
+                return cachedTrack && cachedLastModified ? {'If-Modified-Since': cachedLastModified} : {};
+              })(),
+            })
+            .pipe(take(1))
+            .subscribe(
+              response => {
+                const lastModified = response.headers.get('last-modified');
+
+                if (response.status === 200) {
+                  const remoteTrack = response.body;
+
+                  if (remoteTrack) {
+                    // Aggiorna il localForage solo se la track era già stata scaricata dall'utente
+                    if (cachedTrack) {
+                      saveEcTrack(`${id}`, remoteTrack).catch(err =>
+                        console.warn('getEcTrack: Failed to update localForage cache', err),
+                      );
+                    }
+
+                    if (lastModified) {
+                      localStorage.setItem(lastModifiedKey, lastModified);
+                    }
+
+                    observer.next(remoteTrack);
+                  }
+                } else if (response.status === 304) {
+                  console.log(`No changes detected for track ${id}, using cached data.`);
+                }
+
+                observer.complete();
+              },
+              error => {
+                if (!cachedTrack) {
+                  observer.error(error); // Errore solo se non ci sono dati in cache
+                } else {
+                  observer.complete(); // Completa senza errore se esiste la cache
+                }
+              },
+            );
+        });
+      });
     }
   }
 
@@ -159,6 +225,125 @@ export class EcService {
       this._queryDic[query] = value;
     }
     return this._queryDic[query];
+  }
+
+  private _pickFirstStringValue(value: unknown): string | null {
+    if (typeof value === 'string') return value;
+    if (value && typeof value === 'object') {
+      for (const v of Object.values(value as Record<string, unknown>)) {
+        if (typeof v === 'string' && v.trim().length > 0) return v;
+      }
+    }
+    return null;
+  }
+
+  private _trackNameForLang(
+    rawName: unknown,
+    lang: string,
+    defaultLang: string,
+  ): string {
+    if (rawName && typeof rawName === 'object' && !Array.isArray(rawName)) {
+      const o = rawName as Record<string, unknown>;
+      const direct = o[lang];
+      if (typeof direct === 'string' && direct.trim().length > 0) {
+        return direct.trim();
+      }
+      const fromDefault = o[defaultLang];
+      if (typeof fromDefault === 'string' && fromDefault.trim().length > 0) {
+        return fromDefault.trim();
+      }
+      return this._pickFirstStringValue(rawName)?.trim() ?? '';
+    }
+    if (typeof rawName === 'string' && rawName.trim().length > 0) {
+      return rawName.trim();
+    }
+    return '';
+  }
+
+  private _notPassableRelatedPoiName(rawName: unknown): Record<string, string> {
+    const defaultLang =
+      this._langSvc.defaultLang || this._langSvc.getFallbackLang() || 'it';
+    const langs = [...(this._langSvc.getLangs() ?? [])];
+    if (langs.length === 0) {
+      const cur = this._langSvc.getCurrentLang();
+      if (cur) {
+        langs.push(cur);
+      }
+      const fb = this._langSvc.getFallbackLang();
+      if (fb && !langs.includes(fb)) {
+        langs.push(fb);
+      }
+    }
+    const out: Record<string, string> = {};
+    for (const lang of langs) {
+      const base = this._trackNameForLang(rawName, lang, defaultLang);
+      const suffix = EC_NOT_PASSABLE_SUFFIX[lang] ?? EC_NOT_PASSABLE_SUFFIX['en'];
+      const only = EC_NOT_PASSABLE_ONLY_LABEL[lang] ?? EC_NOT_PASSABLE_ONLY_LABEL['en'];
+      out[lang] = base.length > 0 ? `${base} ${suffix}` : only;
+    }
+    return out;
+  }
+
+  private _getLineStringMidpoint(
+    track: WmFeature<LineString> | null | undefined,
+  ): [number, number] | null {
+    const coords = (track as any)?.geometry?.coordinates;
+    if (!Array.isArray(coords) || coords.length === 0) return null;
+    const mid = coords[Math.floor(coords.length / 2)];
+    if (!Array.isArray(mid) || mid.length < 2) return null;
+    const lon = Number(mid[0]);
+    const lat = Number(mid[1]);
+    if (!Number.isFinite(lon) || !Number.isFinite(lat)) return null;
+    return [lon, lat];
+  }
+
+  private _ensureNotAccessibleRelatedPoi(
+    track: WmFeature<LineString> | null | undefined,
+  ): WmFeature<LineString> | null | undefined {
+    if (track == null) return track;
+    const props = (track as any).properties ?? null;
+    if (props?.not_accessible !== true) return track;
+
+    const coordinates = this._getLineStringMidpoint(track);
+    if (coordinates == null) return track;
+
+    const existing = (props.related_pois as any[]) ?? [];
+    const alreadyThere = existing.some(
+      p => +p?.properties?.id === EcService.NOT_ACCESSIBLE_RELATED_POI_ID,
+    );
+    if (alreadyThere) return track;
+
+    const message = props?.not_accessible_message ?? '';
+    const name = this._notPassableRelatedPoiName(props?.name);
+
+    const poi: WmFeature<Point> = {
+      type: 'Feature',
+      properties: {
+        id: EcService.NOT_ACCESSIBLE_RELATED_POI_ID,
+        wmNotAccessibleRelated: true,
+        name,
+        description: message,
+        feature_image: {
+          sizes: {
+            '108x137': '/assets/icon/not-accessible.png',
+            '108x148': '/assets/icon/not-accessible.png',
+          },
+        },
+        related_url: null,
+      } as any,
+      geometry: {
+        type: 'Point',
+        coordinates,
+      },
+    } as any;
+
+    return {
+      ...(track as any),
+      properties: {
+        ...props,
+        related_pois: [...existing, poi],
+      },
+    };
   }
 }
 

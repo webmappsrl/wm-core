@@ -4,6 +4,7 @@ import {IUGCBOX} from '../../types/config';
 import {openDownloads, openUgc} from '@wm-core/store/user-activity/user-activity.action';
 
 @Component({
+  standalone: false,
   selector: 'wm-downloads-ec-track-box',
   templateUrl: './downloads-ec-track-box.component.html',
   styleUrls: ['./downloads-ec-track-box.component.scss'],

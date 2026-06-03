@@ -5,8 +5,8 @@
       <div class="webmapp-walkability" *ngIf="taxonomy.activity as activity">
         <ng-container *ngFor="let item of activity">
           <div class="webmapp-walkability-box">
-            <wm-icon [iconData]="item"></wm-icon>
-            <span class="webmapp-walkability-label">{{item.name|wmtrans}}</span>
+            <wm-icon *ngIf="hasIcon(item)" [iconData]="item"></wm-icon>
+            <span class="webmapp-walkability-label">{{item?.name|wmtrans}}</span>
           </div>
         </ng-container>
       </div>

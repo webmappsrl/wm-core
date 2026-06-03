@@ -39,7 +39,7 @@ export const statsApi = createSelector(aggregations, aggregations => {
         ...[
           {
             key: countKey,
-            doc_count: aggregations.themes.doc_count,
+            doc_count: aggregations?.themes?.doc_count,
           },
         ],
       ];

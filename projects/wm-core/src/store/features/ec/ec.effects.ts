@@ -1,8 +1,10 @@
-import {Injectable} from '@angular/core';
+import {Inject, Injectable, Optional} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {from, of} from 'rxjs';
-import {catchError, map, switchMap, distinctUntilChanged} from 'rxjs/operators';
+import {catchError, map, switchMap, distinctUntilChanged, tap} from 'rxjs/operators';
 import {Response} from '@wm-types/elastic';
+import {POSTHOG_CLIENT} from '@wm-core/store/conf/conf.token';
+import {WmPosthogClient} from '@wm-types/posthog';
 import {EcService} from './ec.service';
 import {
   currentEcTrackId,
@@ -30,6 +32,7 @@ export class EcEffects {
       ofType(currentEcTrackId),
       switchMap(action =>
         from(this._ecSvc.getEcTrack(action.currentEcTrackId)).pipe(
+          map(ecTrack => this._ecSvc.decorateNotAccessibleRelatedPoi(ecTrack)),
           map(ecTrack => loadCurrentEcTrackSuccess({ecTrack})),
           catchError(error => of(loadCurrentEcTrackFailure({error}))),
         ),
@@ -64,6 +67,15 @@ export class EcEffects {
           inputTyped: action.inputTyped,
         };
         return from(this._ecSvc.getQuery(newAction)).pipe(
+          tap((response: Response) => {
+            // Traccia solo le ricerche utente dalla search bar
+            if (action.inputTyped && this._posthogClient) {
+              this._posthogClient.capture('searchPerformed', {
+                query: action.inputTyped,
+                results_count: response?.hits?.length ?? 0,
+              });
+            }
+          }),
           map((response: Response) => ecTracksSuccess({response})),
           catchError(e => of(ecTracksFailure())),
         );
@@ -93,5 +105,9 @@ export class EcEffects {
     ),
   );
 
-  constructor(private _ecSvc: EcService, private _actions$: Actions) {}
+  constructor(
+    private _ecSvc: EcService,
+    private _actions$: Actions,
+    @Optional() @Inject(POSTHOG_CLIENT) private _posthogClient?: WmPosthogClient,
+  ) {}
 }

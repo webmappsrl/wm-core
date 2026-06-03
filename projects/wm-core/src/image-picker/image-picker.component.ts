@@ -11,6 +11,7 @@ import {deleteUgcMedia} from '@wm-core/store/features/ugc/ugc.actions';
 import {DeviceService} from '@wm-core/services/device.service';
 
 @Component({
+  standalone: false,
   selector: 'wm-image-picker',
   templateUrl: './image-picker.component.html',
   styleUrls: ['./image-picker.component.scss'],

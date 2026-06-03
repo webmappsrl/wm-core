@@ -28,6 +28,7 @@ import {addFormError, removeFormError} from '@wm-core/utils/form';
 import {isValidWmFeature} from '@wm-core/utils/features';
 
 @Component({
+  standalone: false,
   selector: 'wm-modal-ugc-uploader',
   templateUrl: './modal-ugc-uploader.component.html',
   styleUrls: ['./modal-ugc-uploader.component.scss'],

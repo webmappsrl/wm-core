@@ -244,8 +244,8 @@ export const wmIT = {
   'Dati non sincronizzati': 'Dati non sincronizzati',
   'Lingua': 'Lingua',
   'Azione irreversibile': 'Azione irreversibile',
-  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
-    'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.',
+  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "delete account" per procedere.':
+    'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "delete account" per procedere.',
   'Digita "delete account"': 'Digita "delete account"',
   'Conferma': 'Conferma',
   'La conferma non corrisponde. Digita "delete account" per procedere.':
@@ -260,4 +260,17 @@ export const wmIT = {
   'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
     'È stata rilevata una registrazione interrotta. Vuoi riprenderla?',
   'Riprendi': 'Riprendi',
+  'Info': 'Info',
+  'Chiudi': 'Chiudi',
+  'Store non disponibile': 'Store non disponibile',
+  "Non è stato possibile aprire direttamente lo store. Prova ad aprire manualmente la pagina dell'app nello store.":
+    "Non è stato possibile aprire direttamente lo store. Prova ad aprire manualmente la pagina dell'app nello store.",
+  'Aggiornamento obbligatorio': 'Aggiornamento obbligatorio',
+  "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
+    "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.",
+  "È disponibile una nuova versione dell'app.": "È disponibile una nuova versione dell'app.",
+  "Dove": "Dove",
+  "Regione": "Regione",
+  "Provincia": "Provincia",
+  "Comune": "Comune",
 };

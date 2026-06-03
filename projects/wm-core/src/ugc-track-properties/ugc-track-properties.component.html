@@ -39,10 +39,11 @@
             class="wm-ugc-track-form-readonly"
             [disabled]="true"
             [confPOIFORMS]="confTRACKFORMS$|async"
-            [init]="track?.properties?.form"
+            [init]="form"
             (formGroupEvt)="fg = $event"
           ></wm-form>
         </ng-container>
+        <wm-txn-where [taxonomyWheres]="ugcProperties?.taxonomy_where"></wm-txn-where>
       </ng-container>
       <wm-ugc-medias [showArrows]="true" class="wm-ugc-track-media-content"></wm-ugc-medias>
       <wm-feature-useful-urls [track]="track"></wm-feature-useful-urls>

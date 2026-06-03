@@ -33,7 +33,7 @@ wm-search-box {
         left: 0px;
         top: 0px;
         border-radius: 25px;
-        padding: 6px 10px 6px 10px;
+        padding: 6px;
         background-color: white;
         border: 1px solid #888888;
         margin: 3px;
@@ -44,14 +44,18 @@ wm-search-box {
         justify-content: center;
         align-content: stretch;
         align-items: center;
-        svg {
-          width: 22px;
-          height: 22px;
-          circle {
-            fill: transparent;
-          }
-          g {
-            fill: var(--wm-color-darkgrey);
+
+        div[appBuildSvg] {
+          display: flex;
+          svg {
+            width: 22px;
+            height: 22px;
+            circle {
+              fill: transparent;
+            }
+            g {
+              fill: var(--wm-color-darkgrey);
+            }
           }
         }
         > * {

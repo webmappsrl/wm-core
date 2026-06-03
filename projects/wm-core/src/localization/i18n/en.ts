@@ -245,7 +245,7 @@ export const wmEN = {
   'Dati non sincronizzati': 'Unsynchronized data',
   'Lingua': 'Language',
   'Azione irreversibile': 'Irreversible action',
-  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "elimina account" per procedere.':
+  'Vuoi veramente eliminare il tuo account? È obbligatorio scrivere "delete account" per procedere.':
     'Do you really want to delete your account? It is necessary to write "delete account" to proceed.',
   'Digita "delete account"': 'Enter "delete account"',
   'Conferma': 'Confirm',
@@ -261,4 +261,17 @@ export const wmEN = {
   'È stata rilevata una registrazione interrotta. Vuoi riprenderla?':
     'A recording has been interrupted. Do you want to resume it?',
   'Riprendi': 'Resume',
+  'Info': 'Info',
+  'Chiudi': 'Close',
+  'Store non disponibile': 'Store not available',
+  "Non è stato possibile aprire direttamente lo store. Prova ad aprire manualmente la pagina dell'app nello store.":
+    'It was not possible to open the store directly. Try to manually open the app page in the store.',
+  'Aggiornamento obbligatorio': 'Mandatory update',
+  "Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile.":
+    'To continue using the app, you must install the latest available version.',
+  "È disponibile una nuova versione dell'app.": 'A new version of the app is available.',
+  "Dove": "Where",
+  "Regione": "Region",
+  "Provincia": "Province",
+  "Comune": "Municipality",
 };

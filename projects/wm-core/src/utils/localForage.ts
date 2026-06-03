@@ -1,13 +1,13 @@
 import {WmFeature} from '@wm-types/feature';
 import {GeoJsonProperties, LineString, Point} from 'geojson';
 import * as localforage from 'localforage';
+import {Location} from '@capacitor-community/background-geolocation';
 import {downloadTiles, getTilesByGeometry, removeTiles} from '../../../../../map-core/src/utils';
 import {IUser} from '@wm-core/store/auth/auth.model';
 import {isValidWmFeature} from '@wm-core/utils/features';
 
 export async function clearUgcSynchronizedData(): Promise<void> {
   await Promise.all([
-    synchronizedImg.clear(),
     synchronizedUgcTrack.clear(),
     synchronizedUgcPoi.clear(),
   ]);
@@ -18,16 +18,18 @@ export async function clearUgcDeviceData(): Promise<void> {
     deviceUgcTrack.clear(),
     deviceUgcPoi.clear(),
     deviceImg.clear(),
+    deviceCurrentUgcTrackLocations.clear(),
   ]);
 }
 export async function downloadEcTrack(
   trackid: string,
   track: WmFeature<LineString>,
   callBackStatusFn = updateStatus,
+  tileUrlTemplate?: string,
 ): Promise<number> {
   let totalSize = 0;
   const tiles = getTilesByGeometry(track.geometry);
-  totalSize += await downloadTiles(tiles, trackid, callBackStatusFn);
+  totalSize += await downloadTiles(tiles, trackid, callBackStatusFn, tileUrlTemplate);
   totalSize += await saveEcTrack(trackid, track, callBackStatusFn, totalSize);
 
   return Promise.resolve(totalSize);
@@ -233,17 +235,10 @@ export async function getUgcTrack(
   return a ?? b ?? c;
 }
 
-export async function getCurrentUgcTrack(): Promise<WmFeature<LineString>> {
+export async function getCurrentUgcTrackLocations(): Promise<Location[]> {
   return handleAsync(
-    deviceCurrentUgcTrack.getItem<WmFeature<LineString>>('current-ugc-track'),
-    'getCurrentUgcTrack: Failed',
-  );
-}
-
-export async function getCurrentUgcTrackTime(): Promise<number> {
-  return handleAsync(
-    deviceCurrentUgcTrack.getItem<number>('current-ugc-track-time'),
-    'getCurrentUgcTrackTime: Failed',
+    deviceCurrentUgcTrackLocations.getItem<Location[]>('current-ugc-track-locations'),
+    'getCurrentUgcTrackLocations: Failed',
   );
 }
 
@@ -368,7 +363,7 @@ export async function removeDeviceUgcTrack(uuid: string): Promise<void> {
 export async function removeEcTrack(trackId: string): Promise<void> {
   const track = await getEcTrack(trackId);
   if (track) {
-    await removeImgInsideTrack(track);
+    await removeSynchronizedImgsInsideProperties(track.properties);
     const tiles = getTilesByGeometry(track.geometry);
     await removeTiles(tiles, trackId);
   }
@@ -382,8 +377,9 @@ export async function removeImg(url: string): Promise<void> {
   await handleAsync(synchronizedImg.removeItem(url), 'removeImg: Failed to remove img');
 }
 
-export async function removeImgInsideTrack(track: WmFeature<LineString>): Promise<void> {
-  const properties = track.properties;
+export async function removeSynchronizedImgsInsideProperties(
+  properties: GeoJsonProperties | undefined | null,
+): Promise<void> {
   if (!properties) return;
   const urls = findImgInsideProperties(properties);
   if (urls.length === 0) return;
@@ -404,6 +400,9 @@ export async function removeUgcPoi(poi: WmFeature<Point>): Promise<void> {
   const properties = poi.properties;
   const featureId = properties?.id ?? properties?.uuid;
   const storage = properties?.id ? synchronizedUgcPoi : deviceUgcPoi;
+  if(storage === synchronizedUgcPoi) {
+    await removeSynchronizedImgsInsideProperties(properties);
+  }
   await handleAsync(storage.removeItem(`${featureId}`), 'removeUgcPoi: Failed');
 }
 
@@ -413,16 +412,15 @@ export async function removeUgcTrack(track: WmFeature<LineString>): Promise<void
   const properties = track.properties;
   const featureId = properties?.id ?? properties?.uuid;
   const storage = properties?.id ? synchronizedUgcTrack : deviceUgcTrack;
+  if(storage === synchronizedUgcTrack) {
+    await removeSynchronizedImgsInsideProperties(properties);
+  }
   await handleAsync(storage.removeItem(`${featureId}`), 'removeUgcTrack: Failed');
 }
 
-export async function removeCurrentUgcTrack(): Promise<void> {
+export async function removeCurrentUgcTrackLocations(): Promise<void> {
   await handleAsync(
-    deviceCurrentUgcTrack.removeItem('current-ugc-track'),
-    'removeCurrentUgcTrack: Failed',
-  );
-  await handleAsync(
-    deviceCurrentUgcTrack.removeItem('current-ugc-track-time'),
+    deviceCurrentUgcTrackLocations.removeItem('current-ugc-track-locations'),
     'removeCurrentUgcTrack: Failed',
   );
 }
@@ -471,6 +469,42 @@ export async function saveImg(url: string, value: ArrayBuffer | null = null): Pr
   synchronizedImg.setItem(url, value);
 }
 
+async function saveUgcImagesByStorage(
+  feature: WmFeature<LineString | Point>,
+  isSynchronized: boolean,
+): Promise<void> {
+  const media = feature?.properties?.media;
+  if (!Array.isArray(media) || media.length === 0) {
+    return;
+  }
+  const urls = media.map(m => m?.webPath).filter((url): url is string => typeof url === 'string');
+  if (urls.length === 0) {
+    return;
+  }
+
+  if (!isSynchronized) {
+    const blobUrls = urls.filter(url => isBlobUrl(url));
+    if (blobUrls.length === 0) return;
+    await Promise.all(blobUrls.map(url => saveDeviceImg(url)));
+    return;
+  }
+
+  await Promise.all(
+    urls.map(async url => {
+      if (isBlobUrl(url)) {
+        const value = await downloadBlobUrl(url);
+        if (value != null) {
+          await synchronizedImg.setItem(url, value);
+        }
+        return;
+      }
+      if (isValidUrl(url)) {
+        await saveImg(url);
+      }
+    }),
+  );
+}
+
 export async function saveImgInsideTrack(
   track: WmFeature<LineString>,
   callBackStatusFn = updateStatus,
@@ -512,11 +546,7 @@ export async function saveUgcPoi(feature: WmFeature<Point>): Promise<void> {
   const featureId = properties.id ?? properties?.uuid;
   const storage = properties.id ? synchronizedUgcPoi : deviceUgcPoi;
   await handleAsync(storage.setItem(`${featureId}`, feature), 'saveUgcPoi: Failed');
-
-  if (!properties.id && properties.media) {
-    const blobUrls = extractBlobUrlsFromMedia(properties.media);
-    await Promise.all(blobUrls.map(url => saveDeviceImg(url)));
-  }
+  await saveUgcImagesByStorage(feature, !!properties.id);
 }
 
 export async function saveUgcTrack(feature: WmFeature<LineString>): Promise<void> {
@@ -524,12 +554,7 @@ export async function saveUgcTrack(feature: WmFeature<LineString>): Promise<void
   const featureId = properties.id ?? properties.uuid;
   const storage = properties.id ? synchronizedUgcTrack : deviceUgcTrack;
   await handleAsync(storage.setItem(`${featureId}`, feature), 'saveUgcTrack: Failed');
-
-  // Se è un UGC device (non sincronizzato), salva le immagini blob URL in deviceImg
-  if (!properties.id && properties.media) {
-    const blobUrls = extractBlobUrlsFromMedia(properties.media);
-    await Promise.all(blobUrls.map(url => saveDeviceImg(url)));
-  }
+  await saveUgcImagesByStorage(feature, !!properties.id);
 }
 
 export async function saveUgc(feature: WmFeature<LineString | Point>): Promise<void> {
@@ -542,17 +567,10 @@ export async function saveUgc(feature: WmFeature<LineString | Point>): Promise<v
   }
 }
 
-export async function saveCurrentUgcTrack(
-  track: WmFeature<LineString>,
-  time: number,
-): Promise<void> {
+export async function saveCurrentUgcTrackLocations(trackLocations: Location[]): Promise<void> {
   await handleAsync(
-    deviceCurrentUgcTrack.setItem('current-ugc-track', track),
-    'saveCurrentUgcTrack: Failed',
-  );
-  await handleAsync(
-    deviceCurrentUgcTrack.setItem('current-ugc-track-time', time),
-    'saveCurrentUgcTrack: Failed',
+    deviceCurrentUgcTrackLocations.setItem('current-ugc-track-locations', trackLocations),
+    'saveCurrentUgcTrackLocations: Failed to save current UGC track locations',
   );
 }
 
@@ -601,7 +619,7 @@ export const deviceAuth = localforage.createInstance({
   name: 'device',
   storeName: 'auth',
 });
-export const deviceCurrentUgcTrack = localforage.createInstance({
+export const deviceCurrentUgcTrackLocations = localforage.createInstance({
   name: 'device',
-  storeName: 'current-ugc-track',
+  storeName: 'current-ugc-track-locations',
 });

@@ -16,6 +16,7 @@ import {BehaviorSubject, combineLatest} from 'rxjs';
 import {take} from 'rxjs/operators';
 
 @Component({
+  standalone: false,
   selector: 'wm-draw-ugc-button',
   templateUrl: './draw-ugc-button.component.html',
   styleUrls: ['./draw-ugc-button.component.scss'],

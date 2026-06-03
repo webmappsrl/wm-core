@@ -97,11 +97,11 @@ export const UgcReducer = createReducer(
   })),
   on(enableSyncInterval, state => ({
     ...state,
-    syncIntervalEnabled: true,
+    syncUgcIntervalEnabled: true,
   })),
   on(disableSyncInterval, state => ({
     ...state,
-    syncIntervalEnabled: false,
+    syncUgcIntervalEnabled: false,
   })),
   on(deleteUgcTrackSuccess, state => ({
     ...state,
@@ -124,26 +124,28 @@ export const UgcReducer = createReducer(
     currentCustomTrack,
   })),
   on(deleteUgcMediaSuccess, (state, {media}) => {
-    if(state.currentUgcPoi) {
+    if (state.currentUgcPoi) {
       const ugcPoi = {
         ...state.currentUgcPoi,
         properties: {
           ...state.currentUgcPoi.properties,
-          media: state.currentUgcPoi.properties?.media?.filter(m => m.webPath !== media.webPath) ?? [],
+          media:
+            state.currentUgcPoi.properties?.media?.filter(m => m.webPath !== media.webPath) ?? [],
         },
-      }
+      };
       return {
         ...state,
         currentUgcPoi: ugcPoi,
       };
-    } else if(state.currentUgcTrack) {
+    } else if (state.currentUgcTrack) {
       const ugcTrack = {
         ...state.currentUgcTrack,
         properties: {
           ...state.currentUgcTrack.properties,
-          media: state.currentUgcTrack.properties?.media?.filter(m => m.webPath !== media.webPath) ?? [],
+          media:
+            state.currentUgcTrack.properties?.media?.filter(m => m.webPath !== media.webPath) ?? [],
         },
-      }
+      };
       return {
         ...state,
         currentUgcTrack: ugcTrack,
@@ -164,11 +166,11 @@ export function wmFeatureToHits(features: WmFeature<LineString | Point>[]): Hit[
     const hit: Hit = {
       id: `${feature.properties.id ?? feature.properties.uuid}`,
       taxonomyActivities: activity ? [activity] : [],
-      taxonomyWheres: [],
+      taxonomyWheres: feature.properties?.taxonomyWheres ?? [],
       taxonomyIcons: {},
       cai_scale: '',
       distance: '',
-      feature_image: null,
+      feature_image: feature.properties?.feature_image ?? null,
       layers: [],
       name: feature.properties.name,
       properties: feature.properties,

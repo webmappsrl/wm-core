@@ -8,6 +8,7 @@ import {RegisterComponent} from '@wm-core/register/register.component';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 
 @Component({
+  standalone: false,
   selector: 'wm-profile-auth',
   templateUrl: './profile-auth.component.html',
   styleUrls: ['./profile-auth.component.scss'],
@@ -29,6 +30,7 @@ export class ProfileAuthComponent {
       slidesOffsetAfter: 0,
       slidesOffsetBefore: 0,
       slidesPerView: 1,
+      pagination: true
     };
   }
 
@@ -40,7 +42,7 @@ export class ProfileAuthComponent {
           from(
             this._modalCtrl.create({
               component: LoginComponent,
-              swipeToClose: true,
+              canDismiss: true,
               mode: 'ios',
               id: 'webmapp-login-modal',
             }),
@@ -59,7 +61,7 @@ export class ProfileAuthComponent {
           from(
             this._modalCtrl.create({
               component: RegisterComponent,
-              swipeToClose: true,
+              canDismiss: true,
               mode: 'ios',
               id: 'webmapp-login-modal',
             }),

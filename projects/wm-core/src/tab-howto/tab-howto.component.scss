@@ -69,6 +69,20 @@ wm-tab-howto {
         line-height: 17px;
         letter-spacing: 0em;
         text-align: left;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+      }
+    }
+
+    .webmapp-walkability-box:not(:has(wm-icon)) {
+      justify-content: center;
+      align-items: center;
+
+      .webmapp-walkability-label {
+        text-align: center;
       }
     }
   }

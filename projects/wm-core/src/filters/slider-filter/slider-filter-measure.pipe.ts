@@ -2,6 +2,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 import { SliderFilter } from '../../types/config';
 
 @Pipe({
+  standalone: false,
   name: 'wmUnits',
   pure: false,
 })

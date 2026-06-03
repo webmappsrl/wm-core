@@ -2,7 +2,7 @@
   <div class="wm-modal-release-update-app" e2e-release-update-modal>
     <div class="ios-filling"></div>
 
-    <div class="wm-modal-release-update-app-header ripple-parent ion-activatable">
+    <div class="wm-modal-release-update-app-header ripple-parent ion-activatable" *ngIf="!mandatory">
       <ion-icon
         name="close-outline"
         class="wm-modal-release-update-app-closebtn"
@@ -16,11 +16,20 @@
       <ion-icon name="cloud-download-outline" class="wm-modal-release-update-app-icon"></ion-icon>
 
       <ion-label class="wm-modal-release-update-app-title" e2e-release-update-modal-title>
-        {{ 'Aggiornamento disponibile' | wmtrans }}
+        {{
+          mandatory
+            ? ('Aggiornamento obbligatorio' | wmtrans)
+            : ('Aggiornamento disponibile' | wmtrans)
+        }}
       </ion-label>
 
       <ion-label class="wm-modal-release-update-app-message" e2e-release-update-modal-message>
-        {{ "È disponibile una nuova versione dell'app. Aggiorna per ottenere le ultime funzionalità e miglioramenti." | wmtrans }}
+        {{
+          mandatory
+            ? ("Per continuare a utilizzare l'app è necessario installare l'ultima versione disponibile." | wmtrans)
+            : ("È disponibile una nuova versione dell'app. Aggiorna per ottenere le ultime funzionalità e miglioramenti."
+              | wmtrans)
+        }}
       </ion-label>
 
       <ion-label
@@ -29,6 +38,14 @@
         e2e-release-update-modal-version
       >
         {{ 'Versione disponibile' | wmtrans }}: {{ gitVersion }}
+      </ion-label>
+
+      <ion-label
+        *ngIf="releaseNotes"
+        class="wm-modal-release-update-app-releasenotes"
+        e2e-release-update-modal-releasenotes
+      >
+        {{ releaseNotes }}
       </ion-label>
 
       <div class="wm-modal-release-update-app-buttoncontainer">
@@ -41,6 +58,7 @@
           {{ 'Aggiorna ora' | wmtrans }}
         </ion-button>
         <ion-button
+          *ngIf="!mandatory"
           expand="block"
           class="wm-modal-release-update-app-button-close"
           fill="outline"

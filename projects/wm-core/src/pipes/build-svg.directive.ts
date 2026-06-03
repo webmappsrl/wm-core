@@ -2,6 +2,7 @@ import {Directive, ElementRef, Input} from '@angular/core';
 
 @Directive({
   selector: '[appBuildSvg]',
+  standalone: false,
 })
 export class BuildSvgDirective {
   constructor(public readonly elementRef: ElementRef) {}
