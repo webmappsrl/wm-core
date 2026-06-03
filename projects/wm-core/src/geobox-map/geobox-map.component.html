@@ -40,11 +40,11 @@
     [wmMapLayerZoomFeaturesInViewport]="zoomFeaturesInViewport$|async"
     (colorSelectedFromLayerEVT)="trackColor$.next($event)"
     (featuresInViewportEVT)="featuresInViewport($event)"
+    [wmMapPoisFilters]="poiFilterIdentifiers$|async"
     wmMapPois
     [wmMapInputTyped]="apiSearchInputTyped$|async"
     [wmMapPoisPoi]="currentEcPoiId$|async"
     [wmMapPoisPois]="pois$|async"
-    [wmMapPoisFilters]="poiFilterIdentifiers$|async"
     [WmMapPoisUnselectPoi]="resetSelectedPoi$|async"
     [wmMapPoisDisableClusterLayer]="wmMapEcPoisDisableLayer$|async"
     (currentPoiEvt)="setPoi($event)"
