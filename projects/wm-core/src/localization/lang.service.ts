@@ -9,18 +9,7 @@
  * */
 
 import {Inject, Injectable} from '@angular/core';
-import {
-  DEFAULT_LANGUAGE,
-  MissingTranslationHandler,
-  TranslateCompiler,
-  TranslateLoader,
-  TranslateParser,
-  TranslateService,
-  TranslateStore,
-  USE_DEFAULT_LANG,
-  USE_EXTEND,
-  USE_STORE,
-} from '@ngx-translate/core';
+import {TranslateService} from '@ngx-translate/core';
 import {wmIT} from './i18n/it';
 import {wmEN} from './i18n/en';
 import {wmDE} from './i18n/de';
@@ -44,20 +33,12 @@ export class LangService extends TranslateService {
   isInit$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(
-    store: TranslateStore,
-    currentLoader: TranslateLoader,
-    compiler: TranslateCompiler,
-    parser: TranslateParser,
-    missingTranslationHandler: MissingTranslationHandler,
-    @Inject(USE_DEFAULT_LANG) useDefaultLang: boolean,
-    @Inject(USE_STORE) isolate: boolean,
-    @Inject(USE_EXTEND) extend: boolean,
-    @Inject(DEFAULT_LANGUAGE) defaultLanguage: string,
     @Inject(APP_TRANSLATION) public appTranslation: WmTranslations,
     private _deviceService: DeviceService,
     private _store: Store<any>,
   ) {
-    super(store, currentLoader, compiler, parser, missingTranslationHandler, useDefaultLang, isolate, extend, defaultLanguage);
+    // @ts-ignore — TranslateService constructor signature differs between v15/v16 (9 args) and v17+ (0 args)
+    super();
     this._init();
   }
 
