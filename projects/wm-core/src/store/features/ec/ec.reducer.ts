@@ -5,6 +5,7 @@ import {
   loadEcPoisSuccess,
   ecTracksFailure,
   ecTracksSuccess,
+  ecTracksInitAggregationsSuccess,
   loadCurrentEcTrackSuccess,
   loadCurrentEcTrackFailure,
   ecTracks,
@@ -23,6 +24,7 @@ export interface Ec {
   hits?: Hit[];
   ecTracksLoading: boolean;
   aggregations?: Aggregations;
+  initialAggregations?: Aggregations;
   currentEcTrack?: WmFeature<LineString>;
   currentEcPoiId?: number;
   currentEcPoi?: WmFeature<Point>;
@@ -48,13 +50,18 @@ export const ecReducer = createReducer(
     };
   }),
   on(ecTracksSuccess, (state, {response}) => {
-    const newState: Ec = {
+    return {
       ...state,
       hits: response?.hits ?? [],
       aggregations: response?.aggregations ?? null,
       ecTracksLoading: false,
     };
-    return newState;
+  }),
+  on(ecTracksInitAggregationsSuccess, (state, {response}) => {
+    return {
+      ...state,
+      initialAggregations: response?.aggregations ?? null,
+    };
   }),
   on(ecTracksFailure, state => {
     return {

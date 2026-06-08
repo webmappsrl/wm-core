@@ -40,7 +40,7 @@
       <ng-template #layerView>
         <wm-home-layer></wm-home-layer>
       </ng-template>
-      <wm-home-result></wm-home-result>
+      <wm-home-result (layerEVT)="setLayer($event)"></wm-home-result>
     </ng-container>
   </ng-template>
 </div>

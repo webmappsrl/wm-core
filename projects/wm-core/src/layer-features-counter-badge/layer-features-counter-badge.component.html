@@ -1,4 +1,4 @@
-<ng-container *ngIf="layerFeaturesCount$ | async as layerFeaturesCount">
+<ng-container *ngIf="(useTotal ? layerFeaturesTotalCount$ : layerFeaturesCount$) | async as layerFeaturesCount">
   <div>
     <ng-container *ngIf="layerFeaturesCount[layerId]?.tracks as countEcTracks">
       <div

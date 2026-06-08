@@ -146,6 +146,7 @@ export const wmSQ = {
     'Për të regjistruar gjurmët dhe pikat e interesit saktësisht, aktivizo lejen e vendndodhjes në cilësimet.',
   'I miei percorsi': 'Itineraret e mia',
   'Sentieri': 'Shtigjet',
+  'layers': 'Layers',
   '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
     '<span class="green">Niveli 1: seksione që nuk preken nga lartësia e madhe (lartësia më e ulët se {{orange}} metra)</span>',
   '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra {{orange}} metri e {{red}} metri)</span>':

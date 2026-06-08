@@ -7,21 +7,31 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
+
+function normalizeString(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '');
+}
 import {POSTHOG_CLIENT} from '../../store/conf/conf.token';
 import {WmPosthogClient} from '@wm-types/posthog';
 import {Store} from '@ngrx/store';
 import {Observable, combineLatest, from, of} from 'rxjs';
-import {distinctUntilChanged, map, startWith, switchMap, throttleTime} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, map, startWith, switchMap, throttleTime} from 'rxjs/operators';
 import {ecTracksLoading, poisInitCount} from '@wm-core/store/features/ec/ec.selector';
 
 import {
   downloadsOpened,
   ecLayer,
   homeResultTabSelected,
+  inputTyped,
   lastFilterType,
   showTracks,
   ugcOpened,
 } from '@wm-core/store/user-activity/user-activity.selector';
+import {confHOMELayers} from '@wm-core/store/conf/conf.selector';
+import {ILAYER} from '@wm-core/types/config';
 import {
   countAll,
   countPois,
@@ -49,6 +59,7 @@ import {setHomeResultTabSelected} from '@wm-core/store/user-activity/user-activi
   encapsulation: ViewEncapsulation.None,
 })
 export class WmHomeResultComponent {
+  @Output() layerEVT: EventEmitter<ILAYER> = new EventEmitter<ILAYER>();
   @Output() poiEVT: EventEmitter<number | string> = new EventEmitter();
   @Output() refreshDownloads: EventEmitter<void> = new EventEmitter<void>();
   @Output() trackEVT: EventEmitter<number | string> = new EventEmitter();
@@ -86,37 +97,9 @@ export class WmHomeResultComponent {
         : of([]),
     ),
   );
-  showResultTabSelected$ = combineLatest([
-    this.countTracks$,
-    this.countPois$,
-    this._store.select(homeResultTabSelected),
-    this.lastFilterType$,
-  ]).pipe(
-    map(([countTracks, countPois, userSelectedTab, lastFilterType]) => {
-      // Use lastFilterType as priority if available, otherwise use userSelectedTab
-      const preferredTab = lastFilterType ?? userSelectedTab;
-
-      // If user manually selected a tab and that tab has results, respect the selection
-      if (preferredTab === 'tracks' && countTracks > 0) {
-        return 'tracks';
-      }
-      if (preferredTab === 'pois' && countPois > 0) {
-        return 'pois';
-      }
-
-      // Otherwise, automatic selection based on availability
-      if (countTracks > 0) {
-        return 'tracks'; // Priority to tracks if available
-      }
-      if (countPois > 0) {
-        return 'pois'; // If there are no tracks but there are pois
-      }
-
-      // No results available
-      return null;
-    }),
-    distinctUntilChanged(), // Avoid duplicate emissions
-  ) as Observable<HomeResultTab>;
+  filteredLayers$: Observable<ILAYER[]>;
+  countLayers$: Observable<number>;
+  showResultTabSelected$: Observable<HomeResultTab>;
   showTracks$ = this._store.select(showTracks);
   tracks$: Observable<Hit[]>;
   tracksLoading$: Observable<boolean> = this._store.select(ecTracksLoading);
@@ -130,6 +113,54 @@ export class WmHomeResultComponent {
     private _geolocationSvc: GeolocationService,
     @Optional() @Inject(POSTHOG_CLIENT) private _posthogClient?: WmPosthogClient,
   ) {
+    this.filteredLayers$ = combineLatest([
+      this._store.select(confHOMELayers),
+      this._store.select(inputTyped),
+    ]).pipe(
+      debounceTime(300),
+      map(([layers, input]) => {
+        if (!input || input.trim() === '') return [];
+        if (!layers) return [];
+        const normalized = normalizeString(input);
+        return layers.filter(layer => {
+          if (!layer.title) return false;
+          const title = this._langSvc.instant(layer.title as any);
+          if (!title || typeof title !== 'string') return false;
+          return normalizeString(title).includes(normalized);
+        });
+      }),
+      distinctUntilChanged((a, b) => JSON.stringify(a.map(l => l.id)) === JSON.stringify(b.map(l => l.id))),
+    );
+
+    this.countLayers$ = this.filteredLayers$.pipe(map(layers => layers.length));
+
+    this.showResultTabSelected$ = combineLatest([
+      this.countTracks$,
+      this.countPois$,
+      this.countLayers$,
+      this._store.select(homeResultTabSelected),
+      this.lastFilterType$,
+      this._store.select(ecLayer).pipe(startWith(null)),
+    ]).pipe(
+      map(([countTracks, countPois, countLayers, userSelectedTab, lastFilterType, currentLayer]) => {
+        // Se un layer è già aperto, il tab layers non esiste nell'UI — mai restituirlo
+        const layersAvailable = countLayers > 0 && !currentLayer;
+
+        // Rispetta la scelta esplicita dell'utente (userSelectedTab != null)
+        if (userSelectedTab === 'tracks' && countTracks > 0) return 'tracks';
+        if (userSelectedTab === 'pois' && countPois > 0) return 'pois';
+        if (userSelectedTab === 'layers' && layersAvailable) return 'layers';
+
+        // Default automatico (nessuna selezione esplicita): layers prima, poi tracks, poi pois
+        if (layersAvailable) return 'layers';
+        if (countTracks > 0) return 'tracks';
+        if (countPois > 0) return 'pois';
+
+        return null;
+      }),
+      distinctUntilChanged(),
+    ) as Observable<HomeResultTab>;
+
     this.tracks$ = combineLatest([
       this.ectracks$,
       this.downloadsTracks$,
@@ -189,6 +220,10 @@ export class WmHomeResultComponent {
     const id = f?.properties?.id ?? f?.properties?.uuid ?? null;
     this._urlHandlerSvc.setPoi(id);
     this.poiEVT.emit(id);
+  }
+
+  setLayer(layer: ILAYER): void {
+    this.layerEVT.emit(layer);
   }
 
   setTrack(id: string | number): void {
