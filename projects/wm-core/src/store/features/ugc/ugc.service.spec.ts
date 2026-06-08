@@ -64,6 +64,7 @@ let mockStore: jasmine.SpyObj<Store>;
 let mockEnvironmentService: jasmine.SpyObj<EnvironmentService>;
 
 beforeEach(() => {
+  TestBed.resetTestingModule();
   const storeSpy = jasmine.createSpyObj('Store', ['select', 'dispatch']);
   const environmentSpy = jasmine.createSpyObj('EnvironmentService', [], {
     origin: 'https://test-api.com'
@@ -88,6 +89,7 @@ beforeEach(() => {
 
 afterEach(() => {
   httpMock.verify();
+  TestBed.resetTestingModule();
 });
 
 describe('UgcService', () => {

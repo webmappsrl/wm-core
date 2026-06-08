@@ -40,6 +40,7 @@ describe('PosthogCapacitorClient', () => {
 
   // Helper per creare una nuova istanza del client via TestBed
   const createClient = (config?: Partial<WmPosthogConfig>): PosthogCapacitorClient => {
+    TestBed.resetTestingModule();
     const finalConfig = {...mockConfig, ...config};
 
     TestBed.configureTestingModule({

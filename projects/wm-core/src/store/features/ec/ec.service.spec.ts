@@ -1,4 +1,4 @@
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {of, throwError} from 'rxjs';
 
 import {EcService} from './ec.service';
@@ -32,11 +32,16 @@ describe('EcService - getEcTrack (offline cache behaviour)', () => {
       elasticApi: 'https://elastic.test',
       appId: null,
     };
+    const langServiceMock: any = {
+      defaultLang: 'it',
+      currentLang: 'it',
+      getLangs: () => ['it', 'en'],
+    };
 
     // Pulisce lo store delle ec-tracks prima di ogni test
     await synchronizedEctrack.clear();
 
-    service = new EcService(httpClientSpy, environmentMock);
+    service = new EcService(httpClientSpy, environmentMock, langServiceMock);
   });
 
   it('dovrebbe emettere la track da cache e non andare in errore se la HTTP fallisce ma esiste cachedTrack', async () => {
@@ -73,7 +78,12 @@ describe('EcService - getEcTrack (offline cache behaviour)', () => {
     const remoteTrack = createMockTrack(456);
 
     // Nessuna track salvata in cache per questo id
-    httpClientSpy.get.and.returnValue(of(remoteTrack));
+    const httpResponse = new HttpResponse({
+      status: 200,
+      body: remoteTrack,
+      headers: new HttpHeaders(),
+    });
+    httpClientSpy.get.and.returnValue(of(httpResponse));
 
     const emissions: WmFeature<LineString>[] = [];
     let error: any = null;

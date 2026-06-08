@@ -11,7 +11,17 @@ describe('WmTransPipe', () => {
   let cdrMock: jasmine.SpyObj<ChangeDetectorRef>;
   let langChange$: Subject<void>;
 
+  afterEach(() => {
+    pipe?.ngOnDestroy();
+    const sub = (WmTransPipe as any)['sub'];
+    if (sub) { sub.unsubscribe(); }
+    (WmTransPipe as any)['sub'] = null;
+    ((WmTransPipe as any)['cdrs'] as Set<any>).clear();
+    TestBed.resetTestingModule();
+  });
+
   beforeEach(() => {
+    TestBed.resetTestingModule();
     langChange$ = new Subject<void>();
     cdrMock = jasmine.createSpyObj<ChangeDetectorRef>('ChangeDetectorRef', ['markForCheck']);
 

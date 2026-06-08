@@ -13,6 +13,7 @@ describe('UpdateService', () => {
   let service: UpdateService;
 
   beforeEach(() => {
+    TestBed.resetTestingModule();
     // Pulisce l'eventuale stato precedente usato per il throttling
     try {
       if (typeof localStorage !== 'undefined') {
