@@ -16,17 +16,31 @@ import {
   ecTracks,
   ecTracksFailure,
   ecTracksSuccess,
+  ecTracksInitAggregationsSuccess,
 } from '@wm-core/store/features/ec/ec.actions';
 import {
   wmMapFeaturesInViewport,
   wmMapFeaturesInViewportFailure,
   wmMapFeaturesInViewportSuccess,
 } from '@wm-core/store/user-activity/user-activity.action';
+import {loadConfSuccess} from '@wm-core/store/conf/conf.actions';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EcEffects {
+  initLayerAggregations$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(loadConfSuccess),
+      switchMap(() =>
+        from(this._ecSvc.getQuery({})).pipe(
+          map((response: Response) => ecTracksInitAggregationsSuccess({response})),
+          catchError(() => of(ecTracksFailure())),
+        ),
+      ),
+    ),
+  );
+
   currentEcTrack$ = createEffect(() =>
     this._actions$.pipe(
       ofType(currentEcTrackId),

@@ -141,6 +141,7 @@ export const wmFR = {
     "Pour enregistrer les pistes et les points d'intérêt correctement, activez la permission de position dans les paramètres.",
   'I miei percorsi': 'Mes parcours',
   'Sentieri': 'Sentiers',
+  'layers': 'Layers',
   '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
     '<span class="green">Niveau 1: sections non affectées par l\'altitude (altitude inférieure à {{orange}} mètres)</span>',
   '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa entre {{orange}} mètres et {{red}} metri)</span>':

@@ -142,6 +142,7 @@ export const wmDE = {
     'Um gültige Routen und Interessantenpunkte zu erfassen, aktivieren Sie die Standortberechtigung in den Einstellungen.',
   'I miei percorsi': 'Meine Strecken',
   'Sentieri': 'Wanderwege',
+  'layers': 'Layers',
   '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
     '<span class="green">Stufe 1: Abschnitte nicht von großer Höhe betroffen (Höhe unter {{orange}} Metern)</span>',
   '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra {{orange}} metri e {{red}} metri)</span>':

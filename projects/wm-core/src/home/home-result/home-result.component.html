@@ -22,8 +22,21 @@
   </div>
 </ng-container>
 <ng-template #noDownload>
-  <ng-container *ngIf="(countAll$|async)>0;">
+  <ng-container *ngIf="(countAll$|async)>0 || (countLayers$|async)>0">
     <ion-segment [value]="showResultTabSelected$|async" (ionChange)="changeResultType($event)">
+      <ng-container *ngIf="countLayers$|async as countLayers">
+        <ion-segment-button
+          value="layers"
+          *ngIf="countLayers > 0 && !(currentLayer$|async)"
+          [attr.aria-label]="('layers'|wmtrans) + ', ' + countLayers + ' risultati'"
+          e2e-home-result-layers-tab
+        >
+          <ion-label aria-live="polite">
+            {{'layers'|wmtrans}}
+            <span>{{countLayers}}</span>
+          </ion-label>
+        </ion-segment-button>
+      </ng-container>
       <ng-container *ngIf="tracks$|async as tracks">
         <ion-segment-button
           value="tracks"
@@ -98,6 +111,14 @@
           </ng-container>
         </ng-container>
       </ng-container>
+      <div class="layers" *ngIf="showResultTabSelected === 'layers' && !(currentLayer$|async)">
+        <wm-layer-box
+          *ngFor="let layer of filteredLayers$|async"
+          [data]="{box_type: 'layer', layer: layer}"
+          [useTotal]="true"
+          (clickEVT)="setLayer(layer)"
+        ></wm-layer-box>
+      </div>
       <div class="pois" *ngIf="showResultTabSelected === 'pois'">
         <wm-poi-box
           *ngFor="let c of pois$|async|wmSort:'properties.updatedAt':false"
@@ -110,7 +131,7 @@
         </wm-poi-box>
       </div>
     </ng-container>
-    <ion-item lines="none" *ngIf="(countAll$|async)==0;">
+    <ion-item lines="none" *ngIf="(countAll$|async)==0 && (countLayers$|async)==0;">
       <h5>
         {{'Spiacenti non ci sono risultati con questi criteri di ricerca.'|wmtrans}}
       </h5>

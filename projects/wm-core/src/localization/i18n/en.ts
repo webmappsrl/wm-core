@@ -147,6 +147,7 @@ export const wmEN = {
     'To register tracks and then correctly, enable the location permission in the settings.',
   'I miei percorsi': 'My paths',
   'Sentieri': 'Trails',
+  'layers': 'Layers',
   '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
     '<span class="green">Level 1: sections not affected by high altitude (altitude less than {{orange}} meters)</span>',
   '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra {{orange}} metri e {{red}} metri)</span>':

@@ -96,7 +96,7 @@ const initialState: UserActivityState = {
   wmMapHitMapChangeFeatureById: null,
   wmMapHitmapFeatures: [],
   featuresInViewport: [],
-  homeResultTabSelected: 'tracks',
+  homeResultTabSelected: null,
   enableTrackRecoderPanel: false,
   enablePoiRecorderPanel: false,
   onRecord: false,
@@ -134,6 +134,7 @@ export const userActivityReducer = createReducer(
     const newState: UserActivityState = {
       ...state,
       inputTyped,
+      homeResultTabSelected: null,
     };
     return newState;
   }),

@@ -16,6 +16,10 @@ export const ecTracks = createAction(
 );
 export const ecTracksSuccess = createAction(
   '[ec] Load ec tracks success',
+  props<{response: Response; isInit?: boolean}>(),
+);
+export const ecTracksInitAggregationsSuccess = createAction(
+  '[ec] Load ec tracks init aggregations success',
   props<{response: Response}>(),
 );
 export const ecTracksFailure = createAction('[ec] Load ec tracks fail');

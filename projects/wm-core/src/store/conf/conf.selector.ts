@@ -3,7 +3,7 @@ import {getCSSVariables} from '../../theme/theme';
 
 import {confFeatureKey} from './conf.reducer';
 import {Hit} from '@wm-types/elastic';
-import {ICONF, IHOME, ILAYER, ITHEME} from '../../types/config';
+import {ICONF, IHOME, ILAYER, ILAYERBOX, ITHEME} from '../../types/config';
 
 const confFeature = createFeatureSelector<ICONF>(confFeatureKey);
 export const MAX_TRACKS = 200;
@@ -136,6 +136,12 @@ export const confHOME = createSelector(confFeature, confFILTERS, (state, filters
   }
 
   return state.HOME;
+});
+export const confHOMELayers = createSelector(confHOME, home => {
+  if (!home) return [];
+  return (home as IHOME[])
+    .filter((el): el is ILAYERBOX => el.box_type === 'layer' && (el as ILAYERBOX).layer != null)
+    .map(el => el.layer);
 });
 export const confOPTIONSShowFeaturesInViewport = createSelector(
   confOPTIONS,

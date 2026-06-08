@@ -24,6 +24,7 @@ export const ec = createFeatureSelector<Elastic>('ec');
 export const ecTracks = createSelector(ec, (state: Ec) => state.hits ?? []);
 export const countEcTracks = createSelector(ec, (state: Ec) => state.hits.length ?? undefined);
 export const aggregations = createSelector(ec, (state: Ec) => state.aggregations ?? undefined);
+export const initialAggregations = createSelector(ec, (state: Ec) => state.initialAggregations ?? undefined);
 // @ts-ignore
 export const statsApi = createSelector(aggregations, aggregations => {
   if (aggregations) {
@@ -221,6 +222,14 @@ export const layerFeaturesCount = createSelector(
   (confMAPLayers, allEcpoiFeatures, aggregationBucketsLayers) => {
     return calculateLayerFeaturesCount(confMAPLayers, allEcpoiFeatures, aggregationBucketsLayers);
   },
+);
+
+export const initialAggregationBucketsLayers = createSelector(initialAggregations, agg => agg?.layers?.count?.buckets ?? []);
+export const layerFeaturesTotalCount = createSelector(
+  confMAPLayers,
+  allEcpoiFeatures,
+  initialAggregationBucketsLayers,
+  (layers, pois, buckets) => calculateLayerFeaturesCount(layers, pois, buckets),
 );
 
 export const currentRelatedPoiIndex = createSelector(

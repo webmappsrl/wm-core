@@ -162,7 +162,8 @@ export class WmHomeComponent implements AfterContentInit {
       layer = {id: layer};
     }
 
-    this._urlHandlerSvc.updateURL({layer: layer?.id ?? undefined});
+    this._urlHandlerSvc.updateURL({layer: layer?.id ?? undefined, search: undefined});
+    this._store.dispatch(inputTyped({inputTyped: null}));
     this._store.dispatch(closeUgc());
     this._store.dispatch(closeDownloads());
     this._store.dispatch(setMapDetailsStatus({status: 'open'}));

@@ -139,6 +139,7 @@ export const wmPR = {
     'Para registar trilhas e pontos de interesse corretamente, ative a permissão de localização nas definições.',
   'I miei percorsi': 'Minhas rotas',
   'Sentieri': 'Trilhas',
+  'layers': 'Layers',
   '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
     '<span class="green">Nível 1: seções não interessadas pela alta altitude (altitude menor que {{orange}} metros)</span>',
   '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra {{orange}} metri e {{red}} metri)</span>':

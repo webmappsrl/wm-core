@@ -147,6 +147,7 @@ export const wmIT = {
     "Per registrare tracce e poi correttamente, abilita l'autorizzazione alla posizione nelle impostazioni",
   'I miei percorsi': 'I miei percorsi',
   'Sentieri': 'Sentieri',
+  'layers': 'Layers',
   '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
     '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>',
   '<span class="orange">Livello 2: tratti parzialmente in alta quota (quota compresa tra {{orange}} metri e {{red}} metri)</span>':

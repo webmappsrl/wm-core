@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   Inject,
+  Input,
   Optional,
   ViewEncapsulation,
 } from '@angular/core';
@@ -22,6 +23,9 @@ import {WmPosthogClient} from '@wm-types/posthog';
   encapsulation: ViewEncapsulation.None,
 })
 export class LayerBoxComponent extends BaseBoxComponent<ILAYERBOX> {
+  @Input() showBadge = true;
+  @Input() useTotal = false;
+
   constructor(
     langSvc: LangService,
     cdr: ChangeDetectorRef,
