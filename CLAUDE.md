@@ -68,11 +68,18 @@ Solo per smoke test ("il sistema è su e risponde"), non per test di logica UI.
 
 ## Features implementate
 
-| Feature | Ticket | Moduli toccati |
-|---|---|---|
-| Ricerca per layer/cammino nella home | oc:7643 | `home-result`, `ec` store (actions/reducer/effects/selectors), `layer-box`, `layer-features-counter-badge`, `user-activity.reducer` |
+| Feature | Ticket | Moduli toccati | Note |
+|---|---|---|---|
+| Fix regex hostname 5 parti | oc:8031 | `environment.service.ts`, `environment.service.spec.ts` | Regex aggiornata a `(?:\.[^.]+)+` per supportare domini Surge preview a N parti |
+| Ricerca per layer/cammino nella home | oc:7643 | `home-result`, `ec` store (actions/reducer/effects/selectors), `layer-box`, `layer-features-counter-badge`, `user-activity.reducer` | |
 
 ## Decisioni architetturali
+
+### Fix regex hostname 5 parti (oc:8031)
+
+- **`(?:\.[^.]+)+` invece di gruppi opzionali fissi**: accetta N parti TLD senza dover patchare la regex ad ogni nuovo provider o variante di dominio (es. Surge preview `pr-N.surge.sh`)
+- **Test spec su regex privata via `(service as any)`**: proprietà mantenuta `private`; guard `expect(regex).toBeDefined()` cattura rename silenziosi
+- **Rischio preesistente non affrontato**: `_assignApi()` crasha se `shardName` non è in `environment.shards` — da tracciare in ticket separato
 
 ### Tab layers nella home (oc:7643)
 
