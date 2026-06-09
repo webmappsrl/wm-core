@@ -261,15 +261,14 @@ export class EcService {
   }
 
   private _notPassableRelatedPoiName(rawName: unknown): Record<string, string> {
-    const defaultLang =
-      this._langSvc.defaultLang || this._langSvc.getFallbackLang() || 'it';
+    const defaultLang = this._langSvc.defaultLang || 'it';
     const langs = [...(this._langSvc.getLangs() ?? [])];
     if (langs.length === 0) {
-      const cur = this._langSvc.getCurrentLang();
+      const cur = this._langSvc.currentLang;
       if (cur) {
         langs.push(cur);
       }
-      const fb = this._langSvc.getFallbackLang();
+      const fb = this._langSvc.defaultLang;
       if (fb && !langs.includes(fb)) {
         langs.push(fb);
       }

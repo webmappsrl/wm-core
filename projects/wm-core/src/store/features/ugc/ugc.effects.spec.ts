@@ -84,6 +84,7 @@ describe('UgcEffects', () => {
   let langSvcSpy: jasmine.SpyObj<LangService>;
 
   beforeEach(() => {
+    TestBed.resetTestingModule();
     ugcServiceSpy = jasmine.createSpyObj('UgcService', [
       'deleteApiPoi',
       'deleteTrack',
@@ -122,7 +123,10 @@ describe('UgcEffects', () => {
   });
 
   afterEach(() => {
-    store.resetSelectors();
+    if (store) {
+      store.resetSelectors();
+    }
+    TestBed.resetTestingModule();
   });
 
   // ─── deleteUgcFailure$ ────────────────────────────────────────────────────

@@ -37,6 +37,7 @@ export class LangService extends TranslateService {
     private _deviceService: DeviceService,
     private _store: Store<any>,
   ) {
+    // @ts-ignore — TranslateService constructor signature differs between v15/v16 (9 args) and v17+ (0 args)
     super();
     this._init();
   }
