@@ -114,7 +114,7 @@
       <div class="layers" *ngIf="showResultTabSelected === 'layers' && !(currentLayer$|async)">
         <wm-layer-box
           *ngFor="let layer of filteredLayers$|async"
-          [data]="{box_type: 'layer', layer: layer}"
+          [data]="{box_type: 'layer', layer: layer, title: layer.title}"
           [useTotal]="true"
           (clickEVT)="setLayer(layer)"
         ></wm-layer-box>
