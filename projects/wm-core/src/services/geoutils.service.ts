@@ -3,7 +3,11 @@ import {Feature, LineString} from 'geojson';
 import {IPoint} from '../types/model';
 import {Injectable} from '@angular/core';
 import {Location} from '@wm-types/feature';
+import {ILAYER} from '@wm-core/types/config';
+import {FeatureLike} from 'ol/Feature';
 import {Coordinate} from 'ol/coordinate';
+import {fromLonLat, toLonLat} from 'ol/proj';
+import RenderFeature, {toFeature} from 'ol/render/Feature';
 import {getDistance} from 'ol/sphere';
 
 @Injectable({
@@ -13,6 +17,60 @@ export class GeoutilsService {
   private _maxCurrentSpeedPoint = 5;
 
   constructor() {}
+
+  /**
+   * Trova il layer home più vicino alla posizione GPS tra le feature VectorTile già caricate.
+   *
+   * @param features feature LineString/MultiLineString da VectorTileSource
+   * @param location posizione GPS corrente
+   * @param homeLayers layer visibili in home (confHOMELayers)
+   * @returns il layer home più vicino alla posizione GPS, o null
+   */
+  pickNearestLayerFromFeatures(
+    features: FeatureLike[],
+    location: Location | null,
+    homeLayers: ILAYER[],
+  ): ILAYER | null {
+    if (!features?.length || location == null || !homeLayers?.length) {
+      return null;
+    }
+
+    const gpsLonLat: [number, number] = [location.longitude, location.latitude];
+    const gps3857 = fromLonLat(gpsLonLat);
+    const homeLayerById = new Map(homeLayers.map(l => [Number(l.id), l]));
+    let bestLayer: ILAYER | null = null;
+    let bestDist = Infinity;
+
+    for (const raw of features) {
+      const feature = raw instanceof RenderFeature ? toFeature(raw) : raw;
+      const rawLayers = feature.get('layers');
+      if (rawLayers == null) continue;
+
+      let featureLayerIds: number[];
+      try {
+        featureLayerIds = JSON.parse(rawLayers) as number[];
+      } catch {
+        continue;
+      }
+
+      const matchingId = featureLayerIds.find(id => homeLayerById.has(id));
+      if (matchingId == null) continue;
+
+      const geom = feature.getGeometry();
+      if (geom == null) continue;
+
+      const closest3857 = geom.getClosestPoint(gps3857);
+      const closestLonLat = toLonLat(closest3857) as [number, number];
+      const dist = getDistance(gpsLonLat, closestLonLat);
+
+      if (dist < bestDist) {
+        bestDist = dist;
+        bestLayer = homeLayerById.get(matchingId) ?? null;
+      }
+    }
+
+    return bestLayer;
+  }
 
   /**
    * Transform a second period into object with hours/minutes/seconds
@@ -72,18 +130,22 @@ export class GeoutilsService {
   }
 
   /**
-   * Get the date when the track was recorded
+   * Calculate the distance in meters between two coordinates.
    *
-   * @param track a track feature
+   * @param point1 first coordinate
+   * @param point2 second coordinate
+   * @returns distance in meters
    */
-  getDate(track: Feature<LineString>) {
-    return new Date();
-  }
-
   getDistance(point1: Coordinate, point2: Coordinate): number {
     return this._calcDistanceM(point1, point2);
   }
 
+  /**
+   * Get the first [lat, lon] point from a nested coordinate array.
+   *
+   * @param coordinates nested coordinate array
+   * @returns first coordinate as [lat, lon]
+   */
   getFirstPoint(coordinates: any): Coordinate {
     if (Array.isArray(coordinates) && typeof coordinates[0] == 'number') {
       return [coordinates[1], coordinates[0]];
@@ -235,12 +297,4 @@ export class GeoutilsService {
     return slope;
   }
 
-  /**
-   * Converte gradi in radianti.
-   * @param deg Gradi.
-   * @returns Radianti.
-   */
-  private deg2rad(deg: number): number {
-    return deg * (Math.PI / 180);
-  }
 }

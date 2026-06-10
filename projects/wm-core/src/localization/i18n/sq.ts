@@ -274,4 +274,6 @@ export const wmSQ = {
   "Regione": "Rregioni",
   "Provincia": "Provincë",
   "Comune": "Komuna",
+  'layer': 'Layer',
+  'Nessun risultato': 'Nuk ka rezultate',
 };

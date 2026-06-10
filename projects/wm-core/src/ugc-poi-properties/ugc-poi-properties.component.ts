@@ -106,6 +106,7 @@ export class UgcPoiPropertiesComponent {
             ...currentUgcPoi?.properties,
             name: this.fg.value.title,
             form: this.fg.value,
+            ...(this.fg.value?.layer_id != null && {layer_id: this.fg.value.layer_id}),
             updatedAt: new Date(),
             media: this._photos ?? [],
           },

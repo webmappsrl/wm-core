@@ -1,6 +1,6 @@
 import {Inject, Injectable, Optional} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {from, of} from 'rxjs';
+import {EMPTY, from, of} from 'rxjs';
 import {catchError, map, switchMap, distinctUntilChanged, tap} from 'rxjs/operators';
 import {Response} from '@wm-types/elastic';
 import {POSTHOG_CLIENT} from '@wm-core/store/conf/conf.token';
@@ -110,11 +110,13 @@ export class EcEffects {
       }),
       switchMap(({featureIds}) => {
         if (featureIds.length === 0) {
-          return of(null);
+          return EMPTY;
         }
         return this._ecSvc.getQuery({trackIds: featureIds});
       }),
-      map((response) => wmMapFeaturesInViewportSuccess({featuresInViewport: response?.hits ?? []})),
+      map((response: Response) =>
+        wmMapFeaturesInViewportSuccess({featuresInViewport: response?.hits ?? []}),
+      ),
       catchError(() => of(wmMapFeaturesInViewportFailure())),
     ),
   );

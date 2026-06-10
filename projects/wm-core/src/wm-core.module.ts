@@ -13,7 +13,6 @@ import {WmHomeResultComponent} from './home/home-result/home-result.component';
 import {WmHomeLandingComponent} from './home/home-landing/home-landing.component';
 import {WmHomeLayerComponent} from './home/home-layer/home-layer.component';
 import {WmHomeComponent} from './home/home.component';
-import {LangService} from './localization/lang.service';
 import {WmLocalizationModule} from './localization/localization.module';
 import {WmPhoneComponent} from './phone/phone.component';
 import {WmPipeModule} from './pipes/pipe.module';
@@ -80,6 +79,7 @@ import {ModalGetDirectionsComponent} from './modal-get-directions/modal-get-dire
 import {ModalReleaseUpdateComponent} from './modal-release-update/modal-release-update.component';
 import {WmDrawUgcComponent} from './draw-ugc/draw-ugc.component';
 import {WmDrawUgcButtonComponent} from './draw-ugc-button/draw-ugc-button.component';
+import {WmSelectNearbyLayerComponent} from './form/select-nearby-layer/select-nearby-layer.component';
 import {iconsReducer} from './store/icons/icons.reducer';
 import {IconsEffects} from './store/icons/icons.effects';
 import {register} from 'swiper/element/bundle';
@@ -150,6 +150,7 @@ export const declarations = [
   ModalReleaseUpdateComponent,
   WmDrawUgcComponent,
   WmDrawUgcButtonComponent,
+  WmSelectNearbyLayerComponent,
 ];
 const modules = [
   WmSharedModule,
@@ -318,7 +319,9 @@ const modules = [
                 }
               });
           } else {
-            console.warn('[PostHog] No valid properties to register, skipping initAndRegister call');
+            console.warn(
+              '[PostHog] No valid properties to register, skipping initAndRegister call',
+            );
           }
         } else {
           console.log('[WM_CORE_INITIALIZER] PostHog not configured, skipping initialization');

@@ -275,4 +275,6 @@ export const wmEN = {
   "Regione": "Region",
   "Provincia": "Province",
   "Comune": "Municipality",
+  'layer': 'Layer',
+  'Nessun risultato': 'No results',
 };

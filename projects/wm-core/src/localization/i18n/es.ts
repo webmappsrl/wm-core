@@ -266,4 +266,6 @@ export const wmES = {
   'Regione': 'Región',
   'Provincia': 'Provincia',
   'Comune': 'Municipio',
+  'layer': 'Layer',
+  'Nessun risultato': 'Sin resultados',
 };

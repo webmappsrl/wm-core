@@ -56,8 +56,11 @@
       </ng-container>
     </ng-container>
     <ng-template #modifiable>
-      <ng-container *ngFor="let field of (currentForm$|async).fields">
-        <ion-item class="wm-form-field">
+      <ng-container *ngFor="let field of (currentForm$|async)?.fields">
+        <ion-item
+          class="wm-form-field"
+          [class.wm-form-field--floating-dropdown]="field.type === 'selectNearLayer'"
+        >
           <i class="{{field.type|getFormFieldIcn}} wm-form-field-icon secondary"></i>
           <ion-label class="wm-form-field-label" position="stacked">
             {{ field.label | wmtrans }}
@@ -93,6 +96,10 @@
                 >{{opt.label|wmtrans}}</ion-select-option
               >
             </ion-select>
+            <wm-select-nearby-layer
+              *ngSwitchCase="'selectNearLayer'"
+              [formControlName]="field.name"
+            ></wm-select-nearby-layer>
           </container-element>
         </ion-item>
 

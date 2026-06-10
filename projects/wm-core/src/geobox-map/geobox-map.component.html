@@ -40,6 +40,7 @@
     [wmMapLayerZoomFeaturesInViewport]="zoomFeaturesInViewport$|async"
     (colorSelectedFromLayerEVT)="trackColor$.next($event)"
     (featuresInViewportEVT)="featuresInViewport($event)"
+    (featuresInLocationRangeEVT)="featuresInLocationRange($event)"
     [wmMapPoisFilters]="poiFilterIdentifiers$|async"
     wmMapPois
     [wmMapInputTyped]="apiSearchInputTyped$|async"

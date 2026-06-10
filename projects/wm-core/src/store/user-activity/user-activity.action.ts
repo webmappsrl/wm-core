@@ -132,6 +132,16 @@ export const wmMapFeaturesInViewportFailure = createAction(
   '[User Activity] wm map features in viewport failure',
 );
 
+export const refreshMapFeaturesInLocationRange = createAction(
+  '[User Activity] refresh map features in location range',
+  props<{location: {longitude: number; latitude: number}}>(),
+);
+
+export const setNearbyLayerId = createAction(
+  '[User Activity] set nearby layer id',
+  props<{layerId: string | null}>(),
+);
+
 export const startDrawUgcPoi = createAction(
   '[User Activity] start draw ugc poi',
   props<{ugcPoi: WmFeature<Point>}>(),
