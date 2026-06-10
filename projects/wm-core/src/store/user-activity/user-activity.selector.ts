@@ -193,6 +193,7 @@ export const currentHitmapFeature = createSelector(
 );
 
 export const featuresInViewport = createSelector(userActivity, state => state.featuresInViewport);
+export const nearbyLayerId = createSelector(userActivity, state => state.nearbyLayerId);
 export const hasFeatureInViewport = createSelector(
   featuresInViewport,
   featuresInViewport => featuresInViewport && featuresInViewport.length > 0,

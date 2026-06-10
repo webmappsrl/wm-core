@@ -274,4 +274,6 @@ export const wmIT = {
   "Regione": "Regione",
   "Provincia": "Provincia",
   "Comune": "Comune",
+  'layer': 'Layer',
+  'Nessun risultato': 'Nessun risultato',
 };

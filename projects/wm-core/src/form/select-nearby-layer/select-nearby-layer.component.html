@@ -1,0 +1,45 @@
+<div class="wm-select-nearby-layer">
+  <ion-input
+    #layerInput
+    role="combobox"
+    aria-autocomplete="list"
+    aria-haspopup="listbox"
+    aria-controls="wm-layer-listbox"
+    [attr.aria-expanded]="(showDropdown$ | async) === true"
+    [value]="searchText"
+    [placeholder]="'layer' | wmtrans"
+    [clearInput]="selectedLayer != null || searchText.length > 0"
+    (ionInput)="onInputChange($event.detail.value)"
+    (ionFocus)="onInputFocus()"
+    (ionBlur)="onBlur()"
+    class="wm-select-nearby-layer-input"
+    e2e-form-input="layer"
+  ></ion-input>
+
+  <div
+    *ngIf="(showDropdown$ | async)"
+    id="wm-layer-listbox"
+    role="listbox"
+    class="wm-select-nearby-layer-list"
+  >
+    <ng-container *ngIf="(filteredLayers$ | async)?.length; else noResults">
+      <button
+        *ngFor="let layer of (filteredLayers$ | async)"
+        type="button"
+        role="option"
+        (mousedown)="$event.preventDefault()"
+        (click)="selectLayer(layer)"
+        class="wm-select-nearby-layer-option"
+        [class.is-selected]="selectedLayer?.id === layer.id"
+        [attr.aria-selected]="selectedLayer?.id === layer.id"
+      >
+        {{ layer.title | wmtrans }}
+      </button>
+    </ng-container>
+    <ng-template #noResults>
+      <div class="wm-select-nearby-layer-empty">
+        {{'Nessun risultato' | wmtrans}}
+      </div>
+    </ng-template>
+  </div>
+</div>

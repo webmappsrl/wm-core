@@ -269,4 +269,6 @@ export const wmFR = {
   'Regione': 'Région',
   'Provincia': 'Province',
   'Comune': 'Commune',
+  'layer': 'Layer',
+  'Nessun risultato': 'Aucun résultat',
 };

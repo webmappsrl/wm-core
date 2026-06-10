@@ -266,4 +266,6 @@ export const wmPR = {
   'Regione': 'Região',
   'Provincia': 'Província',
   'Comune': 'Município',
+  'layer': 'Layer',
+  'Nessun risultato': 'Sem resultados',
 };

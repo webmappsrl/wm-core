@@ -136,6 +136,7 @@ export class ModalUgcUploaderComponent {
                 const properties: WmProperties = {
                   name: formValue?.title,
                   form: formValue,
+                  ...(formValue?.layer_id != null && {layer_id: formValue.layer_id}),
                   uuid: generateUUID(),
                   app_id: `${geohubId}`,
                   createdAt: dateNow,

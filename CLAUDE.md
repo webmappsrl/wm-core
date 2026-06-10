@@ -72,6 +72,7 @@ Solo per smoke test ("il sistema è su e risponde"), non per test di logica UI.
 |---|---|---|---|
 | Fix regex hostname 5 parti | oc:8031 | `environment.service.ts`, `environment.service.spec.ts` | Regex aggiornata a `(?:\.[^.]+)+` per supportare domini Surge preview a N parti |
 | Ricerca per layer/cammino nella home | oc:7643 | `home-result`, `ec` store (actions/reducer/effects/selectors), `layer-box`, `layer-features-counter-badge`, `user-activity.reducer` | |
+| Selezione cammino nel form UGC segnalazione | oc:7639 | `select-nearby-layer` (nuovo), `form.component`, `geobox-map`, `modal-ugc-uploader`, `geoutils.service`, `user-activity` store (`nearbyLayerId`), `map-core/layer.directive`, `map-core/ol.ts` | Test E2E: `core/cypress/e2e/app_52/ugc-segnalazione-layer-selection.cy.ts` |
 
 ## Decisioni architetturali
 
@@ -115,3 +116,52 @@ Solo per smoke test ("il sistema è su e risponde"), non per test di logica UI.
 
 - `@Input() showBadge = true` — permette di nascondere il badge (usato in altri contesti)
 - `@Input() useTotal = false` — quando `true` il badge usa `layerFeaturesTotalCount` (non filtrato)
+
+### Selezione layer nel form UGC segnalazione (oc:7639)
+
+**Pipeline pre-selezione GPS**
+
+La pre-selezione non avviene nel componente form. Segue una pipeline in tre stadi:
+1. `WmMapLayerDirective.refreshFeaturesInLocationRange(location)` fetcha tile PBF a zoom fisso via `loadVectorTileFeaturesForLocation` (map-core) — indipendente dallo zoom corrente della mappa
+2. `GeoboxMapComponent.featuresInLocationRange(features)` chiama `GeoutilsService.pickNearestLayerFromFeatures()` e dispatcha `setNearbyLayerId` allo store
+3. `WmSelectNearbyLayerComponent` legge da `combineLatest([confHOMELayers, currentEcLayer, store.select(nearbyLayerId)])` e applica priorità: `currentEcLayer` → `nearbyLayerId`
+
+**Perché non `source.getFeaturesInExtent()`**
+
+`getFeaturesInExtent()` legge solo tile già renderizzati in viewport: se la mappa è a zoom alto o il modal si apre prima del render, le feature non ci sono. `loadVectorTileFeaturesForLocation` fetcha i tile a zoom fisso basso indipendentemente dallo stato del viewport.
+
+**Comportamento al confine tra tile PBF — gestito correttamente**
+
+Il buffer da 1500m viene applicato **prima** di calcolare quali tile fetchare. Se il GPS è vicino al bordo di una tile, l'extent espanso sconfina nella tile adiacente e `getTilesForExtent` include entrambe nel fetch. Una feature nella tile adiacente a 50m viene trovata correttamente anche se la tile del punto GPS contiene solo feature lontane. L'unico limite è il raggio: feature oltre 1500m non vengono cercate per design.
+
+**`pickNearestLayerFromFeatures` vs `getNearestLayer`**
+
+Il metodo in `GeoutilsService` si chiama `pickNearestLayerFromFeatures(features, location, homeLayers)` — non `getNearestLayer`. Non riceve `OlMap` come parametro. Gestisce `RenderFeature` con `toFeature()`.
+
+**`currentEcLayer` non `currentLayer`**
+
+Il selettore corretto è `currentEcLayer` da `user-activity.selector.ts`. Il selettore `currentLayer` non esiste.
+
+**`featuresInLocationRangeEVT` emette `{features, location}` non solo `features`**
+
+La location viaggia con le feature per evitare stato condiviso fragile (`_lastLocationRangeRefresh` era un campo di classe che poteva essere sovrascritto tra chiamate concorrenti). `GeoboxMapComponent.featuresInLocationRange` usa `async`/`firstValueFrom` invece di `subscribe` imperativo.
+
+**CVA `WmSelectNearbyLayerComponent` — propagazione al form ricreato**
+
+Quando `WmFormComponent.setForm()` ricrea il `FormGroup`, Angular chiama `registerOnChange(newFn)`. Se il combineLatest dello store non ri-emette, `_onChange` non verrebbe mai chiamato con il nuovo form control. Fix: `registerOnChange` propaga immediatamente il valore se `_lastResolvedLayer` è noto; `_applyPreselection` chiama sempre `_onChange` (non solo quando il layer cambia visivamente).
+
+**`layer_id` top-level va estratto in tutti i componenti di salvataggio**
+
+Il flusso POI segnalazione usa `ModalSaveComponent` (non `ModalUgcUploaderComponent`). Entrambi devono usare `...(formValue?.layer_id != null && {layer_id: formValue.layer_id})` per non inviare `layer_id: null` al backend.
+
+**`WmFormComponent.confPOIFORMS` setter accetta `null`**
+
+Il setter è dichiarato `any[] | null` con guard `if (forms == null) return`. Necessario perché `X | async` in strict Angular template produce `T | null` — senza il `null` nel tipo il compiler segnala un errore. Tutti i template che usano `[confPOIFORMS]="obs$|async"` senza `?? []` dipendono da questo.
+
+**`WmFormComponent.setForm()` — il form group va costruito fuori dal forEach**
+
+Le righe `this.formGroup = this._fb.group(formObj)`, `formGroupEvt.emit`, `isInvalidEvt.emit` devono stare **dopo** il `forEach` sui campi, non dentro. Dentro il loop accumulare solo `formObj[field.name]`.
+
+**Subscription management in `WmFormComponent`**
+
+Usare `takeUntil(this._destroy$)` con un `Subject<void>` per tutte le subscription (sia `formIdGroup.valueChanges` che `formGroup.valueChanges`). La gestione manuale con `Subscription` causava leak perché le subscription vecchie di `formGroup.valueChanges` non venivano mai chiuse al cambio form.

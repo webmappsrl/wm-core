@@ -36,6 +36,7 @@ import {
   setEnableTilesDownload,
   setWmMapTilesBoundingBox,
   setDisableTilesDownloadButton,
+  setNearbyLayerId,
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
@@ -64,6 +65,7 @@ export interface UserActivityState {
   currentEcPoiId?: any;
   wmMapHitMapChangeFeatureById?: number;
   featuresInViewport: Hit[];
+  nearbyLayerId: string | null;
   wmMapHitmapFeatures: WmFeature<MultiPolygon>[];
   homeResultTabSelected: HomeResultTab;
   currentLocation?: Location;
@@ -96,6 +98,7 @@ const initialState: UserActivityState = {
   wmMapHitMapChangeFeatureById: null,
   wmMapHitmapFeatures: [],
   featuresInViewport: [],
+  nearbyLayerId: null,
   homeResultTabSelected: null,
   enableTrackRecoderPanel: false,
   enablePoiRecorderPanel: false,
@@ -323,6 +326,10 @@ export const userActivityReducer = createReducer(
     };
     return newState;
   }),
+  on(setNearbyLayerId, (state, {layerId}) => ({
+    ...state,
+    nearbyLayerId: layerId,
+  })),
   on(setHomeResultTabSelected, (state, {tab}) => {
     return {
       ...state,

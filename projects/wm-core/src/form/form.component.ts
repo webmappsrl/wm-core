@@ -8,8 +8,8 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
-import {BehaviorSubject, Subscription} from 'rxjs';
-import {distinctUntilChanged, filter} from 'rxjs/operators';
+import {BehaviorSubject, Subject} from 'rxjs';
+import {distinctUntilChanged, filter, takeUntil} from 'rxjs/operators';
 
 @Component({
   standalone: false,
@@ -21,9 +21,11 @@ import {distinctUntilChanged, filter} from 'rxjs/operators';
 })
 export class WmFormComponent implements OnDestroy {
   private _currentFormId = 0;
+  private _destroy$ = new Subject<void>();
   private _titleFirstClick = true;
 
-  @Input() set confPOIFORMS(forms: any[]) {
+  @Input() set confPOIFORMS(forms: any[] | null) {
+    if (forms == null) return;
     this.forms$.next(forms);
     if (forms.length === 1) {
       this.formIdGroup.controls['id'].setValue(0);
@@ -52,7 +54,6 @@ export class WmFormComponent implements OnDestroy {
   formGroup: UntypedFormGroup;
   formIdGroup: UntypedFormGroup;
   forms$: BehaviorSubject<any[]> = new BehaviorSubject<any>([]);
-  formGroupValueChangesSub: Subscription = Subscription.EMPTY;
   constructor(private _fb: UntypedFormBuilder) {
     this.formIdGroup = this._fb.group({
       id: [null, [Validators.required]],
@@ -61,16 +62,12 @@ export class WmFormComponent implements OnDestroy {
       .pipe(
         filter(form => form != null && form.id != null),
         distinctUntilChanged((prev, curr) => prev.id === curr.id),
+        takeUntil(this._destroy$),
       )
       .subscribe(form => {
         this.enableForm$.next(false);
-        if (form.id != null) {
-          this.setForm(form.id);
-          this.enableForm$.next(true);
-          this.formGroupValueChangesSub = this.formGroup.valueChanges.subscribe(() => {
-            this.isInvalidEvt.emit(this.formGroup.invalid);
-          });
-        }
+        this.setForm(form.id);
+        this.enableForm$.next(true);
       });
   }
 
@@ -82,7 +79,10 @@ export class WmFormComponent implements OnDestroy {
     this._titleFirstClick = true;
     this.formIdGroup.controls['id'].setValue(idx);
     this.currentForm$.next(this.forms$.value[idx]);
-    let formObj = {};
+    const formObj: Record<string, any> = {
+      index: idx,
+      id: this.currentForm$.value.id,
+    };
 
     this.currentForm$.value?.fields.forEach(field => {
       const validators = [];
@@ -91,7 +91,6 @@ export class WmFormComponent implements OnDestroy {
       }
       if (field.type === 'text') {
         let defaultValue = null;
-
         if (field.name === 'title') {
           if (values && values[field.name]) {
             defaultValue = values[field.name];
@@ -107,7 +106,6 @@ export class WmFormComponent implements OnDestroy {
         } else {
           defaultValue = values && values[field.name] ? values[field.name] : null;
         }
-
         formObj[field.name] = [defaultValue, validators];
       }
       if (field.type === 'textarea') {
@@ -119,16 +117,25 @@ export class WmFormComponent implements OnDestroy {
           validators,
         ];
       }
-      formObj['index'] = idx;
-      formObj['id'] = this.currentForm$.value.id;
-      this.formGroup = this._fb.group(formObj);
-      this.formGroupEvt.emit(this.formGroup);
+      if (field.type === 'selectNearLayer') {
+        formObj[field.name] = [
+          values && values[field.name] ? values[field.name] : null,
+          validators,
+        ];
+      }
+    });
+
+    this.formGroup = this._fb.group(formObj);
+    this.formGroup.valueChanges.pipe(takeUntil(this._destroy$)).subscribe(() => {
       this.isInvalidEvt.emit(this.formGroup.invalid);
     });
+    this.formGroupEvt.emit(this.formGroup);
+    this.isInvalidEvt.emit(this.formGroup.invalid);
   }
 
   ngOnDestroy(): void {
-    this.formGroupValueChangesSub.unsubscribe();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   async selectAllTitleText(event: any): Promise<void> {

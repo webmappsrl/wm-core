@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -20,6 +21,7 @@ import {LangService} from '@wm-core/localization/lang.service';
 import {
   confGeohubId,
   confHOME,
+  confHOMELayers,
   confMAP,
   confMAPLAYERS,
   confOPTIONS,
@@ -53,6 +55,8 @@ import {
   togglePoiFilter,
   toggleTrackFilter,
   updateTrackFilter,
+  refreshMapFeaturesInLocationRange,
+  setNearbyLayerId,
   wmMapFeaturesInViewport,
   wmMapHitMapChangeFeatureById,
 } from '@wm-core/store/user-activity/user-activity.action';
@@ -65,7 +69,7 @@ import {
 } from '@wm-core/types/config';
 import {ICONS} from '@wm-types/config';
 import {icons} from '@wm-core/store/icons/icons.selector';
-import {BehaviorSubject, combineLatest, from, merge, of, Subject, Subscription, EMPTY} from 'rxjs';
+import {BehaviorSubject, combineLatest, firstValueFrom, from, merge, of, Subject, Subscription, EMPTY} from 'rxjs';
 import {Observable} from 'rxjs';
 import {
   debounceTime,
@@ -120,7 +124,7 @@ import {
   ugcTracksFeatures,
 } from '@wm-core/store/features/ugc/ugc.selector';
 import {AlertController, ModalController} from '@ionic/angular';
-import {WmMapTrackRelatedPoisDirective} from '@map-core/directives';
+import {WmMapLayerDirective, WmMapTrackRelatedPoisDirective} from '@map-core/directives';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {WmMapComponent} from '@map-core/components';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
@@ -132,10 +136,11 @@ import {currentUgcPoiId} from '@wm-core/store/features/ugc/ugc.selector';
 import {DeviceService} from '@wm-core/services/device.service';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {GeolocationService} from '@wm-core/services/geolocation.service';
+import {GeoutilsService} from '@wm-core/services/geoutils.service';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 import {FeatureLike} from 'ol/Feature';
 import {OPTIONS, ZoomFeaturesInViewport} from '@wm-types/config';
-import {Location} from '@capacitor-community/background-geolocation';
+import {Location} from '@wm-types/feature';
 
 const initPadding = [10, 10, 10, 10];
 const initMenuOpened = true;
@@ -150,7 +155,7 @@ const DIFFERENCE_THRESHOLD_LAT_LON = 0.00001; // 0.00001 gradi (~1 metro)
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class WmGeoboxMapComponent implements OnDestroy {
+export class WmGeoboxMapComponent implements AfterViewInit, OnDestroy {
   private _confMAPLAYERS$: Observable<ILAYER[]> = this._store.select(confMAPLAYERS);
   private readonly _destroy$ = new Subject<void>();
 
@@ -175,8 +180,15 @@ export class WmGeoboxMapComponent implements OnDestroy {
   }>();
   @ViewChild(WmMapTrackRelatedPoisDirective)
   WmMapTrackRelatedPoisDirective: WmMapTrackRelatedPoisDirective;
+  @ViewChild(WmMapLayerDirective) layerDirective: WmMapLayerDirective;
   @ViewChild('filterCmp') filterCmp: FiltersComponent;
   @ViewChild(WmMapComponent) mapCmp: WmMapComponent;
+
+  private _pendingLocationRangeRefresh: {longitude: number; latitude: number} | null = null;
+
+  get olMap() {
+    return this.mapCmp?.map ?? null;
+  }
 
   apiElasticState$: Observable<any> = this._store.select(mapFilters);
   apiSearchInputTyped$: Observable<string> = this._store.select(inputTyped);
@@ -315,6 +327,7 @@ export class WmGeoboxMapComponent implements OnDestroy {
     private _urlHandlerSvc: UrlHandlerService,
     private _deviceSvc: DeviceService,
     private _geolocationSvc: GeolocationService,
+    private _geoutilsSvc: GeoutilsService,
     private _environmentSvc: EnvironmentService,
   ) {
     this._actions$.pipe(ofType(resetMap), takeUntil(this._destroy$)).subscribe(() => {
@@ -322,6 +335,11 @@ export class WmGeoboxMapComponent implements OnDestroy {
       this.mapCmp?.wmMapControls?.reset();
       this._store.dispatch(wmMapHitMapChangeFeatureById({id: null}));
     });
+    this._actions$
+      .pipe(ofType(refreshMapFeaturesInLocationRange), takeUntil(this._destroy$))
+      .subscribe(({location}) => {
+        this._runLocationRangeRefresh(location);
+      });
     this.currentMapPaddings$ = combineLatest([
       this.showMenu$,
       this.mapPadding$,
@@ -414,12 +432,43 @@ export class WmGeoboxMapComponent implements OnDestroy {
     );
   }
 
+  ngAfterViewInit(): void {
+    if (this._pendingLocationRangeRefresh != null) {
+      this._runLocationRangeRefresh(this._pendingLocationRangeRefresh);
+      this._pendingLocationRangeRefresh = null;
+    }
+  }
+
+  private _runLocationRangeRefresh(location: {longitude: number; latitude: number}): void {
+    if (this.layerDirective != null) {
+      this.layerDirective.refreshFeaturesInLocationRange(location);
+      return;
+    }
+    this._pendingLocationRangeRefresh = location;
+  }
+
   featuresInViewport(features: FeatureLike[]): void {
     const featureIds = features
-      .map(feature => feature.getProperties()?.id)
+      .map(feature => feature.getProperties()?.id ?? feature.get('id'))
       .filter(id => id != null);
 
     this._store.dispatch(wmMapFeaturesInViewport({featureIds}));
+  }
+
+  async featuresInLocationRange({
+    features,
+    location,
+  }: {
+    features: FeatureLike[];
+    location: Location;
+  }): Promise<void> {
+    const homeLayers = await firstValueFrom(this._store.select(confHOMELayers));
+    const layer = this._geoutilsSvc.pickNearestLayerFromFeatures(
+      features,
+      location,
+      homeLayers ?? [],
+    );
+    this._store.dispatch(setNearbyLayerId({layerId: layer?.id ?? null}));
   }
 
   ngOnDestroy(): void {

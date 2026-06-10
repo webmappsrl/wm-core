@@ -270,4 +270,6 @@ export const wmDE = {
   "Regione": "Region",
   "Provincia": "Provinz",
   "Comune": "Gemeinde",
+  'layer': 'Layer',
+  'Nessun risultato': 'Keine Ergebnisse',
 };
