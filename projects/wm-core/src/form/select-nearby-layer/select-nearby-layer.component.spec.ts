@@ -23,6 +23,7 @@ describe('WmSelectNearbyLayerComponent', () => {
   let store: MockStore;
 
   beforeEach(async () => {
+    TestBed.resetTestingModule();
     await TestBed.configureTestingModule({
       declarations: [WmSelectNearbyLayerComponent],
       imports: [ReactiveFormsModule, IonicModule.forRoot(), CommonModule, WmPipeModule],
@@ -49,7 +50,7 @@ describe('WmSelectNearbyLayerComponent', () => {
     component = fixture.componentInstance;
   });
 
-  afterEach(() => store.resetSelectors());
+  afterEach(() => store?.resetSelectors());
 
   it('pre-seleziona currentEcLayer se presente nello store', () => {
     store.overrideSelector(currentEcLayer, {id: '81'} as any);

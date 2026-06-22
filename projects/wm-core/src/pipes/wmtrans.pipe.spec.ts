@@ -21,6 +21,10 @@ describe('WmTransPipe', () => {
   });
 
   beforeEach(() => {
+    // Reset static state that may have been left by other spec files using WmPipeModule
+    (WmTransPipe as any)['sub']?.unsubscribe();
+    (WmTransPipe as any)['sub'] = null;
+    ((WmTransPipe as any)['cdrs'] as Set<any>).clear();
     TestBed.resetTestingModule();
     langChange$ = new Subject<void>();
     cdrMock = jasmine.createSpyObj<ChangeDetectorRef>('ChangeDetectorRef', ['markForCheck']);
