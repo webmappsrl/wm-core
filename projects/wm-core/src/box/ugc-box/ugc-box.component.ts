@@ -22,7 +22,7 @@ import {map} from 'rxjs/operators';
 })
 export class UgcBoxComponent extends BaseBoxComponent<IUGCBOX> {
   myPathsImage$: Observable<string> = this._store.select(confAPP).pipe(
-    map(app => app?.my_paths ?? 'assets/images/profile/my-path.webp'),
+    map(app => app?.myPaths ?? 'assets/images/profile/my-path.webp'),
   );
   isLogged$: Observable<boolean> = this._store.select(isLogged);
   ugcOpen$: Observable<boolean> = this._store.select(ugcOpened);
