@@ -85,6 +85,7 @@ import {IconsEffects} from './store/icons/icons.effects';
 import {register} from 'swiper/element/bundle';
 import {Capacitor} from '@capacitor/core';
 import {PosthogCapacitorClient} from './services/posthog-capacitor.client';
+import {PosthogContextService} from './services/posthog-context.service';
 import {EnvironmentService} from './services/environment.service';
 import {
   APP_TRANSLATION,
@@ -352,7 +353,8 @@ export class WmCoreModule {
         {provide: APP_TRANSLATION, useValue: config.translations || {}},
         {provide: POSTHOG_CONFIG, useValue: config.posthog},
         PosthogCapacitorClient,
-        {provide: POSTHOG_CLIENT, useExisting: PosthogCapacitorClient},
+        PosthogContextService,
+        {provide: POSTHOG_CLIENT, useExisting: PosthogContextService},
       ],
     };
   }
