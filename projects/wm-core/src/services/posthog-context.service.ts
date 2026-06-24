@@ -60,7 +60,7 @@ export class PosthogContextService implements WmPosthogClient {
     this._geolocationSvc?.onLocationChange$
       .pipe(takeUntilDestroyed(this._destroyRef))
       .subscribe(() => {
-        this.capture('locationUpdate', {mode: this._geolocationSvc?.currentMode});
+        this.capture('userMoved', {mode: this._geolocationSvc?.currentMode});
       });
   }
 
