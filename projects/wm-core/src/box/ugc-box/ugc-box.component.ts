@@ -25,7 +25,7 @@ const LOCAL_MY_PATHS = 'assets/images/profile/my-path.webp';
 })
 export class UgcBoxComponent extends BaseBoxComponent<IUGCBOX> {
   myPathsImage$: Observable<string> = this._store.select(confAPP).pipe(
-    map(app => (!Capacitor.isNativePlatform() && app?.my_paths) ? app.my_paths : LOCAL_MY_PATHS),
+    map(app => (!Capacitor.isNativePlatform() && app?.myPaths) ? app.myPaths : LOCAL_MY_PATHS),
   );
   isLogged$: Observable<boolean> = this._store.select(isLogged);
   ugcOpen$: Observable<boolean> = this._store.select(ugcOpened);
