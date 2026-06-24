@@ -1,11 +1,14 @@
 import {DestroyRef, Injectable, Injector} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {App} from '@capacitor/app';
+import {PluginListenerHandle} from '@capacitor/core';
 import {Store} from '@ngrx/store';
 import {currentEcPoiId, currentEcTrack} from '@wm-core/store/features/ec/ec.selector';
 import {currentUgcPoiId, currentUgcTrackId} from '@wm-core/store/features/ugc/ugc.selector';
 import {currentEcLayer} from '@wm-core/store/user-activity/user-activity.selector';
 import {WmPosthogClient, WmPosthogInitOptions, WmPosthogProps} from '@wm-types/posthog';
-import {combineLatest} from 'rxjs';
+import {combineLatest, timer} from 'rxjs';
+import {filter} from 'rxjs/operators';
 import {PosthogCapacitorClient} from './posthog-capacitor.client';
 import {GeolocationService} from './geolocation.service';
 
@@ -21,6 +24,8 @@ import {GeolocationService} from './geolocation.service';
 export class PosthogContextService implements WmPosthogClient {
   private _contextSnapshot: WmPosthogProps = {};
   private _geolocationSvcRef: GeolocationService | null = null;
+  private _isAppActive = true;
+  private _appStateListener: PluginListenerHandle | null = null;
 
   constructor(
     private _client: PosthogCapacitorClient,
@@ -44,6 +49,25 @@ export class PosthogContextService implements WmPosthogClient {
         if (ecTrack?.properties?.id != null) snap['track_id'] = `${ecTrack.properties.id}`;
         if (ugcTrackId != null) snap['ugc_track_id'] = `${ugcTrackId}`;
         this._contextSnapshot = snap;
+      });
+
+    App.addListener('appStateChange', ({isActive}) => {
+      this._isAppActive = isActive;
+    }).then(handle => {
+      this._appStateListener = handle;
+    });
+
+    this._destroyRef.onDestroy(() => {
+      this._appStateListener?.remove();
+    });
+
+    timer(0, 60_000)
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        filter(() => this._isAppActive || this._geolocationSvc.currentMode === 'recording'),
+      )
+      .subscribe(() => {
+        this.capture('userOnline', {mode: this._geolocationSvc.currentMode});
       });
   }
 
