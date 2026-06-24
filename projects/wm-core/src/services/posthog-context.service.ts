@@ -1,7 +1,6 @@
 import {DestroyRef, Injectable, Injector} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {App} from '@capacitor/app';
-import {PluginListenerHandle} from '@capacitor/core';
 import {Store} from '@ngrx/store';
 import {currentEcPoiId, currentEcTrack} from '@wm-core/store/features/ec/ec.selector';
 import {currentUgcPoiId, currentUgcTrackId} from '@wm-core/store/features/ugc/ugc.selector';
@@ -22,10 +21,11 @@ import {GeolocationService} from './geolocation.service';
  */
 @Injectable()
 export class PosthogContextService implements WmPosthogClient {
+  private static readonly HEARTBEAT_INTERVAL_MS = 60_000;
+
   private _contextSnapshot: WmPosthogProps = {};
   private _geolocationSvcRef: GeolocationService | null = null;
   private _isAppActive = true;
-  private _appStateListener: PluginListenerHandle | null = null;
 
   constructor(
     private _client: PosthogCapacitorClient,
@@ -51,36 +51,40 @@ export class PosthogContextService implements WmPosthogClient {
         this._contextSnapshot = snap;
       });
 
-    App.addListener('appStateChange', ({isActive}) => {
-      this._isAppActive = isActive;
-    }).then(handle => {
-      this._appStateListener = handle;
-    });
-
-    this._destroyRef.onDestroy(() => {
-      this._appStateListener?.remove();
-    });
-
-    timer(0, 60_000)
-      .pipe(
-        takeUntilDestroyed(this._destroyRef),
-        filter(() => this._isAppActive || this._geolocationSvc.currentMode === 'recording'),
-      )
-      .subscribe(() => {
-        this.capture('userOnline', {mode: this._geolocationSvc.currentMode});
-      });
+    this._initAppStateListener();
+    this._initHeartbeat();
   }
 
-  private get _geolocationSvc(): GeolocationService {
+  private get _geolocationSvc(): GeolocationService | null {
     if (!this._geolocationSvcRef) {
-      this._geolocationSvcRef = this._injector.get(GeolocationService);
+      this._geolocationSvcRef = this._injector.get(GeolocationService, null);
     }
     return this._geolocationSvcRef;
   }
 
+  private _initAppStateListener(): void {
+    (async () => {
+      const handle = await App.addListener('appStateChange', ({isActive}) => {
+        this._isAppActive = isActive;
+      });
+      this._destroyRef.onDestroy(() => handle.remove());
+    })();
+  }
+
+  private _initHeartbeat(): void {
+    timer(0, PosthogContextService.HEARTBEAT_INTERVAL_MS)
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        filter(() => this._isAppActive || this._geolocationSvc?.currentMode === 'recording'),
+      )
+      .subscribe(() => {
+        this.capture('userOnline', {mode: this._geolocationSvc?.currentMode});
+      });
+  }
+
   private _buildContext(): WmPosthogProps {
     const ctx = {...this._contextSnapshot};
-    const loc = this._geolocationSvc.location;
+    const loc = this._geolocationSvc?.location;
     if (loc && Number.isFinite(loc.latitude) && Number.isFinite(loc.longitude)) {
       ctx['user_location'] = loc;
     }
