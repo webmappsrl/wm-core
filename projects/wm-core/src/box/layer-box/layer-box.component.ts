@@ -38,9 +38,12 @@ export class LayerBoxComponent extends BaseBoxComponent<ILAYERBOX> {
   onClick(): void {
     if (this._posthogClient && this.data?.layer) {
       const layerId = `${this.data.layer.id}`;
-      const layerName = this.data.layer.title ?? this.data.title ?? '';
+      const rawTitle = this.data.layer.title ?? this.data.title ?? '';
+      const layerName =
+        typeof rawTitle === 'string'
+          ? rawTitle
+          : rawTitle.it ?? Object.values(rawTitle).find(v => v) ?? '';
       this._posthogClient.capture('layerOpened', {
-        layer_id: layerId,
         layer_name: layerName,
         layer_label: `${layerId} - ${layerName}`,
       });

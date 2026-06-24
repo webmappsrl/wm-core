@@ -4,7 +4,9 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
+  Inject,
   OnDestroy,
+  Optional,
   Output,
   ViewChild,
   ViewEncapsulation,
@@ -138,6 +140,8 @@ import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {GeolocationService} from '@wm-core/services/geolocation.service';
 import {GeoutilsService} from '@wm-core/services/geoutils.service';
 import {EnvironmentService} from '@wm-core/services/environment.service';
+import {POSTHOG_CLIENT} from '@wm-core/store/conf/conf.token';
+import {WmPosthogClient} from '@wm-types/posthog';
 import {FeatureLike} from 'ol/Feature';
 import {OPTIONS, ZoomFeaturesInViewport} from '@wm-types/config';
 import {Location} from '@wm-types/feature';
@@ -329,6 +333,7 @@ export class WmGeoboxMapComponent implements AfterViewInit, OnDestroy {
     private _geolocationSvc: GeolocationService,
     private _geoutilsSvc: GeoutilsService,
     private _environmentSvc: EnvironmentService,
+    @Optional() @Inject(POSTHOG_CLIENT) private _posthogClient: WmPosthogClient | null,
   ) {
     this._actions$.pipe(ofType(resetMap), takeUntil(this._destroy$)).subscribe(() => {
       this.mapCmp?.resetView();
@@ -490,6 +495,7 @@ export class WmGeoboxMapComponent implements AfterViewInit, OnDestroy {
         focus = !wmMapPositionfocus;
       }
       this._store.dispatch(setFocusPosition({focusPosition: focus}));
+      this._posthogClient?.capture(focus ? 'navigationStarted' : 'navigationStopped');
     });
   }
 

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Inject, Injectable, Optional} from '@angular/core';
 import {BehaviorSubject, from, Observable, of, ReplaySubject} from 'rxjs';
 import {
   BackgroundGeolocationPlugin,
@@ -12,10 +12,12 @@ import {WmFeature} from '@wm-types/feature';
 import {DeviceService} from './device.service';
 import {CStopwatch} from '@wm-core/utils/cstopwatch';
 import {getDistance} from 'ol/sphere';
-import {distinctUntilChanged, map, startWith, throttleTime} from 'rxjs/operators';
+import {distinctUntilChanged, map, pairwise, startWith, throttleTime} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
 import {setFocusPosition, setOnRecord} from '@wm-core/store/user-activity/user-activity.action';
 import {onRecord} from '@wm-core/store/user-activity/user-activity.selector';
+import {POSTHOG_CLIENT} from '@wm-core/store/conf/conf.token';
+import {WmPosthogClient} from '@wm-types/posthog';
 import {
   getCurrentUgcTrackLocations,
   saveCurrentUgcTrackLocations,
@@ -45,7 +47,11 @@ export class GeolocationService {
   );
   onRecord$: Observable<boolean> = this._store.select(onRecord);
 
-  constructor(private _deviceService: DeviceService, private _store: Store) {
+  constructor(
+    private _deviceService: DeviceService,
+    private _store: Store,
+    @Optional() @Inject(POSTHOG_CLIENT) private _posthogClient: WmPosthogClient | null,
+  ) {
     if (!this._deviceService.isBrowser) {
       App.addListener('appStateChange', async ({isActive}) => {
         if (isActive) {
@@ -57,6 +63,14 @@ export class GeolocationService {
         }
       });
     }
+
+    this.onModeChange.pipe(pairwise()).subscribe(([prev, curr]) => {
+      if (curr === 'recording') {
+        this._posthogClient?.capture('recordingStarted');
+      } else if (prev === 'recording' && curr === 'stopped') {
+        this._posthogClient?.capture('recordingStopped');
+      }
+    });
   }
 
   get recordTime(): number {
