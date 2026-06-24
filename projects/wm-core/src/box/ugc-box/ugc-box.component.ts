@@ -11,6 +11,9 @@ import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
 import {isLogged, needsPrivacyAgree} from '@wm-core/store/auth/auth.selectors';
 import {confAPP} from '@wm-core/store/conf/conf.selector';
 import {map} from 'rxjs/operators';
+import {Capacitor} from '@capacitor/core';
+
+const LOCAL_MY_PATHS = 'assets/images/profile/my-path.webp';
 
 @Component({
   standalone: false,
@@ -22,7 +25,7 @@ import {map} from 'rxjs/operators';
 })
 export class UgcBoxComponent extends BaseBoxComponent<IUGCBOX> {
   myPathsImage$: Observable<string> = this._store.select(confAPP).pipe(
-    map(app => app?.myPaths ?? 'assets/images/profile/my-path.webp'),
+    map(app => (!Capacitor.isNativePlatform() && app?.my_paths) ? app.my_paths : LOCAL_MY_PATHS),
   );
   isLogged$: Observable<boolean> = this._store.select(isLogged);
   ugcOpen$: Observable<boolean> = this._store.select(ugcOpened);
