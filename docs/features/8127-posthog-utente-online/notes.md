@@ -24,5 +24,15 @@ Nessuno.
 
 ## Follow-up
 
-- Verificare volume eventi PostHog dopo il primo deploy: ~60 eventi/ora per utente attivo.
-  Se il piano PostHog viene saturato, aumentare l'intervallo da 60s a 120s o 300s.
+- Verificare volume eventi PostHog dopo il primo deploy: il numero di `locationUpdate` dipende
+  dalla frequenza di aggiornamento GPS (distanceFilter 10m per navigazione/recording, 100m in
+  standby). Su percorsi attivi può essere significativo — monitorare il piano PostHog.
+
+## Revisione post-implementazione
+
+- **Cambio trigger:** dopo revisione, il trigger è stato cambiato da timer fisso (60s) a ogni
+  aggiornamento di posizione (`onLocationChange$`). Più fedele alla semantica "posizione utente"
+  e più semplice: spariscono timer, flag `_isAppActive`, `App.addListener` e tutta la logica
+  foreground/background (il GPS watcher gestisce già questo nativamente).
+- **Cambio nome evento:** da `userOnline` a `locationUpdate` — più preciso rispetto al trigger
+  reale (aggiornamento posizione, non semplice presenza).

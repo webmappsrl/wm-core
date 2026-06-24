@@ -1,13 +1,11 @@
 import {DestroyRef, Injectable, Injector} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {App} from '@capacitor/app';
 import {Store} from '@ngrx/store';
 import {currentEcPoiId, currentEcTrack} from '@wm-core/store/features/ec/ec.selector';
 import {currentUgcPoiId, currentUgcTrackId} from '@wm-core/store/features/ugc/ugc.selector';
 import {currentEcLayer} from '@wm-core/store/user-activity/user-activity.selector';
 import {WmPosthogClient, WmPosthogInitOptions, WmPosthogProps} from '@wm-types/posthog';
-import {combineLatest, timer} from 'rxjs';
-import {filter} from 'rxjs/operators';
+import {combineLatest} from 'rxjs';
 import {PosthogCapacitorClient} from './posthog-capacitor.client';
 import {GeolocationService} from './geolocation.service';
 
@@ -21,11 +19,8 @@ import {GeolocationService} from './geolocation.service';
  */
 @Injectable()
 export class PosthogContextService implements WmPosthogClient {
-  private static readonly HEARTBEAT_INTERVAL_MS = 60_000;
-
   private _contextSnapshot: WmPosthogProps = {};
   private _geolocationSvcRef: GeolocationService | null = null;
-  private _isAppActive = true;
 
   constructor(
     private _client: PosthogCapacitorClient,
@@ -51,8 +46,7 @@ export class PosthogContextService implements WmPosthogClient {
         this._contextSnapshot = snap;
       });
 
-    this._initAppStateListener();
-    this._initHeartbeat();
+    this._initLocationTracking();
   }
 
   private get _geolocationSvc(): GeolocationService | null {
@@ -62,23 +56,11 @@ export class PosthogContextService implements WmPosthogClient {
     return this._geolocationSvcRef;
   }
 
-  private _initAppStateListener(): void {
-    (async () => {
-      const handle = await App.addListener('appStateChange', ({isActive}) => {
-        this._isAppActive = isActive;
-      });
-      this._destroyRef.onDestroy(() => handle.remove());
-    })();
-  }
-
-  private _initHeartbeat(): void {
-    timer(0, PosthogContextService.HEARTBEAT_INTERVAL_MS)
-      .pipe(
-        takeUntilDestroyed(this._destroyRef),
-        filter(() => this._isAppActive || this._geolocationSvc?.currentMode === 'recording'),
-      )
+  private _initLocationTracking(): void {
+    this._geolocationSvc?.onLocationChange$
+      .pipe(takeUntilDestroyed(this._destroyRef))
       .subscribe(() => {
-        this.capture('userOnline', {mode: this._geolocationSvc?.currentMode});
+        this.capture('locationUpdate', {mode: this._geolocationSvc?.currentMode});
       });
   }
 
