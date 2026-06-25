@@ -34,5 +34,16 @@ Nessuno.
   aggiornamento di posizione (`onLocationChange$`). Più fedele alla semantica "posizione utente"
   e più semplice: spariscono timer, flag `_isAppActive`, `App.addListener` e tutta la logica
   foreground/background (il GPS watcher gestisce già questo nativamente).
-- **Cambio nome evento:** da `userOnline` a `locationUpdate` — più preciso rispetto al trigger
-  reale (aggiornamento posizione, non semplice presenza).
+- **Cambio nome evento:** da `userOnline` → `locationUpdate` → `userMoved` (scelta finale).
+
+## Review esterna (peppedeka — 25-06-2026)
+
+- **[C3] `capture('userMoved')` spostato in `GeolocationService._onLocationUpdate()`:**
+  la dipendenza circolare implicita (`PosthogContextService` → `GeolocationService` →
+  `POSTHOG_CLIENT`) viene eliminata alla radice. `GeolocationService` conosce già `_mode` e
+  `_posthogClient` — è il posto naturale per inviare l'evento. `_initLocationTracking()` e il
+  workaround `Promise.resolve().then()` rimossi da `PosthogContextService`.
+- **[C1] `mode?: GeolocationMode` invece di union literal inline:** nuovo tipo
+  `GeolocationMode = 'navigation' | 'recording' | 'stopped'` estratto in
+  `wm-types/user-activity.ts`. Usato in `WmPosthogProps.mode` e in `GeolocationService`
+  al posto del tipo ripetuto tre volte.

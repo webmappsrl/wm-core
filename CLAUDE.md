@@ -70,17 +70,16 @@ Solo per smoke test ("il sistema è su e risponde"), non per test di logica UI.
 
 | Feature | Ticket | Moduli toccati | Note |
 |---|---|---|---|
-| PostHog heartbeat utente online | oc:8127 | `posthog-context.service.ts` | Ping `userOnline` ogni 60s con campo `mode`; attivo in foreground o in background durante recording |
+| PostHog tracking utente online | oc:8127 | `geolocation.service.ts`, `posthog-context.service.ts` | Evento `userMoved` ad ogni aggiornamento GPS con campo `mode` (GeolocationMode) |
 | Fix regex hostname 5 parti | oc:8031 | `environment.service.ts`, `environment.service.spec.ts` | Regex aggiornata a `(?:\.[^.]+)+` per supportare domini Surge preview a N parti |
 | Ricerca per layer/cammino nella home | oc:7643 | `home-result`, `ec` store (actions/reducer/effects/selectors), `layer-box`, `layer-features-counter-badge`, `user-activity.reducer` | |
 | Selezione cammino nel form UGC segnalazione | oc:7639 | `select-nearby-layer` (nuovo), `form.component`, `geobox-map`, `modal-ugc-uploader`, `geoutils.service`, `user-activity` store (`nearbyLayerId`), `map-core/layer.directive`, `map-core/ol.ts` | Test E2E: `core/cypress/e2e/app_52/ugc-segnalazione-layer-selection.cy.ts` |
 
 ## Decisioni architetturali
 
-### PostHog heartbeat utente online (oc:8127)
-- **Logica aggiunta in `PosthogContextService` invece di un nuovo servizio**: aveva già tutti i deps (GeolocationService lazy, DestroyRef, client). Evita boilerplate inutile.
-- **Flag `_isAppActive` invece di restart timer**: `timer(0, 60_000)` gira sempre, filtrato da `_isAppActive || mode === 'recording'`. Previene burst di eventi al ritorno in foreground.
-- **`_destroyRef.onDestroy()` per cleanup listener Capacitor**: coerente con il pattern DestroyRef già usato nel servizio; non richiede implementare `OnDestroy`.
+### PostHog tracking utente online (oc:8127)
+- **`capture('userMoved')` in `GeolocationService._onLocationUpdate()`**: elimina la dipendenza circolare alla radice. `GeolocationService` ha già `_mode` e `_posthogClient` — non serve nessun workaround lazy. L'evento si attiva ad ogni aggiornamento GPS; il foreground/background è implicito nel watcher.
+- **`GeolocationMode` in wm-types**: tipo condiviso `'navigation' | 'recording' | 'stopped'` estratto in `wm-types/user-activity.ts`. Usato da `GeolocationService` e `WmPosthogProps.mode` per evitare la union literal ripetuta.
 
 ### Fix regex hostname 5 parti (oc:8031)
 

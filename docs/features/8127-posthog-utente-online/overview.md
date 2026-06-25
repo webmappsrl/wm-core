@@ -21,17 +21,15 @@ online.
 
 ## Requisiti
 
-- [ ] Aggiungere in `PosthogContextService` un timer RxJS `timer(0, 60_000)` che ad ogni tick
-      invia `this.capture('userOnline', { mode: currentMode })`
-- [ ] Il timer usa un flag `_isAppActive` aggiornato da `App.addListener('appStateChange')`:
-      il timer gira sempre, ma ogni tick viene filtrato con
-      `filter(() => _isAppActive || geolocationSvc.currentMode === 'recording')`
-      — nessun restart, nessun burst al ritorno in foreground
-- [ ] Aggiungere il campo `mode?: string` a `WmPosthogProps` in `wm-types`
-- [ ] Il ping viene inviato anche quando `user_location` è `null` (campo semplicemente assente)
-- [ ] Timer gestito con `takeUntilDestroyed(this._destroyRef)` già presente nel servizio
-- [ ] Il listener `App.addListener('appStateChange')` viene salvato come `PluginListenerHandle`
-      e rimosso esplicitamente nell'`ngOnDestroy` del servizio
+- [x] Aggiungere `capture('userMoved', { mode })` in `GeolocationService._onLocationUpdate()`
+      — si attiva ad ogni aggiornamento di posizione GPS
+- [x] Il foreground/background è gestito implicitamente: il GPS watcher si ferma già in
+      background (salvo recording), quindi nessuna logica aggiuntiva è necessaria
+- [x] Aggiungere il tipo `GeolocationMode = 'navigation' | 'recording' | 'stopped'`
+      in `wm-types/user-activity.ts` e il campo `mode?: GeolocationMode` a `WmPosthogProps`
+- [x] L'evento viene inviato anche quando `user_location` è `null` (campo assente se GPS off)
+- [x] `PosthogContextService._buildContext()` aggiunge `user_location` automaticamente
+      a ogni `capture()` se la posizione è disponibile
 
 ## Rischi
 
@@ -60,5 +58,7 @@ online.
 
 | File | Repo | Tipo | Note |
 |------|------|------|------|
-| `projects/wm-core/src/services/posthog-context.service.ts` | `wm-core` | MODIFICA | Aggiunge timer heartbeat + logica foreground/background |
-| `src/posthog.ts` | `wm-types` | MODIFICA | Aggiunge `mode?: string` a `WmPosthogProps` |
+| `projects/wm-core/src/services/geolocation.service.ts` | `wm-core` | MODIFICA | Aggiunge `capture('userMoved')` in `_onLocationUpdate()` |
+| `projects/wm-core/src/services/posthog-context.service.ts` | `wm-core` | MODIFICA | `_buildContext()` arricchisce automaticamente l'evento con GPS e contesto |
+| `src/user-activity.ts` | `wm-types` | MODIFICA | Aggiunge tipo `GeolocationMode` |
+| `src/posthog.ts` | `wm-types` | MODIFICA | Aggiunge `mode?: GeolocationMode` a `WmPosthogProps` |
