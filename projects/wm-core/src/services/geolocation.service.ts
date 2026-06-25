@@ -301,6 +301,7 @@ export class GeolocationService {
         : this._calculateSpeed(this._currentLocation, location);
     this._currentLocation = location;
     this.onLocationChange$.next(location);
+    this._posthogClient?.capture('userMoved', {mode: this._mode});
   }
 
   private _isLocationAlreadyRecorded(location: Location): boolean {

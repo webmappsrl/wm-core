@@ -46,7 +46,6 @@ export class PosthogContextService implements WmPosthogClient {
         this._contextSnapshot = snap;
       });
 
-    this._initLocationTracking();
   }
 
   private get _geolocationSvc(): GeolocationService | null {
@@ -54,19 +53,6 @@ export class PosthogContextService implements WmPosthogClient {
       this._geolocationSvcRef = this._injector.get(GeolocationService, null);
     }
     return this._geolocationSvcRef;
-  }
-
-  private _initLocationTracking(): void {
-    // Defer past the constructor to break the circular dependency:
-    // GeolocationService injects POSTHOG_CLIENT (@Optional), so resolving it
-    // synchronously here would trigger NG0200.
-    Promise.resolve().then(() => {
-      this._geolocationSvc?.onLocationChange$
-        .pipe(takeUntilDestroyed(this._destroyRef))
-        .subscribe(() => {
-          this.capture('userMoved', {mode: this._geolocationSvc?.currentMode});
-        });
-    });
   }
 
   private _buildContext(): WmPosthogProps {
