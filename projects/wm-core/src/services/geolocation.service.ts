@@ -18,6 +18,7 @@ import {setFocusPosition, setOnRecord} from '@wm-core/store/user-activity/user-a
 import {onRecord} from '@wm-core/store/user-activity/user-activity.selector';
 import {POSTHOG_CLIENT} from '@wm-core/store/conf/conf.token';
 import {WmPosthogClient} from '@wm-types/posthog';
+import {GeolocationMode} from '@wm-types/user-activity';
 import {
   getCurrentUgcTrackLocations,
   saveCurrentUgcTrackLocations,
@@ -37,12 +38,12 @@ export class GeolocationService {
   private _watcherId: string | null = null;
   private _webWatcherId: number | null = null;
 
-  private _mode: 'navigation' | 'recording' | 'stopped' = 'stopped';
+  private _mode: GeolocationMode = 'stopped';
   private _isPaused = false;
 
   onLocationChange$: ReplaySubject<Location> = new ReplaySubject<Location>(1);
   onResumeRecording$: ReplaySubject<Location[]> = new ReplaySubject<Location[]>(1);
-  onModeChange: BehaviorSubject<'navigation' | 'recording' | 'stopped'> = new BehaviorSubject(
+  onModeChange: BehaviorSubject<GeolocationMode> = new BehaviorSubject(
     this._mode,
   );
   onRecord$: Observable<boolean> = this._store.select(onRecord);
@@ -93,7 +94,7 @@ export class GeolocationService {
     return this._mode === 'navigation' || this._mode === 'recording';
   }
 
-  get currentMode(): 'navigation' | 'recording' | 'stopped' {
+  get currentMode(): GeolocationMode {
     return this._mode;
   }
 
@@ -301,6 +302,7 @@ export class GeolocationService {
         : this._calculateSpeed(this._currentLocation, location);
     this._currentLocation = location;
     this.onLocationChange$.next(location);
+    this._posthogClient?.capture('userMoved', {mode: this._mode});
   }
 
   private _isLocationAlreadyRecorded(location: Location): boolean {

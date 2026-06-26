@@ -45,18 +45,19 @@ export class PosthogContextService implements WmPosthogClient {
         if (ugcTrackId != null) snap['ugc_track_id'] = `${ugcTrackId}`;
         this._contextSnapshot = snap;
       });
+
   }
 
-  private get _geolocationSvc(): GeolocationService {
+  private get _geolocationSvc(): GeolocationService | null {
     if (!this._geolocationSvcRef) {
-      this._geolocationSvcRef = this._injector.get(GeolocationService);
+      this._geolocationSvcRef = this._injector.get(GeolocationService, null);
     }
     return this._geolocationSvcRef;
   }
 
   private _buildContext(): WmPosthogProps {
     const ctx = {...this._contextSnapshot};
-    const loc = this._geolocationSvc.location;
+    const loc = this._geolocationSvc?.location;
     if (loc && Number.isFinite(loc.latitude) && Number.isFinite(loc.longitude)) {
       ctx['user_location'] = loc;
     }
