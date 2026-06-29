@@ -320,7 +320,7 @@ describe('PosthogCapacitorClient', () => {
       client = createClient();
       await client.initAndRegister({appName: 'TestApp'});
 
-      await client.capture('test_event', {key: 'value'});
+      await client.capture('test_event', {key: 'value'} as any);
 
       // 2 chiamate: una per $session_start durante init, una per test_event
       expect(mockAdapter.capture).toHaveBeenCalledTimes(2);
@@ -334,7 +334,7 @@ describe('PosthogCapacitorClient', () => {
       client = createClient({enabled: false});
       await client.initAndRegister({appName: 'TestApp'});
 
-      await client.capture('test_event', {key: 'value'});
+      await client.capture('test_event', {key: 'value'} as any);
 
       expect(mockAdapter.capture).not.toHaveBeenCalled();
     });
@@ -343,7 +343,7 @@ describe('PosthogCapacitorClient', () => {
       client = createClient();
       await client.initAndRegister({appName: 'TestApp'});
 
-      await client.identify('user123', {email: 'test@example.com'});
+      await client.identify('user123', {email: 'test@example.com'} as any);
 
       expect(mockAdapter.identify).toHaveBeenCalledWith({
         distinctId: 'user123',
@@ -355,7 +355,7 @@ describe('PosthogCapacitorClient', () => {
       client = createClient({enabled: false});
       await client.initAndRegister({appName: 'TestApp'});
 
-      await client.identify('user123', {email: 'test@example.com'});
+      await client.identify('user123', {email: 'test@example.com'} as any);
 
       expect(mockAdapter.identify).not.toHaveBeenCalled();
     });
@@ -456,7 +456,7 @@ describe('PosthogCapacitorClient', () => {
       client = createClient();
 
       await expectAsync(
-        client.initAndRegister({appName: 'TestApp', invalidProp: undefined}),
+        client.initAndRegister({appName: 'TestApp', invalidProp: undefined} as any),
       ).toBeRejectedWithError(/Invalid properties.*invalidProp.*undefined/);
     });
 
@@ -465,7 +465,7 @@ describe('PosthogCapacitorClient', () => {
       client = createClient();
 
       await expectAsync(
-        client.initAndRegister({appName: 'TestApp', invalidProp: null}),
+        client.initAndRegister({appName: 'TestApp', invalidProp: null} as any),
       ).toBeRejectedWithError(/Invalid properties.*invalidProp.*null/);
     });
 
@@ -474,7 +474,7 @@ describe('PosthogCapacitorClient', () => {
       client = createClient();
 
       await expectAsync(
-        client.initAndRegister({appName: 'TestApp', invalidProp: '  '}),
+        client.initAndRegister({appName: 'TestApp', invalidProp: '  '} as any),
       ).toBeRejectedWithError(/Invalid properties.*invalidProp.*empty string/);
     });
 
@@ -487,7 +487,7 @@ describe('PosthogCapacitorClient', () => {
           version: '1.0.0',
           numericProp: 123,
           boolProp: true,
-        }),
+        } as any),
       ).toBeResolved();
 
       expect(mockAdapter.register).toHaveBeenCalledTimes(4);
