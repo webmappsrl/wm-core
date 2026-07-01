@@ -70,12 +70,19 @@ Solo per smoke test ("il sistema è su e risponde"), non per test di logica UI.
 
 | Feature | Ticket | Moduli toccati | Note |
 |---|---|---|---|
+| Controllo aggiornamenti app al resume | oc:8174 | `update.service.ts`, `conf.effects.ts` | `startForegroundWatcher` registra `App.addListener('appStateChange')` in `UpdateService`; `checkAppVersion$` chiama watcher + update flow in `concat` |
 | PostHog tracking utente online | oc:8127 | `geolocation.service.ts`, `posthog-context.service.ts` | Evento `userMoved` ad ogni aggiornamento GPS con campo `mode` (GeolocationMode) |
 | Fix regex hostname 5 parti | oc:8031 | `environment.service.ts`, `environment.service.spec.ts` | Regex aggiornata a `(?:\.[^.]+)+` per supportare domini Surge preview a N parti |
 | Ricerca per layer/cammino nella home | oc:7643 | `home-result`, `ec` store (actions/reducer/effects/selectors), `layer-box`, `layer-features-counter-badge`, `user-activity.reducer` | |
 | Selezione cammino nel form UGC segnalazione | oc:7639 | `select-nearby-layer` (nuovo), `form.component`, `geobox-map`, `modal-ugc-uploader`, `geoutils.service`, `user-activity` store (`nearbyLayerId`), `map-core/layer.directive`, `map-core/ol.ts` | Test E2E: `core/cypress/e2e/app_52/ugc-segnalazione-layer-selection.cy.ts` |
 
 ## Decisioni architetturali
+
+### Controllo aggiornamenti app al resume (oc:8174)
+- **`startForegroundWatcher` in `UpdateService`**: il listener Capacitor `appStateChange` vive nel service (non in un effect NgRx), così il service rimane testabile in isolamento e il ciclo di vita del listener è disaccoppiato dallo store. `checkAppVersion$` lo avvia come side-effect la prima volta che l'azione viene dispatchata.
+- **`concat` invece di `Promise.all`**: le due operazioni (`startForegroundWatcher` + `handleAppUpdateFlow`) sono sequenziali e con `catchError(() => EMPTY)` indipendente — se il watcher non si registra, il controllo versione parte comunque.
+- **`await remove()` prima di re-registrare**: `PluginListenerHandle.remove()` è asincrono; senza `await` c'è una finestra in cui due listener sono attivi contemporaneamente e `handleAppUpdateFlow` viene chiamato due volte sullo stesso resume.
+- **Guard `isAppMobile` nel service, non nell'effect**: l'effect non sa nulla della piattaforma — il service incapsula la guardia, restituisce `Promise<void>` silenziosamente su browser.
 
 ### PostHog tracking utente online (oc:8127)
 - **`capture('userMoved')` in `GeolocationService._onLocationUpdate()`**: elimina la dipendenza circolare alla radice. `GeolocationService` ha già `_mode` e `_posthogClient` — non serve nessun workaround lazy. L'evento si attiva ad ogni aggiornamento GPS; il foreground/background è implicito nel watcher.
