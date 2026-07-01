@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {of} from 'rxjs';
+import {of, from, EMPTY, concat} from 'rxjs';
 import {catchError, filter, map, switchMap, withLatestFrom, take} from 'rxjs/operators';
 import {
   loadConf,
@@ -84,7 +84,10 @@ export class ConfEffects {
           ),
         ),
         switchMap(([_, confApp]) =>
-          this._updateService.handleAppUpdateFlow(confApp),
+          concat(
+            from(this._updateService.startForegroundWatcher(confApp)).pipe(catchError(() => EMPTY)),
+            from(this._updateService.handleAppUpdateFlow(confApp)).pipe(catchError(() => EMPTY)),
+          ),
         ),
       ),
     {dispatch: false},
