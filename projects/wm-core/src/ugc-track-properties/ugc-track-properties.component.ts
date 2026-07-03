@@ -16,13 +16,14 @@ import {Store} from '@ngrx/store';
 import {BehaviorSubject, from, Observable} from 'rxjs';
 import {take, tap} from 'rxjs/operators';
 import {LineString} from 'geojson';
-import {Media, WmFeature} from '@wm-types/feature';
+import {WmFeature} from '@wm-types/feature';
 import {LangService} from '@wm-core/localization/lang.service';
 import {deleteUgcTrack, updateUgcTrack} from '@wm-core/store/features/ugc/ugc.actions';
 import {UntypedFormGroup} from '@angular/forms';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {trackElevationChartHoverElemenents} from '@wm-core/store/user-activity/user-activity.action';
+import {UgcPropertiesBaseComponent} from '@wm-core/ugc-properties-base/ugc-properties-base.component';
 
 @Component({
   standalone: false,
@@ -32,7 +33,7 @@ import {trackElevationChartHoverElemenents} from '@wm-core/store/user-activity/u
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class UgcTrackPropertiesComponent {
+export class UgcTrackPropertiesComponent extends UgcPropertiesBaseComponent {
   @Input('track') set setTrack(track: WmFeature<LineString>) {
     if (track != null) {
       this.track = track;
@@ -64,14 +65,14 @@ export class UgcTrackPropertiesComponent {
   };
   track: WmFeature<LineString>;
 
-  private _photos: Media[] = [];
-
   constructor(
     private _store: Store,
     private _alertCtlr: AlertController,
     private _langSvc: LangService,
     private _urlHandlerSvc: UrlHandlerService,
-  ) {}
+  ) {
+    super();
+  }
 
   @HostListener('document:keydown.Escape', ['$event'])
   public close(): void {
@@ -118,16 +119,8 @@ export class UgcTrackPropertiesComponent {
     ).subscribe(alert => alert.present());
   }
 
-  enableEditing(): void {
-    this.isEditing$;
-  }
-
   onLocationHover(event: WmSlopeChartHoverElements): void {
     this._store.dispatch(trackElevationChartHoverElemenents({elements: event}));
-  }
-
-  photosChanged(photos: Media[]): void {
-    this._photos = photos;
   }
 
   removeUgcTrackFromUrl(): void {
@@ -147,7 +140,7 @@ export class UgcTrackPropertiesComponent {
           ...this.track?.properties,
           name: this.fg.value.title,
           form: this.fg.value,
-          media: this._photos ?? [],
+          media: this.photos,
           updatedAt: new Date(),
         },
       };
