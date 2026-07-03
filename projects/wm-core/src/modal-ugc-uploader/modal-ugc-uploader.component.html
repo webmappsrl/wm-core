@@ -25,6 +25,7 @@
       <wm-map
         [wmMapConf]="confMap$|async"
         [wmMapOnly]="true"
+        [wmMapPadding]="[20, 20, 20, 20]"
         [wmMapGeojson]="ugcFeature$|async"
       ></wm-map>
       <wm-form
