@@ -74,8 +74,16 @@ Solo per smoke test ("il sistema è su e risponde"), non per test di logica UI.
 | Fix regex hostname 5 parti | oc:8031 | `environment.service.ts`, `environment.service.spec.ts` | Regex aggiornata a `(?:\.[^.]+)+` per supportare domini Surge preview a N parti |
 | Ricerca per layer/cammino nella home | oc:7643 | `home-result`, `ec` store (actions/reducer/effects/selectors), `layer-box`, `layer-features-counter-badge`, `user-activity.reducer` | |
 | Selezione cammino nel form UGC segnalazione | oc:7639 | `select-nearby-layer` (nuovo), `form.component`, `geobox-map`, `modal-ugc-uploader`, `geoutils.service`, `user-activity` store (`nearbyLayerId`), `map-core/layer.directive`, `map-core/ol.ts` | Test E2E: `core/cypress/e2e/app_52/ugc-segnalazione-layer-selection.cy.ts` |
+| Unica AddPhotos per ugc-track e ugc-poi | oc:5125 | `ugc-properties-base` (nuovo), `ugc-poi-properties.component.ts`, `ugc-track-properties.component.ts` | Estratta `UgcPropertiesBaseComponent` per condividere `_photos`/`photosChanged()` tra editing POI e track già sincronizzati |
 
 ## Decisioni architetturali
+
+### Unica AddPhotos per ugc-track e ugc-poi (oc:5125)
+- **`ModalSaveComponent` (repo principale) era già unificato**: il flusso di registrazione GPS (nuovo track/POI) usa un solo `ModalSaveComponent` con flag `isWaypoint`, non due componenti separati. Il ticket originale referenziava nomi obsoleti (`modal-save.component`/`modal-waypoint-save.component`) — la vera duplicazione residua era nel flusso di *editing* di UGC già sincronizzati, tra `ugc-poi-properties.component.ts` e `ugc-track-properties.component.ts`
+- **`UgcPropertiesBaseComponent` è una classe astratta plain-TS, non un `@Component` Angular**: nessuna injection, nessun decoratore, nessun template — condivide solo `_photos`/`photosChanged()`/getter `photos`. Scelta preferita a un servizio iniettato perché lo stato è intrinsecamente per-istanza (POI vs track), non cross-cutting
+- **`draw-ugc.component.ts` esplicitamente fuori scope**: usa `Photo[]` di Capacitor (foto locali, mai sincronizzate) invece di `Media[]`, un modello dati diverso da quello di editing — unificarlo avrebbe forzato un'astrazione tra tipi semanticamente distinti
+- **`_buildFormData()` in `ugc.service.ts` gestisce già foto locali miste a foto sincronizzate**: filtra `media.filter(p => !p.id)` e le allega come file multipart (`images[]`) nella stessa richiesta di update — non serve nessuna logica aggiuntiva per questo caso nella base class
+- **Debito noto, non affrontato in questo ticket**: `slideOptions`, `isEditing$`, `confOPTIONS$`, `deletePoi()`/`deleteTrack()` restano duplicati identici tra i due componenti — candidati per un refactoring successivo, fuori scope perché il ticket copriva solo AddPhotos
 
 ### PostHog tracking utente online (oc:8127)
 - **`capture('userMoved')` in `GeolocationService._onLocationUpdate()`**: elimina la dipendenza circolare alla radice. `GeolocationService` ha già `_mode` e `_posthogClient` — non serve nessun workaround lazy. L'evento si attiva ad ogni aggiornamento GPS; il foreground/background è implicito nel watcher.
