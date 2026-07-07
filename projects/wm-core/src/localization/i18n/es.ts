@@ -45,7 +45,8 @@ export const wmES = {
   'Bici elettriche': 'Bicicletas eléctricas',
   'Mezzi pubblici': 'Transporte público',
   'Auto Propria': 'Automóvil propio',
-  'Punti di interesse': 'Puntos de interés',
+  'Punti di interesse': 'POI',
+  'Punto di interesse': 'POI',
   'Collegamenti esterni': 'Enlaces externos',
   'Downloads': 'Descargas',
   'edit geohub': 'Editar geohub',
@@ -138,6 +139,7 @@ export const wmES = {
     'Para registrar rutas y puntos de interés correctamente, habilita la ubicación en las configuraciones.',
   'I miei percorsi': 'Mis rutas',
   'Sentieri': 'Senderos',
+  'Sentiero': 'Sendero',
   'layers': 'Layers',
   '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
     '<span class="green">Nivel 1: tramos no afectados por la alta altitud (altitud menor de {{orange}} metros)</span>',

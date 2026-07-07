@@ -45,7 +45,8 @@ export const wmPR = {
   'Bici elettriche': 'Bicicletas elétricas',
   'Mezzi pubblici': 'Transporte público',
   'Auto Propria': 'Carro próprio',
-  'Punti di interesse': 'Pontos de interesse',
+  'Punti di interesse': 'POI',
+  'Punto di interesse': 'POI',
   'Collegamenti esterni': 'Links externos',
   'Downloads': 'Downloads',
   'edit geohub': 'Editar geohub',
@@ -139,6 +140,7 @@ export const wmPR = {
     'Para registar trilhas e pontos de interesse corretamente, ative a permissão de localização nas definições.',
   'I miei percorsi': 'Minhas rotas',
   'Sentieri': 'Trilhas',
+  'Sentiero': 'Trilha',
   'layers': 'Layers',
   '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
     '<span class="green">Nível 1: seções não interessadas pela alta altitude (altitude menor que {{orange}} metros)</span>',
