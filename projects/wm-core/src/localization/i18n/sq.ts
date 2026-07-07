@@ -51,7 +51,8 @@ export const wmSQ = {
   'Bici elettriche': 'Biçikleta elektrike',
   'Mezzi pubblici': 'Transporti publik',
   'Auto Propria': 'Makina personale',
-  'Punti di interesse': 'Pikat e interesit',
+  'Punti di interesse': 'POI',
+  'Punto di interesse': 'POI',
   'Collegamenti esterni': 'Lidhje të jashtme',
   'Downloads': 'Shkarkime',
   'edit geohub': 'Modifiko Geohub',
@@ -146,6 +147,7 @@ export const wmSQ = {
     'Për të regjistruar gjurmët dhe pikat e interesit saktësisht, aktivizo lejen e vendndodhjes në cilësimet.',
   'I miei percorsi': 'Itineraret e mia',
   'Sentieri': 'Shtigjet',
+  'Sentiero': 'Shtegu',
   'layers': 'Layers',
   '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
     '<span class="green">Niveli 1: seksione që nuk preken nga lartësia e madhe (lartësia më e ulët se {{orange}} metra)</span>',

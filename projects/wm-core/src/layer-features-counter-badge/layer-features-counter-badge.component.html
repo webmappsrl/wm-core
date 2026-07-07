@@ -5,7 +5,7 @@
         *ngIf="countEcTracks > 0"
       >
         <span>{{countEcTracks}}</span>
-        <span>{{(countEcTracks > 1 ? 'Percorsi' : 'Percorso')|wmtrans}}</span>
+        <span>{{(countEcTracks > 1 ? 'Sentieri' : 'Sentiero')|wmtrans}}</span>
       </div>
     </ng-container>
     <ng-container *ngIf="layerFeaturesCount[layerId]?.pois as countEcPoi">
@@ -13,7 +13,7 @@
         *ngIf="countEcPoi > 0"
       >
         <span>{{countEcPoi}}</span>
-        <span>{{(countEcPoi > 1 ? 'Luoghi' : 'Luogo')|wmtrans}}</span>
+        <span>{{(countEcPoi > 1 ? 'Punti di interesse' : 'Punto di interesse')|wmtrans}}</span>
       </div>
     </ng-container>
   </div>

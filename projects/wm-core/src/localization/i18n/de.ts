@@ -46,7 +46,8 @@ export const wmDE = {
   'Bici elettriche': 'Elektroräder',
   'Mezzi pubblici': 'Öffentliche Verkehrsmittel',
   'Auto Propria': 'Eigenes Auto',
-  'Punti di interesse': 'Interessante Orte',
+  'Punti di interesse': 'POI',
+  'Punto di interesse': 'POI',
   'Collegamenti esterni': 'Externe Links',
   'Downloads': 'Downloads',
   'edit geohub': 'Geohub bearbeiten',
@@ -142,6 +143,7 @@ export const wmDE = {
     'Um gültige Routen und Interessantenpunkte zu erfassen, aktivieren Sie die Standortberechtigung in den Einstellungen.',
   'I miei percorsi': 'Meine Strecken',
   'Sentieri': 'Wanderwege',
+  'Sentiero': 'Wanderweg',
   'layers': 'Layers',
   '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
     '<span class="green">Stufe 1: Abschnitte nicht von großer Höhe betroffen (Höhe unter {{orange}} Metern)</span>',

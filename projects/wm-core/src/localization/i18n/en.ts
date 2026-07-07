@@ -48,7 +48,8 @@ export const wmEN = {
   'Bici elettriche': 'Electric Bikes',
   'Mezzi pubblici': 'Public Transport',
   'Auto Propria': 'Own Car',
-  'Punti di interesse': 'Points of Interest',
+  'Punti di interesse': 'POI',
+  'Punto di interesse': 'POI',
   'Collegamenti esterni': 'External Links',
   'Downloads': 'Downloads',
   'edit geohub': 'Edit Geohub',
@@ -147,6 +148,7 @@ export const wmEN = {
     'To register tracks and then correctly, enable the location permission in the settings.',
   'I miei percorsi': 'My paths',
   'Sentieri': 'Trails',
+  'Sentiero': 'Trail',
   'layers': 'Layers',
   '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
     '<span class="green">Level 1: sections not affected by high altitude (altitude less than {{orange}} meters)</span>',

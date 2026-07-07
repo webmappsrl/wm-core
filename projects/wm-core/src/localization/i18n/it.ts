@@ -52,7 +52,8 @@ export const wmIT = {
   'Bici elettriche': 'Bici elettriche',
   'Mezzi pubblici': 'Mezzi pubblici',
   'Auto Propria': 'Auto Propria',
-  'Punti di interesse': 'Punti di interesse',
+  'Punti di interesse': 'POI',
+  'Punto di interesse': 'POI',
   'Collegamenti esterni': 'Collegamenti esterni',
   'Downloads': 'Downloads',
   'edit geohub': 'Modifica geohub',
@@ -147,6 +148,7 @@ export const wmIT = {
     "Per registrare tracce e poi correttamente, abilita l'autorizzazione alla posizione nelle impostazioni",
   'I miei percorsi': 'I miei percorsi',
   'Sentieri': 'Sentieri',
+  'Sentiero': 'Sentiero',
   'layers': 'Layers',
   '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>':
     '<span class="green">Livello 1: tratti non interessati dall\'alta quota (quota minore di {{orange}} metri)</span>',
