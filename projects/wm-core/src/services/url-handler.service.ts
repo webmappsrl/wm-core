@@ -157,6 +157,35 @@ export class UrlHandlerService {
   }
 
   /**
+   * Gestisce un deep link nativo (Universal Link / App Link) ricevuto da appUrlOpen.
+   * Inoltra qualsiasi path e query param dell'URL al router, così qualunque route
+   * dell'app è raggiungibile da link esterno, non solo /map.
+   * ugc_track/ugc_poi sono esclusi di proposito: dati personali, non raggiungibili da link pubblico.
+   */
+  handleDeepLink(url: string): void {
+    let parsed: URL;
+    try {
+      parsed = new URL(url);
+    } catch {
+      return;
+    }
+
+    const path = parsed.pathname.replace(/^\//, '');
+    const queryParams: Params = {};
+    parsed.searchParams.forEach((value, key) => {
+      if (key === 'ugc_track' || key === 'ugc_poi') {
+        return;
+      }
+      queryParams[key] = value;
+    });
+
+    const posthogProps: Record<string, any> = {url, ...queryParams};
+    this._posthogClient?.capture('deepLinkOpened', posthogProps);
+
+    this.navigateTo(path ? [path] : [], queryParams);
+  }
+
+  /**
    * Decodifica un parametro query in modo sicuro.
    * Gestisce il caso in cui il valore sia già decodificato o contenga caratteri speciali.
    */
