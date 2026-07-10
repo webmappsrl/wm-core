@@ -1,0 +1,67 @@
+// Palette fissa, non legata al tema (--wm-color-primary varia da istanza a istanza): stessa
+// tonalità blu dell'icona "sei qui" (WmMapPositionDirective/location-icon.png), per dare a
+// tutti gli indicatori di posizione GPS live un'identità visiva coerente in tutta l'app,
+// indipendente dal brand dell'istanza (vedi oc:8177). Duplicata in
+// constants/track-remaining-distance.ts (LOCATION_MARKER_COLOR) — se cambia va aggiornata
+// anche lì.
+$wm-location-marker-color: #4285f4;
+
+wm-track-remaining-distance {
+  display: block;
+  margin: var(--wm-feature-details-margin);
+
+  .wm-track-remaining-distance {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: rgba($wm-location-marker-color, 0.1);
+    border: 1px dashed $wm-location-marker-color;
+  }
+
+  .wm-track-remaining-distance-icon {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    border-radius: 50%;
+    background: $wm-location-marker-color;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .wm-track-remaining-distance-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .wm-track-remaining-distance-value {
+    color: var(--wm-color-dark);
+    font-weight: var(--wm-font-weight-bold);
+    font-size: 15px;
+    line-height: 1.25;
+  }
+
+  .wm-track-remaining-distance-caption {
+    color: var(--wm-color-medium);
+    font-size: 12px;
+  }
+
+  .wm-track-remaining-distance-stale {
+    background: rgba(var(--wm-color-warning-rgb), 0.12);
+    border-color: var(--wm-color-warning);
+
+    .wm-track-remaining-distance-icon {
+      background: var(--wm-color-warning);
+    }
+
+    .wm-track-remaining-distance-value {
+      color: var(--wm-color-warning-shade);
+    }
+  }
+}

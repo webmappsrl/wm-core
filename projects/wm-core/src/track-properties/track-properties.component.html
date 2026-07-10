@@ -35,9 +35,11 @@
   <wm-slope-chart
     (hover)="onLocationHover($event)"
     [currentTrack]="ecTrack$|async"
+    [trackProgress]="trackProgress$|async"
     id="webmapp-track-details-elevation-chart"
   >
   </wm-slope-chart>
+  <wm-track-remaining-distance></wm-track-remaining-distance>
   <wm-get-directions></wm-get-directions>
   <wm-tab-detail class="webmapp-route-tab" [properties]="ecTrackProperties"></wm-tab-detail>
   <wm-txn-where
