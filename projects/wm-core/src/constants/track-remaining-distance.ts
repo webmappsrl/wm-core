@@ -4,7 +4,7 @@
 // Palette fissa, non legata al tema (--wm-color-primary varia da istanza a istanza): stessa
 // tonalità blu dell'icona "sei qui" (WmMapPositionDirective/location-icon.png), per dare a
 // tutti gli indicatori di posizione GPS live un'identità visiva coerente in tutta l'app,
-// indipendente dal brand dell'istanza. Duplicata in track-remaining-distance.component.scss
+// indipendente dal brand dell'istanza. Duplicata in tab-detail.component.scss
 // (variabile Sass $wm-location-marker-color) — se cambia va aggiornata anche lì.
 export const LOCATION_MARKER_COLOR = '#4285F4';
 // Solo per l'uso diretto in stringhe rgba() lato canvas (TS, non Sass) — vedi slope-chart.component.ts.

@@ -238,5 +238,9 @@ export const trackRemainingDistance = createSelector(
   userActivity,
   state => state.trackRemainingDistance,
 );
+export const trackDistanceCovered = createSelector(
+  userActivity,
+  state => state.trackDistanceCovered,
+);
 export const trackProgress = createSelector(userActivity, state => state.trackProgress);
 export const trackPositionStale = createSelector(userActivity, state => state.trackPositionStale);

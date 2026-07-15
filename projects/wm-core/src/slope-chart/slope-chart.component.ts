@@ -503,8 +503,7 @@ export class WmSlopeChartComponent implements OnInit, OnDestroy {
               ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
               ctx.stroke();
 
-              // etichetta dislivello, sopra il marker — stesso stile (tinta trasparente +
-              // bordo tratteggiato) del componente wm-track-remaining-distance (oc:8177)
+              // etichetta dislivello, sopra il marker — tinta trasparente + bordo tratteggiato
               const label = Math.round(altitude) + ' m',
                 measure: TextMetrics = ctx.measureText(label),
                 labelMinX = Math.max(0, Math.min(chart.width - measure.width, x - measure.width / 2)),

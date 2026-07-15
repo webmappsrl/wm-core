@@ -80,6 +80,7 @@ export interface UserActivityState {
   wmMapTilesBoundingBox?: WmFeature<MultiPolygon>;
   currentUgcTrackRecording?: WmFeature<LineString>;
   trackRemainingDistance: number | null;
+  trackDistanceCovered: number | null;
   trackProgress: number | null;
   trackPositionStale: boolean;
 }
@@ -112,6 +113,7 @@ const initialState: UserActivityState = {
   enableTilesDownload: false,
   disableTilesDownloadButton: false,
   trackRemainingDistance: null,
+  trackDistanceCovered: null,
   trackProgress: null,
   trackPositionStale: false,
 };
@@ -391,18 +393,23 @@ export const userActivityReducer = createReducer(
       disableTilesDownloadButton,
     };
   }),
-  on(setTrackRemainingDistance, (state, {remainingDistance, trackProgress, trackPositionStale}) => {
-    return {
-      ...state,
-      trackRemainingDistance: remainingDistance,
-      trackProgress,
-      trackPositionStale,
-    };
-  }),
+  on(
+    setTrackRemainingDistance,
+    (state, {remainingDistance, distanceCovered, trackProgress, trackPositionStale}) => {
+      return {
+        ...state,
+        trackRemainingDistance: remainingDistance,
+        trackDistanceCovered: distanceCovered,
+        trackProgress,
+        trackPositionStale,
+      };
+    },
+  ),
   on(resetTrackRemainingDistance, state => {
     return {
       ...state,
       trackRemainingDistance: null,
+      trackDistanceCovered: null,
       trackProgress: null,
       trackPositionStale: false,
     };

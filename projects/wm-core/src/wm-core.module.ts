@@ -56,7 +56,7 @@ import {WmUgcMediasModule} from './ugc-medias/wm-ugc-medias.module';
 import {UgcTrackDataComponent} from './ugc-details/ugc-track-data/ugc-track-data.component';
 import {UgcTrackPropertiesComponent} from './ugc-track-properties/ugc-track-properties.component';
 import {TrackPropertiesComponent} from './track-properties/track-properties.component';
-import {WmTrackRemainingDistanceComponent} from './track-remaining-distance/track-remaining-distance.component';
+import {WmTrackLiveDistanceBadgeComponent} from './track-live-distance-badge/track-live-distance-badge.component';
 import {TabImageGalleryComponent} from './tab-image-gallery/tab-image-gallery.component';
 import {ModalImageComponent} from './modal-image/modal-image.component';
 import {ImageGalleryComponent} from './image-gallery/image-gallery.component';
@@ -110,7 +110,7 @@ export const declarations = [
   WmTaxonomyWhereComponent,
   WmTrackAudioComponent,
   WmSlopeChartComponent,
-  WmTrackRemainingDistanceComponent,
+  WmTrackLiveDistanceBadgeComponent,
   WmRelatedUrlsComponent,
   WmEmailComponent,
   WmPhoneComponent,

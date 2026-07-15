@@ -198,6 +198,7 @@ export const setTrackRemainingDistance = createAction(
   '[User Activity] set track remaining distance',
   props<{
     remainingDistance: number | null;
+    distanceCovered: number | null;
     trackProgress: number | null;
     trackPositionStale: boolean;
   }>(),

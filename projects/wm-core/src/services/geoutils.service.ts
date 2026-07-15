@@ -25,6 +25,7 @@ export interface RemainingDistanceContext {
 
 export interface RemainingDistanceResult {
   remainingDistance: number;
+  distanceCovered: number;
   trackProgress: number;
   distanceFromTrack: number;
 }
@@ -295,6 +296,7 @@ export class GeoutilsService {
 
     return {
       remainingDistance: trackLength - result.distanceAlongLine,
+      distanceCovered: result.distanceAlongLine,
       trackProgress: result.distanceAlongLine / trackLength,
       distanceFromTrack,
     };

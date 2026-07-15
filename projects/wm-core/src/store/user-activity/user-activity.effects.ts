@@ -479,6 +479,7 @@ export class UserActivityEffects {
 
         return setTrackRemainingDistance({
           remainingDistance: result?.remainingDistance ?? null,
+          distanceCovered: result?.distanceCovered ?? null,
           trackProgress: result?.trackProgress ?? null,
           trackPositionStale:
             result != null && Date.now() - location.time > TRACK_POSITION_STALE_THRESHOLD_MS,
