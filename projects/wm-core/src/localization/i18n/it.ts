@@ -18,6 +18,7 @@ export const wmIT = {
   'ascent': 'Dislivello positivo',
   'descent': 'Dislivello negativo',
   'distance': 'Distanza',
+  'da te': 'da te',
   'ele_from': 'Quota di partenza',
   'ele_max': 'Quota massima',
   'ele_min': 'Quota minima',

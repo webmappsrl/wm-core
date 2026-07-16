@@ -1,6 +1,31 @@
 wm-tab-detail {
   display: block;
   margin: var(--wm-feature-details-margin);
+
+  .webmapp-pageroute-tabdetail-item-live {
+    --inner-padding-bottom: 10px;
+    --inner-padding-top: 10px;
+
+    &::part(native) {
+      align-items: flex-start;
+    }
+
+    ion-label.webmapp-pageroute-tabdetail-label {
+      // ion-label ha un margin-top di default (~10px) pensato per l'allineamento centrato
+      // di ion-item: con align-items:flex-start va azzerato, altrimenti l'etichetta resta
+      // visibilmente più in basso del valore sulla stessa riga
+      margin-top: 0 !important;
+    }
+  }
+
+  .webmapp-pageroute-tabdetail-end-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    padding-inline-end: 4px;
+  }
+
   .webmapp-pageroute-tabdetail-chart {
     // height: 200px;
     text-align: center;
@@ -26,5 +51,6 @@ wm-tab-detail {
   .webmapp-pageroute-tabdetail-value {
     color: var(--wm-color-dark);
     font-weight: var(--wm-font-weight-bold);
+    font-size: 0.6875rem;
   }
 }

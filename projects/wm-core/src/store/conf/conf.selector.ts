@@ -156,6 +156,10 @@ export const confOPTIONSShowDownloadTiles = createSelector(
   confOPTIONS,
   state => state.showDownloadTiles,
 );
+export const confOPTIONSShowTrackRemainingDistance = createSelector(
+  confOPTIONS,
+  state => state.showTrackRemainingDistance,
+);
 
 export const confZoomFeaturesInViewport = createSelector(confOPTIONS, state => {
   const minZoomFeaturesInViewport = state.minZoomFeaturesInViewport;

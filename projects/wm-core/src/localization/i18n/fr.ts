@@ -13,6 +13,7 @@ export const wmFR = {
   'ascent': 'Dénivelé positif',
   'descent': 'Dénivelé négatif',
   'distance': 'Distance',
+  'da te': 'de vous',
   'ele_from': 'Altitude de départ',
   'ele_max': 'Altitude maximale',
   'ele_min': 'Altitude minimale',

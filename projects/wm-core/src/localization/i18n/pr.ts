@@ -13,6 +13,7 @@ export const wmPR = {
   'ascent': 'Elevação +',
   'descent': 'Elevação -',
   'distance': 'Distância',
+  'da te': 'de você',
   'ele_from': 'Altitude de partida',
   'ele_max': 'Altitude máxima',
   'ele_min': 'Altitude mínima',

@@ -13,6 +13,7 @@ export const wmEN = {
   'ascent': 'Slope +',
   'descent': 'Slope -',
   'distance': 'Distance',
+  'da te': 'from you',
   'ele_from': 'Starting Elevation',
   'ele_max': 'Max Elevation',
   'ele_min': 'Min Elevation',

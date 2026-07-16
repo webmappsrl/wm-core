@@ -13,6 +13,7 @@ export const wmES = {
   'ascent': 'Ascenso +',
   'descent': 'Descenso -',
   'distance': 'Distancia',
+  'da te': 'de ti',
   'ele_from': 'Elevación de inicio',
   'ele_max': 'Elevación máxima',
   'ele_min': 'Elevación mínima',

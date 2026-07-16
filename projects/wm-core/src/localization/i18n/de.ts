@@ -13,6 +13,7 @@ export const wmDE = {
   'ascent': 'Anstieg +',
   'descent': 'Abstieg -',
   'distance': 'Entfernung',
+  'da te': 'von dir',
   'ele_from': 'Start-Höhe',
   'ele_max': 'Max-Höhe',
   'ele_min': 'Min-Höhe',

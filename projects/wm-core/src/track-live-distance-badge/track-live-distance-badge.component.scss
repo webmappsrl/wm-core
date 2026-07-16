@@ -1,0 +1,32 @@
+wm-track-live-distance-badge {
+  display: contents;
+  // Palette fissa (non theme-driven), coerente con gli altri indicatori di posizione GPS live
+  // introdotti da oc:8177 (marker sul grafico, pallino "Pendenza"): #4285F4.
+  $wm-location-marker-color: #4285f4;
+
+  .webmapp-track-live-distance-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba($wm-location-marker-color, 0.1);
+    color: $wm-location-marker-color;
+    font-weight: var(--wm-font-weight-bold);
+    font-size: 11px;
+    padding: 3px 8px 3px 6px;
+    border-radius: 20px;
+    white-space: nowrap;
+
+    &.webmapp-track-live-distance-badge-stale {
+      // tinta grigia fissa (non var(--wm-color-light), quasi bianca e quindi invisibile su
+      // sfondo bianco) — stesso pattern del blu fisso sopra, coerente col mockup approvato
+      background: rgba(115, 115, 115, 0.12);
+      color: var(--wm-color-medium);
+    }
+  }
+
+  .webmapp-track-live-distance-badge-dot {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+  }
+}

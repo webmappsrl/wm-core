@@ -1,0 +1,11 @@
+<span
+  *ngIf="distanceMeters != null"
+  class="webmapp-track-live-distance-badge"
+  [class.webmapp-track-live-distance-badge-stale]="stale"
+>
+  <svg class="webmapp-track-live-distance-badge-dot" viewBox="0 0 24 24" fill="currentColor">
+    <circle cx="12" cy="12" r="8" />
+    <circle cx="12" cy="12" r="3" fill="white" />
+  </svg>
+  {{ distanceMeters | distance: 'auto':1 }} {{ 'da te' | wmtrans }}
+</span>

@@ -18,7 +18,10 @@
           <div class="webmapp-slopechart-legend-slope-selected-text">
             {{ slope.selectedValue }}%
           </div>
-          <div class="webmapp-slopechart-legend-slope-selected-dot"></div>
+          <div
+            class="webmapp-slopechart-legend-slope-selected-dot"
+            [class.webmapp-slopechart-legend-slope-selected-dot-gps]="slope.source === 'gps'"
+          ></div>
         </div>
       </div>
     </div>

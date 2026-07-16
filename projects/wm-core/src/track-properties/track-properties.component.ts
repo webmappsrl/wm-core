@@ -9,6 +9,7 @@ import {
   chartHoverElements,
   ecLayer,
   flowLineQuoteText,
+  trackProgress,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {OPTIONS} from '@wm-types/config';
 import {LineStringProperties, WmFeature} from '@wm-types/feature';
@@ -40,6 +41,7 @@ export class TrackPropertiesComponent {
     }),
   );
   flowLineQuoteShow$: Observable<boolean> = this._store.select(flowLineQuoteShow);
+  trackProgress$: Observable<number | null> = this._store.select(trackProgress);
 
   constructor(
     private _store: Store,

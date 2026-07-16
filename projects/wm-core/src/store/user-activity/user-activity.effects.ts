@@ -26,6 +26,8 @@ import {
   checkCurrentUgcTrack,
   resumeCurrentUgcTrack,
   setEnableTrackRecorderPanel,
+  setTrackRemainingDistance,
+  resetTrackRemainingDistance,
 } from './user-activity.action';
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
@@ -36,11 +38,13 @@ import {
   ecTracks,
   currentEcLayerId,
 } from '@wm-core/store/features/ec/ec.actions';
+import {currentEcTrack} from '@wm-core/store/features/ec/ec.selector';
 import {resetTrackFilters, setLoading} from '@wm-core/store/user-activity/user-activity.action';
 import {
   ecLayer,
   filterTracks,
   inputTyped as inputTypedSelector,
+  trackProgress as trackProgressSelector,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {
   debounceTime,
@@ -82,11 +86,17 @@ import {currentCustomTrack} from '@wm-core/store/features/ugc/ugc.actions';
 import {confAUTHEnable} from '../conf/conf.selector';
 import {isLogged} from '../auth/auth.selectors';
 import {GeolocationService} from '@wm-core/services/geolocation.service';
+import {GeoutilsService, RemainingDistanceContext} from '@wm-core/services/geoutils.service';
 import {LangService} from '@wm-core/localization/lang.service';
 import {removeCurrentUgcTrackLocations} from '@wm-core/utils/localForage';
+import {TRACK_POSITION_STALE_THRESHOLD_MS} from '@wm-core/constants/track-remaining-distance';
 
 @Injectable()
 export class UserActivityEffects {
+  // coordinate riproiettate in 3857 + distanze cumulative, precalcolate una sola volta per
+  // traccia (non ad ogni fix GPS) via GeoutilsService.prepareRemainingDistanceContext (oc:8177)
+  private _currentTrackContext: {id: number; context: RemainingDistanceContext} | null = null;
+  private _lastLocationTime: number | null = null;
   backOfMapDetails$ = createEffect(() =>
     this._actions$.pipe(
       ofType(backOfMapDetails),
@@ -424,6 +434,60 @@ export class UserActivityEffects {
     ),
   );
 
+  // Combina la posizione GPS live con la traccia correntemente aperta per calcolare
+  // distanza rimanente/avanzamento (oc:8177). Al cambio traccia, il contesto (riproiezione +
+  // distanze cumulative) viene ricostruito PRIMA di calcolare — mai con la geometria della
+  // traccia precedente — ma il calcolo avviene comunque nella stessa emissione, usando la
+  // posizione GPS già disponibile (onLocationChange$ è un ReplaySubject: se l'utente è fermo
+  // all'apertura della traccia, l'ultima posizione nota resta valida e va usata subito, non
+  // solo al prossimo fix).
+  trackRemainingDistance$ = createEffect(() =>
+    combineLatest([this._geolocationSvc.onLocationChange$, this._store.select(currentEcTrack)]).pipe(
+      withLatestFrom(this._store.select(trackProgressSelector)),
+      map(([[location, ecTrack], lastKnownProgress]) => {
+        const trackId = ecTrack?.properties?.id ?? null;
+
+        if (trackId == null || ecTrack.geometry == null) {
+          this._currentTrackContext = null;
+          this._lastLocationTime = null;
+          return resetTrackRemainingDistance();
+        }
+
+        const isNewTrack = this._currentTrackContext?.id !== trackId;
+        if (isNewTrack) {
+          const context = this._geoutilsSvc.prepareRemainingDistanceContext(ecTrack.geometry);
+          this._currentTrackContext = context != null ? {id: trackId, context} : null;
+          this._lastLocationTime = null;
+        }
+
+        if (this._currentTrackContext == null) {
+          return resetTrackRemainingDistance();
+        }
+
+        const elapsedSeconds =
+          this._lastLocationTime != null ? (location.time - this._lastLocationTime) / 1000 : null;
+        this._lastLocationTime = location.time;
+
+        const result = this._geoutilsSvc.getRemainingDistance(
+          location,
+          this._currentTrackContext.context,
+          // Al cambio traccia lastKnownProgress apparterrebbe alla traccia precedente:
+          // forzare la ricerca globale invece di vincolarla a una finestra locale sbagliata.
+          isNewTrack ? null : lastKnownProgress,
+          elapsedSeconds,
+        );
+
+        return setTrackRemainingDistance({
+          remainingDistance: result?.remainingDistance ?? null,
+          distanceCovered: result?.distanceCovered ?? null,
+          trackProgress: result?.trackProgress ?? null,
+          trackPositionStale:
+            result != null && Date.now() - location.time > TRACK_POSITION_STALE_THRESHOLD_MS,
+        });
+      }),
+    ),
+  );
+
   constructor(
     private _actions$: Actions,
     private _store: Store,
@@ -431,6 +495,7 @@ export class UserActivityEffects {
     private _modalCtrl: ModalController,
     private _http: HttpClient,
     private _geolocationSvc: GeolocationService,
+    private _geoutilsSvc: GeoutilsService,
     private _alertCtrl: AlertController,
     private _langSvc: LangService,
   ) {}

@@ -18,6 +18,7 @@ export const wmSQ = {
   'ascent': 'Ngjitje',
   'descent': 'Zbritje',
   'distance': 'Distanca',
+  'da te': 'nga ti',
   'ele_from': 'Lartësia e nisjes',
   'ele_max': 'Lartësia maksimale',
   'ele_min': 'Lartësia minimale',

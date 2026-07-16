@@ -37,6 +37,8 @@ import {
   setWmMapTilesBoundingBox,
   setDisableTilesDownloadButton,
   setNearbyLayerId,
+  setTrackRemainingDistance,
+  resetTrackRemainingDistance,
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
@@ -77,6 +79,10 @@ export interface UserActivityState {
   disableTilesDownloadButton: boolean;
   wmMapTilesBoundingBox?: WmFeature<MultiPolygon>;
   currentUgcTrackRecording?: WmFeature<LineString>;
+  trackRemainingDistance: number | null;
+  trackDistanceCovered: number | null;
+  trackProgress: number | null;
+  trackPositionStale: boolean;
 }
 
 export interface UserAcitivityRootState {
@@ -106,6 +112,10 @@ const initialState: UserActivityState = {
   focusPosition: false,
   enableTilesDownload: false,
   disableTilesDownloadButton: false,
+  trackRemainingDistance: null,
+  trackDistanceCovered: null,
+  trackProgress: null,
+  trackPositionStale: false,
 };
 
 function extractFilterTaxonomies(layer) {
@@ -381,6 +391,27 @@ export const userActivityReducer = createReducer(
     return {
       ...state,
       disableTilesDownloadButton,
+    };
+  }),
+  on(
+    setTrackRemainingDistance,
+    (state, {remainingDistance, distanceCovered, trackProgress, trackPositionStale}) => {
+      return {
+        ...state,
+        trackRemainingDistance: remainingDistance,
+        trackDistanceCovered: distanceCovered,
+        trackProgress,
+        trackPositionStale,
+      };
+    },
+  ),
+  on(resetTrackRemainingDistance, state => {
+    return {
+      ...state,
+      trackRemainingDistance: null,
+      trackDistanceCovered: null,
+      trackProgress: null,
+      trackPositionStale: false,
     };
   }),
 );
