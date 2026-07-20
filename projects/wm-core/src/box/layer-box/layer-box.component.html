@@ -14,7 +14,13 @@
     class="webmapp-card-big-image-container wm-result-img"
     [src]="data.layer.feature_image"
     size="225x100"
-  ></wm-img>
+  >
+    <wm-img
+      *ngIf="data.layer.logo_image | hasLogo"
+      class="wm-layer-box-logo-overlay"
+      [src]="data.layer.logo_image"
+    ></wm-img>
+  </wm-img>
   <div class="wm-box-title">{{data.layer.title??data.title | wmtrans}}</div>
   <wm-layer-features-counter-badge
     *ngIf="showBadge"
