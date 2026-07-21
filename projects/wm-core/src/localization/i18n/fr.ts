@@ -276,7 +276,6 @@ export const wmFR = {
   'Nessun risultato': 'Aucun résultat',
   'Condividi': 'Partager',
   'Condivisione in corso': 'Partage en cours',
-  'Condiviso con successo': 'Partagé avec succès',
   'Condivisione non riuscita': 'Échec du partage',
   'Riprova': 'Réessayer',
 };

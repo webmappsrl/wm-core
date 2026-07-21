@@ -281,7 +281,6 @@ export const wmSQ = {
   'Nessun risultato': 'Nuk ka rezultate',
   'Condividi': 'Shpërndaj',
   'Condivisione in corso': 'Duke u shpërndarë',
-  'Condiviso con successo': 'U shpërnda me sukses',
   'Condivisione non riuscita': 'Shpërndarja dështoi',
   'Riprova': 'Provo përsëri',
 };

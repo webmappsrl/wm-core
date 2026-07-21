@@ -90,13 +90,6 @@
               ></ion-icon>
               {{ (shareState === EUgcTrackShareState.GENERATING ? 'Condivisione in corso' : 'Condividi') | wmtrans }}
             </ion-button>
-            <div
-              class="wm-ugc-track-share-feedback wm-ugc-track-share-feedback--success"
-              *ngIf="shareState === EUgcTrackShareState.SUCCESS"
-            >
-              <ion-icon name="checkmark-circle"></ion-icon>
-              <span>{{ 'Condiviso con successo' | wmtrans }}</span>
-            </div>
           </div>
         </ng-container>
       </ng-container>

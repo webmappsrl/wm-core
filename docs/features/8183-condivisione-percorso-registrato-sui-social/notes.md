@@ -201,6 +201,23 @@ condivisione lato backend (analisi dello stile esistente, nessun colore/font inv
   richieste dal developer — la seconda non è stata ancora comunicata/implementata a fine
   sessione.
 
+### Rimozione del feedback di successo
+
+Richiesta esplicita del developer: "togli anche il condiviso con successo, non serve un
+feedback di successo è visibile da sé" — la chiusura del native share sheet è già un segnale
+sufficiente, un chip aggiuntivo era ridondante.
+
+- Rimosso il blocco `.wm-ugc-track-share-feedback--success` dal template (restava solo
+  questo dopo la rimozione precedente del chip d'errore, quindi l'intera classe
+  `.wm-ugc-track-share-feedback` è stata rimossa anche dallo SCSS, non solo il modificatore).
+- Rimossa la chiave i18n `'Condiviso con successo'` da tutti e 7 i file
+  `localization/i18n/*.ts` (era diventata dead code, nessun altro riferimento nel codebase).
+- **Lo stato interno `EUgcTrackShareState.SUCCESS` resta invariato** (`shareState$` continua
+  a transitare lì, coperto dagli stessi test preesistenti) — nessuna ragione per toccare la
+  state machine solo perché il template non la renderizza più.
+- Verificato con `ng build --configuration=ci` (pulito) e la suite Karma dedicata
+  (13/13 verdi, invariata rispetto a prima).
+
 ### Correzione: errore mostrato con alert nativo, non con un banner in-template
 
 Richiesta esplicita del developer subito dopo aver visto la prima versione: "gli errori non

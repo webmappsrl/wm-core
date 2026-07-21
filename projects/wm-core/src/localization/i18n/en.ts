@@ -282,7 +282,6 @@ export const wmEN = {
   'Nessun risultato': 'No results',
   'Condividi': 'Share',
   'Condivisione in corso': 'Sharing in progress',
-  'Condiviso con successo': 'Shared successfully',
   'Condivisione non riuscita': 'Sharing failed',
   'Riprova': 'Retry',
 };
