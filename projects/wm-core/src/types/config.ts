@@ -229,6 +229,7 @@ export interface ILAYER {
   feature_image: string;
   icon?: any;
   id: string;
+  logo_image?: string;
   name: string;
   params?: {[id: string]: string};
   style: {[name: string]: string};
