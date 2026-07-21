@@ -271,4 +271,9 @@ export const wmES = {
   'Comune': 'Municipio',
   'layer': 'Layer',
   'Nessun risultato': 'Sin resultados',
+  'Condividi': 'Compartir',
+  'Condivisione in corso': 'Compartiendo',
+  'Condiviso con successo': 'Compartido correctamente',
+  'Condivisione non riuscita': 'No se ha podido compartir',
+  'Riprova': 'Reintentar',
 };

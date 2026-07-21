@@ -279,4 +279,9 @@ export const wmIT = {
   "Comune": "Comune",
   'layer': 'Layer',
   'Nessun risultato': 'Nessun risultato',
+  'Condividi': 'Condividi',
+  'Condivisione in corso': 'Condivisione in corso',
+  'Condiviso con successo': 'Condiviso con successo',
+  'Condivisione non riuscita': 'Condivisione non riuscita',
+  'Riprova': 'Riprova',
 };

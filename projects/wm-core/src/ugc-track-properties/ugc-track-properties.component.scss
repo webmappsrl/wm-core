@@ -34,6 +34,48 @@ wm-ugc-track-properties {
     width: 100%;
   }
 
+  .wm-ugc-track-share-section {
+    width: 100%;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--wm-color-medium-tint, #e0e0e0);
+
+    .wm-ugc-track-share-button {
+      ion-icon,
+      ion-spinner {
+        margin-inline-end: 8px;
+      }
+    }
+
+    .wm-ugc-track-share-feedback {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: var(--font-sm);
+
+      ion-icon {
+        font-size: 20px;
+        flex: none;
+      }
+
+      span {
+        flex: 1;
+      }
+
+      &--success {
+        background: var(--wm-color-success-tint, rgba(16, 220, 96, 0.12));
+        color: var(--wm-color-success-shade, var(--wm-color-success));
+
+        ion-icon {
+          color: var(--wm-color-success);
+        }
+      }
+    }
+  }
+
   #wm-ugc-track-details-content {
     width: 100%;
     height: calc(100% - 56px);

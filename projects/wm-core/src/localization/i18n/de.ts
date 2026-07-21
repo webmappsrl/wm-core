@@ -275,4 +275,9 @@ export const wmDE = {
   "Comune": "Gemeinde",
   'layer': 'Layer',
   'Nessun risultato': 'Keine Ergebnisse',
+  'Condividi': 'Teilen',
+  'Condivisione in corso': 'Wird geteilt',
+  'Condiviso con successo': 'Erfolgreich geteilt',
+  'Condivisione non riuscita': 'Teilen fehlgeschlagen',
+  'Riprova': 'Erneut versuchen',
 };

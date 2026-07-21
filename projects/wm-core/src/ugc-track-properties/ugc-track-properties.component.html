@@ -68,6 +68,38 @@
           </ion-col>
         </ion-row>
       </ion-grid>
+      <ng-container *ngIf="(confOPTIONS$|async)?.ugcTrackShareEnabled">
+        <ng-container *ngIf="shareState$|async as shareState">
+          <div class="wm-ugc-track-share-section">
+            <ion-button
+              class="wm-ugc-track-share-button"
+              expand="block"
+              fill="clear"
+              [disabled]="shareState === EUgcTrackShareState.GENERATING"
+              (click)="triggerShare()"
+            >
+              <ion-spinner
+                *ngIf="shareState === EUgcTrackShareState.GENERATING"
+                name="crescent"
+                slot="start"
+              ></ion-spinner>
+              <ion-icon
+                *ngIf="shareState !== EUgcTrackShareState.GENERATING"
+                name="share-social-outline"
+                slot="start"
+              ></ion-icon>
+              {{ (shareState === EUgcTrackShareState.GENERATING ? 'Condivisione in corso' : 'Condividi') | wmtrans }}
+            </ion-button>
+            <div
+              class="wm-ugc-track-share-feedback wm-ugc-track-share-feedback--success"
+              *ngIf="shareState === EUgcTrackShareState.SUCCESS"
+            >
+              <ion-icon name="checkmark-circle"></ion-icon>
+              <span>{{ 'Condiviso con successo' | wmtrans }}</span>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
     </ng-container>
     <ng-template #editingButtons>
       <ion-grid class="ion-margin-top">
