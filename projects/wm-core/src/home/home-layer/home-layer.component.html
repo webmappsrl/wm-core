@@ -1,6 +1,11 @@
 <ng-container *ngIf="layer$|async as layer">
   <wm-img *ngIf="layer?.feature_image as img" [src]="img">
     <div class="wm-box-title" *ngIf="layer?.title as title">{{title | wmtrans}}</div>
+    <wm-img
+      *ngIf="layer?.logo_image | hasLogo"
+      class="wm-home-layer-logo-overlay"
+      [src]="layer.logo_image"
+    ></wm-img>
   </wm-img>
 
   <wm-tab-description

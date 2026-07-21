@@ -12,6 +12,21 @@ wm-home-layer {
   .wm-description {
     margin: 10px;
   }
+  wm-img.wm-home-layer-logo-overlay {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+    margin: 0;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+    z-index: 2;
+  }
   .wm-box-title {
     font-size: 26px;
     font-family: var(--wm-font-family-content, inherit);
