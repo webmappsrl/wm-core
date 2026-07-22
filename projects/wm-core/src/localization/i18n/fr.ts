@@ -274,4 +274,8 @@ export const wmFR = {
   'Comune': 'Commune',
   'layer': 'Layer',
   'Nessun risultato': 'Aucun résultat',
+  'Condividi': 'Partager',
+  'Condivisione in corso': 'Partage en cours',
+  'Condivisione non riuscita': 'Échec du partage',
+  'Riprova': 'Réessayer',
 };

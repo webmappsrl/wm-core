@@ -34,6 +34,20 @@ wm-ugc-track-properties {
     width: 100%;
   }
 
+  .wm-ugc-track-share-section {
+    width: 100%;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--wm-color-medium-tint, #e0e0e0);
+
+    .wm-ugc-track-share-button {
+      ion-icon,
+      ion-spinner {
+        margin-inline-end: 8px;
+      }
+    }
+  }
+
   #wm-ugc-track-details-content {
     width: 100%;
     height: calc(100% - 56px);

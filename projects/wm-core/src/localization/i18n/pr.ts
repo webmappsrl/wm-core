@@ -271,4 +271,8 @@ export const wmPR = {
   'Comune': 'Município',
   'layer': 'Layer',
   'Nessun risultato': 'Sem resultados',
+  'Condividi': 'Compartilhar',
+  'Condivisione in corso': 'A compartilhar',
+  'Condivisione non riuscita': 'Não foi possível compartilhar',
+  'Riprova': 'Tentar novamente',
 };

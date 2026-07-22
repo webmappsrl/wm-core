@@ -279,4 +279,8 @@ export const wmSQ = {
   "Comune": "Komuna",
   'layer': 'Layer',
   'Nessun risultato': 'Nuk ka rezultate',
+  'Condividi': 'Shpërndaj',
+  'Condivisione in corso': 'Duke u shpërndarë',
+  'Condivisione non riuscita': 'Shpërndarja dështoi',
+  'Riprova': 'Provo përsëri',
 };
