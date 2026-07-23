@@ -7,5 +7,5 @@
     <circle cx="12" cy="12" r="8" />
     <circle cx="12" cy="12" r="3" fill="white" />
   </svg>
-  {{ distanceMeters | distance: 'auto':1 }} {{ 'da te' | wmtrans }}
+  {{ distanceMeters | distance: 'auto':1 }}<ng-container *ngIf="showSuffix"> {{ 'da te' | wmtrans }}</ng-container>
 </span>

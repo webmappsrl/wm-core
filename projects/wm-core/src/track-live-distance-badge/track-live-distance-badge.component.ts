@@ -11,4 +11,8 @@ import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@ang
 export class WmTrackLiveDistanceBadgeComponent {
   @Input() distanceMeters: number | null = null;
   @Input() stale = false;
+  // Di default il badge mostra "<distanza> da te" (comportamento esistente in tab-detail,
+  // oc:8177). A `false` mostra solo la distanza — usato nel box di registrazione (oc:8284),
+  // dove il contesto ("PARTENZA"/"ARRIVO" già in etichetta) rende "da te" ridondante.
+  @Input() showSuffix = true;
 }
