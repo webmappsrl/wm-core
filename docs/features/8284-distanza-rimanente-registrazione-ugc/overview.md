@@ -10,6 +10,8 @@ Innalzamento della costante `REMAINING_DISTANCE_MAX_SPEED_MS` (`constants/track-
 
 **Aggiunta a posteriori (dopo verifica su device reale del box di registrazione, vedi overview lato `core`)**: nuovo `@Input() showSuffix: boolean = true` su `WmTrackLiveDistanceBadgeComponent` (`track-live-distance-badge/`). A `false`, il badge mostra solo la distanza formattata, senza il suffisso `" da te"` che il componente aggiunge di default. Default `true` per non alterare l'unico uso esistente (`tab-detail.component.html`, oc:8177) — nessuna modifica richiesta lì. Il box di registrazione (repo principale) passa `[showSuffix]="false"`, perché l'etichetta "PARTENZA"/"ARRIVO" già dà il contesto e "da te" risultava ridondante.
 
+**Fix applicato dopo la review formale (`wm-skills:wm-review-ticket`)**: la logica di combinazione `trackDistanceCovered`/`trackRemainingDistance`/`trackPositionStale`/`confOPTIONSShowTrackRemainingDistance` (con lo stesso gate) era duplicata identica tra `tab-detail.component.ts` (oc:8177) e `track-recorder.component.ts` (oc:8284, repo principale). Estratta in un nuovo selettore condiviso `trackLiveDistanceVm` (con interfaccia `TrackLiveDistanceVm`) in `user-activity.selector.ts` — questo **aggiunge un nuovo selettore a wm-core**, contraddicendo la precedente formulazione di questa sezione ("nessuna nuova logica di calcolo in wm-core"): non è un nuovo *calcolo*, ma una composizione di selettori già esistenti, resa esplicita e condivisa invece di lasciata duplicata in due consumer.
+
 ## Perché
 
 Riuso deliberato dell'architettura esistente invece di introdurne una nuova. Revisione con il CTO (call del 22/07/2026, trascrizione condivisa) ha corretto un'impostazione iniziale eccessivamente elaborata — uno stato dedicato `recordingEcTrackId` con pin/sostituzione-in-corsa/persistenza su localForage/retry automatico — perché il dato necessario è già disponibile e calcolato: l'unico lavoro reale è di visualizzazione (vedi overview lato `core`).
@@ -18,6 +20,8 @@ Riuso deliberato dell'architettura esistente invece di introdurne una nuova. Rev
 
 - [ ] `REMAINING_DISTANCE_MAX_SPEED_MS` (`constants/track-remaining-distance.ts`) alzata da 3 a 8 m/s
 - [ ] `WmTrackLiveDistanceBadgeComponent`: nuovo `@Input() showSuffix = true` — a `false` omette il suffisso `" da te"` dal testo del badge, mostrando solo la distanza formattata. Nessun impatto sull'uso esistente in `tab-detail.component.html` (default `true`, nessuna modifica al chiamante)
+- [ ] `user-activity.selector.ts`: nuovo selettore `trackLiveDistanceVm` (+ interfaccia `TrackLiveDistanceVm`) che compone `trackDistanceCovered`/`trackRemainingDistance`/`trackPositionStale`/`confOPTIONSShowTrackRemainingDistance` con lo stesso gate già usato nei due consumer — sostituisce la logica duplicata inline in `tab-detail.component.ts` e `track-recorder.component.ts`
+- [ ] `tab-detail.component.ts`: aggiornato per usare `this._store.select(trackLiveDistanceVm)` al posto del `combineLatest` inline; rimossi gli import ora inutilizzati (`combineLatest`, `map`, i singoli selettori)
 
 ## Rischi
 
@@ -32,10 +36,12 @@ Riuso deliberato dell'architettura esistente invece di introdurne una nuova. Rev
 - Marker di posizione sul profilo altimetrico durante la registrazione
 - Modifica della soglia di 100m (`REMAINING_DISTANCE_OFF_TRACK_THRESHOLD_M`, riusata identica a oc:8177)
 - Feature flag/kill-switch runtime
-- Qualunque modifica a `GeolocationService`, `store/user-activity/` (oltre a nessuna azione/reducer/selector/effect nuovo), `utils/localForage.ts`, `store/features/ec/ec.effects.ts`
+- Qualunque modifica a `GeolocationService`, `utils/localForage.ts`, `store/features/ec/ec.effects.ts` — su `store/user-activity/` resta esclusa qualunque nuova *action/reducer/effect* (il nuovo `trackLiveDistanceVm` è un selettore che compone selettori già esistenti, non un nuovo stato)
 
 ## Moduli toccati
 
 **wm-core (submodule):**
 - `projects/wm-core/src/constants/track-remaining-distance.ts` — `REMAINING_DISTANCE_MAX_SPEED_MS` da 3 a 8 m/s
 - `projects/wm-core/src/track-live-distance-badge/track-live-distance-badge.component.ts` / `.html` — nuovo `@Input() showSuffix` (aggiunta a posteriori, vedi "Cosa cambia")
+- `projects/wm-core/src/store/user-activity/user-activity.selector.ts` — nuovo selettore condiviso `trackLiveDistanceVm` (fix post-review)
+- `projects/wm-core/src/tab-detail/tab-detail.component.ts` — aggiornato per riusare `trackLiveDistanceVm` (fix post-review, nessuna modifica al template `tab-detail.component.html`)
