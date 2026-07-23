@@ -19,10 +19,11 @@ export const HOVER_DISMISS_DELAY_MS = 2500;
 // Soglia oltre la quale la posizione GPS mostrata viene considerata "non aggiornata".
 export const TRACK_POSITION_STALE_THRESHOLD_MS = 60_000;
 
-// Velocità massima plausibile di un camminatore/corridore leggero, usata come soglia per
-// il fallback a ricerca globale in GeoutilsService.getRemainingDistance quando lo spostamento
-// implicito rispetto all'ultimo trackProgress noto supera questo limite.
-export const REMAINING_DISTANCE_MAX_SPEED_MS = 3;
+// Velocità massima plausibile di un utente in movimento (camminata, corsa leggera o bici/e-bike
+// durante la registrazione UGC, oc:8284), usata come soglia per il fallback a ricerca globale in
+// GeoutilsService.getRemainingDistance quando lo spostamento implicito rispetto all'ultimo
+// trackProgress noto supera questo limite.
+export const REMAINING_DISTANCE_MAX_SPEED_MS = 8;
 export const REMAINING_DISTANCE_MIN_PLAUSIBLE_JUMP_M = 150;
 export const REMAINING_DISTANCE_LOCAL_WINDOW_RATIO = 0.15;
 export const REMAINING_DISTANCE_LOCAL_WINDOW_MIN_M = 300;
