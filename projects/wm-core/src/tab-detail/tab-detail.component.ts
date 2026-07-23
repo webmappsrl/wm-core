@@ -10,20 +10,12 @@ import {GeoJsonProperties} from 'geojson';
 import {IGeojsonFeature, IGeojsonProperties} from '../types/model';
 import {ISlopeChartHoverElements} from '../types/slope-chart';
 import {Store} from '@ngrx/store';
-import {combineLatest, Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {confOPTIONS, confOPTIONSShowTrackRemainingDistance} from '@wm-core/store/conf/conf.selector';
+import {Observable} from 'rxjs';
+import {confOPTIONS} from '@wm-core/store/conf/conf.selector';
 import {
-  trackDistanceCovered,
-  trackPositionStale,
-  trackRemainingDistance,
+  trackLiveDistanceVm,
+  TrackLiveDistanceVm,
 } from '@wm-core/store/user-activity/user-activity.selector';
-
-export interface TrackLiveDistanceVm {
-  distanceCovered: number | null;
-  remainingDistance: number | null;
-  stale: boolean;
-}
 
 @Component({
   standalone: false,
@@ -43,23 +35,10 @@ export class WmTabDetailComponent {
   confOptions$: Observable<any> = this._store.select(confOPTIONS);
   public route: IGeojsonFeature;
 
-  // Gate su OPTIONS.showTrackRemainingDistance: quando disabilitato le distanze live restano
-  // null e le righe Partenza/Arrivo si comportano come prima di oc:8177 (visibili solo se
-  // properties.from/to sono presenti). Quando abilitato, distanceCovered/remainingDistance
-  // possono valere 0 (traguardo raggiunto/appena partiti): per questo il gate è su `enabled`,
-  // non sul valore numerico, altrimenti *ngIf nasconderebbe il badge esattamente a 0.
-  trackLiveDistanceVm$: Observable<TrackLiveDistanceVm> = combineLatest([
-    this._store.select(trackDistanceCovered),
-    this._store.select(trackRemainingDistance),
-    this._store.select(trackPositionStale),
-    this._store.select(confOPTIONSShowTrackRemainingDistance),
-  ]).pipe(
-    map(([distanceCovered, remainingDistance, stale, enabled]) => ({
-      distanceCovered: enabled !== false ? distanceCovered : null,
-      remainingDistance: enabled !== false ? remainingDistance : null,
-      stale,
-    })),
-  );
+  // Selettore condiviso con track-recorder.component.ts (oc:8284) — vedi commento su
+  // trackLiveDistanceVm in user-activity.selector.ts per il gate su
+  // OPTIONS.showTrackRemainingDistance.
+  trackLiveDistanceVm$: Observable<TrackLiveDistanceVm> = this._store.select(trackLiveDistanceVm);
 
   constructor(private _store: Store<any>) {}
 

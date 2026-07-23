@@ -1,7 +1,12 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {currentCustomTrack, currentUgcPoi, currentUgcPoiDrawn} from '../features/ugc/ugc.selector';
 import {UserActivityState} from './user-activity.reducer';
-import {confFlowLineQuote, confPOIFORMS, confTRACKFORMS} from '../conf/conf.selector';
+import {
+  confFlowLineQuote,
+  confOPTIONSShowTrackRemainingDistance,
+  confPOIFORMS,
+  confTRACKFORMS,
+} from '../conf/conf.selector';
 import {WmSlopeChartFlowLineQuote} from '@wm-types/slope-chart';
 
 export const userActivity = createFeatureSelector<UserActivityState>('user-activity');
@@ -244,3 +249,26 @@ export const trackDistanceCovered = createSelector(
 );
 export const trackProgress = createSelector(userActivity, state => state.trackProgress);
 export const trackPositionStale = createSelector(userActivity, state => state.trackPositionStale);
+
+export interface TrackLiveDistanceVm {
+  distanceCovered: number | null;
+  remainingDistance: number | null;
+  stale: boolean;
+}
+
+// Selettore condiviso tra tab-detail.component.ts (oc:8177, visualizzazione traccia) e
+// track-recorder.component.ts (oc:8284, box di registrazione) — evita di duplicare in ogni
+// consumer lo stesso gate su OPTIONS.showTrackRemainingDistance. Quando disabilitato, le
+// distanze restano null a prescindere dal dato reale (il gate è su `enabled`, non sul valore
+// numerico, perché distanceCovered/remainingDistance possono valere legittimamente 0).
+export const trackLiveDistanceVm = createSelector(
+  trackDistanceCovered,
+  trackRemainingDistance,
+  trackPositionStale,
+  confOPTIONSShowTrackRemainingDistance,
+  (distanceCovered, remainingDistance, stale, enabled): TrackLiveDistanceVm => ({
+    distanceCovered: enabled !== false ? distanceCovered : null,
+    remainingDistance: enabled !== false ? remainingDistance : null,
+    stale,
+  }),
+);
