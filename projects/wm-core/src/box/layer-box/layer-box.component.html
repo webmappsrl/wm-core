@@ -22,10 +22,28 @@
     ></wm-img>
   </wm-img>
   <div class="wm-box-title">{{data.layer.title??data.title | wmtrans}}</div>
-  <wm-layer-features-counter-badge
-    *ngIf="showBadge"
-    [layerId]="data.layer?.id"
-    [useTotal]="useTotal"
-  ></wm-layer-features-counter-badge>
+  <div class="wm-layer-box-badge-combo" [class.wm-layer-box-badge-combo--with-heart]="showFavoriteHeart$|async">
+    <wm-layer-features-counter-badge
+      *ngIf="showBadge"
+      [layerId]="data.layer?.id"
+      [useTotal]="useTotal"
+    ></wm-layer-features-counter-badge>
+    <ng-container *ngIf="showFavoriteHeart$|async">
+      <span class="wm-layer-box-favorite-divider"></span>
+      <i
+        class="wm-layer-box-favorite"
+        [class.wm-layer-box-favorite--interactive]="favoriteInteractive"
+        [class.wm-layer-box-favorite--disabled]="favoriteInteractive && isTogglingFavorite"
+        [attr.aria-label]="favoriteInteractive
+          ? ((isFavorite$|async) ? ('Rimuovi dai preferiti'|wmtrans) : ('Aggiungi ai preferiti'|wmtrans))
+          : ((isFavorite$|async) ? ('Preferito'|wmtrans) : ('Non preferito'|wmtrans))"
+        [ngClass]="{
+          'icon-fill-heart': isFavorite$|async,
+          'icon-outline-heart': !(isFavorite$|async)
+        }"
+        (click)="onFavoriteClick($event)"
+      ></i>
+    </ng-container>
+  </div>
   <ng-content></ng-content>
 </div>

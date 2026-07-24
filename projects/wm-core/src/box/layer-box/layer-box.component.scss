@@ -92,5 +92,70 @@ wm-layer-box {
         filter: none;
       }
     }
+
+    .wm-layer-box-badge-combo {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+
+      // Il badge conteggio resta un componente a sé (`wm-layer-features-counter-badge`, usato
+      // anche altrove) — qui la sua chrome (sfondo/ombra/posizione) viene neutralizzata così
+      // la pillola visibile è una sola, fornita da questo wrapper.
+      wm-layer-features-counter-badge {
+        position: static;
+        background: transparent;
+        box-shadow: none;
+        top: auto;
+        right: auto;
+      }
+
+      &--with-heart {
+        background-color: rgba(255, 255, 255, 0.85);
+        border-radius: 999px;
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
+        padding: 0 6px 0 0;
+      }
+    }
+
+    .wm-layer-box-favorite-divider {
+      width: 1px;
+      height: 16px;
+      background-color: rgba(0, 0, 0, 0.15);
+      margin: 0 8px;
+      flex: none;
+    }
+
+    .wm-layer-box-favorite {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      min-width: 22px;
+      min-height: 22px;
+      border-radius: 50%;
+      z-index: 2;
+      font-size: 16px;
+      color: var(--wm-color-favorite, #d7263d);
+      pointer-events: none;
+
+      &--interactive {
+        pointer-events: auto;
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        min-height: 32px;
+        font-size: 22px;
+      }
+
+      &--disabled {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+    }
   }
 }

@@ -284,4 +284,9 @@ export const wmEN = {
   'Condivisione in corso': 'Sharing in progress',
   'Condivisione non riuscita': 'Sharing failed',
   'Riprova': 'Retry',
+  'Aggiungi ai preferiti': 'Add to favorites',
+  'Rimuovi dai preferiti': 'Remove from favorites',
+  'Preferito': 'Favorite',
+  'Non preferito': 'Not favorite',
+  'Impossibile aggiornare i preferiti, riprova': 'Could not update favorites, try again',
 };

@@ -279,4 +279,9 @@ export const wmDE = {
   'Condivisione in corso': 'Wird geteilt',
   'Condivisione non riuscita': 'Teilen fehlgeschlagen',
   'Riprova': 'Erneut versuchen',
+  'Aggiungi ai preferiti': 'Zu Favoriten hinzufügen',
+  'Rimuovi dai preferiti': 'Aus Favoriten entfernen',
+  'Preferito': 'Favorit',
+  'Non preferito': 'Kein Favorit',
+  'Impossibile aggiornare i preferiti, riprova': 'Favoriten konnten nicht aktualisiert werden, versuche es erneut',
 };

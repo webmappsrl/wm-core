@@ -283,4 +283,9 @@ export const wmSQ = {
   'Condivisione in corso': 'Duke u shpërndarë',
   'Condivisione non riuscita': 'Shpërndarja dështoi',
   'Riprova': 'Provo përsëri',
+  'Aggiungi ai preferiti': 'Shto në të preferuarat',
+  'Rimuovi dai preferiti': 'Hiq nga të preferuarat',
+  'Preferito': 'Të preferuar',
+  'Non preferito': 'Jo i preferuar',
+  'Impossibile aggiornare i preferiti, riprova': 'Nuk u arrit të përditësohen të preferuarat, provo përsëri',
 };

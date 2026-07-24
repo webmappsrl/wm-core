@@ -148,6 +148,10 @@ export const confOPTIONSShowFeaturesInViewport = createSelector(
   state => state.showFeaturesInViewport,
 );
 export const confOPTIONSShowMediaName = createSelector(confOPTIONS, state => state.showMediaName);
+export const confOPTIONSShowFavorites = createSelector(
+  confOPTIONS,
+  state => state.showFavorites ?? false,
+);
 export const confOPTIONSShowEmbeddedHtml = createSelector(
   confOPTIONS,
   state => state.showEmbeddedHtml,
