@@ -6,7 +6,9 @@ import {of, BehaviorSubject} from 'rxjs';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 import {LangService} from '@wm-core/localization/lang.service';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
+import {POSTHOG_CLIENT} from '@wm-core/store/conf/conf.token';
 import {ILAYER} from '@wm-core/types/config';
+import {WmPosthogClient} from '@wm-types/posthog';
 
 import {LayerFavoriteService} from './layer-favorite.service';
 
@@ -17,6 +19,7 @@ function createBaseProviders(storeSpy: Store) {
   const toastPresentSpy = jasmine.createSpy('present').and.resolveTo();
   const toastCtrlSpy = jasmine.createSpyObj<ToastController>('ToastController', ['create']);
   toastCtrlSpy.create.and.resolveTo({present: toastPresentSpy} as any);
+  const posthogSpy = jasmine.createSpyObj<WmPosthogClient>('WmPosthogClient', ['capture']);
 
   return {
     providers: [
@@ -25,9 +28,11 @@ function createBaseProviders(storeSpy: Store) {
       {provide: EnvironmentService, useValue: {origin: 'https://example.test'}},
       {provide: LangService, useValue: langSvcSpy},
       {provide: ToastController, useValue: toastCtrlSpy},
+      {provide: POSTHOG_CLIENT, useValue: posthogSpy},
     ],
     toastCtrlSpy,
     toastPresentSpy,
+    posthogSpy,
   };
 }
 
@@ -37,6 +42,7 @@ describe('LayerFavoriteService', () => {
   let isLoggedSubject: BehaviorSubject<boolean>;
   let toastCtrlSpy: jasmine.SpyObj<ToastController>;
   let toastPresentSpy: jasmine.Spy;
+  let posthogSpy: jasmine.SpyObj<WmPosthogClient>;
 
   const layer1: ILAYER = {id: '1', title: 'Layer 1'} as any;
   const layer2: ILAYER = {id: '2', title: 'Layer 2'} as any;
@@ -52,6 +58,7 @@ describe('LayerFavoriteService', () => {
     const base = createBaseProviders(storeSpy);
     toastCtrlSpy = base.toastCtrlSpy;
     toastPresentSpy = base.toastPresentSpy;
+    posthogSpy = base.posthogSpy;
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: base.providers,
@@ -238,6 +245,50 @@ describe('LayerFavoriteService', () => {
       let result: boolean;
       service.isFavorite$('1').subscribe(v => (result = v));
       expect(result).toBe(true);
+    });
+
+    it('emette layerFavorited con favorite:true quando il toggle aggiunge ai preferiti', async () => {
+      const promise = service.getFavorites();
+      httpMock.expectOne('https://example.test/api/layer/favorite/list').flush({favorites: []});
+      await promise;
+
+      const feedbackPromise = service.toggleWithFeedback(layer1);
+      httpMock.expectOne('https://example.test/api/layer/favorite/toggle/1').flush({favorite: true});
+      await feedbackPromise;
+
+      expect(posthogSpy.capture).toHaveBeenCalledWith(
+        'layerFavorited',
+        jasmine.objectContaining({layer_id: '1', favorite: true}),
+      );
+    });
+
+    it('emette layerFavorited con favorite:false quando il toggle rimuove dai preferiti (fix oc:8176 #4)', async () => {
+      const promise = service.getFavorites();
+      httpMock.expectOne('https://example.test/api/layer/favorite/list').flush({favorites: [layer1]});
+      await promise;
+
+      const feedbackPromise = service.toggleWithFeedback(layer1);
+      httpMock.expectOne('https://example.test/api/layer/favorite/toggle/1').flush({favorite: false});
+      await feedbackPromise;
+
+      expect(posthogSpy.capture).toHaveBeenCalledWith(
+        'layerFavorited',
+        jasmine.objectContaining({layer_id: '1', favorite: false}),
+      );
+    });
+
+    it('non emette layerFavorited se il toggle fallisce', async () => {
+      const promise = service.getFavorites();
+      httpMock.expectOne('https://example.test/api/layer/favorite/list').flush({favorites: []});
+      await promise;
+
+      const feedbackPromise = service.toggleWithFeedback(layer1);
+      httpMock
+        .expectOne('https://example.test/api/layer/favorite/toggle/1')
+        .flush('error', {status: 500, statusText: 'Server Error'});
+      await feedbackPromise;
+
+      expect(posthogSpy.capture).not.toHaveBeenCalled();
     });
   });
 });

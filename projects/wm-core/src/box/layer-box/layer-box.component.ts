@@ -32,9 +32,11 @@ export class LayerBoxComponent extends BaseBoxComponent<ILAYERBOX> implements On
   @Input() showBadge = true;
   @Input() useTotal = false;
   /**
-   * Di default il cuoricino è di sola lettura (indicatore di stato, card nella
-   * home/lista) — impostare a `true` solo dove serve poter rimuovere/aggiungere
-   * il preferito direttamente dal box (es. tab "Cammini" in FavouritesPage).
+   * Di default il cuoricino è di sola lettura (nessun toggle) — impostare a `true`
+   * per abilitare like/dislike direttamente dal box. Oggi tutti i consumer noti
+   * (home-landing, home-result, tab "Cammini" in FavouritesPage) lo impostano a
+   * `true`; il default `false` resta come rete di sicurezza per consumer futuri
+   * non ancora aggiornati esplicitamente.
    */
   @Input() favoriteInteractive = false;
 

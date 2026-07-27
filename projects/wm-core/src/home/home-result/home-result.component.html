@@ -116,6 +116,7 @@
           *ngFor="let layer of filteredLayers$|async"
           [data]="{box_type: 'layer', layer: layer, title: layer.title}"
           [useTotal]="true"
+          [favoriteInteractive]="true"
           (clickEVT)="setLayer(layer)"
         ></wm-layer-box>
       </div>

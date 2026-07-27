@@ -207,11 +207,12 @@ export class LayerFavoriteService {
 
   /**
    * Alterna il preferito con il feedback utente completo (toast di errore, evento
-   * PostHog `layerFavorited` solo su aggiunta) — centralizza qui la logica
-   * altrimenti duplicata identica tra `LayerBoxComponent` e `WmHomeLayerComponent`.
-   * Non fa nulla se un toggle per lo stesso layer è già in corso (vedi `isPending()`).
-   * Il chiamante resta responsabile solo dello stato locale (es. `isTogglingFavorite`
-   * per il binding CSS), non della logica di business del toggle stesso.
+   * PostHog `layerFavorited` sia su aggiunta che su rimozione, distinte dalla prop
+   * `favorite`) — centralizza qui la logica altrimenti duplicata identica tra
+   * `LayerBoxComponent` e `WmHomeLayerComponent`. Non fa nulla se un toggle per lo
+   * stesso layer è già in corso (vedi `isPending()`). Il chiamante resta
+   * responsabile solo dello stato locale (es. `isTogglingFavorite` per il binding
+   * CSS), non della logica di business del toggle stesso.
    *
    * @param layer Layer da aggiungere/rimuovere dai preferiti.
    */
@@ -222,8 +223,11 @@ export class LayerFavoriteService {
 
     try {
       const favorite = await this.toggle(layer);
-      if (favorite && this._posthogClient) {
-        this._posthogClient.capture('layerFavorited', {layer_id: String(layer.id)});
+      if (this._posthogClient) {
+        this._posthogClient.capture('layerFavorited', {
+          layer_id: String(layer.id),
+          favorite,
+        });
       }
     } catch {
       const toast = await this._toastCtrl.create({
