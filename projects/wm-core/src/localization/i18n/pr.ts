@@ -275,4 +275,9 @@ export const wmPR = {
   'Condivisione in corso': 'A compartilhar',
   'Condivisione non riuscita': 'Não foi possível compartilhar',
   'Riprova': 'Tentar novamente',
+  'Aggiungi ai preferiti': 'Adicionar aos favoritos',
+  'Rimuovi dai preferiti': 'Remover dos favoritos',
+  'Preferito': 'Favorito',
+  'Non preferito': 'Não favorito',
+  'Impossibile aggiornare i preferiti, riprova': 'Não foi possível atualizar os favoritos, tente novamente',
 };

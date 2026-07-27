@@ -6,6 +6,17 @@
       class="wm-home-layer-logo-overlay"
       [src]="layer.logo_image"
     ></wm-img>
+    <i
+      *ngIf="showFavoriteHeart$|async"
+      class="wm-home-layer-favorite"
+      [class.wm-home-layer-favorite--disabled]="isTogglingFavorite"
+      [attr.aria-label]="(isFavorite$(layer)|async) ? ('Rimuovi dai preferiti'|wmtrans) : ('Aggiungi ai preferiti'|wmtrans)"
+      [ngClass]="{
+        'icon-fill-heart': isFavorite$(layer)|async,
+        'icon-outline-heart': !(isFavorite$(layer)|async)
+      }"
+      (click)="onFavoriteClick($event, layer)"
+    ></i>
   </wm-img>
 
   <wm-tab-description

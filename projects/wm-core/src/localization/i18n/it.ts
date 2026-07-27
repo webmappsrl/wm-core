@@ -283,4 +283,9 @@ export const wmIT = {
   'Condivisione in corso': 'Condivisione in corso',
   'Condivisione non riuscita': 'Condivisione non riuscita',
   'Riprova': 'Riprova',
+  'Aggiungi ai preferiti': 'Aggiungi ai preferiti',
+  'Rimuovi dai preferiti': 'Rimuovi dai preferiti',
+  'Preferito': 'Preferito',
+  'Non preferito': 'Non preferito',
+  'Impossibile aggiornare i preferiti, riprova': 'Impossibile aggiornare i preferiti, riprova',
 };

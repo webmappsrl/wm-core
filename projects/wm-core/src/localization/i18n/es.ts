@@ -275,4 +275,9 @@ export const wmES = {
   'Condivisione in corso': 'Compartiendo',
   'Condivisione non riuscita': 'No se ha podido compartir',
   'Riprova': 'Reintentar',
+  'Aggiungi ai preferiti': 'Añadir a favoritos',
+  'Rimuovi dai preferiti': 'Quitar de favoritos',
+  'Preferito': 'Favorito',
+  'Non preferito': 'No favorito',
+  'Impossibile aggiornare i preferiti, riprova': 'No se han podido actualizar los favoritos, inténtalo de nuevo',
 };

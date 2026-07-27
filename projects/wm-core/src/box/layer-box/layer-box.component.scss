@@ -92,5 +92,80 @@ wm-layer-box {
         filter: none;
       }
     }
+
+    .wm-layer-box-badge-combo {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      // Sfondo/ombra/forma della pillola vivono sempre qui (non solo quando il
+      // cuoricino è presente) — prima erano condizionati a `--with-heart`, quindi
+      // il badge restava senza sfondo per utenti anonimi/flag disattivato.
+      background-color: rgba(255, 255, 255, 0.85);
+      border-radius: 999px;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
+
+      // Il badge conteggio resta un componente a sé (`wm-layer-features-counter-badge`, usato
+      // anche altrove) — qui la sua chrome (sfondo/ombra/posizione) viene neutralizzata così
+      // la pillola visibile è una sola, fornita da questo wrapper.
+      wm-layer-features-counter-badge {
+        position: static;
+        background: transparent;
+        box-shadow: none;
+        top: auto;
+        right: auto;
+      }
+
+      &--with-heart {
+        padding-right: 6px;
+      }
+
+      // L'intera pillola (badge + divisore + cuoricino) diventa l'area di tap del
+      // toggle preferiti, non solo il piccolo cuoricino da 22px — altrimenti,
+      // ridotto a quella dimensione, il bersaglio di tocco reale sarebbe troppo
+      // piccolo per un'azione così frequente.
+      &--interactive {
+        cursor: pointer;
+      }
+    }
+
+    .wm-layer-box-favorite-divider {
+      width: 1px;
+      height: 16px;
+      background-color: rgba(0, 0, 0, 0.15);
+      margin: 0 8px;
+      flex: none;
+    }
+
+    .wm-layer-box-favorite {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      min-width: 22px;
+      min-height: 22px;
+      border-radius: 50%;
+      z-index: 2;
+      font-size: 16px;
+      color: var(--wm-color-favorite, #d7263d);
+      pointer-events: none;
+
+      // Stessa dimensione della versione di sola lettura, non ingrandita: un
+      // cuoricino più grande del badge (es. 32px) alza l'altezza dell'intera
+      // pillola per effetto di `align-items:center`, facendo apparire il badge
+      // "rimpicciolito" per contrasto anche se le sue dimensioni sono invariate.
+      &--interactive {
+        pointer-events: auto;
+        cursor: pointer;
+      }
+
+      &--disabled {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+    }
   }
 }

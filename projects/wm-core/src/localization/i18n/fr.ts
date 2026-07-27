@@ -278,4 +278,9 @@ export const wmFR = {
   'Condivisione in corso': 'Partage en cours',
   'Condivisione non riuscita': 'Échec du partage',
   'Riprova': 'Réessayer',
+  'Aggiungi ai preferiti': 'Ajouter aux favoris',
+  'Rimuovi dai preferiti': 'Retirer des favoris',
+  'Preferito': 'Favori',
+  'Non preferito': 'Non favori',
+  'Impossibile aggiornare i preferiti, riprova': 'Impossible de mettre à jour les favoris, réessayez',
 };
