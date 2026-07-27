@@ -7,6 +7,7 @@ import {LangService} from '@wm-core/localization/lang.service';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {WmFeature} from '@wm-types/feature';
 import {EUgcTrackShareState} from '@wm-core/types/eugc-track-share-state.enum';
+import {ugcTracksFeatures} from '@wm-core/store/features/ugc/ugc.selector';
 
 import {UgcTrackPropertiesComponent} from './ugc-track-properties.component';
 
@@ -22,7 +23,7 @@ import {UgcTrackPropertiesComponent} from './ugc-track-properties.component';
 describe('UgcTrackPropertiesComponent — condivisione social (oc:8183)', () => {
   const fakeTrack: WmFeature<LineString> = {
     type: 'Feature',
-    properties: {id: 1, name: 'Traccia di prova'},
+    properties: {id: 1, uuid: 'fake-uuid', name: 'Traccia di prova'},
     geometry: {
       type: 'LineString',
       coordinates: [
@@ -32,6 +33,11 @@ describe('UgcTrackPropertiesComponent — condivisione social (oc:8183)', () => 
     },
   } as any;
 
+  // Default store contents for `ugcTracksFeatures`: this exact track, already synced (has
+  // an `id`) - existing tests below cover the share state machine itself, not the sync gate,
+  // so they should behave exactly as before this feature was added, not fall over on it.
+  const syncedTrackFeatures = [fakeTrack];
+
   let storeSpy: jasmine.SpyObj<Store>;
   let alertCtrlSpy: jasmine.SpyObj<AlertController>;
   let langSvcSpy: jasmine.SpyObj<LangService>;
@@ -40,12 +46,19 @@ describe('UgcTrackPropertiesComponent — condivisione social (oc:8183)', () => 
 
   /**
    * Builds a fresh component instance, optionally with a specific `OPTIONS` conf value
-   * for the `confOPTIONS$` observable (read once at construction time, like the real
-   * `Store.select`).
+   * for the `confOPTIONS$` observable and a specific `ugcTracksFeatures` list (defaults to
+   * "this track is already synced", see `syncedTrackFeatures` above) - both read once at
+   * construction time, like the real `Store.select`. `ngOnInit()` is called explicitly since
+   * this is a plain `new` instance, not run through Angular's own lifecycle/TestBed.
    */
-  function createComponent(confOptions: any = {}): UgcTrackPropertiesComponent {
+  function createComponent(
+    confOptions: any = {},
+    trackFeatures: any[] = syncedTrackFeatures,
+  ): UgcTrackPropertiesComponent {
     storeSpy = jasmine.createSpyObj<Store>('Store', ['select', 'dispatch']);
-    storeSpy.select.and.returnValue(of(confOptions));
+    storeSpy.select.and.callFake((selector: any) =>
+      selector === ugcTracksFeatures ? of(trackFeatures) : of(confOptions),
+    );
     alertCtrlSpy = jasmine.createSpyObj('AlertController', ['create']);
     alertCtrlSpy.create.and.resolveTo({present: jasmine.createSpy('present')} as any);
     langSvcSpy = jasmine.createSpyObj('LangService', ['instant']);
@@ -59,11 +72,16 @@ describe('UgcTrackPropertiesComponent — condivisione social (oc:8183)', () => 
       urlHandlerSvcSpy,
     );
     instance.track = fakeTrack;
+    instance.ngOnInit();
     return instance;
   }
 
   beforeEach(() => {
     component = createComponent();
+  });
+
+  afterEach(() => {
+    component.ngOnDestroy();
   });
 
   describe('state machine UI', () => {
@@ -169,6 +187,55 @@ describe('UgcTrackPropertiesComponent — condivisione social (oc:8183)', () => 
       expect(component.shareErrorMessage).toBeNull();
       expect(component.shareTrack.emit).toHaveBeenCalledTimes(2);
       expect(component.shareTrack.emit).toHaveBeenCalledWith(fakeTrack);
+    });
+  });
+
+  describe('gating sulla sincronizzazione della traccia (oc:8183)', () => {
+    it('isTrackSynced$ emette true quando la traccia (per uuid) ha un id assegnato dal backend', done => {
+      const instance = createComponent({}, [fakeTrack]);
+
+      instance.isTrackSynced$.subscribe(synced => {
+        expect(synced).toBe(true);
+        instance.ngOnDestroy();
+        done();
+      });
+    });
+
+    it('isTrackSynced$ emette false quando la traccia non compare ancora tra quelle sincronizzate', done => {
+      const instance = createComponent({}, []);
+
+      instance.isTrackSynced$.subscribe(synced => {
+        expect(synced).toBe(false);
+        instance.ngOnDestroy();
+        done();
+      });
+    });
+
+    it('isTrackSynced$ emette false quando la traccia compare ma senza id (solo locale)', done => {
+      const localOnlyTrack = {...fakeTrack, properties: {...fakeTrack.properties, id: undefined}};
+      const instance = createComponent({}, [localOnlyTrack]);
+
+      instance.isTrackSynced$.subscribe(synced => {
+        expect(synced).toBe(false);
+        instance.ngOnDestroy();
+        done();
+      });
+    });
+
+    it('triggerShare non emette share-track e mostra un alert se la traccia non è ancora sincronizzata', () => {
+      const instance = createComponent({}, []);
+      spyOn(instance.shareTrack, 'emit');
+
+      instance.triggerShare();
+
+      expect(instance.shareTrack.emit).not.toHaveBeenCalled();
+      expect(instance.shareState$.value).toBe(EUgcTrackShareState.IDLE);
+      expect(alertCtrlSpy.create).toHaveBeenCalledOnceWith(
+        jasmine.objectContaining({
+          message: 'Il percorso è ancora in fase di sincronizzazione, riprova tra qualche secondo.',
+        }),
+      );
+      instance.ngOnDestroy();
     });
   });
 
