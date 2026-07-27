@@ -22,7 +22,12 @@
     ></wm-img>
   </wm-img>
   <div class="wm-box-title">{{data.layer.title??data.title | wmtrans}}</div>
-  <div class="wm-layer-box-badge-combo" [class.wm-layer-box-badge-combo--with-heart]="showFavoriteHeart$|async">
+  <div
+    class="wm-layer-box-badge-combo"
+    [class.wm-layer-box-badge-combo--with-heart]="showFavoriteHeart$|async"
+    [class.wm-layer-box-badge-combo--interactive]="favoriteInteractive && (showFavoriteHeart$|async)"
+    (click)="onFavoriteClick($event)"
+  >
     <wm-layer-features-counter-badge
       *ngIf="showBadge"
       [layerId]="data.layer?.id"
@@ -41,7 +46,6 @@
           'icon-fill-heart': isFavorite$|async,
           'icon-outline-heart': !(isFavorite$|async)
         }"
-        (click)="onFavoriteClick($event)"
       ></i>
     </ng-container>
   </div>
