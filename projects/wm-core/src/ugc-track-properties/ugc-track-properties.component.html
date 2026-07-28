@@ -75,7 +75,7 @@
               class="wm-ugc-track-share-button"
               expand="block"
               fill="clear"
-              [disabled]="shareState === EUgcTrackShareState.GENERATING"
+              [disabled]="shareState === EUgcTrackShareState.GENERATING || !(isTrackSynced$|async)"
               (click)="triggerShare()"
             >
               <ion-spinner

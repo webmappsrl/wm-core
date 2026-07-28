@@ -4,20 +4,22 @@
 
 ## Cosa cambia
 - Nuovo pulsante "Condividi" in `ugc-track-properties.component.html`/`.ts`, visibile solo se il flag conf `ugc_track_share_enabled` è `true` (opzionabile per shard, pattern già in uso per altri flag come `showTrackRemainingDistance`).
-- Al tap, il componente emette un evento verso il livello superiore (repo principale, che orchestra: richiesta screenshot al componente mini-map di map-core → invocazione plugin nativo Stories — vedi overview del repo principale) — `ugc-track-properties` non ha e non deve avere accesso diretto né alla mappa né al plugin nativo/servizio share.
-- Stati UI: idle → generating (mentre map-core produce lo screenshot on-device e il plugin nativo viene invocato) → success (share sheet Stories si apre) → error (messaggio chiaro + retry esplicito).
-- **Nessuna azione di revoca**: a differenza di una prima ipotesi valutata (link pubblico persistente), lo share è verso le Stories (contenuto effimero, nessun artefatto pubblico sotto il nostro controllo) — non c'è stato di condivisione da attivare/disattivare, ogni tap è un'azione autonoma e stateless.
-- `wm-types`: nuovo campo booleano nell'interfaccia `OPTIONS` per il flag conf (`ugcTrackShareEnabled` o nome equivalente) — modifica minima, senza decisioni di design autonome, per questo non ha un overview.md dedicato in wm-types.
-- **Punto di ingresso disponibile sia subito dopo la registrazione sia in un secondo momento** (chiarito in Fase: challenge): `ugc-track-properties` è montato solo da `map.page.html`, agganciato al parametro URL `ugc_track` — è un pannello generico riusato ogni volta che una traccia UGC viene aperta sulla mappa (anche riaprendola dalla lista "le mie tracce" in un momento successivo alla registrazione), non un componente esclusivo del flusso immediato. Se l'utente è offline al momento della registrazione, può ritentare più tardi riaprendo la stessa traccia, senza bisogno di una coda/retry differito dedicato.
+- Al tap, il componente emette un evento verso il livello superiore (repo principale, che orchestra la chiamata a `ShareService` — vedi overview del repo principale) — `ugc-track-properties` non ha e non deve avere accesso diretto al servizio di condivisione.
+- **Stati UI, rivisti dopo la prima implementazione**: idle → generating → error (messaggio via `AlertController` nativo, non un banner in-template). Nessun banner di successo dedicato — la chiusura del native share sheet è già segnale sufficiente (lo stato interno `SUCCESS` resta nella state machine, solo non renderizzato).
+- **Nessuna azione di revoca**: non c'è uno stato di condivisione da attivare/disattivare, ogni tap è un'azione autonoma e stateless.
+- `wm-types`: nuovo campo booleano nell'interfaccia `OPTIONS` per il flag conf (`ugcTrackShareEnabled`) — modifica minima, senza decisioni di design autonome, per questo non ha un overview.md dedicato in wm-types.
+- **Punto di ingresso disponibile sia subito dopo la registrazione sia in un secondo momento** (chiarito in Fase: challenge): `ugc-track-properties` è montato solo da `map.page.html`, agganciato al parametro URL `ugc_track` — è un pannello generico riusato ogni volta che una traccia UGC viene aperta sulla mappa (anche riaprendola dalla lista "le mie tracce" in un momento successivo alla registrazione), non un componente esclusivo del flusso immediato.
+- **Gating sulla sincronizzazione, aggiunto in un giro successivo**: proprio perché questo pannello può aprirsi per una traccia appena registrata (vedi punto sopra), il pulsante resta disabilitato finché `ugcTracksFeatures` non conferma che la traccia (per `uuid`) ha un `id` dal backend — altrimenti condividere produrrebbe un 404. Vedi `notes.md` per il dettaglio tecnico completo.
 
 ## Perché
 Vedi overview del repo principale (`webmapp-app/docs/features/8183-.../overview.md`) per il contesto completo. Questo file copre solo la superficie UI in wm-core: il pannello proprietà traccia è il punto di ingresso dell'azione utente.
 
 ## Requisiti
 - [ ] Pulsante "Condividi" in `ugc-track-properties`, gated da flag conf `ugc_track_share_enabled`
-- [ ] Stati UI: idle → generating → success/error, con retry esplicito su errore
+- [ ] Stati UI: idle → generating → error (alert nativo), con retry esplicito su errore
 - [ ] Nuovo campo booleano in `OPTIONS` (wm-types) per il flag conf
 - [ ] Traduzioni it/en/es/de/fr/pr/sq per tutti i testi nuovi (bottone, stati, errori) — italiano lingua principale, coerente con le chiavi i18n già in uso nel componente
+- [ ] Pulsante disabilitato finché la traccia non risulta sincronizzata col backend (`properties.id` presente su `ugcTracksFeatures`)
 
 ## Rischi
 - `ugc-track-properties` è un componente "foglio" annidato senza accesso all'istanza mappa o a servizi nativi — il canale di comunicazione verso il repo principale (Output event vs dispatch NgRx) va scelto in `plan.md` in coerenza con i pattern già esistenti nel componente (oggi usa `@Output('dismiss')`/`@Output('poi-click')` per bubbling verso l'alto, non NgRx diretto per queste interazioni UI).

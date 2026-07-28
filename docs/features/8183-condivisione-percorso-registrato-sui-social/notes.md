@@ -249,3 +249,48 @@ pattern già usato da `deleteTrack()` in questo stesso componente (`AlertControl
   discovery, vedi oc:8023) — **13/13 test verdi** (11 preesistenti + 2 nuovi). Ripetuta
   anche `ng build --configuration=ci` sul repo principale per confermare che il template
   aggiornato compili senza errori.
+
+### Gating sulla sincronizzazione della traccia
+
+Richiesta esplicita del developer dopo aver notato lo stesso problema anche nel secondo
+punto di ingresso (`ModalSuccessComponent`, repo principale): questo pannello si apre anche
+per una traccia appena registrata e **non ancora inviata al backend** (es. tappando la card
+in `ModalSuccessComponent` prima che la sincronizzazione sia completata, o riaprendo una
+traccia dalla lista mentre è ancora in coda) — condividerla in quel momento produce un 404
+dal backend, che non conosce ancora quello `uuid`.
+
+- **Nuovo `isTrackSynced$: Observable<boolean>`**, calcolato in `ngOnInit()` (il componente
+  ora implementa anche `OnInit`/`OnDestroy`, prima solo una classe plain) selezionando
+  `ugcTracksFeatures` (`ugc.selector.ts`) e cercando una feature con lo stesso `uuid` della
+  traccia corrente **e** `properties.id != null` — stesso identico criterio già usato altrove
+  nel codebase (`UgcSynchronizedBadgeComponent`) per distinguere una traccia solo locale da
+  una davvero sul server. `ugcTracksFeatures` fonde già locali+sincronizzate
+  (`getUgcTracks()` in wm-core stesso), quindi non serve nessuna nuova azione/selettore.
+- **Doppia guardia, sincrona + reattiva**: `triggerShare()` verifica un campo privato
+  `_isTrackSynced` (snapshot booleano tenuto aggiornato da una subscription su
+  `isTrackSynced$`, con `takeUntil(this._destroy$)` per evitare leak) prima di emettere
+  `share-track` — necessario perché il check nel template (`[disabled]` con `|async`) da solo
+  non basta contro un tap che arriva prima che l'`async` pipe abbia aggiornato il DOM.
+- **Nessun nuovo asset/pattern per lo stato "in attesa"**: qui il bottone (`fill="clear"`,
+  senza card sovrapposta) può usare il `[disabled]` nativo di Ionic in sicurezza — a
+  differenza del chip di `ModalSuccessComponent` (vedi notes.md di quel repo), non c'è nessuna
+  card sotto che possa trasparire con l'opacità del disabled. Esteso semplicemente il
+  `[disabled]` già esistente (`shareState === GENERATING`) con `|| !(isTrackSynced$|async)`.
+- **Nessuno spinner per lo stato "non sincronizzato"**: solo il bottone disabilitato/grigio
+  di Ionic — lo spinner resta riservato al solo stato `GENERATING` reale, per non far
+  sembrare che una condivisione sia già in corso quando in realtà si sta solo aspettando
+  la sincronizzazione.
+- **Alert esplicativo invece di 404 silenzioso**: se `triggerShare()` viene comunque
+  invocato mentre non sincronizzato (guardia sincrona), mostra un `AlertController` con
+  "Il percorso è ancora in fase di sincronizzazione, riprova tra qualche secondo." — stesso
+  pattern di `deleteTrack()`/`presentShareErrorAlert()`, nessun bottone "Riprova" (si
+  riabilita da sé quando `isTrackSynced$` passa a `true`, nessun retry manuale necessario).
+- **Spec aggiornato**: `createComponent()` ora accetta anche una lista `trackFeatures` per
+  simulare lo stato di `ugcTracksFeatures` (default: la traccia di test già sincronizzata,
+  così i test preesistenti sullo state machine di condivisione restano inalterati), e chiama
+  esplicitamente `instance.ngOnInit()` dopo aver impostato `instance.track` (necessario dato
+  che questi test istanziano il componente come classe TS pura, senza `TestBed`/Angular
+  lifecycle — `ngOnInit()` non parte da solo). Aggiunti 4 nuovi test (`isTrackSynced$` true/
+  false per traccia sincronizzata/assente/senza id, e `triggerShare()` che non emette e mostra
+  l'alert quando non sincronizzato). **17/17 test verdi** (13 preesistenti + 4 nuovi).
+- **Verifica**: `ng build --configuration=ci` sul repo principale, pulito.

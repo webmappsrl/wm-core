@@ -6,6 +6,8 @@ import {
   EventEmitter,
   HostListener,
   Input,
+  OnDestroy,
+  OnInit,
   Output,
   ViewChild,
   ViewEncapsulation,
@@ -13,12 +15,13 @@ import {
 import {WmSwiperComponent} from '@wm-core/swiper/swiper.component';
 import {AlertController, IonContent} from '@ionic/angular';
 import {Store} from '@ngrx/store';
-import {BehaviorSubject, from, Observable} from 'rxjs';
-import {take, tap} from 'rxjs/operators';
+import {BehaviorSubject, from, Observable, Subject} from 'rxjs';
+import {map, take, takeUntil, tap} from 'rxjs/operators';
 import {LineString} from 'geojson';
 import {WmFeature} from '@wm-types/feature';
 import {LangService} from '@wm-core/localization/lang.service';
 import {deleteUgcTrack, updateUgcTrack} from '@wm-core/store/features/ugc/ugc.actions';
+import {ugcTracksFeatures} from '@wm-core/store/features/ugc/ugc.selector';
 import {UntypedFormGroup} from '@angular/forms';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
@@ -45,7 +48,10 @@ export interface UgcTrackShareResult {
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class UgcTrackPropertiesComponent extends UgcPropertiesBaseComponent {
+export class UgcTrackPropertiesComponent
+  extends UgcPropertiesBaseComponent
+  implements OnInit, OnDestroy
+{
   @Input('track') set setTrack(track: WmFeature<LineString>) {
     if (track != null) {
       this.track = track;
@@ -89,6 +95,16 @@ export class UgcTrackPropertiesComponent extends UgcPropertiesBaseComponent {
   currentImage$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
   fg: UntypedFormGroup;
   isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  /**
+   * Whether THIS track (matched by `uuid`) has reached the backend (`properties.id` assigned
+   * by the server) — same check as `ModalSuccessComponent` in the main repo (oc:8183, second
+   * entry point). This panel can be reopened for a just-recorded, not-yet-synced track too
+   * (e.g. tapping the card in the post-recording success screen before sync lands), so the
+   * same race applies here: sharing before the backend knows this uuid would 404.
+   */
+  isTrackSynced$: Observable<boolean>;
+  private _destroy$ = new Subject<void>();
+  private _isTrackSynced = false;
   shareErrorMessage: string | null = null;
   shareState$: BehaviorSubject<EUgcTrackShareState> = new BehaviorSubject<EUgcTrackShareState>(
     EUgcTrackShareState.IDLE,
@@ -112,6 +128,25 @@ export class UgcTrackPropertiesComponent extends UgcPropertiesBaseComponent {
     private _urlHandlerSvc: UrlHandlerService,
   ) {
     super();
+  }
+
+  ngOnInit(): void {
+    this.isTrackSynced$ = this._store.select(ugcTracksFeatures).pipe(
+      map(
+        features =>
+          features?.some(
+            f => f.properties?.uuid === this.track?.properties?.uuid && f.properties?.id != null,
+          ) ?? false,
+      ),
+    );
+    this.isTrackSynced$.pipe(takeUntil(this._destroy$)).subscribe(synced => {
+      this._isTrackSynced = synced;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   @HostListener('document:keydown.Escape', ['$event'])
@@ -199,9 +234,24 @@ export class UgcTrackPropertiesComponent extends UgcPropertiesBaseComponent {
     if (this.shareState$.value === EUgcTrackShareState.GENERATING) {
       return;
     }
+    if (!this._isTrackSynced) {
+      this.presentNotSyncedAlert();
+      return;
+    }
     this.shareErrorMessage = null;
     this.shareState$.next(EUgcTrackShareState.GENERATING);
     this.shareTrack.emit(this.track);
+  }
+
+  private presentNotSyncedAlert(): void {
+    from(
+      this._alertCtlr.create({
+        message: this._langSvc.instant(
+          'Il percorso è ancora in fase di sincronizzazione, riprova tra qualche secondo.',
+        ),
+        buttons: [this._langSvc.instant('OK')],
+      }),
+    ).subscribe(alert => alert.present());
   }
 
   updateTrack(): void {
