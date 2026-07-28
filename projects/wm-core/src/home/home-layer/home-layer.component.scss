@@ -1,3 +1,5 @@
+@import '../../theme/mixins.scss';
+
 wm-home-layer {
   display: flex;
   flex-direction: column;
@@ -22,8 +24,7 @@ wm-home-layer {
     min-height: 56px;
     margin: 0;
     border-radius: 4px;
-    background-color: rgba(255, 255, 255, 0.85);
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
+    @include overlay-chip-background;
     overflow: hidden;
     z-index: 2;
   }
@@ -58,8 +59,7 @@ wm-home-layer {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.85);
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
+    @include overlay-chip-background;
     z-index: 3;
     cursor: pointer;
     font-size: 22px;

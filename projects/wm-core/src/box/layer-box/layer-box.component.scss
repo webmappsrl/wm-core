@@ -1,3 +1,5 @@
+@import '../../theme/mixins.scss';
+
 wm-layer-box {
   .wm-box {
     position: relative;
@@ -5,18 +7,35 @@ wm-layer-box {
     border-radius: 15px;
     box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.1);
     transition: all 500ms;
-    height: 100%;
-    max-height: 176px;
+    // Tecnica di stacking: CSS Grid a cella condivisa, non position:absolute
+    // (scelta esplicita dello sviluppatore, oc:8305) — .color, .wm-box-icon,
+    // la foto, il logo, il titolo e il badge occupano tutti la stessa cella
+    // (grid-row:1;grid-column:1) e si posizionano dentro quella cella con
+    // align-self/justify-self + margin invece di top/right/bottom/left.
+    // Il titolo resta overlay sulla foto (non si sposta in una fascia sotto:
+    // quel trattamento esiste solo per home-layer, ed è solo per
+    // camminiditalia via theme CSS — qui il default resta overlay per tutte
+    // le istanze).
+    // Altezza fissa (non più height:100%;max-height:176px), stessa per tutte
+    // le card della stessa lista. Budget: ~52px riservati in alto per
+    // .wm-layer-box-badge-combo (margin 16px + altezza pillola) + ~117px per
+    // il titolo (line-clamp a 3 righe, line-height 31px + padding). A
+    // differenza della versione precedente, qui la sovrapposizione è esclusa
+    // per costruzione (non solo per margine generoso): -webkit-line-clamp:3
+    // sul titolo lo rende alto al massimo ~117px indipendentemente dalla
+    // lunghezza del testo — un titolo più lungo di 3 righe viene troncato
+    // con ellipsis invece di crescere e invadere la zona del badge
+    // (troncamento accettato esplicitamente dallo sviluppatore, oc:8305,
+    // in deroga al requisito originale "titolo sempre completamente
+    // leggibile" del cliente — vedi notes.md).
+    height: 180px;
     cursor: pointer;
 
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    align-content: stretch;
-    align-items: stretch;
+    display: grid;
+    grid-template: 1fr / 1fr;
     .color {
-      position: absolute;
+      grid-row: 1;
+      grid-column: 1;
       border-radius: 15px;
       clip-path: polygon(100% 0, calc(100% - 30px) 0, 100% 30px);
       box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.1);
@@ -25,14 +44,19 @@ wm-layer-box {
       z-index: 1;
     }
     .wm-box-icon {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      margin: 0;
+      // Stesso angolo del logo cammino (wm-layer-box-logo-overlay, sotto,
+      // spostato qui da oc:8305): nessun conflitto reale oggi (nessun layer
+      // camminiditalia imposta `icon` nel config.json home, verificato su
+      // 117 box `layer` reali), ma le due feature sono pilotate da fonti
+      // dati indipendenti (box home vs layer.logo_image) e potrebbero
+      // sovrapporsi su un altro shard che usasse entrambe.
+      grid-row: 1;
+      grid-column: 1;
+      align-self: start;
+      justify-self: start;
+      margin: 10px;
       height: 48px;
       width: 48px;
-      margin: 10px;
 
       border-width: 1px;
       svg {
@@ -41,7 +65,20 @@ wm-layer-box {
       z-index: 2;
     }
     wm-img {
+      grid-row: 1;
+      grid-column: 1;
       height: 100%;
+      width: 100%;
+      // Grid annidato: il logo (wm-img.wm-layer-box-logo-overlay, sotto) è
+      // figlio REALE di questo elemento (nidificato dentro il wm-img della
+      // foto, non di .wm-box — vedi commento su quella regola), quindi il
+      // suo grid-row/grid-column/align-self ha effetto solo se ANCHE questo
+      // elemento è un grid container. Senza questo, quelle proprietà sul
+      // logo sarebbero inerti (bug trovato in review, oc:8305) e il logo
+      // finirebbe in flusso normale invece che in overlay in alto a
+      // sinistra sulla foto.
+      display: grid;
+      grid-template: 1fr / 1fr;
       img {
         position: absolute;
         border-radius: 15px;
@@ -59,27 +96,43 @@ wm-layer-box {
       font-style: normal;
       font-weight: 700;
       color: white;
-      position: absolute;
-      bottom: 0;
-      padding: 6%;
+      grid-row: 1;
+      grid-column: 1;
+      align-self: end;
+      justify-self: stretch;
+      padding: 12px 16px;
+      z-index: 2;
 
       line-height: 31px;
       letter-spacing: 0em;
       text-align: left;
-      white-space: break-spaces;
+      white-space: normal;
+      // Cap a 3 righe con ellipsis (non più illimitato): rende l'altezza del
+      // titolo deterministica, così l'altezza fissa del box sopra può
+      // escludere la sovrapposizione col badge per costruzione.
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
+    // Alto-sinistra invece di basso-destra (oc:8305, generalizzato da un
+    // mockup camminiditalia a tutte le istanze) — resta nidificato dentro il
+    // wm-img della feature image (non sibling di .wm-box), stesso principio
+    // di allineamento ai confini reali della foto introdotto in oc:8164.
     wm-img.wm-layer-box-logo-overlay {
-      position: absolute;
-      bottom: 8px;
-      right: 8px;
+      grid-row: 1;
+      grid-column: 1;
+      align-self: start;
+      justify-self: start;
+      margin: 8px;
       width: 44px;
       height: 44px;
       min-width: 44px;
       min-height: 44px;
       border-radius: 4px;
-      background-color: rgba(255, 255, 255, 0.85);
-      box-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
+      @include overlay-chip-background;
       overflow: hidden;
       z-index: 2;
 
@@ -94,18 +147,19 @@ wm-layer-box {
     }
 
     .wm-layer-box-badge-combo {
-      position: absolute;
-      top: 16px;
-      right: 16px;
+      grid-row: 1;
+      grid-column: 1;
+      align-self: start;
+      justify-self: end;
+      margin: 16px;
       z-index: 2;
       display: flex;
       align-items: center;
       // Sfondo/ombra/forma della pillola vivono sempre qui (non solo quando il
       // cuoricino è presente) — prima erano condizionati a `--with-heart`, quindi
       // il badge restava senza sfondo per utenti anonimi/flag disattivato.
-      background-color: rgba(255, 255, 255, 0.85);
+      @include overlay-chip-background;
       border-radius: 999px;
-      box-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
 
       // Il badge conteggio resta un componente a sé (`wm-layer-features-counter-badge`, usato
       // anche altrove) — qui la sua chrome (sfondo/ombra/posizione) viene neutralizzata così
