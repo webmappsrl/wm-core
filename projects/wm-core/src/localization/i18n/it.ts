@@ -288,4 +288,11 @@ export const wmIT = {
   'Preferito': 'Preferito',
   'Non preferito': 'Non preferito',
   'Impossibile aggiornare i preferiti, riprova': 'Impossibile aggiornare i preferiti, riprova',
+  'Modifica profilo': 'Modifica profilo',
+  'Cambia foto': 'Cambia foto',
+  'Il nome è obbligatorio': 'Il nome è obbligatorio',
+  'Il nome non può superare i 255 caratteri': 'Il nome non può superare i 255 caratteri',
+  'Cognome': 'Cognome',
+  'Il cognome non può superare i 255 caratteri': 'Il cognome non può superare i 255 caratteri',
+  'Salva': 'Salva',
 };

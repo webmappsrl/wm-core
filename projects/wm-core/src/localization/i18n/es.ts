@@ -280,4 +280,11 @@ export const wmES = {
   'Preferito': 'Favorito',
   'Non preferito': 'No favorito',
   'Impossibile aggiornare i preferiti, riprova': 'No se han podido actualizar los favoritos, inténtalo de nuevo',
+  'Modifica profilo': 'Editar perfil',
+  'Cambia foto': 'Cambiar foto',
+  'Il nome è obbligatorio': 'El nombre es obligatorio',
+  'Il nome non può superare i 255 caratteri': 'El nombre no puede superar los 255 caracteres',
+  'Cognome': 'Apellido',
+  'Il cognome non può superare i 255 caratteri': 'El apellido no puede superar los 255 caracteres',
+  'Salva': 'Guardar',
 };

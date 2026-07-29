@@ -280,4 +280,11 @@ export const wmPR = {
   'Preferito': 'Favorito',
   'Non preferito': 'Não favorito',
   'Impossibile aggiornare i preferiti, riprova': 'Não foi possível atualizar os favoritos, tente novamente',
+  'Modifica profilo': 'Editar perfil',
+  'Cambia foto': 'Alterar foto',
+  'Il nome è obbligatorio': 'O nome é obrigatório',
+  'Il nome non può superare i 255 caratteri': 'O nome não pode exceder 255 caracteres',
+  'Cognome': 'Sobrenome',
+  'Il cognome non può superare i 255 caratteri': 'O sobrenome não pode exceder 255 caracteres',
+  'Salva': 'Salvar',
 };

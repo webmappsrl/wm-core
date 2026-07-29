@@ -283,4 +283,11 @@ export const wmFR = {
   'Preferito': 'Favori',
   'Non preferito': 'Non favori',
   'Impossibile aggiornare i preferiti, riprova': 'Impossible de mettre à jour les favoris, réessayez',
+  'Modifica profilo': 'Modifier le profil',
+  'Cambia foto': 'Changer de photo',
+  'Il nome è obbligatorio': 'Le prénom est obligatoire',
+  'Il nome non può superare i 255 caratteri': 'Le prénom ne peut pas dépasser 255 caractères',
+  'Cognome': 'Nom de famille',
+  'Il cognome non può superare i 255 caratteri': 'Le nom de famille ne peut pas dépasser 255 caractères',
+  'Salva': 'Enregistrer',
 };

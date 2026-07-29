@@ -289,4 +289,11 @@ export const wmEN = {
   'Preferito': 'Favorite',
   'Non preferito': 'Not favorite',
   'Impossibile aggiornare i preferiti, riprova': 'Could not update favorites, try again',
+  'Modifica profilo': 'Edit profile',
+  'Cambia foto': 'Change photo',
+  'Il nome è obbligatorio': 'Name is required',
+  'Il nome non può superare i 255 caratteri': 'Name cannot exceed 255 characters',
+  'Cognome': 'Surname',
+  'Il cognome non può superare i 255 caratteri': 'Surname cannot exceed 255 characters',
+  'Salva': 'Save',
 };

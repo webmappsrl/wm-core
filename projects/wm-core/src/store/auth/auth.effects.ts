@@ -113,6 +113,22 @@ export class AuthEffects {
       ),
     );
   });
+  updateUserProfile$ = createEffect(() => {
+    return this._actions$.pipe(
+      ofType(AuthActions.updateUserProfile),
+      switchMap(action =>
+        this._authSvc.updateProfile(action).pipe(
+          map(user => {
+            saveAuth(user);
+            return AuthActions.loadAuthsSuccess({user});
+          }),
+          catchError(error => {
+            return of(AuthActions.updateUserProfileFailure({error}));
+          }),
+        ),
+      ),
+    );
+  });
   syncUgcAfterAuthSuccess$ = createEffect(
     () => {
       return this._actions$.pipe(

@@ -1,0 +1,100 @@
+<wm-modal-header
+  class="wm-profile-edit-header"
+  [title]="'Modifica profilo' | wmtrans"
+  (dismiss)="dismiss()"
+></wm-modal-header>
+<ion-content>
+  <form class="wm-profile-edit-form" (ngSubmit)="save()" [formGroup]="profileForm">
+    <div class="wm-profile-edit-avatar-container">
+      <button
+        type="button"
+        class="wm-profile-edit-avatar"
+        (click)="pickPhoto()"
+        [attr.aria-label]="'Cambia foto' | wmtrans"
+      >
+        <ion-avatar class="wm-profile-edit-avatar-circle">
+          <img *ngIf="selectedPhoto?.webPath; else currentOrInitials" [src]="selectedPhoto.webPath" />
+          <ng-template #currentOrInitials>
+            <img *ngIf="currentAvatarUrl" [src]="currentAvatarUrl" />
+            <div class="wm-profile-edit-avatar-initials" *ngIf="!currentAvatarUrl">
+              {{ currentName | userInitials }}
+            </div>
+          </ng-template>
+          <div
+            class="wm-profile-edit-avatar-scrim"
+            *ngIf="(state$ | async) === EProfileEditState.UPLOADING_PHOTO"
+          >
+            <ion-spinner class="wm-profile-edit-avatar-spinner" color="light"></ion-spinner>
+          </div>
+        </ion-avatar>
+        <span
+          class="wm-profile-edit-avatar-badge"
+          *ngIf="(state$ | async) !== EProfileEditState.UPLOADING_PHOTO"
+        >
+          <i class="icon-fill-camera"></i>
+        </span>
+      </button>
+    </div>
+
+    <ion-card class="wm-profile-edit-fields-card">
+      <div class="wm-profile-edit-field-container">
+        <ion-label class="wm-profile-edit-label">{{ 'Nome' | wmtrans }}</ion-label>
+        <ion-item
+          class="wm-profile-edit-field"
+          lines="none"
+          [ngClass]="{
+            'wm-profile-edit-field-has-error':
+              (submitted$ | async) && profileForm.controls.name.invalid
+          }"
+        >
+          <ion-input type="text" formControlName="name" class="wm-profile-edit-input"></ion-input>
+        </ion-item>
+        <span
+          class="wm-profile-edit-field-error"
+          *ngIf="(submitted$ | async) && profileForm.controls.name.errors?.required"
+        >
+          {{ 'Il nome è obbligatorio' | wmtrans }}
+        </span>
+        <span
+          class="wm-profile-edit-field-error"
+          *ngIf="(submitted$ | async) && profileForm.controls.name.errors?.maxlength"
+        >
+          {{ 'Il nome non può superare i 255 caratteri' | wmtrans }}
+        </span>
+      </div>
+
+      <div class="wm-profile-edit-field-divider"></div>
+
+      <div class="wm-profile-edit-field-container">
+        <ion-label class="wm-profile-edit-label">{{ 'Cognome' | wmtrans }}</ion-label>
+        <ion-item
+          class="wm-profile-edit-field"
+          lines="none"
+          [ngClass]="{
+            'wm-profile-edit-field-has-error':
+              (submitted$ | async) && profileForm.controls.surname.invalid
+          }"
+        >
+          <ion-input type="text" formControlName="surname" class="wm-profile-edit-input"></ion-input>
+        </ion-item>
+        <span
+          class="wm-profile-edit-field-error"
+          *ngIf="(submitted$ | async) && profileForm.controls.surname.errors?.maxlength"
+        >
+          {{ 'Il cognome non può superare i 255 caratteri' | wmtrans }}
+        </span>
+      </div>
+    </ion-card>
+
+    <button
+      type="submit"
+      class="wm-profile-edit-save-button"
+      [disabled]="(state$ | async) === EProfileEditState.SAVING"
+    >
+      <ion-spinner *ngIf="(state$ | async) === EProfileEditState.SAVING"></ion-spinner>
+      <ng-container *ngIf="(state$ | async) !== EProfileEditState.SAVING">
+        {{ 'Salva' | wmtrans }}
+      </ng-container>
+    </button>
+  </form>
+</ion-content>

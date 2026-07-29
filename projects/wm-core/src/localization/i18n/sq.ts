@@ -288,4 +288,11 @@ export const wmSQ = {
   'Preferito': 'Të preferuar',
   'Non preferito': 'Jo i preferuar',
   'Impossibile aggiornare i preferiti, riprova': 'Nuk u arrit të përditësohen të preferuarat, provo përsëri',
+  'Modifica profilo': 'Modifiko profilin',
+  'Cambia foto': 'Ndrysho foton',
+  'Il nome è obbligatorio': 'Emri është i detyrueshëm',
+  'Il nome non può superare i 255 caratteri': 'Emri nuk mund të kalojë 255 karaktere',
+  'Cognome': 'Mbiemri',
+  'Il cognome non può superare i 255 caratteri': 'Mbiemri nuk mund të kalojë 255 karaktere',
+  'Salva': 'Ruaj',
 };

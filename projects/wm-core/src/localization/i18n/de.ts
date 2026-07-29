@@ -284,4 +284,11 @@ export const wmDE = {
   'Preferito': 'Favorit',
   'Non preferito': 'Kein Favorit',
   'Impossibile aggiornare i preferiti, riprova': 'Favoriten konnten nicht aktualisiert werden, versuche es erneut',
+  'Modifica profilo': 'Profil bearbeiten',
+  'Cambia foto': 'Foto ändern',
+  'Il nome è obbligatorio': 'Der Name ist erforderlich',
+  'Il nome non può superare i 255 caratteri': 'Der Name darf 255 Zeichen nicht überschreiten',
+  'Cognome': 'Nachname',
+  'Il cognome non può superare i 255 caratteri': 'Der Nachname darf 255 Zeichen nicht überschreiten',
+  'Salva': 'Speichern',
 };

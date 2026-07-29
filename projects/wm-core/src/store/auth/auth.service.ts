@@ -12,6 +12,8 @@ import {AlertController, ModalController} from '@ionic/angular';
 import {updateUserPrivacy} from './auth.actions';
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
 import {DEFAULT_PRIVACY_POLICY_URL} from '@wm-core/constants/links';
+import {Photo} from '@capacitor/camera';
+import {CameraService} from '@wm-core/services/camera.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -24,6 +26,7 @@ export class AuthService {
     private _langSvc: LangService,
     private _alertCtrl: AlertController,
     private _modalCtrl: ModalController,
+    private _cameraSvc: CameraService,
   ) {}
 
   login(email: string, password: string, referrer?: string): Observable<IUser> {
@@ -89,6 +92,48 @@ export class AuthService {
         return this._http.post(`${this._environmentSvc.origin}/api/auth/user`, {
           privacy,
         }) as Observable<IUser>;
+      }),
+    );
+  }
+
+  /**
+   * Update name, surname and/or avatar photo. Builds multipart FormData only
+   * when an avatarPhoto is provided; otherwise sends plain JSON (same endpoint
+   * already used by updatePrivacyAgree, POST /api/auth/user).
+   *
+   * @param data the fields to update
+   *
+   * @returns {Observable<IUser>} the updated user
+   */
+  updateProfile(data: {name?: string; surname?: string; avatarPhoto?: Photo}): Observable<IUser> {
+    if (!data.avatarPhoto) {
+      const body: {name?: string; surname?: string} = {};
+      if (data.name != null) body.name = data.name;
+      if (data.surname != null) body.surname = data.surname;
+      return this._http.post(
+        `${this._environmentSvc.origin}/api/auth/user`,
+        body,
+      ) as Observable<IUser>;
+    }
+
+    return from(
+      this._cameraSvc.getPhotoFile({
+        date: new Date(),
+        id: data.avatarPhoto.path ?? data.avatarPhoto.webPath,
+        photoURL: data.avatarPhoto.webPath,
+        datasrc: data.avatarPhoto.webPath,
+        position: null,
+      }),
+    ).pipe(
+      switchMap(blob => {
+        const formData = new FormData();
+        if (data.name != null) formData.append('name', data.name);
+        if (data.surname != null) formData.append('surname', data.surname);
+        formData.append('avatar', blob, 'avatar.jpg');
+        return this._http.post(
+          `${this._environmentSvc.origin}/api/auth/user`,
+          formData,
+        ) as Observable<IUser>;
       }),
     );
   }
