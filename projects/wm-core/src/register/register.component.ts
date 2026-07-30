@@ -60,6 +60,7 @@ export class RegisterComponent {
     this.registerForm = this._formBuilder.group(
       {
         name: ['', [Validators.required]],
+        surname: ['', [Validators.required]],
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required]],
         confirmPassword: ['', [Validators.required]],
@@ -132,6 +133,7 @@ export class RegisterComponent {
     this._store.dispatch(
       loadSignUps({
         name: this.registerForm.get('name').value,
+        surname: this.registerForm.get('surname').value,
         email: this.registerForm.get('email').value,
         password: this.registerForm.get('password').value,
         referrer: this.referrer,

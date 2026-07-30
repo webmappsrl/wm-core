@@ -36,7 +36,6 @@ import {WmFeatureUsefulUrlsComponent} from './feature-useful-urls/feature-useful
 import {AuthInterceptor} from './store/auth/auth.interceptor';
 import {AuthEffects} from './store/auth/auth.effects';
 import {authReducer} from './store/auth/auth.reducer';
-import {ModalHeaderComponent} from './modal-header/modal-header.component';
 import {LoginComponent} from './login/login.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {WmProfileModule} from './profile/profile.module';
@@ -125,7 +124,6 @@ export const declarations = [
   LoginComponent,
   RegisterComponent,
   GenericPopoverComponent,
-  ModalHeaderComponent,
   WmFormComponent,
   WmSearchBarComponent,
   WmGeoboxMapComponent,

@@ -1,0 +1,162 @@
+wm-profile-edit {
+  .wm-profile-edit-form {
+    display: block;
+    padding: 16px;
+  }
+
+  .wm-profile-edit-avatar-container {
+    display: flex;
+    justify-content: center;
+    padding: 24px 16px 20px;
+  }
+
+  // Il bottone dell'avatar è ora l'intero elemento cliccabile (non più un link
+  // testuale separato "Cambia foto" sotto la foto) — il badge fotocamera
+  // sovrapposto (pattern riconoscibile: WhatsApp/Instagram/LinkedIn) comunica
+  // già da solo l'azione; l'aria-label copre l'accessibilità.
+  .wm-profile-edit-avatar {
+    position: relative;
+    width: 104px;
+    height: 104px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--wm-color-primary, #4285f4);
+      outline-offset: 3px;
+    }
+  }
+
+  .wm-profile-edit-avatar-circle {
+    width: 100%;
+    height: 100%;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .wm-profile-edit-avatar-initials {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--wm-color-primary, #4285f4);
+    color: #fff;
+    font-size: 2.1rem;
+    font-weight: 600;
+    border-radius: 50%;
+  }
+
+  // Overlay di caricamento: scurisce la foto invece di nasconderla, cerchio
+  // pieno (non un rettangolo che sborda dall'avatar), spinner chiaro centrato.
+  .wm-profile-edit-avatar-scrim {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(15, 17, 23, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .wm-profile-edit-avatar-spinner {
+    width: 30px;
+    height: 30px;
+  }
+
+  // Badge fotocamera sovrapposto al bordo dell'avatar — nascosto durante il
+  // caricamento (lo scrim+spinner sopra bastano, evita due indicatori insieme).
+  .wm-profile-edit-avatar-badge {
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--wm-color-primary, #4285f4);
+    border: 3px solid var(--wm-color-white, #fff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+  }
+
+  // Touch target minimo 44x44 (linee guida iOS/Android) sugli elementi
+  // interattivi del modale — l'avatar (104px) lo supera già ampiamente.
+  .wm-profile-edit-save-button {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    background: var(--wm-color-primary, #4285f4);
+    color: #fff;
+    border-radius: 8px;
+    font-size: var(--wm-font-md, 1rem);
+    width: 100%;
+    margin-top: 16px;
+
+    &[disabled] {
+      opacity: 0.6;
+    }
+  }
+
+  // Opzione B (design review oc:8163): i campi vivono dentro un'unica ion-card
+  // contenuta invece che fluttuare direttamente sullo sfondo del modale — resta
+  // un modulo a scopo unico, non un menu; nuovi campi si aggiungono come nuovi
+  // .wm-profile-edit-field-container dentro la stessa card. `--wm-color-light`
+  // è bianco puro in questo tema (invisibile su sfondo bianco): si usa invece
+  // `--wm-color-greybackground`, il token dedicato a sfondi "incassati".
+  ion-card.wm-profile-edit-fields-card {
+    margin: 0 0 16px;
+    box-shadow: none;
+    background: var(--wm-color-greybackground, #f2f2f2);
+    border: 1px solid var(--wm-color-grey, #d2d2d2);
+    border-radius: 14px;
+    padding: 4px 14px;
+  }
+
+  .wm-profile-edit-field-container {
+    padding: 10px 0;
+
+    ion-item {
+      --background: transparent;
+      --padding-start: 0;
+      --inner-padding-end: 0;
+    }
+  }
+
+  .wm-profile-edit-field-divider {
+    height: 1px;
+    background: var(--wm-color-grey, #d2d2d2);
+    margin: 0 -14px;
+  }
+
+  .wm-profile-edit-label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: var(--wm-font-sm, 0.85rem);
+  }
+
+  .wm-profile-edit-field-has-error {
+    --border-color: var(--wm-color-danger, #eb445a);
+    --highlight-color-focused: var(--wm-color-danger, #eb445a);
+  }
+
+  .wm-profile-edit-field-error {
+    display: block;
+    margin-top: 4px;
+    color: var(--wm-color-danger, #eb445a);
+    font-size: 0.8rem;
+  }
+}
