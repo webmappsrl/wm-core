@@ -24,7 +24,6 @@ wm-home-layer {
     min-height: 56px;
     margin: 0;
     border-radius: 4px;
-    @include overlay-chip-background;
     overflow: hidden;
     z-index: 2;
   }

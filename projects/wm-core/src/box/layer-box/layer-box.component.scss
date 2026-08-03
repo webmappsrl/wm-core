@@ -132,7 +132,6 @@ wm-layer-box {
       min-width: 44px;
       min-height: 44px;
       border-radius: 4px;
-      @include overlay-chip-background;
       overflow: hidden;
       z-index: 2;
 
