@@ -8,6 +8,7 @@ export function handleApiCache<T>(
   url: string,
   updateData: (data: T) => void = (data: T) => {},
   headers: any = {},
+  forceFreshRequest: boolean = false,
 ): Observable<T> {
   return new Observable<T>(observer => {
     synchronizedApi.getItem(`${url}`).then((cachedData: string | null) => {
@@ -23,9 +24,10 @@ export function handleApiCache<T>(
         }
       }
 
-      const requestHeaders = cachedLastModified
-        ? {'If-Modified-Since': cachedLastModified, ...headers}
-        : headers;
+      const requestHeaders =
+        parsedData != null && !forceFreshRequest && cachedLastModified
+          ? {'If-Modified-Since': cachedLastModified, ...headers}
+          : headers;
 
       http
         .get<T>(url, {
@@ -34,16 +36,20 @@ export function handleApiCache<T>(
         })
         .pipe(take(1))
         .subscribe(
-          response => {
+          async response => {
             const lastModified = response.headers.get('last-modified');
 
             if (response.status === 200) {
               const data = {...response.body};
               if (data) {
                 updateData(data);
-                synchronizedApi.setItem(`${url}`, JSON.stringify(data));
-                if (lastModified) {
-                  localStorage.setItem(`${url}-last-modified`, lastModified);
+                try {
+                  await synchronizedApi.setItem(`${url}`, JSON.stringify(data));
+                  if (lastModified) {
+                    localStorage.setItem(`${url}-last-modified`, lastModified);
+                  }
+                } catch (e) {
+                  console.warn('Error writing cache. Skipping last-modified update.', e);
                 }
                 observer.next(data);
               }
