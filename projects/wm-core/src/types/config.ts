@@ -1,5 +1,5 @@
 import {Hit} from '@wm-types/elastic';
-import {APP, OPTIONS, WEBAPP} from '@wm-types/config';
+import {APP, ConfigDetailBox, OPTIONS, WEBAPP} from '@wm-types/config';
 
 export type IBASEBOX = IBOX & {
   box_type: 'base';
@@ -238,6 +238,8 @@ export interface ILAYER {
   taxonomy_themes?: any[];
   title: string;
   tracks?: {[name: string]: Hit[]};
+  /** Builder generico "Blocchi Dettaglio" (oc:8181, wm-package) — assente se l'admin non ha configurato alcun box. Tipi in `@wm-types/config`. */
+  config_detail?: ConfigDetailBox[];
 }
 
 export interface IMAP {

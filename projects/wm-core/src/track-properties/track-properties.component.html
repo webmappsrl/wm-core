@@ -58,6 +58,9 @@
     *ngIf="ecTrackProperties?.description != null"
     [description]="ecTrackProperties?.description"
   ></wm-tab-description>
+
+  <wm-config-detail [groups]="ecTrackProperties?.config_detail"></wm-config-detail>
+
   <ng-container *ngIf="ecTrackProperties.related_pois?.length > 0">
     <div class="wm-track-details-track-related-poi">
       <wm-track-related-poi></wm-track-related-poi>
