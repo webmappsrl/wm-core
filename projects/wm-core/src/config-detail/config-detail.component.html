@@ -1,0 +1,51 @@
+<div class="wm-config-detail" *ngIf="visibleEntries.length">
+  <ng-container *ngFor="let entry of visibleEntries; trackBy: trackEntry">
+    <div
+      *ngIf="entry.kind === 'item'"
+      class="wm-config-detail-item"
+      [class.wm-config-detail-item--open]="isOpen(entry.item)"
+      [class.wm-config-detail-item--group-start]="entry.isGroupStart"
+    >
+      <button
+        type="button"
+        class="wm-config-detail-header"
+        [attr.aria-expanded]="isOpen(entry.item)"
+        [attr.aria-controls]="'wm-config-detail-' + uid + '-content-' + entry.itemIndex"
+        (click)="toggle(entry.item)"
+      >
+        <span class="wm-config-detail-title">{{ entry.item.title | wmtrans }}</span>
+        <span class="wm-config-detail-chevron">
+          <ion-icon name="chevron-forward"></ion-icon>
+        </span>
+      </button>
+      <div
+        class="wm-config-detail-content-wrapper"
+        [id]="'wm-config-detail-' + uid + '-content-' + entry.itemIndex"
+      >
+        <div
+          class="wm-config-detail-content"
+          *ngIf="isOpen(entry.item)"
+          [innerHTML]="getSafeContent(entry.item)"
+        ></div>
+      </div>
+    </div>
+
+    <button
+      *ngIf="entry.kind === 'show-more'"
+      type="button"
+      class="wm-config-detail-toggle-button"
+      (click)="showMore(entry.groupIndex)"
+    >
+      {{ 'Mostra altro' | wmtrans }}
+    </button>
+
+    <button
+      *ngIf="entry.kind === 'show-less'"
+      type="button"
+      class="wm-config-detail-toggle-button"
+      (click)="showLess(entry.groupIndex)"
+    >
+      {{ 'Mostra meno' | wmtrans }}
+    </button>
+  </ng-container>
+</div>

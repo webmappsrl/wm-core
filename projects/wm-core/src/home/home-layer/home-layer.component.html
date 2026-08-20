@@ -23,4 +23,6 @@
     *ngIf="layer?.description as description"
     [description]="description"
   ></wm-tab-description>
+
+  <wm-config-detail [groups]="layer?.config_detail"></wm-config-detail>
 </ng-container>
