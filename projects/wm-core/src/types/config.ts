@@ -1,5 +1,5 @@
 import {Hit} from '@wm-types/elastic';
-import {APP, OPTIONS, WEBAPP} from '@wm-types/config';
+import {APP, ConfigDetailBox, OPTIONS, WEBAPP} from '@wm-types/config';
 
 export type IBASEBOX = IBOX & {
   box_type: 'base';
@@ -219,24 +219,6 @@ export interface ILANGUAGES {
   default?: string;
 }
 
-/**
- * Un gruppo del builder generico `properties.config_detail` (Layer/EcTrack/EcPoi),
- * discriminato da `box_type`. Namespace di box_type concettualmente distinto da `IBOX`
- * (quello di `config_home`): non va unito a quella union anche se in futuro potesse
- * comparire una stringa uguale.
- */
-export type IConfigDetailBox = IConfigDetailInfoBox;
-
-export interface IConfigDetailInfoBox {
-  box_type: 'info';
-  items?: IConfigDetailInfoBoxItem[];
-}
-
-export interface IConfigDetailInfoBoxItem {
-  title?: iLocalString;
-  content?: iLocalString;
-}
-
 export interface ILAYER {
   bbox: [number, number, number, number];
   behaviour: {[name: string]: string};
@@ -256,8 +238,8 @@ export interface ILAYER {
   taxonomy_themes?: any[];
   title: string;
   tracks?: {[name: string]: Hit[]};
-  /** Builder generico "Blocchi Dettaglio" (oc:8181, wm-package) — assente se l'admin non ha configurato alcun box. */
-  config_detail?: IConfigDetailBox[];
+  /** Builder generico "Blocchi Dettaglio" (oc:8181, wm-package) — assente se l'admin non ha configurato alcun box. Tipi in `@wm-types/config`. */
+  config_detail?: ConfigDetailBox[];
 }
 
 export interface IMAP {

@@ -9,17 +9,17 @@ import {
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {LangService} from '@wm-core/localization/lang.service';
 import {
-  IConfigDetailBox,
-  IConfigDetailInfoBox,
-  IConfigDetailInfoBoxItem,
-  iLocalString,
-} from '@wm-core/types/config';
+  ConfigDetailBox,
+  ConfigDetailInfoBox,
+  ConfigDetailInfoBoxItem,
+} from '@wm-types/config';
+import {Language} from '@wm-types/language';
 import {Subscription} from 'rxjs';
 
 /** Item pronto per il rendering, con l'informazione se inizia un nuovo gruppo (per lo spazio extra tra gruppi). */
 interface IConfigDetailItemEntry {
   kind: 'item';
-  item: IConfigDetailInfoBoxItem;
+  item: ConfigDetailInfoBoxItem;
   /** Indice progressivo tra i soli item (non conta i pulsanti "Mostra altro"/"Mostra meno"), usato solo per costruire id/aria-controls univoci nel template — l'identità dell'item per `isOpen`/`toggle` è `item` stesso, non questo indice. */
   itemIndex: number;
   /** `true` se è il primo item visibile di un gruppo diverso dal primo (serve più spazio sopra, nessuna intestazione visibile). */
@@ -79,7 +79,7 @@ export class ConfigDetailComponent implements OnDestroy {
   private static readonly PAGE_SIZE = 10;
 
   @Input()
-  set groups(value: IConfigDetailBox[] | null | undefined) {
+  set groups(value: ConfigDetailBox[] | null | undefined) {
     this._groups = value ?? [];
     // Reset perché l'istanza viene riusata tra entità diverse (es. navigazione tra due layer) e
     // il riferimento non è più raggiungibile da `visibleEntries` dopo il reset.
@@ -90,10 +90,10 @@ export class ConfigDetailComponent implements OnDestroy {
     // raggiungibili da `visibleEntries` dopo il reset e andrebbero altrimenti trattenuti in memoria.
     this._safeContentCache.clear();
   }
-  get groups(): IConfigDetailBox[] {
+  get groups(): ConfigDetailBox[] {
     return this._groups;
   }
-  private _groups: IConfigDetailBox[] = [];
+  private _groups: ConfigDetailBox[] = [];
 
   /**
    * Item attualmente aperto, o `null` se tutti chiusi. Tracciato per riferimento all'oggetto
@@ -102,7 +102,7 @@ export class ConfigDetailComponent implements OnDestroy {
    * la posizione di tutti gli item nei gruppi successivi nella lista appiattita. Privato: né il
    * template né alcun consumer esterno leggono questo campo direttamente, solo tramite `isOpen()`.
    */
-  private _openItem: IConfigDetailInfoBoxItem | null = null;
+  private _openItem: ConfigDetailInfoBoxItem | null = null;
 
   /** Quanti item sono attualmente mostrati per ciascun gruppo (indice = posizione del gruppo tra quelli con `box_type: 'info'`); assente = `PAGE_SIZE`. */
   private _visibleCountPerGroup: number[] = [];
@@ -112,7 +112,7 @@ export class ConfigDetailComponent implements OnDestroy {
 
   /** Cache del `SafeHtml` per item, per non richiamare `bypassSecurityTrustHtml` ad ogni change detection (vedi `getSafeContent`). */
   private readonly _safeContentCache = new Map<
-    IConfigDetailInfoBoxItem,
+    ConfigDetailInfoBoxItem,
     {content: string; safeHtml: SafeHtml}
   >();
 
@@ -158,7 +158,7 @@ export class ConfigDetailComponent implements OnDestroy {
     const result: IConfigDetailRenderEntry[] = [];
     let itemIndex = 0;
     this._groups
-      .filter((group): group is IConfigDetailInfoBox => group.box_type === 'info')
+      .filter((group): group is ConfigDetailInfoBox => group.box_type === 'info')
       .forEach((group, groupIndex) => {
         const {shownItems, totalItems} = this._visibleItemsInGroup(group, groupIndex);
         if (totalItems === 0) return;
@@ -191,9 +191,9 @@ export class ConfigDetailComponent implements OnDestroy {
    * @returns `shownItems` (item della pagina corrente) e `totalItems` (item con traduzione disponibile nel gruppo, prima della paginazione).
    */
   private _visibleItemsInGroup(
-    group: IConfigDetailInfoBox,
+    group: ConfigDetailInfoBox,
     groupIndex: number,
-  ): {shownItems: IConfigDetailInfoBoxItem[]; totalItems: number} {
+  ): {shownItems: ConfigDetailInfoBoxItem[]; totalItems: number} {
     const translatedItems = (group.items ?? []).filter(
       item => this._resolve(item.title) !== '' || this._resolve(item.content) !== '',
     );
@@ -234,7 +234,7 @@ export class ConfigDetailComponent implements OnDestroy {
    * @param item Item da verificare.
    * @returns `true` se l'item è aperto.
    */
-  isOpen(item: IConfigDetailInfoBoxItem): boolean {
+  isOpen(item: ConfigDetailInfoBoxItem): boolean {
     return this._openItem === item;
   }
 
@@ -244,7 +244,7 @@ export class ConfigDetailComponent implements OnDestroy {
    *
    * @param item Item da alternare.
    */
-  toggle(item: IConfigDetailInfoBoxItem): void {
+  toggle(item: ConfigDetailInfoBoxItem): void {
     this._openItem = this._openItem === item ? null : item;
   }
 
@@ -286,7 +286,7 @@ export class ConfigDetailComponent implements OnDestroy {
    * @param item Item di cui risolvere il contenuto.
    * @returns Il contenuto HTML sanificato, pronto per il binding `[innerHTML]`.
    */
-  getSafeContent(item: IConfigDetailInfoBoxItem): SafeHtml {
+  getSafeContent(item: ConfigDetailInfoBoxItem): SafeHtml {
     const resolvedContent = this._resolve(item.content);
     const cached = this._safeContentCache.get(item);
     if (cached && cached.content === resolvedContent) {
@@ -305,13 +305,15 @@ export class ConfigDetailComponent implements OnDestroy {
    * @param value Oggetto tradotto per lingua, o stringa/undefined.
    * @returns Il valore risolto per la lingua corrente, o stringa vuota se nessuna lingua ha contenuto.
    */
-  private _resolve(value: iLocalString | undefined): string {
+  private _resolve(value: Partial<Record<Language, string>> | undefined): string {
     if (!value) return '';
-    const currentLang = this._langSvc.currentLang;
-    const defaultLang = this._langSvc.defaultLang;
+    const currentLang = this._langSvc.currentLang as Language | undefined;
+    const defaultLang = this._langSvc.defaultLang as Language | undefined;
     if (currentLang && value[currentLang]) return value[currentLang];
     if (defaultLang && value[defaultLang]) return value[defaultLang];
-    for (const k in value) if (value[k]) return value[k];
+    for (const k of Object.keys(value) as Language[]) {
+      if (value[k]) return value[k];
+    }
     return '';
   }
 }

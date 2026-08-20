@@ -42,7 +42,7 @@ Il backend ha introdotto il builder Nova generico `config_detail` esplicitamente
 - [ ] Una riga non viene renderizzata solo se **sia `title` sia `content`** risultano vuoti dopo il fallback (nessuna lingua disponibile per nessuno dei due); se solo uno dei due ha contenuto, la riga si mostra comunque
 - [ ] `config_detail` presente ma con array vuoto (`[]`) è equivalente ad "assente": nessun box renderizzato, stesso comportamento del campo assente
 - [ ] Wiring nel template dopo `wm-tab-description` in: `home-layer.component.html` (Layer), `track-properties.component.html` (EcTrack)
-- [ ] `ILAYER` (`wm-core/projects/wm-core/src/types/config.ts`) estesa con un campo tipizzato per `config_detail` — interfaccia chiusa, l'accesso non compila senza estensione esplicita
+- [ ] `ILAYER` (`wm-core/projects/wm-core/src/types/config.ts`) estesa con `config_detail?: ConfigDetailBox[]` — tipi condivisi in `@wm-types/config` (`ConfigDetailBox` / `ConfigDetailInfoBox` / `ConfigDetailInfoBoxItem`, senza prefisso `I`)
 - [ ] Accordion **custom** (decisione esplicita del developer: niente `ion-accordion`/`ion-accordion-group`, per evitare dipendenze da componenti Ionic complessi) — markup con `<button>` nativo per l'header (semantica/focus/keyboard di serie) e attributi `aria-expanded`/`aria-controls` gestiti esplicitamente in TS/template, apertura/chiusura animata via CSS (`grid-template-rows` 0fr↔1fr), non via `ion-accordion`
 - [ ] [UX] Header con target di tap ≥44×44px e `aria-expanded`/focus visibile su expand/collapse — qui **non** c'è un componente nativo che li fornisce di serie (a differenza di `ion-accordion`): vanno implementati esplicitamente
 
@@ -56,7 +56,7 @@ Il backend ha introdotto il builder Nova generico `config_detail` esplicitamente
 
 ## Out of scope
 
-- Estensione tipizzata di `WmProperties`/`LineStringProperties`/`PointProperties` (wm-types) e `IGeojsonProperties`/`ILAYER` (map-core) — questi indici sono già aperti (`[key: string]: any`), l'accesso a `config_detail` compila senza modifiche; lasciato come debito tecnico noto (solo type-safety/autocomplete, non bloccante).
+- Estensione tipizzata di `WmProperties`/`LineStringProperties`/`PointProperties` (wm-types) e `IGeojsonProperties`/`ILAYER` (map-core) — questi indici sono già aperti (`[key: string]: any`), l'accesso a `config_detail` compila senza modifiche; lasciato come debito tecnico noto (solo type-safety/autocomplete, non bloccante). I tipi del box `info` vivono in `@wm-types/config` (`ConfigDetailBox`…); `ILAYER` in wm-core li importa.
 - Altri `box_type` oltre a `info` — non implementati né lato backend né lato frontend in questo ciclo.
 - Modifiche al backend/Nova (già rilasciato in oc:8181/oc:8349).
 - Gestione custom di errori di rendering per HTML malformato o embed non raggiungibile offline — si eredita il comportamento esistente di `[innerHTML]`/`bypassSecurityTrustHtml` già in uso altrove nell'app (nessuna sanitizzazione lato client, fiducia nel backend).
@@ -64,8 +64,9 @@ Il backend ha introdotto il builder Nova generico `config_detail` esplicitamente
 
 ## Moduli toccati
 
-- Nuovo componente `wm-core/projects/wm-core/src/box/...` (naming esatto da definire in plan.md) — dispatch `box_type`, item accordion, lazy content
-- `wm-core/projects/wm-core/src/types/config.ts` — nuovi tipi per il box `info`/i suoi item + estensione `ILAYER`
+- Nuovo componente `wm-core/projects/wm-core/src/config-detail/...` — dispatch `box_type`, item accordion, lazy content
+- `wm-types/src/config.ts` — tipi condivisi `ConfigDetailBox` / `ConfigDetailInfoBox` / `ConfigDetailInfoBoxItem`
+- `wm-core/projects/wm-core/src/types/config.ts` — estensione `ILAYER.config_detail` (import da `@wm-types/config`)
 - `wm-core/projects/wm-core/src/home/home-layer/home-layer.component.html` — wiring dopo `wm-tab-description`
 - `wm-core/projects/wm-core/src/track-properties/track-properties.component.html` — wiring dopo `wm-tab-description`
-- Modulo/dichiarazione del nuovo componente (es. `box/box.module.ts` o equivalente) per l'export verso il repo principale
+- Modulo/dichiarazione del nuovo componente (`wm-core.module.ts`) per l'export verso il repo principale
