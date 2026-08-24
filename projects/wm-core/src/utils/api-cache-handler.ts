@@ -54,7 +54,7 @@ export function handleApiCache<T>(
                 observer.next(data);
               }
             } else if (response.status === 304) {
-              console.log('No changes detected, using cached data.');
+              // DEBUG: console.log('No changes detected, using cached data.');
             }
             observer.complete();
           },

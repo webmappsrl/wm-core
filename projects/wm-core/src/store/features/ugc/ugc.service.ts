@@ -91,10 +91,10 @@ export class UgcService {
         );
         if (!cloudPoi || this._isFeatureModified(apiUgcPoi, cloudPoi)) {
           await saveUgcPoi(apiUgcPoi);
-          // console.log(`fetchUgcPois sync: ${apiUgcPoi.properties.id}`);
+          // DEBUG: console.log(`fetchUgcPois sync: ${apiUgcPoi.properties.id}`);
         }
       }
-      // console.log('fetchUgcPois: Synchronization completed successfully');
+      // DEBUG: console.log('fetchUgcPois: Synchronization completed successfully');
     } catch (error) {
       console.error('fetchUgcPois: Error during synchronization:', error);
     }
@@ -114,10 +114,10 @@ export class UgcService {
         );
         if (!synchronizedUgcTrack || this._isFeatureModified(apiTrack, synchronizedUgcTrack)) {
           await saveUgcTrack(apiTrack);
-          // console.log(`fetchUgcTracks sync: ${apiTrack.properties.id}`);
+          // DEBUG: console.log(`fetchUgcTracks sync: ${apiTrack.properties.id}`);
         }
       }
-      // console.log('fetchUgcTracks: Synchronization completed successfully');
+      // DEBUG: console.log('fetchUgcTracks: Synchronization completed successfully');
     } catch (error) {
       console.error('fetchUgcTracks: Error during synchronization:', error);
     }
@@ -184,21 +184,21 @@ export class UgcService {
 
         if (existingPoi) {
           await removeDeviceUgcPoi(deviceUgcPoi.properties.uuid);
-          // console.log(  `POI with UUID ${deviceUgcPoi.properties.uuid} already exists. Skipping save.` );
+          // DEBUG: console.log(  `POI with UUID ${deviceUgcPoi.properties.uuid} already exists. Skipping save.` );
           continue;
         }
 
         // If privacy agree is active, sync ALL unsynchronized UGC
-        console.log(`🔄 Syncing POI ${deviceUgcPoi.properties.uuid} (privacy agree is active)`);
+        // DEBUG: console.log(`🔄 Syncing POI ${deviceUgcPoi.properties.uuid} (privacy agree is active)`);
 
         try {
           const res = await this.saveApiPoi(deviceUgcPoi);
           if (res) {
             await removeDeviceUgcPoi(deviceUgcPoi.properties.uuid);
             synchronizedUgcPois.push(deviceUgcPoi); // Update the list of synchronized POIs
-            console.log(
-              `✅ POI with UUID ${deviceUgcPoi.properties.uuid} synchronized and removed.`,
-            );
+            // DEBUG: console.log(
+            //   `✅ POI with UUID ${deviceUgcPoi.properties.uuid} synchronized and removed.`,
+            // );
           }
         } catch (poiError) {
           console.error(
@@ -207,7 +207,7 @@ export class UgcService {
           );
         }
       }
-      console.log('✅ POI synchronization completed successfully');
+      // DEBUG: console.log('✅ POI synchronization completed successfully');
     } catch (error) {
       console.error('Error during POI synchronization:', error);
     }
@@ -225,21 +225,21 @@ export class UgcService {
 
         if (existingTrack) {
           await removeDeviceUgcTrack(deviceUgcTrack.properties.uuid);
-          // console.log(`Track with UUID ${deviceUgcTrack.properties.uuid} already exists. Skipping save.`);
+          // DEBUG: console.log(`Track with UUID ${deviceUgcTrack.properties.uuid} already exists. Skipping save.`);
           continue;
         }
 
         // If privacy agree is active, sync ALL unsynchronized UGC
-        console.log(`🔄 Syncing Track ${deviceUgcTrack.properties.uuid} (privacy agree is active)`);
+        // DEBUG: console.log(`🔄 Syncing Track ${deviceUgcTrack.properties.uuid} (privacy agree is active)`);
 
         try {
           const res = await this.saveApiTrack(deviceUgcTrack);
           if (res) {
             await removeDeviceUgcTrack(deviceUgcTrack.properties.uuid);
             synchronizedUgcTracks.push(deviceUgcTrack); // Update the list of synchronized tracks
-            console.log(
-              `✅ Track with UUID ${deviceUgcTrack.properties.uuid} synchronized and removed.`,
-            );
+            // DEBUG: console.log(
+            //   `✅ Track with UUID ${deviceUgcTrack.properties.uuid} synchronized and removed.`,
+            // );
           }
         } catch (trackError) {
           console.error(
@@ -248,7 +248,7 @@ export class UgcService {
           );
         }
       }
-      console.log('✅ Track synchronization completed successfully');
+      // DEBUG: console.log('✅ Track synchronization completed successfully');
     } catch (error) {
       console.error('Error during track synchronization:', error);
     }
@@ -303,9 +303,9 @@ export class UgcService {
       this.isLoggedAndHasPrivacyAgree$.pipe(take(1)),
     ).toPromise();
     if (!isLoggedAndHasPrivacyAgree) {
-      console.log(
-        '🔒 User not logged in or privacy agree not given, skipping UGC POI fetch from API',
-      );
+      // DEBUG: console.log(
+      //   '🔒 User not logged in or privacy agree not given, skipping UGC POI fetch from API',
+      // );
       return;
     }
 
