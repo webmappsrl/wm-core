@@ -5,7 +5,7 @@ import {WmHomeLayerBaseComponent} from './home-layer-base.component';
   standalone: false,
   selector: 'wm-home-layer',
   templateUrl: './home-layer.component.html',
-  styleUrls: ['./home-layer.component.scss'],
+  styleUrls: ['./home-layer.component.camminiditalia.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
