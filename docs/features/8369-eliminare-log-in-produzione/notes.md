@@ -4,7 +4,9 @@
 
 ## Deviazioni dal piano
 
-Nessuna deviazione — tutte le modifiche seguono esattamente le tabelle di classificazione di `plan.md`, verificate riga per riga dopo l'esecuzione (155/155 test Karma passati).
+Tutte le modifiche seguono esattamente le tabelle di classificazione di `plan.md`, verificate riga per riga dopo l'esecuzione (155/155 test Karma passati).
+
+Deviazione post-review (`wm-skills:wm-review-ticket`, confermata dal developer): `store/conf/conf.reducer.ts:198` (`console.log('error')` dentro `catch (_)`, zero valore diagnostico) e `services/storage.service.ts` (`init()` con corpo vuoto residuo dopo la cancellazione dell'unico log) sono stati puliti oltre il criterio originale del piano ("qualsiasi console.* in catch resta intatto") — cancellati esplicitamente su richiesta del developer in sede di review, non dal triage automatico. Re-testato: 155/155 test ancora passanti.
 
 ## Bug trovati
 

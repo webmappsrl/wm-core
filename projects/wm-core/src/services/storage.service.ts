@@ -110,8 +110,7 @@ export class StorageService {
     return this._get(USER_STORAGE_KEY);
   }
 
-  init(): void {
-  }
+  init(): void {}
 
   removeByKey(key: string): Promise<void> {
     return this._remove(key);
