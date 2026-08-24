@@ -580,7 +580,7 @@ export function updateStatus(status: {
   media?: number;
   data?: number;
 }): void {
-  console.log('Status update:', status);
+  // DEBUG: console.log('Status update:', status);
 }
 
 export const synchronizedEctrack = localforage.createInstance({
