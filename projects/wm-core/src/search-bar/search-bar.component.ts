@@ -63,7 +63,6 @@ export class WmSearchBarComponent implements OnDestroy {
      **/
     this._searchSub$ = this.searchForm.valueChanges.pipe(debounceTime(500)).subscribe(value => {
       const search = value.search;
-      console.log(search);
       if (search != null && search !== '') {
         this._urlHandlerSvc.updateURL({search});
         this.isTypingsEVT.emit(true);

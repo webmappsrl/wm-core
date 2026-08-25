@@ -198,7 +198,6 @@ export const confReducer = createReducer(
       lastControl = state.MAP.controls.data[state.MAP.controls.data.length - 1] ?? null;
     } catch (_) {
       lastControl = null;
-      console.log('error');
     }
     const lastId = (lastControl as ICONTROLSBUTTON)?.id ?? null;
     const ugc: ICONTROLSBUTTON = {

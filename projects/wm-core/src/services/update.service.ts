@@ -1,6 +1,7 @@
 import {Inject, Injectable} from '@angular/core';
 import {AlertController, ModalController, ToastController} from '@ionic/angular';
 import {App} from '@capacitor/app';
+import {PluginListenerHandle} from '@capacitor/core';
 import {AppUpdate} from '@capawesome/capacitor-app-update';
 import {HttpClient} from '@angular/common/http';
 
@@ -21,6 +22,9 @@ import {DeviceService} from './device.service';
 
 @Injectable({providedIn: 'root'})
 export class UpdateService {
+  private _foregroundListenerHandle: PluginListenerHandle | null = null;
+  private _isUpdateInProgress = false;
+
   constructor(
     private _modalController: ModalController,
     private _toastController: ToastController,
@@ -262,6 +266,30 @@ export class UpdateService {
   }
 
   // ── Flow principale ─────────────────────────────────────────────────────────
+
+  /**
+   * Registra un listener Capacitor che esegue il controllo versione ad ogni resume.
+   * Sostituisce il listener precedente se già registrato.
+   */
+  async startForegroundWatcher(appConfig: APP): Promise<void> {
+    if (!this._deviceService.isAppMobile) {
+      return;
+    }
+    if (this._foregroundListenerHandle) {
+      await this._foregroundListenerHandle.remove();
+      this._foregroundListenerHandle = null;
+    }
+    this._foregroundListenerHandle = await App.addListener('appStateChange', ({isActive}) => {
+      if (isActive && !this._isUpdateInProgress) {
+        this._isUpdateInProgress = true;
+        this.handleAppUpdateFlow(appConfig)
+          .catch(() => {})
+          .finally(() => {
+            this._isUpdateInProgress = false;
+          });
+      }
+    });
+  }
 
   async handleAppUpdateFlow(appConfig: APP): Promise<void> {
     const evaluation = await this.evaluateUpdate(appConfig);

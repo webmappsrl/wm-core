@@ -48,12 +48,8 @@ export class ConfService {
       (data: ICONF) => {
         data.isMobile = this._deviceSvc?.isMobile ?? false;
       },
-      this._environmentSvc.shardName === 'carg'
-        ? {}
-        : (() => {
-            const lastModified = localStorage.getItem(`${url}-last-modified`);
-            return lastModified ? {'If-Modified-Since': lastModified} : {};
-          })(),
+      {},
+      this._environmentSvc.shardName === 'carg',
     );
   }
 }
