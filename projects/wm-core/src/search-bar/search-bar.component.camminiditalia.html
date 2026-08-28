@@ -1,0 +1,153 @@
+<div class="wm-searchbar-camminiditalia-search-row">
+  <ion-item class="wm-searchbar-textcontainer">
+    <ion-icon name="search"></ion-icon>
+    <form [formGroup]="searchForm">
+      <ion-input formControlName="search" type="text" placeholder="{{'placeholder'|wmtrans}}">
+      </ion-input>
+    </form>
+    <i slot="end" (click)="reset()" *ngIf="(isTypingsEVT|async) === true">
+      <ion-icon name="close"></ion-icon>
+    </i>
+  </ion-item>
+  <button
+    type="button"
+    class="wm-searchbar-camminiditalia-toggle"
+    [class.wm-searchbar-camminiditalia-toggle--active]="hasActiveFilters"
+    *ngIf="showFilters$|async"
+    [attr.aria-expanded]="panelOpen"
+    [attr.aria-label]="(hasActiveFilters ? 'Filtri attivi' : 'Filtri') | wmtrans"
+    (click)="togglePanel()"
+  >
+    <span class="wm-searchbar-camminiditalia-toggle-dot" *ngIf="hasActiveFilters" aria-hidden="true"></span>
+    <ion-icon name="options-outline"></ion-icon>
+  </button>
+</div>
+
+<div
+  class="wm-searchbar-camminiditalia-panel"
+  [class.wm-searchbar-camminiditalia-panel--open]="panelOpen"
+  *ngIf="showFilters$|async"
+>
+<div class="wm-searchbar-camminiditalia-panel-inner">
+  <ng-container *ngIf="options$|async as options">
+    <wm-home-route-filter-row
+      [label]="'Lunghezza'|wmtrans"
+      [options]="options.distance"
+      [selected]="draft.distance ?? []"
+      [open]="openKey === 'distance'"
+      (toggleEVT)="toggleRow('distance')"
+      (selectionChangeEVT)="onSelectionChange('distance', $event)"
+    >
+      <svg filter-icon viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M1.725 3.83328C2.39166 0.949943 6.73333 0.949943 7.39167 3.83328C7.78333 5.52494 6.70833 6.95828 5.775 7.84994C5.09167 8.49994 4.01667 8.49161 3.33333 7.84994C2.40833 6.95828 1.33333 5.52494 1.725 3.83328Z"></path>
+        <path d="M12.5583 13.8333C13.225 10.9499 17.5917 10.9499 18.2583 13.8333C18.65 15.5249 17.575 16.9583 16.6333 17.8499C15.95 18.4999 14.8667 18.4916 14.1833 17.8499C13.2417 16.9583 12.1667 15.5249 12.5583 13.8333Z"></path>
+        <path d="M10 4.16663H12.2333C13.775 4.16663 14.4917 6.07496 13.3333 7.09163L6.675 12.9166C5.51666 13.925 6.23333 15.8333 7.76666 15.8333H10" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M4.57185 4.58329H4.58148" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M15.4052 14.5833H15.4148" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </wm-home-route-filter-row>
+
+    <wm-home-route-filter-row
+      [label]="'Tappe'|wmtrans"
+      [options]="options.stageCount"
+      [selected]="draft.stageCount ?? []"
+      [open]="openKey === 'stageCount'"
+      (toggleEVT)="toggleRow('stageCount')"
+      (selectionChangeEVT)="onSelectionChange('stageCount', $event)"
+    >
+      <svg filter-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+    </wm-home-route-filter-row>
+
+    <wm-home-route-filter-row
+      [label]="'Tipologia'|wmtrans"
+      [options]="options.shape"
+      [selected]="draft.shape ?? []"
+      [open]="openKey === 'shape'"
+      (toggleEVT)="toggleRow('shape')"
+      (selectionChangeEVT)="onSelectionChange('shape', $event)"
+    >
+      <svg filter-icon viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12.4087 4.23333C11.6837 4.01667 10.8837 3.875 10.0004 3.875C6.00872 3.875 2.77539 7.10833 2.77539 11.1C2.77539 15.1 6.00872 18.3333 10.0004 18.3333C13.9921 18.3333 17.2254 15.1 17.2254 11.1083C17.2254 9.625 16.7754 8.24167 16.0087 7.09167"></path>
+        <path d="M13.4415 4.43329L11.0332 1.66663"></path>
+        <path d="M13.4411 4.43335L10.6328 6.48335"></path>
+      </svg>
+    </wm-home-route-filter-row>
+
+    <wm-home-route-filter-row
+      [label]="'Portata'|wmtrans"
+      [options]="options.walkingNetwork"
+      [selected]="draft.walkingNetwork ?? []"
+      [open]="openKey === 'walkingNetwork'"
+      (toggleEVT)="toggleRow('walkingNetwork')"
+      (selectionChangeEVT)="onSelectionChange('walkingNetwork', $event)"
+    >
+      <svg filter-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="2" y1="12" x2="22" y2="12"></line>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+      </svg>
+    </wm-home-route-filter-row>
+
+    <wm-home-route-filter-row
+      [label]="'Regioni'|wmtrans"
+      [options]="options.regions"
+      [selected]="draft.regions ?? []"
+      [open]="openKey === 'regions'"
+      (toggleEVT)="toggleRow('regions')"
+      (selectionChangeEVT)="onSelectionChange('regions', $event)"
+    >
+      <svg filter-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+        <circle cx="12" cy="10" r="3"></circle>
+      </svg>
+    </wm-home-route-filter-row>
+
+    <wm-home-route-filter-row
+      [label]="'Temi'|wmtrans"
+      [options]="options.themes"
+      [selected]="draft.themes ?? []"
+      [open]="openKey === 'themes'"
+      (toggleEVT)="toggleRow('themes')"
+      (selectionChangeEVT)="onSelectionChange('themes', $event)"
+    >
+      <svg filter-icon viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2.91719 17.0833C3.60885 17.775 4.72552 17.775 5.41719 17.0833L16.2505 6.24995C16.9422 5.55828 16.9422 4.44162 16.2505 3.74995C15.5589 3.05828 14.4422 3.05828 13.7505 3.74995L2.91719 14.5833C2.22552 15.275 2.22552 16.3916 2.91719 17.0833Z"></path>
+        <path d="M15.0078 7.4917L12.5078 4.9917"></path>
+        <path d="M7.08398 2.03329L8.33398 1.66663L7.96732 2.91663L8.33398 4.16663L7.08398 3.79996L5.83398 4.16663L6.20065 2.91663L5.83398 1.66663L7.08398 2.03329Z"></path>
+        <path d="M3.75 7.03329L5 6.66663L4.63333 7.91663L5 9.16663L3.75 8.79996L2.5 9.16663L2.86667 7.91663L2.5 6.66663L3.75 7.03329Z"></path>
+        <path d="M16.25 11.2L17.5 10.8334L17.1333 12.0834L17.5 13.3334L16.25 12.9667L15 13.3334L15.3667 12.0834L15 10.8334L16.25 11.2Z"></path>
+      </svg>
+    </wm-home-route-filter-row>
+
+    <wm-home-route-filter-row
+      [label]="'Stagioni'|wmtrans"
+      [options]="options.seasons"
+      [selected]="draft.seasons ?? []"
+      [open]="openKey === 'seasons'"
+      (toggleEVT)="toggleRow('seasons')"
+      (selectionChangeEVT)="onSelectionChange('seasons', $event)"
+    >
+      <svg filter-icon viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.0007 15.4167C12.9922 15.4167 15.4173 12.9916 15.4173 10C15.4173 7.0085 12.9922 4.58337 10.0007 4.58337C7.00911 4.58337 4.58398 7.0085 4.58398 10C4.58398 12.9916 7.00911 15.4167 10.0007 15.4167Z" stroke-width="1.5"></path>
+        <path d="M15.9493 15.95L15.841 15.8416M15.841 4.15829L15.9493 4.04996L15.841 4.15829ZM4.04935 15.95L4.15768 15.8416L4.04935 15.95ZM9.99935 1.73329V1.66663V1.73329ZM9.99935 18.3333V18.2666V18.3333ZM1.73268 9.99996H1.66602H1.73268ZM18.3327 9.99996H18.266H18.3327ZM4.15768 4.15829L4.04935 4.04996L4.15768 4.15829Z" stroke-width="2"></path>
+      </svg>
+    </wm-home-route-filter-row>
+  </ng-container>
+
+  <div class="wm-searchbar-camminiditalia-actions" *ngIf="hasActiveFilters">
+    <ion-button
+      class="wm-searchbar-camminiditalia-reset"
+      fill="outline"
+      (click)="resetFilters()"
+    >
+      {{ 'Azzera filtri' | wmtrans }}
+      <ion-icon name="close-circle-outline" slot="end"></ion-icon>
+    </ion-button>
+  </div>
+</div>
+</div>

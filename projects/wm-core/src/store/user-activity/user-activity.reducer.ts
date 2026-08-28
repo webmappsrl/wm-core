@@ -39,11 +39,13 @@ import {
   setNearbyLayerId,
   setTrackRemainingDistance,
   resetTrackRemainingDistance,
+  routeFiltersChanged,
 } from './user-activity.action';
 import {currentEcPoiId} from '../features/ec/ec.actions';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {FilterType, HomeResultTab} from '@wm-types/user-activity';
 import {Hit} from '@wm-types/elastic';
+import {RouteFilterState} from '@wm-types/config';
 
 export const key = 'userActivity';
 export type mapDetailsStatus = 'open' | 'onlyTitle' | 'background' | 'full';
@@ -83,6 +85,7 @@ export interface UserActivityState {
   trackDistanceCovered: number | null;
   trackProgress: number | null;
   trackPositionStale: boolean;
+  routeFilters: RouteFilterState;
 }
 
 export interface UserAcitivityRootState {
@@ -116,6 +119,7 @@ const initialState: UserActivityState = {
   trackDistanceCovered: null,
   trackProgress: null,
   trackPositionStale: false,
+  routeFilters: {},
 };
 
 function extractFilterTaxonomies(layer) {
@@ -414,4 +418,8 @@ export const userActivityReducer = createReducer(
       trackPositionStale: false,
     };
   }),
+  on(routeFiltersChanged, (state, {filters}) => ({
+    ...state,
+    routeFilters: filters,
+  })),
 );

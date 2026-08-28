@@ -32,6 +32,7 @@ import {WmTrackAudioComponent} from './track-audio/track-audio.component';
 import {WmTrackEdgesComponent} from './track-edges/track-edges.component';
 import {WmInnerHtmlComponent} from './inner-html/inner-html.component';
 import {ConfigDetailComponent} from './config-detail/config-detail.component';
+import {HomeRouteFilterRowComponent} from './home/home-route-filters/home-route-filter-row/home-route-filter-row.component';
 import {ButtonsModule} from './buttons/export-to/buttons.module';
 import {WmFeatureUsefulUrlsComponent} from './feature-useful-urls/feature-useful-urls.component';
 import {AuthInterceptor} from './store/auth/auth.interceptor';
@@ -122,6 +123,7 @@ export const declarations = [
   WmTrackEdgesComponent,
   WmInnerHtmlComponent,
   ConfigDetailComponent,
+  HomeRouteFilterRowComponent,
   WmFeatureUsefulUrlsComponent,
   LoginComponent,
   RegisterComponent,

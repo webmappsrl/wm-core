@@ -1,5 +1,5 @@
 import {Hit} from '@wm-types/elastic';
-import {APP, ConfigDetailBox, OPTIONS, WEBAPP} from '@wm-types/config';
+import {APP, ConfigDetailBox, LayerAttributes, OPTIONS, WEBAPP} from '@wm-types/config';
 
 export type IBASEBOX = IBOX & {
   box_type: 'base';
@@ -240,6 +240,8 @@ export interface ILAYER {
   tracks?: {[name: string]: Hit[]};
   /** Builder generico "Blocchi Dettaglio" (oc:8181, wm-package) — assente se l'admin non ha configurato alcun box. Tipi in `@wm-types/config`. */
   config_detail?: ConfigDetailBox[];
+  /** Caratteristiche del cammino usate dai filtri Home (oc:8180). Assente se nessun valore è disponibile (es. cammino senza tappe). Tipi in `@wm-types/config`. */
+  attributes?: LayerAttributes;
 }
 
 export interface IMAP {

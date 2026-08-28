@@ -1,0 +1,117 @@
+.wm-home-route-filter-row {
+  border: 1px solid #1d282b1a;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  overflow: hidden;
+
+  // Bordo evidenziato sia in apertura sia quando la riga ha una selezione attiva — fedele al
+  // riferimento camminiditalia.org, dove un filtro impostato resta evidenziato anche da chiuso.
+  &--open,
+  &--active {
+    border-color: var(--wm-color-primary, #ff6600);
+  }
+}
+
+.wm-home-route-filter-row-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.wm-home-route-filter-row-icon {
+  display: flex;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  color: #1d282bcc;
+  flex-shrink: 0;
+
+  .wm-home-route-filter-row--active & {
+    color: var(--wm-color-primary, #ff6600);
+  }
+
+  ::ng-deep svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.wm-home-route-filter-row-label {
+  flex: 1;
+  font-weight: 600;
+  // Etichetta "spenta" (placeholder) finché il filtro non ha una selezione — coerente col
+  // riferimento, dove i filtri non impostati sono in grigio chiaro.
+  color: var(--wm-color-medium-shade, #666);
+
+  .wm-home-route-filter-row--active & {
+    color: var(--wm-color-dark, #1a1a1a);
+  }
+}
+
+.wm-home-route-filter-row-pill {
+  margin-left: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(var(--wm-color-primary-rgb, 255, 102, 0), 0.12);
+  color: var(--wm-color-primary-shade, var(--wm-color-primary, #ff6600));
+  font-size: 0.8em;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 45%;
+}
+
+.wm-home-route-filter-row-chevron {
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+
+  .wm-home-route-filter-row--open & {
+    transform: rotate(180deg);
+  }
+}
+
+.wm-home-route-filter-row-content {
+  padding: 0 12px 12px;
+
+  &:empty {
+    padding: 0;
+  }
+}
+
+// Opzioni come chip bordati (non checkbox): fedeli al riferimento camminiditalia.org, dove
+// l'opzione selezionata mostra un bordo/testo in colore primario e le altre restano testo piatto.
+.wm-home-route-filter-option {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  color: var(--wm-color-medium-shade, #666);
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &--selected {
+    border-color: var(--wm-color-primary, #ff6600);
+    color: var(--wm-color-dark, #1a1a1a);
+  }
+}

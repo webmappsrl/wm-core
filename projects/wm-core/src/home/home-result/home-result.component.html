@@ -40,7 +40,7 @@
       <ng-container *ngIf="tracks$|async as tracks">
         <ion-segment-button
           value="tracks"
-          *ngIf="tracks.length > 0 &&  showTracks$|async"
+          *ngIf="tracks.length > 0 && (showTracks$|async) && !(hasActiveRouteFilters$|async)"
           e2e-home-result-tracks-tab
         >
           <ion-label>
@@ -57,7 +57,7 @@
         </ion-segment-button>
       </ng-container>
       <ng-container *ngIf="countPois$|async as countPois">
-        <ion-segment-button value="pois" *ngIf="countPois > 0" e2e-home-result-pois-tab>
+        <ion-segment-button value="pois" *ngIf="countPois > 0 && !(hasActiveRouteFilters$|async)" e2e-home-result-pois-tab>
           <ion-label>
             {{'Punti di interesse'|wmtrans}}
             <span>

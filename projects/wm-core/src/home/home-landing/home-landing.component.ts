@@ -8,12 +8,12 @@ import {
 import {Store} from '@ngrx/store';
 import {from, Observable} from 'rxjs';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
-import {confHOME} from '@wm-core/store/conf/conf.selector';
 import {IHOME, IHORIZONTALSCROLLBOX} from '@wm-core/types/config';
 import {
   togglePoiFilter,
   toggleTrackFilterByIdentifier,
 } from '@wm-core/store/user-activity/user-activity.action';
+import {confHOMEFiltered} from '@wm-core/store/user-activity/user-activity.selector';
 import {countUgcAll} from '@wm-core/store/features/ugc/ugc.selector';
 import {offline} from '@wm-core/store/network/network.selector';
 
@@ -35,7 +35,7 @@ export class WmHomeLandingComponent {
   @Output() tracksBoxEVT: EventEmitter<number> = new EventEmitter();
   @Output() ugcBoxEvt: EventEmitter<boolean> = new EventEmitter();
 
-  confHOME$: Observable<IHOME[] | undefined> = this._store.select(confHOME);
+  confHOME$: Observable<IHOME[] | undefined> = this._store.select(confHOMEFiltered);
   countAllUgc$: Observable<number> = this._store.select(countUgcAll);
   isLogged$: Observable<boolean> = this._store.select(isLogged);
   offline$: Observable<boolean> = this._store.select(offline);

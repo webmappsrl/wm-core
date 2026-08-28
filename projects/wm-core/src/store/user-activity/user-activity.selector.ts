@@ -3,11 +3,14 @@ import {currentCustomTrack, currentUgcPoi, currentUgcPoiDrawn} from '../features
 import {UserActivityState} from './user-activity.reducer';
 import {
   confFlowLineQuote,
+  confHOME,
   confOPTIONSShowTrackRemainingDistance,
   confPOIFORMS,
   confTRACKFORMS,
 } from '../conf/conf.selector';
 import {WmSlopeChartFlowLineQuote} from '@wm-types/slope-chart';
+import {IHOME, ILAYERBOX} from '../../types/config';
+import {layerMatchesFilters} from '../../home/home-route-filters/home-route-filters.utils';
 
 export const userActivity = createFeatureSelector<UserActivityState>('user-activity');
 
@@ -34,6 +37,13 @@ export const inputTyped = createSelector(
 export const EmptyInputTyped = createSelector(
   userActivity,
   (state: UserActivityState) => state.inputTyped === '' || state.inputTyped === null,
+);
+export const routeFilters = createSelector(userActivity, state => state.routeFilters);
+
+/** `true` se almeno un filtro Home (oc:8414) ha una selezione non vuota. */
+export const hasActiveRouteFilters = createSelector(
+  routeFilters,
+  filters => Object.values(filters ?? {}).some(v => Array.isArray(v) && v.length > 0),
 );
 
 export const UICurrentPoi = createSelector(userActivity, state =>
@@ -139,6 +149,7 @@ export const showResult = createSelector(
   ugcOpened,
   downloadsOpened,
   inputTyped,
+  hasActiveRouteFilters,
   (
     currentLayer,
     filterTracks,
@@ -146,6 +157,7 @@ export const showResult = createSelector(
     ugcOpened,
     downloadsOpened,
     inputTyped,
+    hasActiveRouteFilters,
   ) => {
     const layerCondition = currentLayer != null;
     const filterTracksCondition = filterTracks.length > 0;
@@ -158,6 +170,7 @@ export const showResult = createSelector(
       filterTracksCondition ||
       poisSelectedFilterIdentifiersCondition ||
       inputTypedCondition ||
+      hasActiveRouteFilters ||
       ugcOpened ||
       downloadsOpened
     );
@@ -272,3 +285,17 @@ export const trackLiveDistanceVm = createSelector(
     stale,
   }),
 );
+
+/**
+ * Come `confHOME`, ma con i box `layer` che non soddisfano i filtri Home rimossi. Nessun filtro
+ * attivo = identico a `confHOME`. I box di altro tipo (title, ecc.) non vengono mai filtrati.
+ */
+export const confHOMEFiltered = createSelector(confHOME, routeFilters, (home, filters) => {
+  if (!home) return home;
+  if (!filters || Object.keys(filters).length === 0) return home;
+  return (home as IHOME[]).filter(el => {
+    if (el.box_type !== 'layer') return true;
+    const layerBox = el as ILAYERBOX;
+    return layerBox.layer == null || layerMatchesFilters(layerBox.layer, filters);
+  });
+});
