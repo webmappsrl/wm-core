@@ -1,4 +1,11 @@
-import {ChangeDetectionStrategy, Component, Inject, Optional, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Inject,
+  Optional,
+  ViewEncapsulation,
+} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
@@ -76,11 +83,17 @@ export class WmSearchBarComponent extends SearchBarBaseComponent {
     protected _store: Store<any>,
     protected _urlHandlerSvc: UrlHandlerService,
     private _langSvc: LangService,
+    private _cdr: ChangeDetectorRef,
     @Optional() @Inject(POSTHOG_CLIENT) private _posthogClient?: WmPosthogClient,
   ) {
     super(fb, _store, _urlHandlerSvc);
     this._store.select(routeFilters).subscribe(filters => {
       this.draft = filters ?? {};
+      // OnPush: la subscription allo store è manuale (non async pipe), che sotto OnPush non
+      // marca da sola la vista "dirty" — senza markForCheck() il pallino "filtri attivi" resta
+      // visivamente non aggiornato finché un altro evento (es. click sul toggle) non forza un
+      // nuovo ciclo di change detection sul componente.
+      this._cdr.markForCheck();
     });
   }
 
