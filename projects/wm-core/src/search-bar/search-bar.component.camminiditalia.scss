@@ -1,0 +1,93 @@
+@import '../theme/mixins.scss';
+
+wm-searchbar {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: var(--wm-color-white, #fff);
+  border-radius: 12px;
+  z-index: 400;
+}
+
+.wm-searchbar-camminiditalia-search-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.wm-searchbar-textcontainer {
+  flex: 1;
+  border-radius: 30px;
+  @include box-shadow-light;
+  --border-style: none;
+
+  form {
+    width: 100%;
+  }
+}
+
+.wm-searchbar-camminiditalia-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 8px;
+  background: var(--wm-color-primary, #ff6600);
+  color: var(--wm-color-primary-contrast, #fff);
+  font-size: 1.2em;
+  cursor: pointer;
+}
+
+// Pallino "filtri attivi" (proposta B): segnala che almeno un filtro è impostato anche a
+// pannello chiuso, senza contare quanti — vedi artifact di confronto per le alternative scartate.
+.wm-searchbar-camminiditalia-toggle-dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--wm-color-danger, #eb445a);
+  border: 2px solid var(--wm-color-white, #fff);
+}
+
+// Apertura/chiusura animata del pannello filtri — stesso trucco CSS Grid già in uso in
+// wm-config-detail (grid-template-rows 0fr → 1fr): anima l'altezza senza doverla misurare via
+// JS, e collassa a zero pulito quando il contenuto interno è vuoto/nascosto.
+.wm-searchbar-camminiditalia-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  transition: grid-template-rows 0.3s ease;
+
+  &--open {
+    grid-template-rows: 1fr;
+    margin-top: 8px;
+  }
+}
+
+.wm-searchbar-camminiditalia-panel-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wm-searchbar-camminiditalia-panel {
+    transition: none;
+  }
+}
+
+.wm-searchbar-camminiditalia-actions {
+  display: flex;
+  padding: 0 10px;
+  margin-top: 8px;
+}
+
+.wm-searchbar-camminiditalia-reset {
+  flex: 1;
+}

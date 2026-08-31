@@ -30,7 +30,11 @@ export const confAUTHEnable = createSelector(
 );
 export const confMAP = createSelector(confFeature, state => state.MAP);
 export const confMAPHitMapUrl = createSelector(confMAP, state => state?.hitMapUrl ?? null);
-export const confMAPLayers = createSelector(confMAP, state => state.layers);
+export const confMAPLayers = createSelector(confMAP, state => state?.layers);
+/** `true` se almeno un layer della config ha `attributes` popolato — gate di visibilità del componente filtri Home (oc:8414), nessun flag `OPTIONS` dedicato. */
+export const confShowRouteFilters = createSelector(confMAPLayers, layers =>
+  (layers ?? []).some(l => l.attributes != null),
+);
 export const flowLineQuoteShow = createSelector(confMAP, state => state.flow_line_quote_show);
 export const confFlowLineQuote = createSelector(confMAP, state =>
   state.flow_line_quote_show

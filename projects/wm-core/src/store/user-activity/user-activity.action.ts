@@ -6,6 +6,7 @@ import {FilterType, HomeResultTab} from '@wm-types/user-activity';
 import {LineString, MultiPolygon, Point} from 'geojson';
 import {mapDetailsStatus} from './user-activity.reducer';
 import {Hit} from '@wm-types/elastic';
+import {RouteFilterState} from '@wm-types/config';
 
 export const openUgc = createAction('[User Activity] Open User Generated Content');
 export const closeUgc = createAction('[User Activity] Close User Generated Content');
@@ -211,4 +212,9 @@ export const checkCurrentUgcTrack = createAction('[User Activity] check current 
 export const resumeCurrentUgcTrack = createAction(
   '[User Activity] resume current ugc track',
   props<{resume: boolean}>(),
+);
+
+export const routeFiltersChanged = createAction(
+  '[User Activity] set route filters',
+  props<{filters: RouteFilterState}>(),
 );
