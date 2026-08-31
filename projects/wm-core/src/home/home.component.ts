@@ -26,7 +26,7 @@ import {
   IPOITYPEFILTERBOX,
   ISLUGBOX,
 } from '@wm-core/types/config';
-import {APP, OPTIONS} from '@wm-types/config';
+import {APP, ConfigDetailToggleEvent, OPTIONS} from '@wm-types/config';
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
 import {countUgcAll, countUgcTracks} from '@wm-core/store/features/ugc/ugc.selector';
 import {
@@ -201,5 +201,48 @@ export class WmHomeComponent implements AfterContentInit {
     if (idx) {
       this._urlHandlerSvc.updateURL({filter: idx});
     }
+  }
+
+  /**
+   * Riceve `configDetailSettled` — un evento DOM nativo dispacciato da `wm-config-detail`
+   * (bubbling attraverso il contenuto annidato di `wm-home-layer`, nessun pass-through
+   * intermedio necessario, oc:8427), già "assestato" (il layout ha smesso di cambiare). Nel tab
+   * Home non c'è alcun pannello ridimensionabile con cui coordinare ulteriormente lo scroll (a
+   * differenza di `wm-map-details`, webmapp-app, che ha una logica di coordinamento diversa —
+   * vedi CLAUDE.md di quel repo), quindi lo scroll avviene subito alla ricezione, con il minimo
+   * movimento necessario (`block: 'nearest'`), solo se l'header non è già interamente visibile.
+   * Nessuna azione in chiusura.
+   *
+   * @param event Evento nativo dispacciato da `wm-config-detail`. Tipizzato `Event` (non
+   *   `ConfigDetailToggleEvent`) perché Angular non riconosce un nome-evento custom come un
+   *   `@Output()` reale sotto `strictTemplates` — il vero payload è nel `.detail`.
+   */
+  onConfigDetailSettled(event: Event): void {
+    const {opening, headerElement} = (event as CustomEvent<ConfigDetailToggleEvent>).detail;
+    if (opening && headerElement && !this._isFullyInView(headerElement)) {
+      headerElement.scrollIntoView({block: 'nearest', behavior: 'smooth'});
+    }
+  }
+
+  /**
+   * Verifica se `el` è già interamente visibile all'interno del proprio antenato scrollabile più
+   * vicino — evita uno scroll percepito come superfluo quando l'item appena aperto è già in vista
+   * (oc:8427).
+   *
+   * @param el Elemento da verificare.
+   * @returns `true` se `el` è già completamente contenuto nel viewport del proprio scroll parent.
+   */
+  private _isFullyInView(el: HTMLElement): boolean {
+    let parent: HTMLElement | null = el.parentElement;
+    while (parent && parent !== document.body) {
+      const style = getComputedStyle(parent);
+      if (/(auto|scroll)/.test(style.overflowY) && parent.scrollHeight > parent.clientHeight) {
+        break;
+      }
+      parent = parent.parentElement;
+    }
+    const containerRect = (parent ?? document.documentElement).getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    return elRect.top >= containerRect.top && elRect.bottom <= containerRect.bottom;
   }
 }

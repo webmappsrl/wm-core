@@ -11,7 +11,7 @@
         class="wm-config-detail-header"
         [attr.aria-expanded]="isOpen(entry.item)"
         [attr.aria-controls]="'wm-config-detail-' + uid + '-content-' + entry.itemIndex"
-        (click)="toggle(entry.item)"
+        (click)="toggle(entry.item, $event)"
       >
         <span class="wm-config-detail-title">{{ entry.item.title | wmtrans }}</span>
         <span class="wm-config-detail-chevron">

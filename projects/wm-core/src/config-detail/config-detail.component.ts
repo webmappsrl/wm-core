@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   Input,
   OnDestroy,
   ViewEncapsulation,
@@ -12,6 +13,7 @@ import {
   ConfigDetailBox,
   ConfigDetailInfoBox,
   ConfigDetailInfoBoxItem,
+  ConfigDetailToggleEvent,
 } from '@wm-types/config';
 import {Language} from '@wm-types/language';
 import {Subscription} from 'rxjs';
@@ -84,6 +86,10 @@ export class ConfigDetailComponent implements OnDestroy {
     // Reset perché l'istanza viene riusata tra entità diverse (es. navigazione tra due layer) e
     // il riferimento non è più raggiungibile da `visibleEntries` dopo il reset.
     this._openItem = null;
+    this._clearSettleTimers();
+    // Stessa ragione: un toggle in attesa di assestamento riferirebbe un item/header ormai
+    // disconnesso dall'entità appena caricata.
+    this._pendingToggleEvent = null;
     // Stessa ragione: la paginazione è per indice di gruppo, che ha senso solo per l'attuale `_groups`.
     this._visibleCountPerGroup = [];
     // Stessa ragione: la cache è keyed per riferimento-item, gli item vecchi non sono più
@@ -104,6 +110,59 @@ export class ConfigDetailComponent implements OnDestroy {
    */
   private _openItem: ConfigDetailInfoBoxItem | null = null;
 
+  /**
+   * Debounce di assestamento: dopo l'ultima `transitionend` pertinente ricevuta, quanto aspettare
+   * prima di considerare il layout stabile e dispacciare `configDetailSettled`. Copre il caso di
+   * DUE wrapper che transitionano dallo stesso click (chiusura + apertura, es. STORIA→ACQUA):
+   * senza questo, ci si fermerebbe al primo `transitionend` mentre l'altro elemento sta ancora
+   * cambiando altezza, causando un secondo, piccolo spostamento subito dopo (oc:8427).
+   *
+   * Vincolo (solo interno a questo file): deve restare sensibilmente sotto `SETTLE_FALLBACK_MS`
+   * (400ms) — altrimenti il fallback potrebbe scattare prima ancora che il debounce di
+   * assestamento abbia la possibilità di farlo, vanificandolo. Nessun vincolo cross-repo verso
+   * webmapp-app resta oggi: il resize automatico di `wm-map-details` in risposta a questo evento
+   * è stato rimosso interamente (non solo ricalibrato) nello stesso ciclo — vedi
+   * `map-details.component.ts` → `onConfigDetailSettled()`, webmapp-app.
+   */
+  private static readonly SETTLE_DEBOUNCE_MS = 50;
+
+  /**
+   * Fallback se `transitionend` non arriva mai per la proprietà attesa (transizione interrotta da
+   * un secondo click prima che finisca — garantito dalla specifica CSS, non un edge case raro).
+   * 300ms di durata nota della transizione (`grid-template-rows`, vedi
+   * `config-detail.component.scss`) + 100ms di margine.
+   */
+  private static readonly SETTLE_FALLBACK_MS = 400;
+
+  private _pendingToggleEvent: ConfigDetailToggleEvent | null = null;
+  private _settleDebounceId: ReturnType<typeof setTimeout> | null = null;
+  private _settleFallbackId: ReturnType<typeof setTimeout> | null = null;
+
+  /**
+   * Filtra su `propertyName` (esclude le altre transizioni CSS del componente, es. `border-color`
+   * dell'header o `opacity` del pulsante "Mostra altro") E su `target` (esclude un `transitionend`
+   * bubbled da dentro il contenuto HTML backend-driven iniettato via `[innerHTML]`, che potrebbe
+   * avere una propria transizione che usa per coincidenza lo stesso nome di proprietà — il
+   * listener è sull'host component, quindi riceve in bubbling anche quelli).
+   */
+  private readonly _onTransitionEnd = (ev: TransitionEvent): void => {
+    const isContentWrapperTransition =
+      (ev.target as HTMLElement | null)?.classList?.contains(
+        'wm-config-detail-content-wrapper',
+      ) === true;
+    if (
+      ev.propertyName !== 'grid-template-rows' ||
+      !isContentWrapperTransition ||
+      this._pendingToggleEvent == null
+    )
+      return;
+    if (this._settleDebounceId != null) clearTimeout(this._settleDebounceId);
+    this._settleDebounceId = setTimeout(
+      () => this._flushPendingToggle(),
+      ConfigDetailComponent.SETTLE_DEBOUNCE_MS,
+    );
+  };
+
   /** Quanti item sono attualmente mostrati per ciascun gruppo (indice = posizione del gruppo tra quelli con `box_type: 'info'`); assente = `PAGE_SIZE`. */
   private _visibleCountPerGroup: number[] = [];
 
@@ -122,8 +181,10 @@ export class ConfigDetailComponent implements OnDestroy {
     private _langSvc: LangService,
     private _cdr: ChangeDetectorRef,
     private _sanitizer: DomSanitizer,
+    private _elRef: ElementRef<HTMLElement>,
   ) {
     this._langChangeSub = this._langSvc.onLangChange.subscribe(() => this._cdr.markForCheck());
+    this._elRef.nativeElement.addEventListener('transitionend', this._onTransitionEnd);
   }
 
   /** Prefisso univoco per istanza, usato nel template per costruire id/aria-controls non duplicati. */
@@ -133,6 +194,8 @@ export class ConfigDetailComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this._langChangeSub?.unsubscribe();
+    this._elRef.nativeElement.removeEventListener('transitionend', this._onTransitionEnd);
+    this._clearSettleTimers();
   }
 
   /**
@@ -240,12 +303,65 @@ export class ConfigDetailComponent implements OnDestroy {
 
   /**
    * Alterna lo stato aperto/chiuso di `item`. Apertura esclusiva: aprirne uno chiude
-   * automaticamente l'item precedentemente aperto (mai più di un item aperto alla volta).
+   * automaticamente l'item precedentemente aperto (mai più di un item aperto alla volta). Programma
+   * il dispatch di `configDetailSettled` (con l'header cliccato solo in apertura, mai in chiusura —
+   * la responsabilità dello scroll resta sempre del consumer) una volta che il layout si è
+   * assestato, non sincrono al click: vedi `SETTLE_DEBOUNCE_MS`/`SETTLE_FALLBACK_MS` e
+   * `_flushPendingToggle()` (oc:8427).
    *
    * @param item Item da alternare.
+   * @param event Evento click originato dal tap sull'header, usato solo per recuperare
+   *   `currentTarget` come header da riportare in vista. Opzionale per restare backward-compatible
+   *   con chiamate programmatiche che non hanno un evento DOM reale.
    */
-  toggle(item: ConfigDetailInfoBoxItem): void {
-    this._openItem = this._openItem === item ? null : item;
+  toggle(item: ConfigDetailInfoBoxItem, event?: Event): void {
+    const opening = this._openItem !== item;
+    this._openItem = opening ? item : null;
+    this._pendingToggleEvent = {
+      opening,
+      headerElement: opening ? ((event?.currentTarget as HTMLElement) ?? null) : null,
+    };
+    this._clearSettleTimers();
+    // Solo il fallback parte subito: il debounce di assestamento (SETTLE_DEBOUNCE_MS) va avviato
+    // solo alla ricezione di una `transitionend` pertinente (vedi `_onTransitionEnd`) — avviarlo
+    // già qui lo farebbe scattare prima ancora che la transizione CSS (0.3s) sia iniziata,
+    // vanificando l'attesa che questo meccanismo dovrebbe garantire.
+    this._settleFallbackId = setTimeout(
+      () => this._flushPendingToggle(),
+      ConfigDetailComponent.SETTLE_FALLBACK_MS,
+    );
+  }
+
+  /** Cancella i timer di assestamento pendenti, senza eseguirne gli effetti. */
+  private _clearSettleTimers(): void {
+    if (this._settleDebounceId != null) clearTimeout(this._settleDebounceId);
+    if (this._settleFallbackId != null) clearTimeout(this._settleFallbackId);
+    this._settleDebounceId = null;
+    this._settleFallbackId = null;
+  }
+
+  /**
+   * Dispaccia `configDetailSettled` (evento DOM nativo, `bubbles: true`) dal proprio host —
+   * invece di un `@Output()` Angular — così un consumer non direttamente parent (es.
+   * `wm-map-details`, webmapp-app, che riceve questo componente come contenuto proiettato più
+   * livelli sotto) può ascoltarlo con un semplice binding di template, senza che i componenti
+   * intermedi (`wm-home-layer`, `wm-track-properties`, `wm-poi-properties`) debbano fare
+   * pass-through (oc:8427). `composed: true` è una difesa a costo zero: nessun antenato reale ha
+   * oggi Shadow DOM lungo questo percorso, ma protegge da una regressione silenziosa se in futuro
+   * uno lo adottasse.
+   */
+  private _flushPendingToggle(): void {
+    if (this._pendingToggleEvent == null) return;
+    const detail = this._pendingToggleEvent;
+    this._pendingToggleEvent = null;
+    this._clearSettleTimers();
+    this._elRef.nativeElement.dispatchEvent(
+      new CustomEvent<ConfigDetailToggleEvent>('configDetailSettled', {
+        detail,
+        bubbles: true,
+        composed: true,
+      }),
+    );
   }
 
   /**
@@ -266,11 +382,19 @@ export class ConfigDetailComponent implements OnDestroy {
    * ridotto: coerente con l'apertura esclusiva (un solo item aperto in tutto il componente) e
    * più semplice/predicibile di un controllo "l'item aperto è ancora tra quelli visibili?".
    *
+   * Annulla anche un eventuale toggle ancora in attesa di assestamento (`_pendingToggleEvent`):
+   * senza questo, se l'item chiuso da questa chiamata era anche quello appena aperto da un
+   * `toggle()` non ancora dispacciato, il `transitionend` di CHIUSURA che questa collassata
+   * genera farebbe comunque dispacciare `configDetailSettled` con `{opening: true}` — un'apertura
+   * che in realtà non è (più) avvenuta.
+   *
    * @param groupIndex Indice del gruppo (tra quelli con `box_type: 'info'`) da riportare alla pagina iniziale.
    */
   showLess(groupIndex: number): void {
     delete this._visibleCountPerGroup[groupIndex];
     this._openItem = null;
+    this._clearSettleTimers();
+    this._pendingToggleEvent = null;
   }
 
   /**
