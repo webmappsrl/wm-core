@@ -26,9 +26,10 @@
 <div
   class="wm-searchbar-camminiditalia-panel"
   [class.wm-searchbar-camminiditalia-panel--open]="panelOpen"
+  [style.max-height.px]="panelOpen ? panelHeight : 0"
   *ngIf="showFilters$|async"
 >
-<div class="wm-searchbar-camminiditalia-panel-inner">
+<div class="wm-searchbar-camminiditalia-panel-inner" #panelInner>
   <ng-container *ngIf="options$|async as options">
     <wm-home-route-filter-row
       [label]="'Lunghezza'|wmtrans"

@@ -2,8 +2,10 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   Inject,
   Optional,
+  ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import {FormBuilder} from '@angular/forms';
@@ -70,6 +72,10 @@ export class WmSearchBarComponent extends SearchBarBaseComponent {
   draft: RouteFilterState = {};
   /** `true` se il pannello dei 7 filtri è visibile (toggle a icona cursori). */
   panelOpen = false;
+  /** Altezza in px del contenuto del pannello, misurata via `scrollHeight` — vedi `togglePanel()`. */
+  panelHeight = 0;
+
+  @ViewChild('panelInner') private _panelInnerRef?: ElementRef<HTMLElement>;
 
   /** `true` se almeno un layer della config ha `attributes` — gate del toggle/pannello filtri. */
   showFilters$: Observable<boolean> = this._store.select(confShowRouteFilters);
@@ -101,17 +107,43 @@ export class WmSearchBarComponent extends SearchBarBaseComponent {
     return hasActiveFilters(this.draft);
   }
 
-  /** Apre/chiude il pannello dei 7 filtri (icona cursori accanto alla search box). */
+  /**
+   * Apre/chiude il pannello dei 7 filtri (icona cursori accanto alla search box).
+   *
+   * L'altezza da animare è misurata da `scrollHeight` invece di un valore CSS fisso: il
+   * contenuto è già presente nel DOM (solo clippato via `overflow:hidden`), quindi la misura
+   * è disponibile subito, prima di flippare `panelOpen` — nessuna attesa necessaria per
+   * l'apertura. Necessario perché un `max-height` fisso troppo distante dall'altezza reale
+   * (es. 2000px contro ~500px di contenuto) rende la transizione CSS impercettibile: la
+   * distanza enorme viene coperta in 0.3s comunque, quindi il contenuto reale arriva a
+   * destinazione quasi subito.
+   */
   togglePanel(): void {
+    if (!this.panelOpen) {
+      this.panelHeight = this._panelInnerRef?.nativeElement.scrollHeight ?? 0;
+    }
     this.panelOpen = !this.panelOpen;
   }
 
   /**
    * Espande/collassa la riga `key` (apertura esclusiva: aprirne una chiude l'eventuale altra aperta).
+   *
+   * Se il pannello è già aperto, ri-misura `panelHeight` dopo che Angular ha applicato la
+   * modifica al DOM (contenuto della riga mostrato/nascosto via `*ngIf` nel componente figlio,
+   * sincrono ma non ancora renderizzato nello stesso turno JS) — altrimenti il contenuto
+   * rivelato da una riga appena espansa verrebbe tagliato dal `max-height` del pannello,
+   * ancora fermo alla misura precedente.
+   *
    * @param key Chiave del filtro alternato.
    */
   toggleRow(key: RouteFilterKey): void {
     this.openKey = this.openKey === key ? null : key;
+    if (this.panelOpen) {
+      requestAnimationFrame(() => {
+        this.panelHeight = this._panelInnerRef?.nativeElement.scrollHeight ?? 0;
+        this._cdr.markForCheck();
+      });
+    }
   }
 
   /**

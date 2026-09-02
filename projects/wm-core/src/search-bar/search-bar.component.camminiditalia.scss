@@ -56,23 +56,34 @@ wm-searchbar {
   border: 2px solid var(--wm-color-white, #fff);
 }
 
-// Apertura/chiusura animata del pannello filtri — stesso trucco CSS Grid già in uso in
-// wm-config-detail (grid-template-rows 0fr → 1fr): anima l'altezza senza doverla misurare via
-// JS, e collassa a zero pulito quando il contenuto interno è vuoto/nascosto.
+// Apertura/chiusura animata del pannello filtri.
+// NOTA (bug iOS, verificato su dispositivo reale): la tecnica CSS Grid
+// `grid-template-rows: 0fr → 1fr` (stesso trucco usato in wm-config-detail,
+// oc:8181) NON anima su Safari/WebKit — lo stato del componente e la classe
+// `--open` si aggiornano correttamente (confermato in Web Inspector), ma il
+// layout resta visivamente collassato. Funziona su Chrome/Blink (desktop e
+// Android), motivo per cui il bug non era emerso prima. Sostituito con
+// `max-height`, supportato ovunque.
+//
+// Il valore di max-height NON è un numero fisso in CSS: un ceiling statico
+// troppo distante dall'altezza reale del contenuto (es. 2000px contro
+// ~500px) rende la transizione impercettibile — la "distanza" enorme viene
+// comunque coperta in 0.3s, quindi il contenuto reale arriva a destinazione
+// quasi subito. L'altezza reale è misurata via `scrollHeight` e applicata
+// come inline style `[style.max-height.px]` dal componente (ha priorità
+// sulla regola qui sotto per specificità) — vedi `togglePanel()`/
+// `toggleRow()` in search-bar.component.camminiditalia.ts.
 .wm-searchbar-camminiditalia-panel {
-  display: grid;
-  grid-template-rows: 0fr;
+  max-height: 0;
   overflow: hidden;
-  transition: grid-template-rows 0.3s ease;
+  transition: max-height 0.3s ease;
 
   &--open {
-    grid-template-rows: 1fr;
     margin-top: 8px;
   }
 }
 
 .wm-searchbar-camminiditalia-panel-inner {
-  min-height: 0;
   overflow: hidden;
 }
 
