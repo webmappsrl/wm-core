@@ -38,7 +38,7 @@
       <wm-status-filter></wm-status-filter>
       <wm-home-ugc *ngIf="(ugcOpened$|async);else layerView"></wm-home-ugc>
       <ng-template #layerView>
-        <wm-home-layer (configDetailSettled)="onConfigDetailSettled($event)"></wm-home-layer>
+        <wm-home-layer></wm-home-layer>
       </ng-template>
       <wm-home-result (layerEVT)="setLayer($event)"></wm-home-result>
     </ng-container>

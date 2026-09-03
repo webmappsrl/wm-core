@@ -11,8 +11,9 @@ import {FilterOption} from '@wm-types/config';
  * (`search-bar.component.camminiditalia.ts`): nessuna variante generica, non è mai montato per
  * altri shard.
  * Apertura esclusiva tra le 7 righe gestita dal genitore: questo componente è puramente
- * controllato via `[open]`/`(toggleEVT)`, non tiene stato di apertura proprio — stesso principio
- * di `wm-config-detail` (apertura esclusiva per riferimento, tracciata nel genitore).
+ * controllato via `[open]`/`(toggleEVT)`, non tiene stato di apertura proprio (a differenza di
+ * `wm-config-detail`, che dall'oc:8458 permette apertura multipla — qui l'esclusività resta
+ * intenzionale e specifica di questo pannello filtri, non un principio condiviso).
  */
 @Component({
   standalone: false,
