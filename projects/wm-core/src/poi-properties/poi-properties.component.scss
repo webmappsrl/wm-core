@@ -1,0 +1,51 @@
+wm-poi-properties {
+  position: absolute;
+  display: block;
+  bottom: 0;
+  height: 50%;
+  border-radius: 15px;
+  background: white;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  .wm-excerpt {
+    padding: 20px 0px 3px 0px;
+  }
+
+  .wm-poi-properties-body {
+    --padding-bottom: 30px;
+
+    > ion-label {
+      display: block;
+      margin: var(--wm-feature-details-margin);
+      margin-top: 0px;
+      span {
+        font-weight: 700;
+      }
+    }
+    .wm-poi-properties-info {
+      margin: var(--wm-feature-details-margin);
+    }
+    .wm-poi-contacts {
+      display: block;
+      margin: var(--wm-feature-details-margin);
+      .webmapp-title {
+        font-weight: var(--wm-feature-details-title-font-weight);
+        font-size: var(--wm-feature-details-title-font-size);
+        color: var(--wm-feature-details-title-color);
+        font-family: var(--wm-feature-details-title-font-family);
+      }
+    }
+    .webmapp-pagepoi-info-body-photoslider {
+      padding: 10px 0;
+      overflow: visible;
+      .webmapp-pagepoi-info-body-photo {
+        height: 150px;
+        width: 250px;
+        &::part(image) {
+          border-radius: 15px;
+        }
+      }
+    }
+  }
+}

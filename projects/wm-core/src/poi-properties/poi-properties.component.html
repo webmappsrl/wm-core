@@ -1,0 +1,80 @@
+<!-- TODO: unire ugc-properties con poi-properties? -->
+<ng-container *ngIf="currentPoiProperties$|async as properties">
+  <div class="wm-poi-properties-body">
+    <ion-label *ngIf="distanceFromCurrentPoi$|async as distanceFromCurrentPoi">
+      {{"Distanza da te" | wmtrans}}
+      <span>{{distanceFromCurrentPoi|distance:'auto':0}}</span>
+    </ion-label>
+    <wm-inner-component-html
+      class="wm-excerpt"
+      *ngIf="properties?.excerpt as excerpt"
+      [enableDismiss]="false"
+      [html]="excerpt|wmtrans"
+    >
+    </wm-inner-component-html>
+    <wm-tab-image-gallery
+      *ngIf="properties?.image_gallery?.length"
+      [imageGallery]="properties?.image_gallery"
+    ></wm-tab-image-gallery>
+    <wm-tab-detail
+      *ngIf="showTechnicalDetails$|async"
+      [properties]="technicalProperties$|async"
+    ></wm-tab-detail>
+    <wm-txn-where
+      *ngIf="properties?.taxonomy_where as txnWhere"
+      [taxonomyWheres]="txnWhere"
+    ></wm-txn-where>
+    <wm-tab-description
+      *ngIf="properties?.description as description"
+      [description]="description"
+    ></wm-tab-description>
+
+    <wm-config-detail [groups]="properties?.config_detail"></wm-config-detail>
+
+    <wm-poi-types-badges
+      *ngIf="properties?.taxonomy?.poi_types as poiTypes"
+      [poiTypes]="poiTypes"
+    ></wm-poi-types-badges>
+    <ng-container *ngIf="properties?.form">
+      <wm-form
+        class="wm-ugc-poi-form-readonly"
+        [disabled]="true"
+        [confPOIFORMS]="confPOIFORMS$|async"
+        [init]="properties?.form"
+        (formGroupEvt)="formGroup = $event"
+      ></wm-form>
+    </ng-container>
+    <ng-container *ngIf="properties?.info as info">
+      <div class="wm-poi-properties-info" [innerHTML]="sanitize(info|wmtrans)"></div>
+    </ng-container>
+    <wm-get-directions></wm-get-directions>
+    <div class="wm-poi-contacts" *ngIf="showContacts$|async">
+      <div class="webmapp-title">{{'Contatti'|wmtrans}}</div>
+      <ion-list>
+        <wm-address
+          *ngIf="properties?.address as address"
+          [address]="address"
+          [addressLink]="properties?.address_link"
+        ></wm-address>
+        <wm-phone *ngIf="properties?.contact_phone as phone" [phone]="phone"></wm-phone>
+        <wm-email *ngIf="properties?.contact_email as email" [email]="email"></wm-email>
+      </ion-list>
+    </div>
+    <wm-feature-useful-urls *ngIf="showUsefulUrls$|async">
+      <wm-related-urls *ngIf="properties?.related_url as relatedUrl" [relatedUrls]="relatedUrl">
+      </wm-related-urls>
+    </wm-feature-useful-urls>
+    <div *ngIf="properties?.osm_url as osm" target="_blank">
+      <ion-icon class="wm-icn " name="link-outline" slot="start"></ion-icon>
+      <a class="webmapp-track-download-urls-item-label" [href]="osm">
+        {{ "Vedi su OpenStreetMap" | wmtrans }}
+      </a>
+    </div>
+    <wm-track-audio *ngIf="properties?.audio" [audio]="properties?.audio"></wm-track-audio>
+    <wm-inner-component-html
+      *ngIf="(confOPTIONSShowEmbeddedHtml$|async) && properties?.embedded_html"
+      [enableDismiss]="false"
+      [html]="properties.embedded_html"
+    ></wm-inner-component-html>
+  </div>
+</ng-container>

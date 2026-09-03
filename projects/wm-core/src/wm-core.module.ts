@@ -15,6 +15,7 @@ import {WmHomeLayerComponent} from './home/home-layer/home-layer.component';
 import {WmHomeComponent} from './home/home.component';
 import {WmLocalizationModule} from './localization/localization.module';
 import {WmPhoneComponent} from './phone/phone.component';
+import {WmAddressComponent} from './address/address.component';
 import {WmPipeModule} from './pipes/pipe.module';
 import {WmRelatedUrlsComponent} from './related-urls/related-urls.component';
 import {WmSharedModule} from './shared/shared.module';
@@ -63,6 +64,7 @@ import {ModalImageComponent} from './modal-image/modal-image.component';
 import {ImageGalleryComponent} from './image-gallery/image-gallery.component';
 import {TrackRelatedPoiComponent} from './track-related-poi/track-related-poi.component';
 import {UgcPoiPropertiesComponent} from './ugc-poi-properties/ugc-poi-properties.component';
+import {PoiPropertiesComponent} from './poi-properties/poi-properties.component';
 import {WmTrackAlertComponent} from './track-alert/track-alert.component';
 import {ModalUgcUploaderComponent} from './modal-ugc-uploader/modal-ugc-uploader.component';
 import {NetworkEffects} from './store/network/network.effects';
@@ -115,6 +117,7 @@ export const declarations = [
   WmRelatedUrlsComponent,
   WmEmailComponent,
   WmPhoneComponent,
+  WmAddressComponent,
   WmHomeComponent,
   WmHomeLandingComponent,
   WmHomeResultComponent,
@@ -139,6 +142,7 @@ export const declarations = [
   ImageGalleryComponent,
   TrackRelatedPoiComponent,
   UgcPoiPropertiesComponent,
+  PoiPropertiesComponent,
   WmTrackAlertComponent,
   ModalUgcUploaderComponent,
   WmHomeHitMapComponent,
