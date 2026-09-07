@@ -73,6 +73,13 @@ export class UrlHandlerService {
 
   initialize(): void {
     this._route.queryParams.pipe(skip(1), debounceTime(100)).subscribe(params => {
+      // Deve restare la PRIMA istruzione del blocco: alcuni dispatch sotto (es.
+      // currentEcLayerId) possono innescare synchronously un effect NgRx che a sua
+      // volta chiama getCurrentQueryParams() (es. HomePage -> changeURL()) — se questa
+      // riga fosse dopo i dispatch, quel chiamante leggerebbe ancora i query param
+      // precedenti (oc:8470).
+      this._currentQueryParams$.next(params);
+
       this._store.dispatch(currentEcLayerId({currentEcLayerId: params.layer ?? null}));
       this._store.dispatch(currentEcTrackId({currentEcTrackId: params.track ?? null}));
       this._store.dispatch(currentEcPoiId({currentEcPoiId: params.poi ?? null}));
@@ -88,7 +95,6 @@ export class UrlHandlerService {
       );
       this._store.dispatch(inputTyped({inputTyped: this._decodeQueryParam(params.search)}));
       this._checkIfUgcIsOpened(params);
-      this._currentQueryParams$.next(params);
 
       // Traccia gli eventi PostHog per i cambiamenti di URL sulla app mobile
       this._mobileTrackUrlChange(params);
