@@ -15,6 +15,7 @@ export const wmIT = {
   'langPlaceholder': 'Seleziona',
   'from': 'Partenza',
   'to': 'Arrivo',
+  'slope':'Dislivello',
   'ascent': 'Dislivello positivo',
   'descent': 'Dislivello negativo',
   'distance': 'Distanza',

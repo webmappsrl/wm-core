@@ -10,6 +10,7 @@ export const wmFR = {
   'langPlaceholder': 'Sélectionner',
   'from': 'Départ',
   'to': 'Arrivée',
+  'slope':'Dénivelé',
   'ascent': 'Dénivelé positif',
   'descent': 'Dénivelé négatif',
   'distance': 'Distance',

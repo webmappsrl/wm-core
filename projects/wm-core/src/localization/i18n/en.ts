@@ -10,6 +10,7 @@ export const wmEN = {
   'langPlaceholder': 'Select',
   'from': 'Start',
   'to': 'Finish',
+  'slope':'Slope',
   'ascent': 'Slope +',
   'descent': 'Slope -',
   'distance': 'Distance',

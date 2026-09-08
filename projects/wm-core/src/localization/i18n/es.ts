@@ -10,6 +10,7 @@ export const wmES = {
   'langPlaceholder': 'Seleccionar',
   'from': 'Inicio',
   'to': 'Fin',
+  'slope':'Desnivel',
   'ascent': 'Ascenso +',
   'descent': 'Descenso -',
   'distance': 'Distancia',

@@ -96,7 +96,7 @@
       <ion-item *ngIf="properties?.ascent as ascent">
         <i class="icon-outline-dislivello-positivo webmapp-pageroute-tabdetail-icon"> </i>
         <ion-label start class="webmapp-pageroute-tabdetail-label">
-          {{ "ascent" | wmtrans }}
+          {{ (properties?.roundtrip ? "slope" : "ascent") | wmtrans }}
         </ion-label>
         <ion-note slot="end" class="webmapp-pageroute-tabdetail-value"> {{ ascent }}m </ion-note>
       </ion-item>

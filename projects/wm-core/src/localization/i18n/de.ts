@@ -10,6 +10,7 @@ export const wmDE = {
   'langPlaceholder': 'Auswählen',
   'from': 'Start',
   'to': 'Ziel',
+  'slope':'Höhenunterschied',
   'ascent': 'Anstieg +',
   'descent': 'Abstieg -',
   'distance': 'Entfernung',
