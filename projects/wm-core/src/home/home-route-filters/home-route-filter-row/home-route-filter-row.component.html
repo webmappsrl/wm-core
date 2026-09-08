@@ -1,0 +1,38 @@
+<div
+  class="wm-home-route-filter-row"
+  [class.wm-home-route-filter-row--open]="open"
+  [class.wm-home-route-filter-row--active]="isActive"
+>
+  <button
+    type="button"
+    class="wm-home-route-filter-row-header"
+    [attr.aria-expanded]="open"
+    [attr.aria-controls]="'wm-home-route-filter-row-' + uid + '-content'"
+    (click)="toggleEVT.emit()"
+  >
+    <span class="wm-home-route-filter-row-icon"><ng-content select="[filter-icon]"></ng-content></span>
+    <span class="wm-home-route-filter-row-label">{{ label }}</span>
+    <span class="wm-home-route-filter-row-pill" *ngIf="isActive">{{ selectedLabel }}</span>
+    <span class="wm-home-route-filter-row-chevron">
+      <ion-icon name="chevron-down-outline"></ion-icon>
+    </span>
+  </button>
+  <div
+    class="wm-home-route-filter-row-content"
+    [id]="'wm-home-route-filter-row-' + uid + '-content'"
+  >
+    <ng-container *ngIf="open">
+      <button
+        type="button"
+        class="wm-home-route-filter-option"
+        [class.wm-home-route-filter-option--selected]="isSelected(option.value)"
+        [disabled]="option.count === 0"
+        [attr.aria-pressed]="isSelected(option.value)"
+        *ngFor="let option of options"
+        (click)="toggleOption(option.value)"
+      >
+        {{ option.label }}
+      </button>
+    </ng-container>
+  </div>
+</div>

@@ -1,16 +1,14 @@
 <ng-container *ngIf="(isLogged$|async)">
-  <div class="wm-profile-user-container">
-    <ion-avatar
-      class="wm-profile-user-avatar"
-      [ngClass]="{
-      'wm-profile-user-avatar-icon': !avatarUrl
-    }"
-    >
-      <i class="wm-icon-user-outline"></i>
+  <div class="wm-profile-user-container" *ngIf="user$|async as currentUser" (click)="openEditProfile(currentUser)">
+    <ion-avatar class="wm-profile-user-avatar">
+      <img *ngIf="currentUser?.avatar_url" [src]="currentUser.avatar_url" />
+      <div class="wm-profile-user-avatar-initials" *ngIf="!currentUser?.avatar_url">
+        {{ currentUser?.name | userInitials }}
+      </div>
     </ion-avatar>
-    <div class="wm-profile-user-header-container" *ngIf="user$|async as user">
-      <h4 class="wm-profile-user-name">{{user?.name}}</h4>
-      <div class="wm-profile-user-email">{{user?.email}}</div>
+    <div class="wm-profile-user-header-container">
+      <h4 class="wm-profile-user-name">{{currentUser?.name}}</h4>
+      <div class="wm-profile-user-email">{{currentUser?.email}}</div>
     </div>
   </div>
 </ng-container>

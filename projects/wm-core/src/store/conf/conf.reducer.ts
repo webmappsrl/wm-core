@@ -136,6 +136,9 @@ const initialConfState: ICONF = {
     showEmbeddedHtml: false,
     showFeaturesInViewport: false,
     showDownloadTiles: false,
+    // TODO(oc:8177): default temporaneo true per i test — portare a false prima del rollout
+    // definitivo, così la feature resta opt-in via config.json backend.
+    showTrackRemainingDistance: true,
   },
   THEME: {
     primary: '#3880ff',

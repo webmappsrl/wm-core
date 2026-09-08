@@ -4,6 +4,7 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  OnDestroy,
   OnInit,
   Output,
   SimpleChanges,
@@ -25,6 +26,12 @@ import {BehaviorSubject} from 'rxjs';
 import {filter, switchMap, take} from 'rxjs/operators';
 import {Location, WmFeature} from '@wm-types/feature';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
+import {GeoutilsService} from '../services/geoutils.service';
+import {
+  HOVER_DISMISS_DELAY_MS,
+  LOCATION_MARKER_COLOR,
+  LOCATION_MARKER_COLOR_RGB,
+} from '../constants/track-remaining-distance';
 
 @Component({
   standalone: false,
@@ -34,11 +41,19 @@ import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class WmSlopeChartComponent implements OnInit {
+export class WmSlopeChartComponent implements OnInit, OnDestroy {
   private _chart: Chart;
   private _chartCanvas: any;
   private _chartValues: Array<Location>;
   private _isInit$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  // Letto da webmappPositionMarkerPlugin per nascondere il marker GPS mentre l'utente
+  // interagisce con il tooltip di hover/touch esistente (vedi oc:8177).
+  private _isHoverActive = false;
+  private _hoverDismissTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  // Stessa icona usata da WmMapPositionDirective per il marker "sei qui" sulla mappa, per
+  // coerenza visiva tra grafico e mappa (vedi oc:8177).
+  private _positionIcon: HTMLImageElement = new Image();
+  private _themeCssVarCache = new Map<string, string>();
 
   @ViewChild('chartCanvas') set content(content: ElementRef) {
     if (this._chart != null) {
@@ -52,17 +67,24 @@ export class WmSlopeChartComponent implements OnInit {
 
   @Input()
   currentTrack: WmFeature<LineString>;
+  @Input()
+  trackProgress: number | null;
   @Output('hover') hover: EventEmitter<WmSlopeChartHoverElements> =
     new EventEmitter<WmSlopeChartHoverElements>();
 
   route: Feature;
   showChart$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  // `source` distingue se il valore di pendenza mostrato viene dal tocco sul grafico ('hover')
+  // o dalla posizione GPS live ('gps'), per colorare diversamente il pallino sulla barra
+  // Pendenza (vedi oc:8177).
   slope: {
     selectedValue: number | undefined;
     selectedPercentage: number;
+    source: 'hover' | 'gps' | null;
   } = {
     selectedValue: undefined,
     selectedPercentage: 0,
+    source: null,
   };
   slopeValues: Array<[number, number]>;
   surfaces: Array<{
@@ -70,17 +92,96 @@ export class WmSlopeChartComponent implements OnInit {
     backgroundColor: string;
   }> = [];
 
-  constructor() {
+  constructor(private _geoutilsSvc: GeoutilsService) {
     Chart.register(...registerables);
+    this._positionIcon.src = '/map-core/assets/location-icon.png';
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.currentTrack) {
       this._init();
+    } else if (changes.trackProgress && this._chart != null) {
+      // Solo un redraw leggero: la recreate completa (_init/_createChart) resta riservata
+      // al cambio traccia, per evitare di ricostruire il chart ad ogni fix GPS (oc:8177).
+      this._chart.update();
     }
   }
 
   ngOnInit(): void {}
+
+  ngOnDestroy(): void {
+    this._clearHoverDismissTimer();
+  }
+
+  /**
+   * Forza la chiusura del tooltip di hover/touch e fa ricomparire il marker GPS, trascorso
+   * HOVER_DISMISS_DELAY_MS dall'ultima interazione (vedi oc:8177).
+   */
+  private _dismissHoverTooltip(): void {
+    this._hoverDismissTimeoutId = null;
+    if (this._chart == null) return;
+
+    this._isHoverActive = false;
+    this._chart.tooltip?.setActiveElements([], {x: 0, y: 0});
+    this._chart.setActiveElements([]);
+    this.slope.selectedValue = undefined;
+    this.slope.source = null;
+    this.hover.emit(undefined);
+    this._chart.update();
+  }
+
+  private _resetHoverDismissTimer(): void {
+    this._clearHoverDismissTimer();
+    this._hoverDismissTimeoutId = setTimeout(
+      () => this._dismissHoverTooltip(),
+      HOVER_DISMISS_DELAY_MS,
+    );
+  }
+
+  private _clearHoverDismissTimer(): void {
+    if (this._hoverDismissTimeoutId != null) {
+      clearTimeout(this._hoverDismissTimeoutId);
+      this._hoverDismissTimeoutId = null;
+    }
+  }
+
+  /**
+   * Legge una CSS custom property del tema (definita a livello di :root/istanza), con
+   * fallback se non disponibile — usata per disegnare sul canvas con gli stessi colori
+   * del resto della UI (vedi oc:8177).
+   *
+   * Il risultato è cacheato per nome: `getComputedStyle()` forza un ricalcolo degli stili,
+   * costo evitabile per un valore che non cambia mai durante la sessione del componente.
+   */
+  private _getThemeCssVar(name: string, fallback: string): string {
+    if (!this._themeCssVarCache.has(name)) {
+      const value = getComputedStyle(this._chartCanvas).getPropertyValue(name).trim();
+      this._themeCssVarCache.set(name, value || fallback);
+    }
+    return this._themeCssVarCache.get(name);
+  }
+
+  /**
+   * Traccia il path di un rettangolo con angoli arrotondati, senza fare fill/stroke — a
+   * differenza di CanvasRenderingContext2D.roundRect(), supportato in modo più uniforme sulle
+   * WebView meno recenti target di questa app hybrid (vedi oc:8177).
+   */
+  private _drawRoundedRectPath(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    radius: number,
+  ): void {
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.arcTo(x + width, y, x + width, y + height, radius);
+    ctx.arcTo(x + width, y + height, x, y + height, radius);
+    ctx.arcTo(x, y + height, x, y, radius);
+    ctx.arcTo(x, y, x + width, y, radius);
+    ctx.closePath();
+  }
 
   /**
    * Return the distance in meters between two locations
@@ -149,6 +250,15 @@ export class WmSlopeChartComponent implements OnInit {
         },
         options: {
           events: ['mousemove', 'click', 'touchstart', 'touchmove', 'pointermove'],
+          // A differenza di beforeTooltipDraw (che rifà il fire ad ogni redraw, anche quelli
+          // programmatici innescati dagli aggiornamenti GPS), onHover scatta solo per
+          // interazioni reali dell'utente — è il punto giusto da cui far ripartire il timer
+          // di dismissal del tooltip (vedi oc:8177).
+          onHover: (_event, elements) => {
+            if (elements.length > 0) {
+              this._resetHoverDismissTimer();
+            }
+          },
           layout: {
             padding: {
               top: 40,
@@ -256,6 +366,7 @@ export class WmSlopeChartComponent implements OnInit {
                 (<any>tooltip)._active &&
                 (<any>tooltip)._active.length > 0
               ) {
+                this._isHoverActive = true;
                 let activePoint = (<any>tooltip)._active[0],
                   ctx = chart.ctx,
                   x = activePoint.element.x,
@@ -295,6 +406,7 @@ export class WmSlopeChartComponent implements OnInit {
                   slopeValues[(<any>tooltip)?._tooltipItems?.[0]?.dataIndex][1];
                 this.slope.selectedPercentage =
                   (Math.min(15, Math.max(0, Math.abs(this.slope.selectedValue))) * 100) / 15;
+                this.slope.source = 'hover';
 
                 let index: number = (<any>tooltip)._tooltipItems[0].dataIndex,
                   locations: Array<Location> = [],
@@ -333,9 +445,102 @@ export class WmSlopeChartComponent implements OnInit {
                   track: surfaceTrack,
                 });
               } else {
+                this._isHoverActive = false;
+                this._clearHoverDismissTimer();
                 this.slope.selectedValue = undefined;
+                this.slope.source = null;
                 this.hover.emit(undefined);
               }
+            },
+          },
+          {
+            id: 'webmappPositionMarkerPlugin',
+            afterDraw: chart => {
+              if (this.trackProgress == null || this._isHoverActive || this._chartValues == null) {
+                return;
+              }
+
+              const lastIndex = labels.length - 1;
+              const index = Math.round(Math.max(0, Math.min(1, this.trackProgress)) * lastIndex);
+              const altitude = this._chartValues[index]?.altitude;
+
+              if (altitude == null) {
+                return;
+              }
+
+              // Posizione pixel dall'elemento renderizzato del dataset, non da
+              // scales['x'].getPixelForValue(): su CategoryScale quel metodo ignora l'indice
+              // passato e cerca il valore per corrispondenza, sbagliando in presenza di km
+              // arrotondati duplicati (vedi oc:8177).
+              const point = (chart.getDatasetMeta(0).data[index] as any) ?? null;
+              if (point == null) {
+                return;
+              }
+
+              const ctx = chart.ctx,
+                x = point.x,
+                y = point.y,
+                bottomY = chart.scales['y'].bottom,
+                iconSize = 22;
+
+              // Aggiorna la barra "Pendenza" esistente con il valore alla posizione GPS live,
+              // stessa logica usata dal tooltip di hover (vedi oc:8177)
+              const slopePercent = slopeValues[index]?.[1];
+              if (typeof slopePercent === 'number') {
+                this.slope.selectedValue = slopePercent;
+                this.slope.selectedPercentage =
+                  (Math.min(15, Math.max(0, Math.abs(slopePercent))) * 100) / 15;
+                this.slope.source = 'gps';
+              }
+
+              ctx.save();
+
+              // guida verticale fino all'asse, per leggibilità
+              ctx.beginPath();
+              ctx.moveTo(x, y);
+              ctx.lineTo(x, bottomY);
+              ctx.lineWidth = 1;
+              ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+              ctx.stroke();
+
+              // etichetta dislivello, sopra il marker — tinta trasparente + bordo tratteggiato
+              const label = Math.round(altitude) + ' m',
+                measure: TextMetrics = ctx.measureText(label),
+                labelMinX = Math.max(0, Math.min(chart.width - measure.width, x - measure.width / 2)),
+                labelY = y - iconSize / 2 - 8,
+                pillX = labelMinX - 6,
+                pillY = labelY - 15,
+                pillW = measure.width + 12,
+                pillH = 21,
+                darkColor = this._getThemeCssVar('--wm-color-dark', '#323031');
+
+              this._drawRoundedRectPath(ctx, pillX, pillY, pillW, pillH, 6);
+              ctx.fillStyle = `rgba(${LOCATION_MARKER_COLOR_RGB}, 0.14)`;
+              ctx.fill();
+              ctx.setLineDash([3, 2]);
+              ctx.lineWidth = 1;
+              ctx.strokeStyle = LOCATION_MARKER_COLOR;
+              ctx.stroke();
+              ctx.setLineDash([]);
+
+              ctx.fillStyle = darkColor;
+              ctx.font = 'bold 12px sans-serif';
+              ctx.fillText(label, labelMinX, labelY);
+
+              // marker di posizione, stessa icona usata sulla mappa (WmMapPositionDirective)
+              if (this._positionIcon.complete && this._positionIcon.naturalWidth > 0) {
+                ctx.drawImage(this._positionIcon, x - iconSize / 2, y - iconSize / 2, iconSize, iconSize);
+              } else {
+                ctx.beginPath();
+                ctx.arc(x, y, iconSize / 3, 0, 2 * Math.PI);
+                ctx.fillStyle = LOCATION_MARKER_COLOR;
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#ffffff';
+                ctx.stroke();
+              }
+
+              ctx.restore();
             },
           },
         ],
@@ -383,9 +588,15 @@ export class WmSlopeChartComponent implements OnInit {
         },
         borderWidth: 3,
         pointRadius: 0,
+        // pointHoverRadius a 0: l'evidenziazione nativa di Chart.js sul punto attivo dipende
+        // da chart._active, lo stesso stato "bloccato attivo" del tooltip (vedi oc:8177) — su
+        // touch reali il reset via setActiveElements([]) non è affidabile al 100%. La linea
+        // verticale + etichetta disegnate da webmappTooltipPlugin sono già l'indicatore
+        // primario del punto toccato, quindi il pallino nativo è ridondante e viene disattivato
+        // per eliminare il rischio di rimanere visibile indefinitamente.
         pointHoverBackgroundColor: '#000000',
         pointHoverBorderColor: '#FFFFFF',
-        pointHoverRadius: 6,
+        pointHoverRadius: 0,
         pointHoverBorderWidth: 2,
         data: values,
         spanGaps: false,
@@ -483,6 +694,14 @@ export class WmSlopeChartComponent implements OnInit {
   }
 
   private _init(): void {
+    // Il cambio traccia ricrea il chart (_createChart) ma non toccherebbe altrimenti questo
+    // stato di istanza: senza reset, se l'utente stava toccando il grafico esattamente al
+    // cambio traccia, il marker GPS resterebbe nascosto sul nuovo chart finché non scatta
+    // il vecchio timer di dismissal (fino a HOVER_DISMISS_DELAY_MS di ritardo) (vedi oc:8177).
+    this._isHoverActive = false;
+    this._clearHoverDismissTimer();
+    this.slope.selectedValue = undefined;
+    this.slope.source = null;
     this.showChart$.next(this._is3dGeometry(this.currentTrack.geometry));
     this._isInit$
       .pipe(
@@ -515,7 +734,6 @@ export class WmSlopeChartComponent implements OnInit {
         slopeValues: Array<[number, number]> = [],
         labels: Array<number> = [],
         steps: number = 100,
-        trackLength: number = 0,
         currentDistance: number = 0,
         previousLocation: Location,
         currentLocation: Location,
@@ -545,7 +763,14 @@ export class WmSlopeChartComponent implements OnInit {
       if (!usedSurfaces.includes(surface)) usedSurfaces.push(surface);
       slopeValues.push([coordinates[0][2] ?? 0, 0]);
 
-      // Calculate track length and max/min altitude
+      // Stessa formula usata da GeoutilsService.getHaversineTrackLength, per garantire che
+      // il totale del grafico e la distanza rimanente (oc:8177) restino sempre coerenti.
+      const trackLength = this._geoutilsSvc.getHaversineTrackLength({
+        type: 'LineString',
+        coordinates,
+      });
+
+      // Calculate max/min altitude
       for (let i = 1; i < coordinates.length; i++) {
         previousLocation = currentLocation;
         currentLocation = {
@@ -553,7 +778,6 @@ export class WmSlopeChartComponent implements OnInit {
           latitude: coordinates[i][1],
           altitude: coordinates[i][2] ?? 0,
         };
-        trackLength += this.getDistanceBetweenPoints(previousLocation, currentLocation);
 
         if (maxAlt < currentLocation.altitude) {
           maxAlt = currentLocation.altitude;

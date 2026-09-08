@@ -16,7 +16,9 @@ import {
   closeUgc,
   inputTyped,
   openUgc,
+  setMapDetailsStatus,
 } from '@wm-core/store/user-activity/user-activity.action';
+import {ILAYER} from '@wm-core/types/config';
 import {BehaviorSubject} from 'rxjs';
 import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
 import {POSTHOG_CLIENT} from '@wm-core/store/conf/conf.token';
@@ -160,6 +162,52 @@ export class UrlHandlerService {
         : {track: id ? id : undefined};
       this.updateURL(queryParams, ['map']);
     });
+  }
+
+  /**
+   * Apre un layer sulla mappa da un punto qualsiasi dell'app (non solo dalla Home,
+   * dove la stessa azione passa invece per `HomeComponent.setLayer()` senza cambiare
+   * route, dato che la mappa è già visibile in quel contesto).
+   *
+   * Usa `changeURL()` (navigazione basata sul path corrente), non `updateURL()`:
+   * `updateURL()` naviga solo se i query param cambiano rispetto a quelli correnti,
+   * quindi se un `layer` con lo stesso id era già in URL da una navigazione precedente
+   * (es. aperto prima dalla Home) il confronto risulterebbe "invariato" e la chiamata
+   * non navigherebbe affatto verso `/map` restando sulla pagina di origine.
+   */
+  setLayer(layer: ILAYER | {id?: string | number} | string | number | null): void {
+    const id = typeof layer === 'object' && layer !== null ? layer.id : layer;
+    this.changeURL('map', {layer: id ?? undefined, search: undefined});
+    this._store.dispatch(setMapDetailsStatus({status: 'open'}));
+  }
+
+  /**
+   * Gestisce un deep link nativo (Universal Link / App Link) ricevuto da appUrlOpen.
+   * Inoltra qualsiasi path e query param dell'URL al router, così qualunque route
+   * dell'app è raggiungibile da link esterno, non solo /map.
+   * ugc_track/ugc_poi sono esclusi di proposito: dati personali, non raggiungibili da link pubblico.
+   */
+  handleDeepLink(url: string): void {
+    let parsed: URL;
+    try {
+      parsed = new URL(url);
+    } catch {
+      return;
+    }
+
+    const path = parsed.pathname.replace(/^\//, '');
+    const queryParams: Params = {};
+    parsed.searchParams.forEach((value, key) => {
+      if (key === 'ugc_track' || key === 'ugc_poi') {
+        return;
+      }
+      queryParams[key] = value;
+    });
+
+    const posthogProps: Record<string, any> = {url, ...queryParams};
+    this._posthogClient?.capture('deepLinkOpened', posthogProps);
+
+    this.navigateTo(path ? [path] : [], queryParams);
   }
 
   /**

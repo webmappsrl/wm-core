@@ -51,13 +51,17 @@ export class CameraService {
             {
               text: this._lanSvc.instant('Scatta una foto'),
               handler: () => {
-                this.shotPhoto().then(photo => resolve([photo]));
+                this.shotPhoto()
+                  .then(photo => resolve([photo]))
+                  .catch(() => reject());
               },
             },
             {
               text: this._lanSvc.instant('Dalla libreria'),
               handler: () => {
-                this.getPhotos(null).then(photos => resolve(photos));
+                this.getPhotos(null)
+                  .then(photos => resolve(photos))
+                  .catch(() => reject());
               },
             },
             {
@@ -75,6 +79,57 @@ export class CameraService {
     });
 
     return retProm;
+  }
+
+  /**
+   * Same action sheet as addPhotos() (Scatta una foto / Dalla libreria / Annulla)
+   * but returns a single Photo — used for profile avatar upload. Does not touch
+   * addPhotos(), which is shared by the UGC flows and returns Photo[]. Caps the
+   * capture at 1600px/quality 80 via an explicit options override passed to
+   * shotPhoto()/getPhotos() — the shared UGC defaults (full resolution) stay
+   * untouched for every other caller.
+   */
+  async addProfilePhoto(): Promise<Photo> {
+    return new Promise<Photo>((resolve, reject) => {
+      this._actionSheetCtrl
+        .create({
+          header: this._lanSvc.instant("Origine dell'immagine"),
+          buttons: [
+            {
+              text: this._lanSvc.instant('Scatta una foto'),
+              handler: () => {
+                this.shotPhoto(1600)
+                  .then(photo => resolve(photo))
+                  .catch(() => reject());
+              },
+            },
+            {
+              text: this._lanSvc.instant('Dalla libreria'),
+              handler: () => {
+                this.getPhotos(null, {quality: 80, width: 1600})
+                  .then(photos => {
+                    if (photos.length === 0) {
+                      reject();
+                      return;
+                    }
+                    resolve(photos[0]);
+                  })
+                  .catch(() => reject());
+              },
+            },
+            {
+              text: this._lanSvc.instant('Annulla'),
+              role: 'cancel',
+              handler: () => {
+                reject();
+              },
+            },
+          ],
+        })
+        .then(actionSheet => {
+          actionSheet.present();
+        });
+    });
   }
 
   public async getBlob(url: string) {
@@ -163,20 +218,23 @@ export class CameraService {
 
     return String(input);
   }
-  async getPhotos(dateLimit: Date = null): Promise<Photo[]> {
+  /**
+   * @param options optional overrides merged into the default gallery options
+   * (e.g. `{quality: 80, width: 1600}` for the avatar flow). Left unset, this
+   * keeps the original full-resolution behavior relied upon by the UGC photo
+   * flows (`addPhotos()`) — those must never be resized as a side effect of
+   * an option only the avatar flow actually needs.
+   */
+  async getPhotos(dateLimit: Date = null, options?: Partial<GalleryImageOptions>): Promise<Photo[]> {
     if (!(await Camera.checkPermissions())) {
       await Camera.requestPermissions();
       if (!(await Camera.checkPermissions())) return [];
     }
-    const options: GalleryImageOptions = {
-      quality: 100, //	number	The quality of image to return as JPEG, from 0-100		1.2.0
-      // width:	10000, //number	The width of the saved image		1.2.0
-      // height:10000,	//number	The height of the saved image		1.2.0
-      // correctOrientation: false, // 	boolean	Whether to automatically rotate the image “up” to correct for orientation in portrait mode	: true	1.2.0
-      // presentationStyle:	'fullscreen' | 'popover'	// iOS only: The presentation style of the Camera.	: 'fullscreen'	1.2.0
-      // limit : 100 //	number	iOS only: Maximum number of pictures the user will be able to choose.	0 (unlimited)	1.2.0
+    const galleryOptions: GalleryImageOptions = {
+      quality: 100,
+      ...options,
     };
-    const gallery: GalleryPhotos = await Camera.pickImages(options);
+    const gallery: GalleryPhotos = await Camera.pickImages(galleryOptions);
     const photos = (gallery.photos as Photo[]).map(photo => {
       photo.exif = this._sanitizeObjectValues(photo.exif);
       return photo;
@@ -248,14 +306,20 @@ export class CameraService {
     }
   }
 
-  async shotPhoto(): Promise<Photo> {
+  /**
+   * @param maxWidth optional max width (px) forwarded to `Camera.getPhoto()`'s `width`
+   * option. Left unset (the default) for `addPhotos()`'s UGC callers, where full
+   * resolution may be intentional/acceptable; `addProfilePhoto()` passes 1600 to cap
+   * the avatar capture at the same size already used for the gallery path.
+   */
+  async shotPhoto(maxWidth?: number): Promise<Photo> {
     if (!this._geoLocationSvc.active) await this._geoLocationSvc.startNavigation();
     const photo: Photo = await Camera.getPhoto({
       quality: 90,
       // allowEditing: true,
       resultType: CameraResultType.Uri,
       saveToGallery: true, //boolean	Whether to save the photo to the gallery. If the photo was picked from the gallery, it will only be saved if edited. Default: false
-      // width: 10000,//	number	The width of the saved image
+      ...(maxWidth != null && {width: maxWidth}), //	number	The width of the saved image
       // height: 10000,//	number	The height of the saved image
       // preserveAspectRatio: true, //	boolean	Whether to preserve the aspect ratio of the image.If this flag is true, the width and height will be used as max values and the aspect ratio will be preserved.This is only relevant when both a width and height are passed.When only width or height is provided the aspect ratio is always preserved(and this option is a no- op).A future major version will change this behavior to be default, and may also remove this option altogether.Default: false
       // correctOrientation: true,	//boolean	Whether to automatically rotate the image “up” to correct for orientation in portrait mode Default: true

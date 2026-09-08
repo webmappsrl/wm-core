@@ -24,14 +24,17 @@ import {ecTracksLoading, poisInitCount} from '@wm-core/store/features/ec/ec.sele
 import {
   downloadsOpened,
   ecLayer,
+  hasActiveRouteFilters,
   homeResultTabSelected,
   inputTyped,
   lastFilterType,
+  routeFilters,
   showTracks,
   ugcOpened,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {confHOMELayers} from '@wm-core/store/conf/conf.selector';
 import {ILAYER} from '@wm-core/types/config';
+import {layerMatchesFilters} from '@wm-core/home/home-route-filters/home-route-filters.utils';
 import {
   countAll,
   countPois,
@@ -99,6 +102,7 @@ export class WmHomeResultComponent {
   );
   filteredLayers$: Observable<ILAYER[]>;
   countLayers$: Observable<number>;
+  hasActiveRouteFilters$: Observable<boolean> = this._store.select(hasActiveRouteFilters);
   showResultTabSelected$: Observable<HomeResultTab>;
   showTracks$ = this._store.select(showTracks);
   tracks$: Observable<Hit[]>;
@@ -116,17 +120,25 @@ export class WmHomeResultComponent {
     this.filteredLayers$ = combineLatest([
       this._store.select(confHOMELayers),
       this._store.select(inputTyped),
+      this._store.select(routeFilters),
     ]).pipe(
       debounceTime(300),
-      map(([layers, input]) => {
-        if (!input || input.trim() === '') return [];
+      map(([layers, input, filters]) => {
+        const hasInput = !!input && input.trim() !== '';
+        const hasFilters = Object.values(filters ?? {}).some(v => Array.isArray(v) && v.length > 0);
+        // Nessun testo digitato e nessun filtro attivo: comportamento invariato, nessun risultato
+        // (la lista completa resta visibile nella griglia Home, non qui).
+        if (!hasInput && !hasFilters) return [];
         if (!layers) return [];
-        const normalized = normalizeString(input);
+        const normalized = hasInput ? normalizeString(input) : '';
         return layers.filter(layer => {
-          if (!layer.title) return false;
-          const title = this._langSvc.instant(layer.title as any);
-          if (!title || typeof title !== 'string') return false;
-          return normalizeString(title).includes(normalized);
+          if (hasInput) {
+            if (!layer.title) return false;
+            const title = this._langSvc.instant(layer.title as any);
+            if (!title || typeof title !== 'string') return false;
+            if (!normalizeString(title).includes(normalized)) return false;
+          }
+          return layerMatchesFilters(layer, filters ?? {});
         });
       }),
       distinctUntilChanged((a, b) => JSON.stringify(a.map(l => l.id)) === JSON.stringify(b.map(l => l.id))),
@@ -141,10 +153,15 @@ export class WmHomeResultComponent {
       this._store.select(homeResultTabSelected),
       this.lastFilterType$,
       this._store.select(ecLayer).pipe(startWith(null)),
+      this.hasActiveRouteFilters$,
     ]).pipe(
-      map(([countTracks, countPois, countLayers, userSelectedTab, lastFilterType, currentLayer]) => {
+      map(([countTracks, countPois, countLayers, userSelectedTab, lastFilterType, currentLayer, hasActiveRouteFilters]) => {
         // Se un layer è già aperto, il tab layers non esiste nell'UI — mai restituirlo
         const layersAvailable = countLayers > 0 && !currentLayer;
+
+        // Filtri Home (oc:8414) attivi: solo cammini sono un risultato pertinente, mai
+        // tracce/POI — ignora la selezione tab dell'utente e la logica di default sotto.
+        if (hasActiveRouteFilters) return layersAvailable ? 'layers' : null;
 
         // Rispetta la scelta esplicita dell'utente (userSelectedTab != null)
         if (userSelectedTab === 'tracks' && countTracks > 0) return 'tracks';

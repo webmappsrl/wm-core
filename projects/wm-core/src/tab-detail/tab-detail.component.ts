@@ -12,6 +12,10 @@ import {ISlopeChartHoverElements} from '../types/slope-chart';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {confOPTIONS} from '@wm-core/store/conf/conf.selector';
+import {
+  trackLiveDistanceVm,
+  TrackLiveDistanceVm,
+} from '@wm-core/store/user-activity/user-activity.selector';
 
 @Component({
   standalone: false,
@@ -30,6 +34,11 @@ export class WmTabDetailComponent {
 
   confOptions$: Observable<any> = this._store.select(confOPTIONS);
   public route: IGeojsonFeature;
+
+  // Selettore condiviso con track-recorder.component.ts (oc:8284) — vedi commento su
+  // trackLiveDistanceVm in user-activity.selector.ts per il gate su
+  // OPTIONS.showTrackRemainingDistance.
+  trackLiveDistanceVm$: Observable<TrackLiveDistanceVm> = this._store.select(trackLiveDistanceVm);
 
   constructor(private _store: Store<any>) {}
 

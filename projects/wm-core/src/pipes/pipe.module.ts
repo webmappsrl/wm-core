@@ -19,6 +19,8 @@ import {WmCreateBlobPipe} from './wm-create-blob.pipe';
 import {WmTimeFormatterPipe} from './wm-time-formatter.pipe';
 import {WmSortPipe} from './wm-sort.pipe';
 import {WmFilterFeaturesPipe} from './wm-filter-features';
+import {WmHasLogoPipe} from './wm-has-logo.pipe';
+import {WmUserInitialsPipe} from './wm-user-initials.pipe';
 
 const pipes = [
   WmTransPipe,
@@ -40,6 +42,8 @@ const pipes = [
   WmTimeFormatterPipe,
   WmSortPipe,
   WmFilterFeaturesPipe,
+  WmHasLogoPipe,
+  WmUserInitialsPipe,
 ];
 @NgModule({
   imports: [CommonModule],

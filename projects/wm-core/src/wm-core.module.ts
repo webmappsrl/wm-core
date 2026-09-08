@@ -31,12 +31,13 @@ import {WmTaxonomyWhereComponent} from './taxonomy-where/taxonomy-where.componen
 import {WmTrackAudioComponent} from './track-audio/track-audio.component';
 import {WmTrackEdgesComponent} from './track-edges/track-edges.component';
 import {WmInnerHtmlComponent} from './inner-html/inner-html.component';
+import {ConfigDetailComponent} from './config-detail/config-detail.component';
+import {HomeRouteFilterRowComponent} from './home/home-route-filters/home-route-filter-row/home-route-filter-row.component';
 import {ButtonsModule} from './buttons/export-to/buttons.module';
 import {WmFeatureUsefulUrlsComponent} from './feature-useful-urls/feature-useful-urls.component';
 import {AuthInterceptor} from './store/auth/auth.interceptor';
 import {AuthEffects} from './store/auth/auth.effects';
 import {authReducer} from './store/auth/auth.reducer';
-import {ModalHeaderComponent} from './modal-header/modal-header.component';
 import {LoginComponent} from './login/login.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {WmProfileModule} from './profile/profile.module';
@@ -56,6 +57,7 @@ import {WmUgcMediasModule} from './ugc-medias/wm-ugc-medias.module';
 import {UgcTrackDataComponent} from './ugc-details/ugc-track-data/ugc-track-data.component';
 import {UgcTrackPropertiesComponent} from './ugc-track-properties/ugc-track-properties.component';
 import {TrackPropertiesComponent} from './track-properties/track-properties.component';
+import {WmTrackLiveDistanceBadgeComponent} from './track-live-distance-badge/track-live-distance-badge.component';
 import {TabImageGalleryComponent} from './tab-image-gallery/tab-image-gallery.component';
 import {ModalImageComponent} from './modal-image/modal-image.component';
 import {ImageGalleryComponent} from './image-gallery/image-gallery.component';
@@ -109,6 +111,7 @@ export const declarations = [
   WmTaxonomyWhereComponent,
   WmTrackAudioComponent,
   WmSlopeChartComponent,
+  WmTrackLiveDistanceBadgeComponent,
   WmRelatedUrlsComponent,
   WmEmailComponent,
   WmPhoneComponent,
@@ -119,11 +122,12 @@ export const declarations = [
   WmHomeUgcComponent,
   WmTrackEdgesComponent,
   WmInnerHtmlComponent,
+  ConfigDetailComponent,
+  HomeRouteFilterRowComponent,
   WmFeatureUsefulUrlsComponent,
   LoginComponent,
   RegisterComponent,
   GenericPopoverComponent,
-  ModalHeaderComponent,
   WmFormComponent,
   WmSearchBarComponent,
   WmGeoboxMapComponent,

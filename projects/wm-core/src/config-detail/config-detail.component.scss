@@ -1,0 +1,147 @@
+wm-config-detail {
+  display: block;
+}
+
+.wm-config-detail {
+  // Margine sul wrapper interno (gated da `*ngIf="visibleEntries.length"` nel template), non sul
+  // tag host `wm-config-detail`: il tag host è sempre nel DOM nei 3 consumer (nessun `*ngIf`
+  // esterno, per design — vedi overview, "singolo binding senza logica di branching"). Se il
+  // margine vivesse sul tag host, un `config_detail` assente/vuoto lascerebbe comunque uno
+  // spazio vuoto visibile (margin di un box a contenuto zero, non collassato), contro il
+  // requisito esplicito "nessun cambiamento visibile" (bug trovato in wm-skills:wm-review-ticket).
+  margin: var(--wm-feature-details-margin);
+
+  // Azzera il margin-bottom finale solo sull'ultimo figlio REALE del componente (item o pulsante
+  // "Mostra altro"/"Mostra meno", qualunque sia), non su ".wm-config-detail-item:last-of-type" —
+  // quella regola avrebbe azzerato il gap tra l'ultimo item mostrato e il pulsante che lo segue
+  // (":last-of-type" si applica all'ultimo elemento di quel tipo, indipendentemente da cosa lo
+  // segue), incollandoli visivamente.
+  > *:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.wm-config-detail-item {
+  border: 1px solid var(--ion-color-light-shade, #e2e8f0);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+
+  &--open {
+    border-color: var(--wm-color-primary, #3880ff);
+  }
+
+  &--group-start {
+    // Nessuna intestazione visibile tra un gruppo e l'altro, ma serve più spazio del semplice
+    // gap tra item dello stesso gruppo (fedele al sito di riferimento) — i margini verticali tra
+    // box adiacenti collassano al valore più alto, quindi basta questo per ottenere un gap
+    // complessivo maggiore rispetto ai 12px di margin-bottom tra item dello stesso gruppo.
+    margin-top: 40px;
+  }
+}
+
+.wm-config-detail-toggle-button {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  // Più dei 12px di gap tra item dello stesso gruppo: deve essere STRETTAMENTE maggiore di 12px,
+  // perché i margini adiacenti collassano al valore più alto (non si sommano) — un valore pari o
+  // inferiore a margin-bottom:12px dell'item precedente non avrebbe alcun effetto visibile.
+  margin-top: 16px;
+  margin-bottom: 12px;
+  padding: 12px 16px;
+  background: var(--wm-color-primary, #3880ff);
+  border: none;
+  border-radius: 8px;
+  color: var(--wm-color-primary-contrast, #ffffff);
+  font: inherit;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.wm-config-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.wm-config-detail-title {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.wm-config-detail-chevron {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 8px;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ion-icon {
+    color: #ffffff;
+    transition: transform 0.2s ease;
+  }
+}
+
+.wm-config-detail-item--open .wm-config-detail-chevron {
+  background: var(--wm-color-primary, #3880ff);
+}
+
+.wm-config-detail-item--open .wm-config-detail-chevron ion-icon {
+  transform: rotate(90deg);
+}
+
+.wm-config-detail-content-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  transition: grid-template-rows 0.3s ease;
+}
+
+.wm-config-detail-item--open .wm-config-detail-content-wrapper {
+  grid-template-rows: 1fr;
+}
+
+.wm-config-detail-content {
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 16px 16px;
+  font-size: 0.95rem;
+
+  img {
+    max-width: 100%;
+  }
+
+  iframe {
+    // Nessun aspect-ratio forzato: il markup embed del backend porta sempre width/height HTML
+    // reali (es. 560x315 per un video 16:9, ma anche 600x450 = 4:3 per una mappa) — forzare 16/9
+    // avrebbe distorto/compresso qualunque embed che non fosse un video in quel rapporto. Con
+    // solo width:100%;height:auto il browser deriva il rapporto naturale dagli attributi
+    // width/height dell'iframe, stesso meccanismo già usato per `img` qui sopra.
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    border: none;
+  }
+}

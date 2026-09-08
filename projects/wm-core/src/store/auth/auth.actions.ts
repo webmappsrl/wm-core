@@ -1,11 +1,13 @@
 import {HttpErrorResponse} from '@angular/common/http';
 import {createAction, props} from '@ngrx/store';
+import {Photo} from '@capacitor/camera';
 import {IUser} from './auth.model';
 
 export const loadSignUps = createAction(
   '[Auth] Load SignUps',
   props<{
     name: string;
+    surname: string;
     email: string;
     password: string;
     referrer?: string;
@@ -53,5 +55,14 @@ export const loadSignOutsSuccess = createAction('[Auth] Load SignOut Success');
 export const updateUserPrivacy = createAction('[Auth] update user privacy', props<{agree}>());
 export const updatePrivacyFailure = createAction(
   '[Auth] update user privacy failure',
+  props<{error: HttpErrorResponse}>(),
+);
+
+export const updateUserProfile = createAction(
+  '[Auth] update user profile',
+  props<{name?: string; surname?: string; avatarPhoto?: Photo}>(),
+);
+export const updateUserProfileFailure = createAction(
+  '[Auth] update user profile failure',
   props<{error: HttpErrorResponse}>(),
 );

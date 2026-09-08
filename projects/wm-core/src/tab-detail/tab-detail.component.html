@@ -2,16 +2,40 @@
   <span class="webmapp-title">{{'Dettagli tecnici'|wmtrans}}</span>
 
   <ion-list *ngIf="properties">
-    <ion-item *ngIf="properties?.from as from">
-      <i class="icon-outline-pin webmapp-pageroute-tabdetail-icon"> </i>
-      <ion-label start class="webmapp-pageroute-tabdetail-label">{{ "from" | wmtrans }}</ion-label>
-      <ion-note slot="end" class="webmapp-pageroute-tabdetail-value">{{from}}</ion-note>
-    </ion-item>
-    <ion-item *ngIf="properties?.to as to">
-      <i class="icon-outline-flag webmapp-pageroute-tabdetail-icon"> </i>
-      <ion-label start class="webmapp-pageroute-tabdetail-label">{{ "to" | wmtrans }} </ion-label>
-      <ion-note slot="end" class="webmapp-pageroute-tabdetail-value">{{to}}</ion-note>
-    </ion-item>
+    <ng-container *ngIf="trackLiveDistanceVm$ | async as liveDistanceVm">
+      <ion-item
+        [class.webmapp-pageroute-tabdetail-item-live]="liveDistanceVm.distanceCovered != null"
+        *ngIf="properties?.from || liveDistanceVm.distanceCovered != null"
+      >
+        <i class="icon-outline-pin webmapp-pageroute-tabdetail-icon"> </i>
+        <ion-label start class="webmapp-pageroute-tabdetail-label">{{ "from" | wmtrans }}</ion-label>
+        <div slot="end" class="webmapp-pageroute-tabdetail-end-stack">
+          <ion-note *ngIf="properties?.from as from" class="webmapp-pageroute-tabdetail-value">{{
+            from
+          }}</ion-note>
+          <wm-track-live-distance-badge
+            [distanceMeters]="liveDistanceVm.distanceCovered"
+            [stale]="liveDistanceVm.stale"
+          ></wm-track-live-distance-badge>
+        </div>
+      </ion-item>
+      <ion-item
+        [class.webmapp-pageroute-tabdetail-item-live]="liveDistanceVm.remainingDistance != null"
+        *ngIf="properties?.to || liveDistanceVm.remainingDistance != null"
+      >
+        <i class="icon-outline-flag webmapp-pageroute-tabdetail-icon"> </i>
+        <ion-label start class="webmapp-pageroute-tabdetail-label">{{ "to" | wmtrans }} </ion-label>
+        <div slot="end" class="webmapp-pageroute-tabdetail-end-stack">
+          <ion-note *ngIf="properties?.to as to" class="webmapp-pageroute-tabdetail-value">{{
+            to
+          }}</ion-note>
+          <wm-track-live-distance-badge
+            [distanceMeters]="liveDistanceVm.remainingDistance"
+            [stale]="liveDistanceVm.stale"
+          ></wm-track-live-distance-badge>
+        </div>
+      </ion-item>
+    </ng-container>
     <ion-item *ngIf="properties.difficulty as difficulty; else cai_scale_template">
       <i class="icon-outline-difficulty webmapp-pageroute-tabdetail-icon"> </i>
       <ion-label start class="webmapp-pageroute-tabdetail-label"

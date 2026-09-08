@@ -1,27 +1,11 @@
-import {
-  EmptyInputTyped,
-  inputTyped as inputTypedSelector,
-} from '@wm-core/store/user-activity/user-activity.selector';
-import {Subscription} from 'rxjs/internal/Subscription';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  OnDestroy,
-  ViewEncapsulation,
-  ChangeDetectionStrategy,
-} from '@angular/core';
-import {FormBuilder, FormGroup, FormControl} from '@angular/forms';
-import {Store} from '@ngrx/store';
-import {debounceTime, filter, distinctUntilChanged} from 'rxjs/operators';
-import {inputTyped} from '@wm-core/store/user-activity/user-activity.action';
-import {UrlHandlerService} from '@wm-core/services/url-handler.service';
+import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
+import {SearchBarBaseComponent} from './search-bar-base.component';
 
-interface SearchForm {
-  search: FormControl<string>;
-}
-
+/**
+ * Search box di default, usata da tutti gli shard tranne camminiditalia (vedi variante
+ * `.camminiditalia.ts`, che aggiunge sopra la stessa ricerca il pannello filtri "Cerca il tuo
+ * cammino", oc:8414). Logica in `SearchBarBaseComponent`.
+ */
 @Component({
   standalone: false,
   selector: 'wm-searchbar',
@@ -30,80 +14,4 @@ interface SearchForm {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WmSearchBarComponent implements OnDestroy {
-  private _searchSub$: Subscription = Subscription.EMPTY;
-  private _inputTypedSub$: Subscription = Subscription.EMPTY;
-
-  @Input('initSearch') set setSearch(init: string) {
-    this.searchForm.controls.search.setValue(init);
-  }
-
-  @Output('isTypings') isTypingsEVT: EventEmitter<boolean> = new EventEmitter<boolean>(false);
-
-  emptyInputTyped$ = this._store.select(EmptyInputTyped);
-  searchForm: FormGroup<SearchForm>;
-
-  constructor(
-    fb: FormBuilder,
-    private _store: Store<any>,
-    private _urlHandlerSvc: UrlHandlerService,
-  ) {
-    this.searchForm = fb.group<SearchForm>({
-      search: new FormControl<string>(''),
-    });
-
-    /**
-     * This code is subscribing to a searchForm valueChanges observable.
-     * It is using the debounceTime operator to wait 500 milliseconds before emitting the value from the observable.
-     * If the words and search are not null and the search is not an empty string,
-     * it dispatches a query action with either the inputTyped and layer or just the inputTyped.
-     * It then emits two events, one for isTypingsEVT with a boolean value of true, and one for wordsEVT
-     * with the words.search as its value. If the words and search are null or an empty string,
-     * it emits an event for isTypingsEVT with a boolean value of false.
-     **/
-    this._searchSub$ = this.searchForm.valueChanges.pipe(debounceTime(500)).subscribe(value => {
-      const search = value.search;
-      if (search != null && search !== '') {
-        this._urlHandlerSvc.updateURL({search});
-        this.isTypingsEVT.emit(true);
-      } else {
-        this._urlHandlerSvc.updateURL({search: undefined});
-        this.isTypingsEVT.emit(false);
-      }
-    });
-    this._store
-      .select(EmptyInputTyped)
-      .pipe(filter(f => f))
-      .subscribe(() => {
-        this.searchForm.reset();
-        this.isTypingsEVT.emit(false);
-      });
-    this._inputTypedSub$ = this._store
-      .select(inputTypedSelector)
-      .pipe(distinctUntilChanged())
-      .subscribe(value => {
-        const currentValue = this.searchForm.controls.search.value;
-        const newValue = value || '';
-        if (currentValue !== newValue) {
-          this.searchForm.controls.search.setValue(newValue);
-        }
-      });
-  }
-
-  ngOnDestroy(): void {
-    this._searchSub$.unsubscribe();
-    this._inputTypedSub$.unsubscribe();
-  }
-
-  /**
-   * @description
-   * This function is a member of a class and is used to reset the searchForm,
-   * emit an empty string to the wordsEVT event, and emit false to the isTypingsEVT event.
-   * @memberof SearchBarComponent
-   */
-  reset(): void {
-    this.searchForm.reset();
-    this._store.dispatch(inputTyped({inputTyped: ''}));
-    this.isTypingsEVT.emit(false);
-  }
-}
+export class WmSearchBarComponent extends SearchBarBaseComponent {}

@@ -58,6 +58,8 @@ export interface IGeojsonProperties {
   image_gallery?: WmImage[];
   import_method?: string;
   kml_url?: string;
+  /** stringa URL semplice o assente — NON un oggetto WmImage, a differenza di feature_image */
+  logo_image?: string;
   mbtiles?: string[];
   name?: iLocalString;
   source?: string;

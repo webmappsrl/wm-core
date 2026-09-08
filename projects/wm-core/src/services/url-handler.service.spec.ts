@@ -9,6 +9,7 @@ import {POSTHOG_CLIENT} from '@wm-core/store/conf/conf.token';
 
 describe('UrlHandlerService', () => {
   let service: UrlHandlerService;
+  let posthogClientSpy: jasmine.SpyObj<{capture: (...args: any[]) => void}>;
   let queryParams$: BehaviorSubject<any>;
   let dispatchSpy: jasmine.Spy;
 
@@ -28,7 +29,7 @@ describe('UrlHandlerService', () => {
         return true;
       },
     } as any;
-    const posthogClientSpy = jasmine.createSpyObj('WmPosthogClient', ['capture']);
+    posthogClientSpy = jasmine.createSpyObj('WmPosthogClient', ['capture']);
 
     TestBed.configureTestingModule({
       providers: [
@@ -42,6 +43,60 @@ describe('UrlHandlerService', () => {
     });
 
     service = TestBed.inject(UrlHandlerService);
+    spyOn(service, 'navigateTo');
+  });
+
+  it('estrae track dall\'URL e naviga sulla mappa', () => {
+    service.handleDeepLink('https://1.camminiditalia.webmapp.it/map?track=123');
+
+    expect(service.navigateTo).toHaveBeenCalledWith(['map'], {track: '123'});
+  });
+
+  it('estrae poi, layer e filter insieme', () => {
+    service.handleDeepLink('https://1.camminiditalia.webmapp.it/map?poi=1&layer=2&filter=3');
+
+    expect(service.navigateTo).toHaveBeenCalledWith(['map'], {poi: '1', layer: '2', filter: '3'});
+  });
+
+  it('esclude ugc_track e ugc_poi dai queryParams', () => {
+    service.handleDeepLink(
+      'https://1.camminiditalia.webmapp.it/map?track=1&ugc_track=9&ugc_poi=8',
+    );
+
+    expect(service.navigateTo).toHaveBeenCalledWith(['map'], {track: '1'});
+  });
+
+  it('non naviga su URL malformato', () => {
+    service.handleDeepLink('not-a-valid-url');
+
+    expect(service.navigateTo).not.toHaveBeenCalled();
+  });
+
+  it('naviga su un path diverso da /map', () => {
+    service.handleDeepLink('https://1.camminiditalia.webmapp.it/favourites?foo=bar');
+
+    expect(service.navigateTo).toHaveBeenCalledWith(['favourites'], {foo: 'bar'});
+  });
+
+  it('naviga sulla root con query param (es. ricerca home)', () => {
+    service.handleDeepLink('https://1.camminiditalia.webmapp.it/?search=sirena');
+
+    expect(service.navigateTo).toHaveBeenCalledWith([], {search: 'sirena'});
+  });
+
+  it('naviga anche senza query param riconosciuti', () => {
+    service.handleDeepLink('https://1.camminiditalia.webmapp.it/map');
+
+    expect(service.navigateTo).toHaveBeenCalledWith(['map'], {});
+  });
+
+  it('invia un evento PostHog deepLinkOpened quando risolve un deep link valido', () => {
+    service.handleDeepLink('https://1.camminiditalia.webmapp.it/map?track=123');
+
+    expect(posthogClientSpy.capture).toHaveBeenCalledWith(
+      'deepLinkOpened',
+      jasmine.objectContaining({track: '123'}),
+    );
   });
 
   it('aggiorna _currentQueryParams$ prima di dispatchare le action, non dopo', done => {

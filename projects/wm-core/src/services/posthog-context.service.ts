@@ -4,6 +4,7 @@ import {Store} from '@ngrx/store';
 import {currentEcPoiId, currentEcTrack} from '@wm-core/store/features/ec/ec.selector';
 import {currentUgcPoiId, currentUgcTrackId} from '@wm-core/store/features/ugc/ugc.selector';
 import {currentEcLayer} from '@wm-core/store/user-activity/user-activity.selector';
+import {user} from '@wm-core/store/auth/auth.selectors';
 import {WmPosthogClient, WmPosthogInitOptions, WmPosthogProps} from '@wm-types/posthog';
 import {combineLatest} from 'rxjs';
 import {PosthogCapacitorClient} from './posthog-capacitor.client';
@@ -34,18 +35,21 @@ export class PosthogContextService implements WmPosthogClient {
       this._store.select(currentUgcPoiId),
       this._store.select(currentEcTrack),
       this._store.select(currentUgcTrackId),
+      this._store.select(user),
     ])
       .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe(([layer, ecPoiId, ugcPoiId, ecTrack, ugcTrackId]) => {
+      .subscribe(([layer, ecPoiId, ugcPoiId, ecTrack, ugcTrackId, authUser]) => {
         const snap: WmPosthogProps = {};
         if (layer?.id != null) snap['layer_id'] = `${layer.id}`;
         if (ecPoiId != null && ecPoiId !== 0) snap['poi_id'] = `${ecPoiId}`;
         if (ugcPoiId != null) snap['ugc_poi_id'] = `${ugcPoiId}`;
         if (ecTrack?.properties?.id != null) snap['track_id'] = `${ecTrack.properties.id}`;
         if (ugcTrackId != null) snap['ugc_track_id'] = `${ugcTrackId}`;
+        // TODO(oc:8159): valutare identify(`${authUser.id}`) per il merge storico
+        // cross-device/reinstall in PostHog, invece della sola prop user_id qui sotto.
+        if (authUser?.id != null) snap['user_id'] = authUser.id;
         this._contextSnapshot = snap;
       });
-
   }
 
   private get _geolocationSvc(): GeolocationService | null {
