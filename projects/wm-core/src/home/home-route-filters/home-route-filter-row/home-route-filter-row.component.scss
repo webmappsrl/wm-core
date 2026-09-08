@@ -38,10 +38,12 @@
     color: var(--wm-color-primary, #ff6600);
   }
 
-  ::ng-deep svg {
-    width: 100%;
-    height: 100%;
-  }
+  // Dimensionamento via attributi width/height sull'<svg> proiettato (non CSS): la regola
+  // `::ng-deep svg` qui usata in precedenza risultava, nel CSS compilato servito dal dev
+  // server di questo progetto, con il selettore letterale "::ng-deep" mai riscritto/rimosso.
+  // Chrome/Blink lo tollera come alias deprecato dello Shadow DOM v0 e applica comunque la
+  // regola; Safari/WebKit non lo riconosce, invalida l'intero selettore e la scarta — le
+  // icone risultavano quindi sempre a 0x0 solo lì, indipendentemente dal valore impostato.
 }
 
 .wm-home-route-filter-row-label {
@@ -73,6 +75,10 @@
 .wm-home-route-filter-row-chevron {
   display: flex;
   align-items: center;
+  // Colore esplicito: senza reset, il <button> su WKWebView (app iOS native) eredita il tint
+  // blu di sistema invece del nero — non riproducibile su Chrome/Safari desktop, dove il default
+  // del bottone è già scuro.
+  color: #1d282bcc;
   transition: transform 0.2s ease;
 
   .wm-home-route-filter-row--open & {
