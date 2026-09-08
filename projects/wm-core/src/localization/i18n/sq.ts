@@ -15,6 +15,7 @@ export const wmSQ = {
   'langPlaceholder': 'Zgjidh',
   'from': 'Nisja',
   'to': 'Mbërritja',
+  'slope':'Lartësia',
   'ascent': 'Ngjitje',
   'descent': 'Zbritje',
   'distance': 'Distanca',
