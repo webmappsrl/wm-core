@@ -161,7 +161,10 @@ export class WmHomeResultComponent {
 
         // Filtri Home (oc:8414) attivi: solo cammini sono un risultato pertinente, mai
         // tracce/POI — ignora la selezione tab dell'utente e la logica di default sotto.
-        if (hasActiveRouteFilters) return layersAvailable ? 'layers' : null;
+        // Non si applica se l'utente ha già aperto un layer specifico: a quel punto i
+        // filtri Home (pensati per la vista d'insieme) non sono più pertinenti, e le
+        // tappe/tracce del layer aperto devono restare visibili come di consueto.
+        if (hasActiveRouteFilters && !currentLayer) return layersAvailable ? 'layers' : null;
 
         // Rispetta la scelta esplicita dell'utente (userSelectedTab != null)
         if (userSelectedTab === 'tracks' && countTracks > 0) return 'tracks';

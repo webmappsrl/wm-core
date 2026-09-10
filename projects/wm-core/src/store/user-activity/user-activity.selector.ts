@@ -4,6 +4,7 @@ import {UserActivityState} from './user-activity.reducer';
 import {
   confFlowLineQuote,
   confHOME,
+  confHOMELayers,
   confOPTIONSShowTrackRemainingDistance,
   confPOIFORMS,
   confTRACKFORMS,
@@ -84,11 +85,24 @@ export const ecLayer = createSelector(userActivity, state => {
 export const filterTaxonomies = createSelector(userActivity, state => {
   return state.filterTaxonomies;
 });
-export const mapFilters = createSelector(userActivity, state => {
+/**
+ * ID numerici dei layer Home che soddisfano i filtri attivi (oc:8414), o `null` se nessun filtro
+ * è attivo — usato dalla mappa (map-core/utils/styles.ts) per nascondere le tracce dei layer
+ * esclusi dal filtro, oltre alla lista già filtrata di `home-result.component.ts`.
+ */
+export const routeFilteredLayerIds = createSelector(
+  routeFilters,
+  hasActiveRouteFilters,
+  confHOMELayers,
+  (filters, hasActive, homeLayers) =>
+    hasActive ? homeLayers.filter(layer => layerMatchesFilters(layer, filters)).map(layer => +layer.id) : null,
+);
+export const mapFilters = createSelector(userActivity, routeFilteredLayerIds, (state, routeFilteredLayerIds) => {
   return {
     layer: state.layer,
     filterTracks: state.filterTracks,
     lastFilterType: 'tracks',
+    routeFilteredLayerIds,
   };
 });
 export const poiFilterIdentifiers = createSelector(
