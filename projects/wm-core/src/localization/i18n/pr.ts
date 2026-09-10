@@ -10,6 +10,7 @@ export const wmPR = {
   'langPlaceholder': 'Selecionar',
   'from': 'Início',
   'to': 'Fim',
+  'slope':'Elevação',
   'ascent': 'Elevação +',
   'descent': 'Elevação -',
   'distance': 'Distância',
