@@ -1,17 +1,26 @@
+@import './home-layer-shared.scss';
+
+// Overlay titolo/logo sulla foto (design di default, tutti gli shard
+// tranne .camminiditalia che ha il proprio layout in
+// home-layer.component.camminiditalia.scss). Queste regole erano finite
+// per errore nel solo home-layer-shared.scss durante oc:8391 e poi perse
+// del tutto (mai state condivise con camminiditalia, che ha sempre avuto
+// un proprio design) — ripristinate qui.
 wm-home-layer {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  align-items: stretch;
-  align-content: stretch;
-  overflow-y: auto;
-  height: fit-content;
-  position: relative;
-  wm-img,
-  .wm-description {
-    margin: 10px;
+  wm-img.wm-home-layer-logo-overlay {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+    margin: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    z-index: 2;
   }
+
   .wm-box-title {
     font-size: 26px;
     font-family: var(--wm-font-family-content, inherit);
@@ -26,9 +35,5 @@ wm-home-layer {
     letter-spacing: 0em;
     text-align: left;
     white-space: break-spaces;
-  }
-  .wm-description {
-    max-height: 200px;
-    overflow: auto;
   }
 }

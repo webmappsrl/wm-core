@@ -202,4 +202,5 @@ export class WmHomeComponent implements AfterContentInit {
       this._urlHandlerSvc.updateURL({filter: idx});
     }
   }
+
 }

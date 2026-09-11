@@ -65,7 +65,6 @@ export class ExportToBtnComponent {
         }
       } catch (e) {
         console.error(e);
-        console.log('---------');
         this._loadingSvc.close(`build ${this.to} file`);
       }
     } else {
@@ -100,7 +99,6 @@ export class ExportToBtnComponent {
         }
       } catch (e) {
         console.error(e);
-        console.log('---------');
         this._loadingSvc.close(`build ${this.to} file`);
       }
     }
@@ -148,7 +146,7 @@ export class ExportToBtnComponent {
           text: 'No',
           role: 'cancel',
           handler: () => {
-            console.log('Condivisione annullata');
+            // DEBUG: console.log('Condivisione annullata');
           },
         },
         {

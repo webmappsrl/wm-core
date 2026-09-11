@@ -5,3 +5,11 @@
 @mixin box-shadow-dark {
   box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.4);
 }
+
+// Sfondo bianco translucido + ombra leggera per badge/logo/cuoricino overlay
+// su foto (layer-box, home-layer) — stesso pattern ripetuto identico in
+// 4 punti tra i due componenti prima di essere estratto qui (oc:8305).
+@mixin overlay-chip-background {
+  background-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
+}

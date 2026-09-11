@@ -12,12 +12,13 @@ import {Store} from '@ngrx/store';
 import {BehaviorSubject, from, Observable, of} from 'rxjs';
 import {switchMap, take} from 'rxjs/operators';
 import {Point} from 'geojson';
-import {Media, WmFeature} from '@wm-types/feature';
+import {WmFeature} from '@wm-types/feature';
 import {LangService} from '@wm-core/localization/lang.service';
 import {deleteUgcPoi, updateUgcPoi} from '@wm-core/store/features/ugc/ugc.actions';
 import {UntypedFormGroup} from '@angular/forms';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {currentUgcPoi, currentUgcPoiProperties} from '@wm-core/store/features/ugc/ugc.selector';
+import {UgcPropertiesBaseComponent} from '@wm-core/ugc-properties-base/ugc-properties-base.component';
 
 @Component({
   standalone: false,
@@ -27,7 +28,7 @@ import {currentUgcPoi, currentUgcPoiProperties} from '@wm-core/store/features/ug
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class UgcPoiPropertiesComponent {
+export class UgcPoiPropertiesComponent extends UgcPropertiesBaseComponent {
   @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
   @ViewChild('content') content: IonContent;
@@ -39,8 +40,6 @@ export class UgcPoiPropertiesComponent {
   currentUgcPoiProperties$ = this._store.select(currentUgcPoiProperties);
   fg: UntypedFormGroup;
   isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-
-  private _photos: Media[] = [];
 
   slideOptions = {
     allowTouchMove: false,
@@ -58,7 +57,9 @@ export class UgcPoiPropertiesComponent {
     private _alertCtlr: AlertController,
     private _langSvc: LangService,
     private _urlHandlerSvc: UrlHandlerService,
-  ) {}
+  ) {
+    super();
+  }
 
   deletePoi(): void {
     this.currentUgcPoi$
@@ -84,10 +85,6 @@ export class UgcPoiPropertiesComponent {
       .subscribe(alert => alert.present());
   }
 
-  enableEditing(): void {
-    this.isEditing$;
-  }
-
   removeUgcPoiFromUrl(): void {
     this._urlHandlerSvc.updateURL({ugc_poi: undefined});
   }
@@ -108,7 +105,7 @@ export class UgcPoiPropertiesComponent {
             form: this.fg.value,
             ...(this.fg.value?.layer_id != null && {layer_id: this.fg.value.layer_id}),
             updatedAt: new Date(),
-            media: this._photos ?? [],
+            media: this.photos,
           },
         };
 
@@ -116,9 +113,5 @@ export class UgcPoiPropertiesComponent {
         this.isEditing$.next(false);
       }
     });
-  }
-
-  photosChanged(photos: Media[]): void {
-    this._photos = photos;
   }
 }

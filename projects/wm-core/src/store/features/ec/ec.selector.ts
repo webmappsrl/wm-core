@@ -5,6 +5,8 @@ import {
   calculateLayerFeaturesCount,
   filterFeatures,
   filterFeaturesByInputTyped,
+  filterFeaturesByLayerId,
+  hasLayerIdData,
 } from './utils';
 import {Elastic} from '@wm-types/elastic';
 import {Ec} from './ec.reducer';
@@ -14,6 +16,7 @@ import {
   filterTaxonomies,
   poiFilterIdentifiers,
   poisSelectedFilterIdentifiers,
+  currentEcLayer,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
@@ -98,7 +101,18 @@ export const poisInitCount = createSelector(allEcpoiFeatures, allEcPois => allEc
 export const poisWhereFeatures = createSelector(
   allEcpoiFeatures,
   filterTaxonomies,
-  (allEcPois, filter) => filterFeatures(allEcPois, filter),
+  currentEcLayer,
+  (allEcPois, filter, layer) => {
+    const taxonomyFiltered = filterFeatures(allEcPois, filter);
+    if (layer == null) return taxonomyFiltered;
+    if (!hasLayerIdData(allEcPois)) return taxonomyFiltered;
+    const layerId = +layer.id;
+    if (!layer.id || isNaN(layerId)) {
+      console.warn(`[poisWhereFeatures] layer.id "${layer.id}" is not numeric — skipping layer ID filter`);
+      return taxonomyFiltered;
+    }
+    return filterFeaturesByLayerId(taxonomyFiltered, layerId);
+  },
 );
 export const poisFilteredFeatures = createSelector(
   poisWhereFeatures,

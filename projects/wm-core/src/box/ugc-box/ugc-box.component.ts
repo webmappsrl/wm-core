@@ -9,7 +9,11 @@ import {openUgcUploader} from '@wm-core/store/user-activity/user-activity.action
 import {combineLatest, Observable} from 'rxjs';
 import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
 import {isLogged, needsPrivacyAgree} from '@wm-core/store/auth/auth.selectors';
-import { map } from 'rxjs/operators';
+import {confAPP} from '@wm-core/store/conf/conf.selector';
+import {map} from 'rxjs/operators';
+import {Capacitor} from '@capacitor/core';
+
+const LOCAL_MY_PATHS = 'assets/images/profile/my-path.webp';
 
 @Component({
   standalone: false,
@@ -20,7 +24,9 @@ import { map } from 'rxjs/operators';
   encapsulation: ViewEncapsulation.None,
 })
 export class UgcBoxComponent extends BaseBoxComponent<IUGCBOX> {
-  public defaultPhotoPath = 'assets/images/profile/my-path.webp';
+  myPathsImage$: Observable<string> = this._store.select(confAPP).pipe(
+    map(app => (!Capacitor.isNativePlatform() && app?.myPaths) ? app.myPaths : LOCAL_MY_PATHS),
+  );
   isLogged$: Observable<boolean> = this._store.select(isLogged);
   ugcOpen$: Observable<boolean> = this._store.select(ugcOpened);
   showUgcUploaderButton$: Observable<boolean> = combineLatest([this.isLogged$, this.ugcOpen$]).pipe(

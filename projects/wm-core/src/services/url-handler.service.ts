@@ -16,7 +16,9 @@ import {
   closeUgc,
   inputTyped,
   openUgc,
+  setMapDetailsStatus,
 } from '@wm-core/store/user-activity/user-activity.action';
+import {ILAYER} from '@wm-core/types/config';
 import {BehaviorSubject} from 'rxjs';
 import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
 import {POSTHOG_CLIENT} from '@wm-core/store/conf/conf.token';
@@ -73,6 +75,13 @@ export class UrlHandlerService {
 
   initialize(): void {
     this._route.queryParams.pipe(skip(1), debounceTime(100)).subscribe(params => {
+      // Deve restare la PRIMA istruzione del blocco: alcuni dispatch sotto (es.
+      // currentEcLayerId) possono innescare synchronously un effect NgRx che a sua
+      // volta chiama getCurrentQueryParams() (es. HomePage -> changeURL()) — se questa
+      // riga fosse dopo i dispatch, quel chiamante leggerebbe ancora i query param
+      // precedenti (oc:8470).
+      this._currentQueryParams$.next(params);
+
       this._store.dispatch(currentEcLayerId({currentEcLayerId: params.layer ?? null}));
       this._store.dispatch(currentEcTrackId({currentEcTrackId: params.track ?? null}));
       this._store.dispatch(currentEcPoiId({currentEcPoiId: params.poi ?? null}));
@@ -88,7 +97,6 @@ export class UrlHandlerService {
       );
       this._store.dispatch(inputTyped({inputTyped: this._decodeQueryParam(params.search)}));
       this._checkIfUgcIsOpened(params);
-      this._currentQueryParams$.next(params);
 
       // Traccia gli eventi PostHog per i cambiamenti di URL sulla app mobile
       this._mobileTrackUrlChange(params);
@@ -154,6 +162,52 @@ export class UrlHandlerService {
         : {track: id ? id : undefined};
       this.updateURL(queryParams, ['map']);
     });
+  }
+
+  /**
+   * Apre un layer sulla mappa da un punto qualsiasi dell'app (non solo dalla Home,
+   * dove la stessa azione passa invece per `HomeComponent.setLayer()` senza cambiare
+   * route, dato che la mappa è già visibile in quel contesto).
+   *
+   * Usa `changeURL()` (navigazione basata sul path corrente), non `updateURL()`:
+   * `updateURL()` naviga solo se i query param cambiano rispetto a quelli correnti,
+   * quindi se un `layer` con lo stesso id era già in URL da una navigazione precedente
+   * (es. aperto prima dalla Home) il confronto risulterebbe "invariato" e la chiamata
+   * non navigherebbe affatto verso `/map` restando sulla pagina di origine.
+   */
+  setLayer(layer: ILAYER | {id?: string | number} | string | number | null): void {
+    const id = typeof layer === 'object' && layer !== null ? layer.id : layer;
+    this.changeURL('map', {layer: id ?? undefined, search: undefined});
+    this._store.dispatch(setMapDetailsStatus({status: 'open'}));
+  }
+
+  /**
+   * Gestisce un deep link nativo (Universal Link / App Link) ricevuto da appUrlOpen.
+   * Inoltra qualsiasi path e query param dell'URL al router, così qualunque route
+   * dell'app è raggiungibile da link esterno, non solo /map.
+   * ugc_track/ugc_poi sono esclusi di proposito: dati personali, non raggiungibili da link pubblico.
+   */
+  handleDeepLink(url: string): void {
+    let parsed: URL;
+    try {
+      parsed = new URL(url);
+    } catch {
+      return;
+    }
+
+    const path = parsed.pathname.replace(/^\//, '');
+    const queryParams: Params = {};
+    parsed.searchParams.forEach((value, key) => {
+      if (key === 'ugc_track' || key === 'ugc_poi') {
+        return;
+      }
+      queryParams[key] = value;
+    });
+
+    const posthogProps: Record<string, any> = {url, ...queryParams};
+    this._posthogClient?.capture('deepLinkOpened', posthogProps);
+
+    this.navigateTo(path ? [path] : [], queryParams);
   }
 
   /**

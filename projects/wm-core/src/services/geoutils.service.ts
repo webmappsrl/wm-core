@@ -1,4 +1,4 @@
-import {Feature, LineString} from 'geojson';
+import {Feature, LineString, Position} from 'geojson';
 
 import {IPoint} from '../types/model';
 import {Injectable} from '@angular/core';
@@ -9,6 +9,26 @@ import {Coordinate} from 'ol/coordinate';
 import {fromLonLat, toLonLat} from 'ol/proj';
 import RenderFeature, {toFeature} from 'ol/render/Feature';
 import {getDistance} from 'ol/sphere';
+import {
+  REMAINING_DISTANCE_LOCAL_WINDOW_MIN_M,
+  REMAINING_DISTANCE_LOCAL_WINDOW_RATIO,
+  REMAINING_DISTANCE_MAX_SPEED_MS,
+  REMAINING_DISTANCE_MIN_PLAUSIBLE_JUMP_M,
+  REMAINING_DISTANCE_OFF_TRACK_THRESHOLD_M,
+} from '../constants/track-remaining-distance';
+
+export interface RemainingDistanceContext {
+  coordinates3857: Coordinate[];
+  cumulativeDistances: number[];
+  trackLength: number;
+}
+
+export interface RemainingDistanceResult {
+  remainingDistance: number;
+  distanceCovered: number;
+  trackProgress: number;
+  distanceFromTrack: number;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -177,6 +197,111 @@ export class GeoutilsService {
     return 0;
   }
 
+  /**
+   * Lunghezza totale di una traccia, calcolata come somma delle distanze haversine tra
+   * coordinate consecutive — stessa formula usata da SlopeChartComponent per l'asse del
+   * grafico, in modo che i due valori restino sempre coerenti (vedi oc:8177).
+   *
+   * @param trackGeometry geometria della traccia (LineString, EPSG:4326)
+   * @returns lunghezza totale in metri
+   */
+  getHaversineTrackLength(trackGeometry: LineString): number {
+    const coordinates = trackGeometry?.coordinates ?? [];
+    const cumulativeDistances = this._getCumulativeDistances(coordinates);
+    return cumulativeDistances[cumulativeDistances.length - 1] ?? 0;
+  }
+
+  /**
+   * Precalcola, una sola volta per traccia, la riproiezione in EPSG:3857 e le distanze
+   * cumulative usate da `getRemainingDistance` — che altrimenti le ricalcolerebbe da zero
+   * ad ogni fix GPS pur dipendendo solo dalla geometria, non dalla posizione utente. Il
+   * risultato va cacheato dal chiamante per la durata della traccia corrente (vedi oc:8177).
+   *
+   * @param trackGeometry geometria della traccia (LineString, EPSG:4326)
+   * @returns il contesto precalcolato, o null se la geometria non è valida
+   */
+  prepareRemainingDistanceContext(trackGeometry: LineString): RemainingDistanceContext | null {
+    const coordinates = trackGeometry?.coordinates ?? [];
+    if (coordinates.length < 2) {
+      return null;
+    }
+
+    const cumulativeDistances = this._getCumulativeDistances(coordinates);
+
+    return {
+      coordinates3857: coordinates.map(c => fromLonLat([c[0], c[1]])),
+      cumulativeDistances,
+      trackLength: cumulativeDistances[cumulativeDistances.length - 1] ?? 0,
+    };
+  }
+
+  /**
+   * Proietta la posizione GPS corrente sulla geometria della traccia (già precalcolata via
+   * `prepareRemainingDistanceContext`) e calcola la distanza rimanente fino alla fine del
+   * percorso.
+   *
+   * La ricerca del punto più vicino è vincolata a una finestra locale attorno a
+   * `lastKnownProgress` per evitare salti su tracce ad anello o con tratti sovrapposti; se lo
+   * spostamento implicito supera la velocità massima plausibile di un camminatore, la ricerca
+   * viene ripetuta sull'intera traccia (vedi oc:8177).
+   *
+   * @param userPosition posizione GPS corrente
+   * @param trackContext contesto precalcolato da `prepareRemainingDistanceContext`
+   * @param lastKnownProgress ultimo avanzamento noto (0-1), o null se non disponibile
+   * @param elapsedSeconds secondi trascorsi dall'ultimo fix GPS noto
+   * @returns distanza rimanente/avanzamento/distanza dalla traccia, o null se non calcolabile o a più di 100m dalla traccia
+   */
+  getRemainingDistance(
+    userPosition: Location,
+    trackContext: RemainingDistanceContext,
+    lastKnownProgress: number | null,
+    elapsedSeconds: number | null,
+  ): RemainingDistanceResult | null {
+    const {coordinates3857, cumulativeDistances, trackLength} = trackContext ?? {};
+    if (coordinates3857 == null || coordinates3857.length < 2 || !trackLength) {
+      return null;
+    }
+
+    const gps3857 = fromLonLat([userPosition.longitude, userPosition.latitude]);
+
+    let result = this._findClosestPointAlongLine(
+      coordinates3857,
+      cumulativeDistances,
+      gps3857,
+      lastKnownProgress != null
+        ? this._localSearchRange(lastKnownProgress * trackLength, trackLength, cumulativeDistances)
+        : null,
+    );
+
+    if (lastKnownProgress != null) {
+      const maxPlausibleJump = Math.max(
+        REMAINING_DISTANCE_MIN_PLAUSIBLE_JUMP_M,
+        REMAINING_DISTANCE_MAX_SPEED_MS * (elapsedSeconds ?? 0),
+      );
+      const impliedJump = Math.abs(result.distanceAlongLine - lastKnownProgress * trackLength);
+
+      if (impliedJump > maxPlausibleJump) {
+        result = this._findClosestPointAlongLine(coordinates3857, cumulativeDistances, gps3857, null);
+      }
+    }
+
+    const distanceFromTrack = getDistance(
+      toLonLat(gps3857) as [number, number],
+      toLonLat(result.point) as [number, number],
+    );
+
+    if (distanceFromTrack > REMAINING_DISTANCE_OFF_TRACK_THRESHOLD_M) {
+      return null;
+    }
+
+    return {
+      remainingDistance: trackLength - result.distanceAlongLine,
+      distanceCovered: result.distanceAlongLine,
+      trackProgress: result.distanceAlongLine / trackLength,
+      distanceFromTrack,
+    };
+  }
+
   getLocations(track: Feature<LineString>): Location[] {
     const properties = track.properties;
     const locations = properties?.locations ?? null;
@@ -244,6 +369,117 @@ export class GeoutilsService {
     const p1 = [point1[0], point1[1]];
     const p2 = [point2[0], point2[1]];
     return getDistance(p1, p2);
+  }
+
+  /**
+   * Punto più vicino a `p` sul segmento [a, b] (coordinate proiettate, es. EPSG:3857), con il
+   * parametro `t` (0-1) della posizione lungo il segmento.
+   */
+  private _closestPointOnSegment(
+    p: Coordinate,
+    a: Coordinate,
+    b: Coordinate,
+  ): {point: Coordinate; t: number} {
+    const abx = b[0] - a[0];
+    const aby = b[1] - a[1];
+    const lenSq = abx * abx + aby * aby;
+    const t =
+      lenSq > 0
+        ? Math.max(0, Math.min(1, ((p[0] - a[0]) * abx + (p[1] - a[1]) * aby) / lenSq))
+        : 0;
+
+    return {point: [a[0] + abx * t, a[1] + aby * t], t};
+  }
+
+  /**
+   * Distanza cumulativa (haversine, metri) dall'inizio della linea per ogni vertice.
+   */
+  private _getCumulativeDistances(coordinates: Position[]): number[] {
+    const cumulative = [0];
+    for (let i = 1; i < coordinates.length; i++) {
+      cumulative.push(cumulative[i - 1] + this._getHaversineDistance(coordinates[i - 1], coordinates[i]));
+    }
+    return cumulative;
+  }
+
+  /**
+   * Punto più vicino a `gps3857` sui segmenti della linea nel range di indici `range`
+   * (o su tutta la linea se `range` è null), con la distanza cumulativa dall'inizio della
+   * linea fino a quel punto.
+   */
+  private _findClosestPointAlongLine(
+    coordinates3857: Coordinate[],
+    cumulativeDistances: number[],
+    gps3857: Coordinate,
+    range: [number, number] | null,
+  ): {point: Coordinate; distanceAlongLine: number} {
+    const [start, end] = range ?? [0, coordinates3857.length - 1];
+    let best: {point: Coordinate; distanceAlongLine: number; distSq: number} | null = null;
+
+    for (let i = start; i < end; i++) {
+      const {point, t} = this._closestPointOnSegment(gps3857, coordinates3857[i], coordinates3857[i + 1]);
+      const dx = gps3857[0] - point[0];
+      const dy = gps3857[1] - point[1];
+      const distSq = dx * dx + dy * dy;
+
+      if (best == null || distSq < best.distSq) {
+        const segmentLength = cumulativeDistances[i + 1] - cumulativeDistances[i];
+        best = {point, distanceAlongLine: cumulativeDistances[i] + t * segmentLength, distSq};
+      }
+    }
+
+    return {point: best.point, distanceAlongLine: best.distanceAlongLine};
+  }
+
+  /**
+   * Distanza haversine (metri) tra due coordinate GeoJSON [lon, lat, alt?] — stessa formula
+   * e raggio terrestre usati da SlopeChartComponent.getDistanceBetweenPoints, per garantire
+   * risultati identici quando si somma sulla stessa geometria (vedi oc:8177).
+   */
+  private _getHaversineDistance(coord1: Position, coord2: Position): number {
+    const R = 6371e3;
+    const lat1 = (coord1[1] * Math.PI) / 180;
+    const lat2 = (coord2[1] * Math.PI) / 180;
+    const dLat = lat2 - lat1;
+    const dLon = ((coord2[0] - coord1[0]) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
+  }
+
+  /**
+   * Range di indici di vertice attorno a `targetDistance` (metri dall'inizio della linea)
+   * largo `max(300m, 15% della lunghezza totale)`, usato per vincolare localmente la ricerca
+   * del punto più vicino ed evitare salti su tracce ad anello (vedi oc:8177).
+   */
+  private _localSearchRange(
+    targetDistance: number,
+    trackLength: number,
+    cumulativeDistances: number[],
+  ): [number, number] {
+    const windowMeters = Math.max(
+      REMAINING_DISTANCE_LOCAL_WINDOW_MIN_M,
+      trackLength * REMAINING_DISTANCE_LOCAL_WINDOW_RATIO,
+    );
+    const from = Math.max(0, targetDistance - windowMeters);
+    const to = Math.min(trackLength, targetDistance + windowMeters);
+
+    let startIndex = 0;
+    let endIndex = cumulativeDistances.length - 1;
+    while (
+      startIndex < cumulativeDistances.length - 1 &&
+      cumulativeDistances[startIndex + 1] < from
+    ) {
+      startIndex++;
+    }
+    while (endIndex > 0 && cumulativeDistances[endIndex - 1] > to) {
+      endIndex--;
+    }
+
+    return [startIndex, Math.max(startIndex + 1, endIndex)];
   }
 
   private _calcTimeS(time1: number, time2: number): number {

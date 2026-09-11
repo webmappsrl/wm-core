@@ -1,0 +1,82 @@
+@import './home-layer-shared.scss';
+
+// Apertura layer camminiditalia (oc:8305, portato da CSS a componente in
+// oc:8391): foto pulita in alto + fascia bianca sotto con logo + divisore +
+// titolo, invece dell'overlay-su-foto di default. Regole scoped a questo
+// componente (encapsulation None, come il default) — nessun !important
+// necessario, non c'è più conflitto con un secondo foglio di stile globale.
+wm-home-layer > wm-img {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    'photo photo'
+    'logo title';
+  // Radius + overflow sul contenitore (non sui singoli figli): un unico
+  // sfondo bianco e un unico clip d'angolo per tutta la card, così la fascia
+  // logo+titolo non mostra una seconda area bianca separata né angoli
+  // inferiori squadrati.
+  background: #fff;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+wm-home-layer > wm-img > .wm-img-image {
+  grid-area: photo;
+  height: 160px;
+}
+
+// Il cuoricino (.wm-home-layer-favorite, in home-layer-shared.scss) resta
+// position:absolute di default — non partecipa al grid, resta overlay sulla
+// foto in alto a destra, come richiesto dal cliente.
+
+wm-home-layer > wm-img > wm-img.wm-home-layer-logo-overlay {
+  grid-area: logo;
+  position: static;
+  align-self: center;
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  min-height: 56px;
+  margin: 12px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: transparent;
+  box-shadow: none;
+  z-index: 2;
+}
+
+wm-home-layer > wm-img > .wm-box-title {
+  grid-area: title;
+  font-size: 26px;
+  font-family: var(--wm-font-family-content, inherit);
+  font-style: normal;
+  font-weight: 700;
+  color: #1a1a1a;
+  position: relative;
+  bottom: auto;
+  align-self: center;
+  padding: 16px 16px 16px 12px;
+  line-height: 31px;
+  letter-spacing: 0em;
+  text-align: left;
+  white-space: normal;
+  text-shadow: none;
+}
+
+// Divisore solo se il layer ha un logo (wm-home-layer-logo-overlay presente
+// nel DOM, *ngIf="hasLogo" nel componente) — senza logo non ha senso una
+// linea "separatrice" accanto al titolo senza nulla da separare.
+wm-home-layer > wm-img:has(> wm-img.wm-home-layer-logo-overlay) > .wm-box-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 30px;
+  bottom: 30px;
+  width: 2px;
+  // Valore hardcoded invece di var(--wm-color-primary) di proposito: questa
+  // variante è specifica di camminiditalia (nessun altro shard la usa),
+  // quindi l'indirezione tramite la variabile del tema non aggiunge nessuna
+  // flessibilità reale qui — stessa scelta già presente nel CSS di origine.
+  background-color: #ef7821;
+}

@@ -80,7 +80,7 @@ export class LangService extends TranslateService {
 
         // Se la lingua del dispositivo è disponibile, usala come default
         if (deviceLang && l && l.available && l.available.includes(deviceLang)) {
-          console.log('use device lang', deviceLang);
+          // DEBUG: console.log('use device lang', deviceLang);
           this.setDefaultLang(deviceLang);
         } else if (l && l.default) {
           // Altrimenti usa la lingua di default dalla configurazione

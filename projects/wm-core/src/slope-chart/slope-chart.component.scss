@@ -53,6 +53,13 @@ wm-slope-chart {
             border-radius: 10px;
             border: 2px solid #fff;
             background: #000;
+
+            // Blu (stessa tonalità del marker "sei qui", vedi constants/track-remaining-distance.ts
+            // LOCATION_MARKER_COLOR) quando il valore mostrato viene dalla posizione GPS live,
+            // invece che dal tocco sul grafico (nero, default) (vedi oc:8177).
+            &.webmapp-slopechart-legend-slope-selected-dot-gps {
+              background: #4285f4;
+            }
           }
         }
       }

@@ -6,6 +6,8 @@ import {
   EventEmitter,
   HostListener,
   Input,
+  OnDestroy,
+  OnInit,
   Output,
   ViewChild,
   ViewEncapsulation,
@@ -13,16 +15,30 @@ import {
 import {WmSwiperComponent} from '@wm-core/swiper/swiper.component';
 import {AlertController, IonContent} from '@ionic/angular';
 import {Store} from '@ngrx/store';
-import {BehaviorSubject, from, Observable} from 'rxjs';
-import {take, tap} from 'rxjs/operators';
+import {BehaviorSubject, from, Observable, Subject} from 'rxjs';
+import {map, take, takeUntil, tap} from 'rxjs/operators';
 import {LineString} from 'geojson';
-import {Media, WmFeature} from '@wm-types/feature';
+import {WmFeature} from '@wm-types/feature';
 import {LangService} from '@wm-core/localization/lang.service';
 import {deleteUgcTrack, updateUgcTrack} from '@wm-core/store/features/ugc/ugc.actions';
+import {ugcTracksFeatures} from '@wm-core/store/features/ugc/ugc.selector';
 import {UntypedFormGroup} from '@angular/forms';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {trackElevationChartHoverElemenents} from '@wm-core/store/user-activity/user-activity.action';
+import {UgcPropertiesBaseComponent} from '@wm-core/ugc-properties-base/ugc-properties-base.component';
+import {EUgcTrackShareState} from '@wm-core/types/eugc-track-share-state.enum';
+
+/**
+ * Outcome reported back by the parent (webmapp-app) once the share pipeline
+ * (screenshot in map-core → backend compositing → native Stories plugin) settles.
+ * `ugc-track-properties` never talks to the map or the native plugin directly: it only
+ * emits a `share-track` request and waits for this input to move out of `GENERATING`.
+ */
+export interface UgcTrackShareResult {
+  errorMessage?: string;
+  success: boolean;
+}
 
 @Component({
   standalone: false,
@@ -32,7 +48,10 @@ import {trackElevationChartHoverElemenents} from '@wm-core/store/user-activity/u
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class UgcTrackPropertiesComponent {
+export class UgcTrackPropertiesComponent
+  extends UgcPropertiesBaseComponent
+  implements OnInit, OnDestroy
+{
   @Input('track') set setTrack(track: WmFeature<LineString>) {
     if (track != null) {
       this.track = track;
@@ -41,17 +60,55 @@ export class UgcTrackPropertiesComponent {
 
   @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
+  @Output('share-track') shareTrack: EventEmitter<WmFeature<LineString>> =
+    new EventEmitter<WmFeature<LineString>>();
   @Output()
   trackElevationChartHover: EventEmitter<WmSlopeChartHoverElements> =
     new EventEmitter<WmSlopeChartHoverElements>();
   @ViewChild('content') content: IonContent;
   @ViewChild('slider') slider: WmSwiperComponent;
 
+  /**
+   * Outcome of a previously requested share, reported back by the parent once the
+   * screenshot/compositing/native-plugin pipeline settles. Setting it to `null` is a
+   * no-op (initial binding value before the parent has anything to report).
+   */
+  @Input('shareResult') set setShareResult(result: UgcTrackShareResult | null) {
+    if (result == null) {
+      return;
+    }
+    this.shareErrorMessage = result.success ? null : result.errorMessage ?? null;
+    this.shareState$.next(
+      result.success ? EUgcTrackShareState.SUCCESS : EUgcTrackShareState.ERROR,
+    );
+    if (!result.success) {
+      this.presentShareErrorAlert(this.shareErrorMessage ?? 'Condivisione non riuscita');
+    }
+  }
+
+  /**
+   * Local alias so the template can reference enum members without importing them.
+   */
+  readonly EUgcTrackShareState = EUgcTrackShareState;
   confOPTIONS$ = this._store.select(confOPTIONS);
   confTRACKFORMS$: Observable<any[]> = this._store.select(confTRACKFORMS);
   currentImage$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
   fg: UntypedFormGroup;
   isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  /**
+   * Whether THIS track (matched by `uuid`) has reached the backend (`properties.id` assigned
+   * by the server) — same check as `ModalSuccessComponent` in the main repo (oc:8183, second
+   * entry point). This panel can be reopened for a just-recorded, not-yet-synced track too
+   * (e.g. tapping the card in the post-recording success screen before sync lands), so the
+   * same race applies here: sharing before the backend knows this uuid would 404.
+   */
+  isTrackSynced$: Observable<boolean>;
+  private _destroy$ = new Subject<void>();
+  private _isTrackSynced = false;
+  shareErrorMessage: string | null = null;
+  shareState$: BehaviorSubject<EUgcTrackShareState> = new BehaviorSubject<EUgcTrackShareState>(
+    EUgcTrackShareState.IDLE,
+  );
   slideOptions = {
     allowTouchMove: false,
     slidesPerView: 1,
@@ -64,14 +121,33 @@ export class UgcTrackPropertiesComponent {
   };
   track: WmFeature<LineString>;
 
-  private _photos: Media[] = [];
-
   constructor(
     private _store: Store,
     private _alertCtlr: AlertController,
     private _langSvc: LangService,
     private _urlHandlerSvc: UrlHandlerService,
-  ) {}
+  ) {
+    super();
+  }
+
+  ngOnInit(): void {
+    this.isTrackSynced$ = this._store.select(ugcTracksFeatures).pipe(
+      map(
+        features =>
+          features?.some(
+            f => f.properties?.uuid === this.track?.properties?.uuid && f.properties?.id != null,
+          ) ?? false,
+      ),
+    );
+    this.isTrackSynced$.pipe(takeUntil(this._destroy$)).subscribe(synced => {
+      this._isTrackSynced = synced;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
+  }
 
   @HostListener('document:keydown.Escape', ['$event'])
   public close(): void {
@@ -118,16 +194,25 @@ export class UgcTrackPropertiesComponent {
     ).subscribe(alert => alert.present());
   }
 
-  enableEditing(): void {
-    this.isEditing$;
+  /**
+   * Same alert-based pattern already used by `deleteTrack()` for error/confirmation
+   * feedback, instead of an inline banner in the template. "Riprova" re-emits the same
+   * `share-track` event via `triggerShare()` (same retry path as before).
+   */
+  private presentShareErrorAlert(message: string): void {
+    from(
+      this._alertCtlr.create({
+        message: this._langSvc.instant(message),
+        buttons: [
+          {text: this._langSvc.instant('Annulla'), role: 'cancel'},
+          {text: this._langSvc.instant('Riprova'), handler: () => this.triggerShare()},
+        ],
+      }),
+    ).subscribe(alert => alert.present());
   }
 
   onLocationHover(event: WmSlopeChartHoverElements): void {
     this._store.dispatch(trackElevationChartHoverElemenents({elements: event}));
-  }
-
-  photosChanged(photos: Media[]): void {
-    this._photos = photos;
   }
 
   removeUgcTrackFromUrl(): void {
@@ -139,6 +224,36 @@ export class UgcTrackPropertiesComponent {
     this.dismiss.emit();
   }
 
+  /**
+   * Requests a share of the current track. Used both for the initial tap and for the
+   * explicit retry action on error — same event, same payload, no silent auto-retry.
+   * Guarded against re-entrancy while a share is already `GENERATING`, in addition to
+   * the button's own `disabled` state (defense in depth against double taps).
+   */
+  triggerShare(): void {
+    if (this.shareState$.value === EUgcTrackShareState.GENERATING) {
+      return;
+    }
+    if (!this._isTrackSynced) {
+      this.presentNotSyncedAlert();
+      return;
+    }
+    this.shareErrorMessage = null;
+    this.shareState$.next(EUgcTrackShareState.GENERATING);
+    this.shareTrack.emit(this.track);
+  }
+
+  private presentNotSyncedAlert(): void {
+    from(
+      this._alertCtlr.create({
+        message: this._langSvc.instant(
+          'Il percorso è ancora in fase di sincronizzazione, riprova tra qualche secondo.',
+        ),
+        buttons: [this._langSvc.instant('OK')],
+      }),
+    ).subscribe(alert => alert.present());
+  }
+
   updateTrack(): void {
     if (this.fg.valid) {
       const track: WmFeature<LineString> = {
@@ -147,7 +262,7 @@ export class UgcTrackPropertiesComponent {
           ...this.track?.properties,
           name: this.fg.value.title,
           form: this.fg.value,
-          media: this._photos ?? [],
+          media: this.photos,
           updatedAt: new Date(),
         },
       };

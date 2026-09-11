@@ -31,12 +31,13 @@ import {WmTaxonomyWhereComponent} from './taxonomy-where/taxonomy-where.componen
 import {WmTrackAudioComponent} from './track-audio/track-audio.component';
 import {WmTrackEdgesComponent} from './track-edges/track-edges.component';
 import {WmInnerHtmlComponent} from './inner-html/inner-html.component';
+import {ConfigDetailComponent} from './config-detail/config-detail.component';
+import {HomeRouteFilterRowComponent} from './home/home-route-filters/home-route-filter-row/home-route-filter-row.component';
 import {ButtonsModule} from './buttons/export-to/buttons.module';
 import {WmFeatureUsefulUrlsComponent} from './feature-useful-urls/feature-useful-urls.component';
 import {AuthInterceptor} from './store/auth/auth.interceptor';
 import {AuthEffects} from './store/auth/auth.effects';
 import {authReducer} from './store/auth/auth.reducer';
-import {ModalHeaderComponent} from './modal-header/modal-header.component';
 import {LoginComponent} from './login/login.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {WmProfileModule} from './profile/profile.module';
@@ -56,6 +57,7 @@ import {WmUgcMediasModule} from './ugc-medias/wm-ugc-medias.module';
 import {UgcTrackDataComponent} from './ugc-details/ugc-track-data/ugc-track-data.component';
 import {UgcTrackPropertiesComponent} from './ugc-track-properties/ugc-track-properties.component';
 import {TrackPropertiesComponent} from './track-properties/track-properties.component';
+import {WmTrackLiveDistanceBadgeComponent} from './track-live-distance-badge/track-live-distance-badge.component';
 import {TabImageGalleryComponent} from './tab-image-gallery/tab-image-gallery.component';
 import {ModalImageComponent} from './modal-image/modal-image.component';
 import {ImageGalleryComponent} from './image-gallery/image-gallery.component';
@@ -109,6 +111,7 @@ export const declarations = [
   WmTaxonomyWhereComponent,
   WmTrackAudioComponent,
   WmSlopeChartComponent,
+  WmTrackLiveDistanceBadgeComponent,
   WmRelatedUrlsComponent,
   WmEmailComponent,
   WmPhoneComponent,
@@ -119,11 +122,12 @@ export const declarations = [
   WmHomeUgcComponent,
   WmTrackEdgesComponent,
   WmInnerHtmlComponent,
+  ConfigDetailComponent,
+  HomeRouteFilterRowComponent,
   WmFeatureUsefulUrlsComponent,
   LoginComponent,
   RegisterComponent,
   GenericPopoverComponent,
-  ModalHeaderComponent,
   WmFormComponent,
   WmSearchBarComponent,
   WmGeoboxMapComponent,
@@ -207,7 +211,7 @@ const modules = [
       const appVersion = inject(APP_VERSION, {optional: true});
       const store = inject(Store);
 
-      console.log('[WM_CORE_INITIALIZER] Starting initialization...');
+      // DEBUG: console.log('[WM_CORE_INITIALIZER] Starting initialization...');
 
       try {
         // Inizializza EnvironmentService
@@ -215,7 +219,7 @@ const modules = [
           envSvc.init(environment);
           // Aspetta che EnvironmentService sia pronto
           await envSvc.readyPromise;
-          console.log('[WM_CORE_INITIALIZER] EnvironmentService initialized');
+          // DEBUG: console.log('[WM_CORE_INITIALIZER] EnvironmentService initialized');
         }
 
         // Inizializza PostHog tramite observable che aspetta che la config sia caricata
@@ -286,8 +290,8 @@ const modules = [
             console.warn('[PostHog] app_platform is invalid, skipping:', appPlatform);
           }
 
-          console.log('[PostHog] Registering properties with values:', posthogProps);
-          console.log('[PostHog] Number of valid properties:', Object.keys(posthogProps).length);
+          // DEBUG: console.log('[PostHog] Registering properties with values:', posthogProps);
+          // DEBUG: console.log('[PostHog] Number of valid properties:', Object.keys(posthogProps).length);
 
           // Attendi che la config sia caricata e poi inizializza PostHog
           // Usiamo debounceTime per aspettare che eventuali emissioni multiple (cache + API) si stabilizzino
@@ -303,18 +307,18 @@ const modules = [
               )
               .subscribe(async ([_, confAnalytics]) => {
                 try {
-                  console.log(
-                    '[PostHog] Config loaded, initializing PostHog with enabled:',
-                    confAnalytics?.enabled,
-                    'recordingProbability:',
-                    confAnalytics?.recordingProbability,
-                  );
+                  // DEBUG: console.log(
+                  // DEBUG:   '[PostHog] Config loaded, initializing PostHog with enabled:',
+                  // DEBUG:   confAnalytics?.enabled,
+                  // DEBUG:   'recordingProbability:',
+                  // DEBUG:   confAnalytics?.recordingProbability,
+                  // DEBUG: );
                   await posthogClient.initAndRegister(posthogProps, {
                     enabled: confAnalytics?.enabled,
                     recordingEnabled: confAnalytics?.recordingEnabled,
                     recordingProbability: confAnalytics?.recordingProbability,
                   });
-                  console.log('[PostHog] PostHog initialized successfully via observable');
+                  // DEBUG: console.log('[PostHog] PostHog initialized successfully via observable');
                 } catch (error) {
                   console.error('[PostHog] Failed to initialize PostHog via observable:', error);
                 }
@@ -325,10 +329,10 @@ const modules = [
             );
           }
         } else {
-          console.log('[WM_CORE_INITIALIZER] PostHog not configured, skipping initialization');
+          // DEBUG: console.log('[WM_CORE_INITIALIZER] PostHog not configured, skipping initialization');
         }
 
-        console.log('[WM_CORE_INITIALIZER] Initialization completed successfully');
+        // DEBUG: console.log('[WM_CORE_INITIALIZER] Initialization completed successfully');
       } catch (error) {
         console.error('[WM_CORE_INITIALIZER] Initialization failed:', error);
         // Non rilanciare l'errore per permettere all'app di avviarsi comunque

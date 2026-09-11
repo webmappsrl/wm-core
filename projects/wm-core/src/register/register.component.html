@@ -34,6 +34,31 @@
 
     <div class="wm-registeruser-field-container">
       <ion-label class="wm-registeruser-label">
+        {{ "Cognome" | wmtrans }}
+      </ion-label>
+      <ion-item
+        class="wm-registeruser-field"
+        [ngClass]="{'wm-registeruser-field-has-error': !!errorControl.surname.errors && (errorControl.surname.dirty || errorControl.surname.touched)}"
+      >
+        <ion-input
+          type="text"
+          placeholder="{{ 'inserisci il tuo cognome' | wmtrans }}"
+          required
+          #surname
+          class="wm-registeruser-input"
+          formControlName="surname"
+        >
+        </ion-input>
+      </ion-item>
+      <ng-container *ngIf="!!errorControl.surname.errors && (errorControl.surname.dirty || errorControl.surname.touched)">
+        <span class="wm-registeruser-field-error" *ngIf="errorControl.surname.errors?.required">
+          {{ "E' necessario inserire un cognome" | wmtrans }}
+        </span>
+      </ng-container>
+    </div>
+
+    <div class="wm-registeruser-field-container">
+      <ion-label class="wm-registeruser-label">
         {{ "Email" | wmtrans }}
       </ion-label>
       <ion-item

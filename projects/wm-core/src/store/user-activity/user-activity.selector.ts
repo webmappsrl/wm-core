@@ -1,8 +1,17 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {currentCustomTrack, currentUgcPoi, currentUgcPoiDrawn} from '../features/ugc/ugc.selector';
 import {UserActivityState} from './user-activity.reducer';
-import {confFlowLineQuote, confPOIFORMS, confTRACKFORMS} from '../conf/conf.selector';
+import {
+  confFlowLineQuote,
+  confHOME,
+  confHOMELayers,
+  confOPTIONSShowTrackRemainingDistance,
+  confPOIFORMS,
+  confTRACKFORMS,
+} from '../conf/conf.selector';
 import {WmSlopeChartFlowLineQuote} from '@wm-types/slope-chart';
+import {IHOME, ILAYERBOX} from '../../types/config';
+import {layerMatchesFilters} from '../../home/home-route-filters/home-route-filters.utils';
 
 export const userActivity = createFeatureSelector<UserActivityState>('user-activity');
 
@@ -29,6 +38,13 @@ export const inputTyped = createSelector(
 export const EmptyInputTyped = createSelector(
   userActivity,
   (state: UserActivityState) => state.inputTyped === '' || state.inputTyped === null,
+);
+export const routeFilters = createSelector(userActivity, state => state.routeFilters);
+
+/** `true` se almeno un filtro Home (oc:8414) ha una selezione non vuota. */
+export const hasActiveRouteFilters = createSelector(
+  routeFilters,
+  filters => Object.values(filters ?? {}).some(v => Array.isArray(v) && v.length > 0),
 );
 
 export const UICurrentPoi = createSelector(userActivity, state =>
@@ -69,11 +85,24 @@ export const ecLayer = createSelector(userActivity, state => {
 export const filterTaxonomies = createSelector(userActivity, state => {
   return state.filterTaxonomies;
 });
-export const mapFilters = createSelector(userActivity, state => {
+/**
+ * ID numerici dei layer Home che soddisfano i filtri attivi (oc:8414), o `null` se nessun filtro
+ * è attivo — usato dalla mappa (map-core/utils/styles.ts) per nascondere le tracce dei layer
+ * esclusi dal filtro, oltre alla lista già filtrata di `home-result.component.ts`.
+ */
+export const routeFilteredLayerIds = createSelector(
+  routeFilters,
+  hasActiveRouteFilters,
+  confHOMELayers,
+  (filters, hasActive, homeLayers) =>
+    hasActive ? homeLayers.filter(layer => layerMatchesFilters(layer, filters)).map(layer => +layer.id) : null,
+);
+export const mapFilters = createSelector(userActivity, routeFilteredLayerIds, (state, routeFilteredLayerIds) => {
   return {
     layer: state.layer,
     filterTracks: state.filterTracks,
     lastFilterType: 'tracks',
+    routeFilteredLayerIds,
   };
 });
 export const poiFilterIdentifiers = createSelector(
@@ -134,6 +163,7 @@ export const showResult = createSelector(
   ugcOpened,
   downloadsOpened,
   inputTyped,
+  hasActiveRouteFilters,
   (
     currentLayer,
     filterTracks,
@@ -141,6 +171,7 @@ export const showResult = createSelector(
     ugcOpened,
     downloadsOpened,
     inputTyped,
+    hasActiveRouteFilters,
   ) => {
     const layerCondition = currentLayer != null;
     const filterTracksCondition = filterTracks.length > 0;
@@ -153,6 +184,7 @@ export const showResult = createSelector(
       filterTracksCondition ||
       poisSelectedFilterIdentifiersCondition ||
       inputTypedCondition ||
+      hasActiveRouteFilters ||
       ugcOpened ||
       downloadsOpened
     );
@@ -233,3 +265,51 @@ export const wmMapTilesBoundingBox = createSelector(
   userActivity,
   state => state.wmMapTilesBoundingBox,
 );
+
+export const trackRemainingDistance = createSelector(
+  userActivity,
+  state => state.trackRemainingDistance,
+);
+export const trackDistanceCovered = createSelector(
+  userActivity,
+  state => state.trackDistanceCovered,
+);
+export const trackProgress = createSelector(userActivity, state => state.trackProgress);
+export const trackPositionStale = createSelector(userActivity, state => state.trackPositionStale);
+
+export interface TrackLiveDistanceVm {
+  distanceCovered: number | null;
+  remainingDistance: number | null;
+  stale: boolean;
+}
+
+// Selettore condiviso tra tab-detail.component.ts (oc:8177, visualizzazione traccia) e
+// track-recorder.component.ts (oc:8284, box di registrazione) — evita di duplicare in ogni
+// consumer lo stesso gate su OPTIONS.showTrackRemainingDistance. Quando disabilitato, le
+// distanze restano null a prescindere dal dato reale (il gate è su `enabled`, non sul valore
+// numerico, perché distanceCovered/remainingDistance possono valere legittimamente 0).
+export const trackLiveDistanceVm = createSelector(
+  trackDistanceCovered,
+  trackRemainingDistance,
+  trackPositionStale,
+  confOPTIONSShowTrackRemainingDistance,
+  (distanceCovered, remainingDistance, stale, enabled): TrackLiveDistanceVm => ({
+    distanceCovered: enabled !== false ? distanceCovered : null,
+    remainingDistance: enabled !== false ? remainingDistance : null,
+    stale,
+  }),
+);
+
+/**
+ * Come `confHOME`, ma con i box `layer` che non soddisfano i filtri Home rimossi. Nessun filtro
+ * attivo = identico a `confHOME`. I box di altro tipo (title, ecc.) non vengono mai filtrati.
+ */
+export const confHOMEFiltered = createSelector(confHOME, routeFilters, (home, filters) => {
+  if (!home) return home;
+  if (!filters || Object.keys(filters).length === 0) return home;
+  return (home as IHOME[]).filter(el => {
+    if (el.box_type !== 'layer') return true;
+    const layerBox = el as ILAYERBOX;
+    return layerBox.layer == null || layerMatchesFilters(layerBox.layer, filters);
+  });
+});

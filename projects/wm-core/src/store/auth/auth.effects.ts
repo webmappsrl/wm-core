@@ -83,7 +83,7 @@ export class AuthEffects {
     return this._actions$.pipe(
       ofType(AuthActions.loadSignUps),
       switchMap(action =>
-        this._authSvc.signUp(action.name, action.email, action.password).pipe(
+        this._authSvc.signUp(action.name, action.surname, action.email, action.password).pipe(
           tap(user => {
             saveAuth(user);
           }),
@@ -108,6 +108,22 @@ export class AuthEffects {
           }),
           catchError(error => {
             return of(AuthActions.updatePrivacyFailure({error}));
+          }),
+        ),
+      ),
+    );
+  });
+  updateUserProfile$ = createEffect(() => {
+    return this._actions$.pipe(
+      ofType(AuthActions.updateUserProfile),
+      switchMap(action =>
+        this._authSvc.updateProfile(action).pipe(
+          map(user => {
+            saveAuth(user);
+            return AuthActions.loadAuthsSuccess({user});
+          }),
+          catchError(error => {
+            return of(AuthActions.updateUserProfileFailure({error}));
           }),
         ),
       ),

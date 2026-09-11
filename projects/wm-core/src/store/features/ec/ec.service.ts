@@ -88,7 +88,7 @@ export class EcService {
                     observer.next(remoteTrack);
                   }
                 } else if (response.status === 304) {
-                  console.log(`No changes detected for track ${id}, using cached data.`);
+                  // DEBUG: console.log(`No changes detected for track ${id}, using cached data.`);
                 }
 
                 observer.complete();
@@ -147,7 +147,7 @@ export class EcService {
                   observer.next(pois);
                 }
               } else if (response.status === 304) {
-                console.log('No changes detected for pois, using cached data.');
+                // DEBUG: console.log('No changes detected for pois, using cached data.');
               }
 
               observer.complete();

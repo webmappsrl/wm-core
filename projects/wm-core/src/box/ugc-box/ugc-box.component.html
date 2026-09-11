@@ -2,7 +2,7 @@
   <div class="color"></div>
   <wm-img
     class="webmapp-card-big-image-container wm-result-img"
-    [src]="defaultPhotoPath"
+    [src]="myPathsImage$ | async"
     size="225x100"
   ></wm-img>
   <ion-button *ngIf="showUgcUploaderButton$|async" color="light" (click)="openUgcUploader()">

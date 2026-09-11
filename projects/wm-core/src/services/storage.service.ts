@@ -54,7 +54,7 @@ export class StorageService {
   }
 
   getByKey(key: string): Promise<any> {
-    // console.log('------- ~ file: storage.service.ts ~ line 92 ~ StorageService ~ getByKey ~ key', key);
+    // DEBUG: console.log('------- ~ file: storage.service.ts ~ line 92 ~ StorageService ~ getByKey ~ key', key);
     return this._get(key);
   }
 
@@ -92,7 +92,6 @@ export class StorageService {
   async getMBTiles(tileId: string): Promise<string | Blob> {
     const path = await this.getMBTileFilename(tileId);
     if (path) {
-      console.log('------- ~ StorageService ~ getMBTiles ~ path', path);
       return this._fileRead(path);
     } else {
       return '';
@@ -111,9 +110,7 @@ export class StorageService {
     return this._get(USER_STORAGE_KEY);
   }
 
-  init(): void {
-    console.log('------- ~ StorageService ~ init ~ init');
-  }
+  init(): void {}
 
   removeByKey(key: string): Promise<void> {
     return this._remove(key);
@@ -343,7 +340,7 @@ export class StorageService {
       this._store.get(key).then(
         value => {
           let result: any;
-          // console.log('------- ~ file: storage.service.ts ~ line 150 ~ StorageService ~ _storeGet ~ value', value);
+          // DEBUG: console.log('------- ~ file: storage.service.ts ~ line 150 ~ StorageService ~ _storeGet ~ value', value);
           if (value) {
             try {
               result = JSON.parse(value);
