@@ -15,8 +15,9 @@ nel repo di quel prodotto.
 
 ## Regole del repo
 
-- **Nei test E2E che toccano la UI si usano `cy.intercept()` e fixture, mai le API reali.** Le API
-  reali valgono solo per gli smoke test («il sistema è su e risponde»). Procedura:
+- **I test E2E non vivono qui.** Cypress sta nei prodotti che montano questa libreria — in
+  `wm-webapp` sotto `cypress/`, nell'app sotto `core/cypress/` — e lì vivono anche le regole su
+  come si scrivono. Qui resta la procedura, perché il dominio che quei test esercitano è questo:
   [docs/howto/test-e2e-cypress.md](docs/howto/test-e2e-cypress.md).
 - **Una modifica qui arriva a entrambi i prodotti.** Prima di cambiare un componente condiviso,
   considera che i consumer hanno temi e varianti propri che questo repo non vede.
