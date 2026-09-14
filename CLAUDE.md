@@ -81,4 +81,5 @@ Temi toccati una volta sola, il cui dettaglio vive solo nel cantiere.
 | Lavoro | Ticket | In breve |
 |---|---|---|
 | Padding della mappa nel modale UGC | oc:4783 | Binding `[wmMapPadding]` su `<wm-map>`; il fix che lo rende visibile è nel submodule `map-core`. `docs/features/4783-controllare-il-padding-della-mappa/overview.md` |
+| Immagine di un layer: formati e zona sicura | oc:8502 | Guida illustrata per il cliente su come preparare l'immagine perché loghi e testo non vengano tagliati, basata sui thumbnail realmente generati su S3. In wm-core `size="225x100"` non cambia l'URL (arriva il 400×200), il secondo ritaglio è solo CSS `cover`. `docs/features/8502-come-impostare-correttamente-limmagine-di-un-layer/` |
 | Immagine "i miei percorsi" su native e web | oc:7480 | Su native usa sempre il path locale ignorando l'URL S3: gulp ha già scaricato l'immagine durante il build. `docs/features/7480-inserire-foto/notes.md` |
