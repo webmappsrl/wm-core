@@ -71,8 +71,8 @@ Il dettaglio di ogni lavoro sta nel proprio cantiere sotto `docs/features/<slug>
 Le trappole — ciò che non si deduce leggendo il codice e che si scopre solo sbagliando — stanno
 in `.claude/rules/`, un file per soggetto, con il frontmatter `paths:` che le carica quando si
 toccano i file corrispondenti: `box-e-immagini`, `spec-e-testbed`, `form-e-cva`,
-`varianti-e-classi-base`, `posthog-e-log`. Ogni rule rimanda alla pagina di conoscenza per il
-perché.
+`varianti-e-classi-base`, `posthog-e-log`, `template-wm-map`. Ogni rule rimanda alla pagina di
+conoscenza per il perché.
 
 ## Lavori senza una pagina dedicata
 
