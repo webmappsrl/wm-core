@@ -268,6 +268,13 @@ export const nextRelatedPoiId = createSelector(
   currentEcRelatedPois,
   currentEcRelatedPoiId,
   (relatedPois, relatedPoiId) => {
+    // `currentEcRelatedPois` restituisce `?? null` quando non c'è un track corrente con
+    // related_pois: senza questa guardia `findIndex` lancia. I selettori vicini
+    // (`currentEcRelatedPoi`, `currentRelatedPoiIndex`) ce l'hanno già; questi due no, e non
+    // esplodevano solo perché i pulsanti del navigator sono gated su `currentRelatedPoisCount`.
+    if (relatedPois == null) {
+      return null;
+    }
     const index = relatedPois.findIndex(
       (p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId,
     );
@@ -279,6 +286,10 @@ export const prevRelatedPoiId = createSelector(
   currentEcRelatedPois,
   currentEcRelatedPoiId,
   (relatedPois, relatedPoiId) => {
+    // Vedi `nextRelatedPoiId`: stessa guardia, stesso motivo.
+    if (relatedPois == null) {
+      return null;
+    }
     const index = relatedPois.findIndex(
       (p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId,
     );

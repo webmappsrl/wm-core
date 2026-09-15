@@ -37,7 +37,7 @@ export class PoiPropertiesComponent {
       this.showContacts$.next(
         !!(properties?.address || properties?.contact_phone || properties?.contact_email),
       );
-      this.showUsefulUrls$.next(!!properties?.related_url);
+      this.showUsefulUrls$.next(hasUsableRelatedUrls(properties?.related_url));
     }),
     shareReplay({bufferSize: 1, refCount: true}),
   );
@@ -81,4 +81,40 @@ export class PoiPropertiesComponent {
     const {address: _address, ...rest} = properties;
     return rest as WmProperties;
   }
+}
+
+/**
+ * `true` solo se `related_url` porta almeno un link mostrabile.
+ *
+ * `!!related_url` non bastava: il backend invia `[]` su **2.572 POI** e **2.796 EcTrack**
+ * (misurato su db_prod), e `![]` è `false`, quindi il blocco "Link utili" compariva col solo
+ * titolo e nessuna riga — il titolo in `feature-useful-urls.component.html:1` non ha `*ngIf`.
+ * L'oggetto vuoto `{}` invece **non esiste nei dati** (0 record su POI e track): non è quello il
+ * caso da coprire.
+ *
+ * Le forme accettate sono una conseguenza deterministica di `EcPoi::getJson()`
+ * (`geohub/app/Models/EcPoi.php:282`), che rimuove il campo solo se `!is_array && empty`: `false`
+ * e `""` spariscono dal payload, mentre una stringa non vuota sopravvive e arriva al client come
+ * stringa (76 POI sull'app 29). Le voci con etichetta vuota vengono scartate: 100 POI hanno una
+ * chiave `""`, che renderebbe una riga senza testo.
+ *
+ * @param relatedUrl Il valore grezzo di `properties.related_url`.
+ * @returns `true` se esiste almeno un link con etichetta e URL non vuoti.
+ */
+export function hasUsableRelatedUrls(relatedUrl: unknown): boolean {
+  if (relatedUrl == null) {
+    return false;
+  }
+  if (typeof relatedUrl === 'string') {
+    return relatedUrl.trim() !== '';
+  }
+  if (Array.isArray(relatedUrl)) {
+    return relatedUrl.some(url => typeof url === 'string' && url.trim() !== '');
+  }
+  if (typeof relatedUrl === 'object') {
+    return Object.entries(relatedUrl as Record<string, unknown>).some(
+      ([label, url]) => label.trim() !== '' && typeof url === 'string' && url.trim() !== '',
+    );
+  }
+  return false;
 }
