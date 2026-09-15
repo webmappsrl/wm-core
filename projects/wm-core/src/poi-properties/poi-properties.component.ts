@@ -57,6 +57,28 @@ export class PoiPropertiesComponent {
         this._geolocationSvc.getDistanceFromCurrentLocation$(currentPoi?.geometry?.coordinates),
       ),
     );
+  /**
+   * Il comune del POI, mostrato sopra il nome (oc:8406). Prima lì stava la categoria
+   * (`taxonomy.poi_type`), sostituita su richiesta esplicita del dev.
+   *
+   * La sorgente è `taxonomyWheres` e **non** `taxonomy_where`: quest'ultimo — il campo tipizzato
+   * che `wm-txn-where` consuma — è vuoto su tutti i POI delle app verificate (0 su 3.252
+   * dell'app 33, 0 su 3.721 dell'app 29), mentre `taxonomyWheres` è popolato su 3.251 e 3.203.
+   *
+   * È un array di stringhe ordinato dal generale allo specifico — regione, provincia, comune —
+   * quindi si prende l'ultimo elemento. Mostrare tutti i livelli concatenati occuperebbe due
+   * righe nel popup della webapp, che a 1024px di viewport è largo ~205px.
+   */
+  municipality$: Observable<string | null> = this.currentPoiProperties$.pipe(
+    map(properties => {
+      const wheres = properties?.taxonomyWheres;
+      if (!Array.isArray(wheres) || wheres.length === 0) {
+        return null;
+      }
+      const last = wheres[wheres.length - 1];
+      return typeof last === 'string' && last.trim() !== '' ? last.trim() : null;
+    }),
+  );
   showContacts$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showTechnicalDetails$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showUsefulUrls$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);

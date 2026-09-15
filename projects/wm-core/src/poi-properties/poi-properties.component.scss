@@ -12,6 +12,38 @@ wm-poi-properties {
     padding: 20px 0px 3px 0px;
   }
 
+  // Intestazione condivisa (oc:8406). I valori vengono dal pannello di webmapp-app
+  // (map.page.scss), che è la resa scelta come riferimento: usa le variabili di tema invece dei
+  // px fissi che aveva il popup della webapp, quindi segue la scala tipografica per-istanza.
+  .wm-poi-properties-header {
+    margin: var(--wm-feature-details-margin);
+    width: 100%;
+    position: relative;
+    color: black;
+    text-align: left;
+
+    .wm-poi-properties-pre-title {
+      color: var(--wm-color-primary);
+      font-size: var(--wm-font-lg);
+      font-weight: var(--wm-font-weight-bold);
+      text-transform: uppercase;
+    }
+
+    .wm-poi-properties-title {
+      font-size: var(--wm-font-lg);
+      font-weight: var(--wm-font-weight-bold);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+
+      // Il nome prende lo spazio residuo, il navigatore dei POI correlati resta a destra
+      // sulla stessa riga: a larghezze strette è più compatto che metterlo sotto.
+      > div {
+        flex: 1;
+      }
+    }
+  }
+
   .wm-poi-properties-body {
     --padding-bottom: 30px;
 

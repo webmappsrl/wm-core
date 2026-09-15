@@ -1,5 +1,22 @@
 <!-- TODO: unire ugc-properties con poi-properties? -->
 <ng-container *ngIf="currentPoiProperties$|async as properties">
+  <!-- Intestazione: località, nome e navigazione fra POI correlati (oc:8406).
+       Prima era markup duplicato nei due prodotti — nell'header del pannello di webmapp-app e
+       nel chrome del popup di wm-webapp — con rese divergenti che nulla segnalava. Il pulsante
+       di chiusura resta invece ai contenitori: lì la semantica è davvero diversa (il pannello
+       chiude il dettaglio, il popup azzera anche il POI correlato). -->
+  <div
+    class="wm-poi-properties-header"
+    *ngIf="(municipality$|async) || properties?.name"
+  >
+    <div class="wm-poi-properties-pre-title" *ngIf="municipality$|async as municipality">
+      {{municipality}}
+    </div>
+    <div class="wm-poi-properties-title" *ngIf="properties?.name as name">
+      <div>{{name|wmtrans}}</div>
+      <wm-related-pois-navigator></wm-related-pois-navigator>
+    </div>
+  </div>
   <div class="wm-poi-properties-body">
     <ion-label *ngIf="distanceFromCurrentPoi$|async as distanceFromCurrentPoi">
       {{"Distanza da te" | wmtrans}}
