@@ -18,13 +18,14 @@ Il mixin `overlay-chip-background` in `theme/mixins.scss` tiene il pattern `back
 - **Il toggle dei preferiti sta solo dove serve agire** (oc:8176): le card in home e nelle liste mostrano lo stato, l'azione vive nel dettaglio e nel tab preferiti, dove serve poter rimuovere un elemento dalla lista stessa. Diverso dal piano originale, che voleva il cuoricino interattivo ovunque.
 - **`UrlHandlerService.setLayer()` usa `changeURL()`, non `updateURL()`** (oc:8176): è un mirror leggero di `HomeComponent.setLayer()` senza i reset di stato UI specifici della Home (`inputTyped`, `closeUgc`, `closeDownloads`, `setHomeResultTabSelected`), così funziona da qualunque pagina e non solo da dove la mappa è già visibile.
 
-## Trappole verificate
+## Trappole
 
-- **Un overlay nidificato richiede che anche il suo genitore reale sia `display:grid`** (oc:8305): altrimenti `grid-row`/`grid-column` sul figlio sono silenziosamente inerti. Nessun errore, semplicemente non succede nulla.
-- **Cambiare tecnica di stacking rompe in silenzio gli override CSS per-shard basati su `top`/`right`/`bottom`/`left`** (oc:8305): un tema di shard nel consumer posizionava il titolo con `top:20%`, che funzionava solo finché il componente era `position:absolute`. Con CSS Grid quel valore non ha più effetto e il titolo torna alla posizione di default, senza errori. Ogni modifica allo stacking di questi componenti va quindi verificata contro i temi dei consumer, che questo repo non vede. Va sostituito con `align-self:start;margin-top:36px` — **non** `margin-top:20%`: le percentuali su `margin-top`/`margin-bottom` si risolvono sulla **larghezza** del containing block, non sull'altezza (la stessa regola dietro il trick `padding-top:56.25%`).
-- **`min-width`/`min-height: 100px` di `wm-img` vince sempre** su `width`/`height` più piccoli del consumer, a prescindere dalla specificità CSS (oc:8164): è un vincolo di box model, non una regola di cascata. Ogni overlay più piccolo di 100px basato su `wm-img` deve sovrascrivere esplicitamente anche i `min-*`.
-- **Le classi icona reali sono `icon-fill-heart`/`icon-outline-heart`** (oc:8176), non `webmapp-icon-heart`/`webmapp-icon-heart-outline`: queste ultime, copiate da `map-track-card.component.html` di webmapp-app, non esistono nell'icon font e rendevano il cuoricino invisibile. Da verificare se lo stesso bug è presente nel componente tracce.
-- **Guardia di staleness in `LayerFavoriteService`** (oc:8176): `toggle()` e il reset di logout incrementano `_version`; un `getFavorites()` in volo lo confronta al resolve e scarta il proprio risultato se è cambiato. Senza, un fetch lento che risolve dopo un toggle concorrente sovrascriverebbe in silenzio l'aggiornamento più recente.
+Vivono in [.claude/rules/box-e-immagini.md](../../.claude/rules/box-e-immagini.md), dove si
+caricano toccando `box/`, `home/home-layer/` o `shared/img/`: l'overlay inerte senza un genitore
+`display:grid`, i `min-*` di `wm-img` che vincono sulla cascata, le classi icona che non esistono
+nell'icon font, e gli override di tema che si rompono cambiando la tecnica di stacking. Qui resta
+il perché di ciascuna.
+
 
 ## Bug risolti di rimbalzo e debito noto
 

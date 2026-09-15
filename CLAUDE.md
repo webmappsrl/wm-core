@@ -19,6 +19,10 @@ nel repo di quel prodotto.
   `wm-webapp` sotto `cypress/`, nell'app sotto `core/cypress/` — e lì vivono anche le regole su
   come si scrivono. Qui resta la procedura, perché il dominio che quei test esercitano è questo:
   [docs/howto/test-e2e-cypress.md](docs/howto/test-e2e-cypress.md).
+- **`wm-core` dipende da `map-core`, mai il contrario.** Gli import `@map-core/…` in questa
+  direzione sono normali — li usano nove file, da `slope-chart` a `geobox-map` — mentre un import
+  di `wm-core` dentro `map-core` rompe l'invariante che quella libreria dichiara di garantire. La
+  regola, vista dall'altro lato, sta nel suo `CLAUDE.md`.
 - **Una modifica qui arriva a entrambi i prodotti.** Prima di cambiare un componente condiviso,
   considera che i consumer hanno temi e varianti propri che questo repo non vede.
 
