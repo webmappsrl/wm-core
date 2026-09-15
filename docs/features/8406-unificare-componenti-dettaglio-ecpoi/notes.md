@@ -252,3 +252,35 @@ Il deep link a una singola immagine (`?…&gallery_index=N`) **apre il dettaglio
 web**: nell'app `wm-image-detail` è montato in base a `currentEcImageGalleryIndex$`, mentre sul web
 il modale viene aperto solo dal click in `showPhoto()`, e nulla reagisce al parametro nell'URL.
 Segnalata al dev, fuori dallo scope concordato.
+
+### Intestazione del POI portata nel componente
+
+Ultima modifica del ciclo, decisa dal dev dopo il test manuale. Località, nome e
+`wm-related-pois-navigator` erano **markup duplicato** nei due prodotti — nell'header del pannello
+di `webmapp-app` e nel chrome del popup di `wm-webapp` — con rese divergenti che nulla segnalava:
+la label della categoria era sparita da un lato senza che nessun test o build se ne accorgesse.
+
+Ora stanno in `poi-properties.component.html`, dentro un `.wm-poi-properties-header`. Il **pulsante
+di chiusura resta ai contenitori**: lì la semantica è davvero diversa — il pannello chiude il
+dettaglio, il popup azzera anche `ec_related_poi`.
+
+**La resa scelta è quella del pannello mobile**, su indicazione del dev: usa le variabili di tema
+(`--wm-font-lg`, `--wm-font-weight-bold`) mentre il popup aveva `20px` e `700` fissi, quindi segue
+la scala tipografica per-istanza. Portati anche `width: 100%`, `position: relative`,
+`text-transform: uppercase` sul pre-title e `> div { flex: 1 }` dentro il titolo — quest'ultimo è
+ciò che tiene il navigator a destra senza staccarlo dal nome quando il titolo è corto.
+
+**Sopra il nome ora c'è il comune, non più la categoria.** La sorgente è `taxonomyWheres` e non
+`taxonomy_where`: quest'ultimo — il campo tipizzato che `wm-txn-where` consuma — è vuoto su tutti i
+POI delle app verificate (0 su 3.252 dell'app 33, 0 su 3.721 dell'app 29), mentre `taxonomyWheres`
+è popolato su 3.251 e 3.203. È un array ordinato dal generale allo specifico, verificato su cinque
+POI, quindi si prende l'ultimo elemento; concatenare i tre livelli occuperebbe due righe nel popup
+della webapp, largo ~205px a 1024px di viewport.
+
+**Una differenza voluta rispetto al markup di partenza:** il contenitore ha un `*ngIf` proprio su
+`(municipality$|async) || properties?.name`. Nel blocco originale il pre-title stava fuori dalla
+guardia del nome, quindi un POI con località e senza nome avrebbe mostrato una label sospesa.
+
+**Conseguenza per `wm-txn-where`, non risolta qui:** la sezione "Dove" non renderizza mai su queste
+app, per lo stesso motivo per cui non si poteva usare `taxonomy_where` come sorgente. Il difetto
+vale su entrambe le piattaforme ed è tracciato, non corretto.
