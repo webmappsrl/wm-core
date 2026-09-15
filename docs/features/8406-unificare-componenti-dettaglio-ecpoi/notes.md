@@ -154,3 +154,101 @@
   sul web: `map.page.ts:65,81` hanno corpi vuoti). Preservare `startDrawUgcPoi` /
   `stopDrawUgcPoi`, che `wm-ugc-poi-properties` non implementa: senza, sul web non si
   riposiziona più un POI UGC.
+
+---
+
+## Fase C — modifiche a wm-core fatte dal lato wm-webapp (15 settembre)
+
+Le fasi A e B sopra sono state svolte dall'agente su webmapp-app. Quanto segue è stato fatto
+dall'agente su wm-webapp durante la fase C, con autorizzazione del dev e previo avviso, sullo
+stesso branch condiviso.
+
+### `wm-related-urls` riscritto
+
+`href="#"` + `(click)` + `window.open()` sostituiti da `<ion-item [href]>` reali con
+`target="_blank"` e `rel="noopener noreferrer"`, e **rimosso** il
+`url.replace(/^https?:\/\//, '')` che riprefissava sempre `https://`.
+
+Misurato su `db_prod`: **1.013 POI su 12.644 con `related_url`** e **1.127 EcTrack su 29.226**
+hanno almeno un URL `http://` puro — comuni, pro loco, siti turistici locali — che quel replace
+rompeva quando il sito non supporta TLS.
+
+⚠️ **Trappola nella misura**: il pattern ovvio `related_url::text ~ 'http://'` restituisce **0**,
+non 1.013. In `jsonb::text` le slash sono escapate (`http:\/\/`), quindi il `//` letterale non
+matcha mai. Il pattern corretto è `~ 'http:[^s]'`. Chi rifà la conta per stabilire una priorità e
+usa il pattern intuitivo conclude che il problema non esiste.
+
+Aggiunta `normalizeRelatedUrls()`, che gestisce le **tre forme** in cui il backend invia il campo:
+oggetto `{label: url}`, **stringa nuda**, array. La forma-stringa non è un incidente dei dati: è
+deterministica, da `EcPoi::getJson()` (`geohub/app/Models/EcPoi.php:282`), che rimuove il campo
+solo se `!is_array && empty` — quindi `false` e `""` spariscono dal payload, ma una stringa non
+vuota sopravvive. Il precedente `|keyvalue` su una stringa ne iterava i **singoli caratteri**.
+
+### `showUsefulUrls$` — "Link utili" non compare più vuoto
+
+`!!properties?.related_url` era `true` anche per `[]`, che il backend invia su **2.572 POI e 2.796
+EcTrack**; il titolo in `feature-useful-urls.component.html:1` non ha `*ngIf`, quindi compariva
+l'intestazione senza righe sotto. Sostituito con `hasUsableRelatedUrls()`.
+
+**L'oggetto vuoto `{}` non esiste nei dati** (0 record su POI e track): una guardia scritta contro
+`{}` non avrebbe corretto nulla. Il caso reale è `[]`, più **100 POI con chiave `""`** che
+produrrebbe una voce con etichetta vuota.
+
+### `wm-tab-description` — timer orfano e stato non resettato
+
+Due difetti indipendenti, entrambi visibili **anche sull'app**:
+
+- `implements AfterViewInit` **senza `OnDestroy`**, e `_checkIfContentIsTruncated()` avviava un
+  `setInterval(…, 50)` che si azzerava **solo** se `scrollHeight > 0`. Un componente distrutto
+  prima della misura lasciava un timer a 20 Hz che chiama `getComputedStyle` — un reflow forzato —
+  per sempre. Nell'app il riavvio lo azzera; una webapp su tablet o kiosk non ricarica mai.
+- `showExpandButton$` e `isExpanded$` non venivano resettati dal setter `description`: l'istanza è
+  riusata, non ricreata, quando cambia solo il binding, quindi **navigando tra POI correlati il
+  successivo ereditava il troncamento del precedente** — "Mostra altro" su una descrizione di una
+  riga, o la sua assenza su una lunga.
+
+### `nextRelatedPoiId` / `prevRelatedPoiId` — guardia mancante
+
+Chiamavano `findIndex` su `currentEcRelatedPois`, che restituisce `?? null`, senza controllarlo —
+a differenza dei selettori vicini (`currentEcRelatedPoi` riga 197, `currentRelatedPoiIndex` riga
+253), che la guardia ce l'hanno. Non esplodeva perché i pulsanti del navigator sono gated su
+`currentRelatedPoisCount`; le scorciatoie da tastiera introdotte in fase C sono
+`@HostListener('document:keydown…')`, quindi globali, e lo avrebbero esposto.
+
+### `image-gallery`: `isMobile` → `isAppMobile`
+
+`showPhoto()` apriva `ModalImageComponent` solo `if (!isMobile)`. Ma `isMobile` è
+`Platform.is('android') || Platform.is('ios')`, cioè **user agent**: era vero anche per la webapp
+aperta da telefono o tablet, che non monta la vista inline (quella la monta `map.page.html:57`
+dell'app). Lì il tap su una foto non apriva **nulla** e si limitava a cambiare l'URL.
+
+`isAppMobile` è `isMobile && !isBrowser`, cioè "dentro l'app nativa". Effetto: modale su qualunque
+browser (desktop e mobile), vista inline solo in app. Richiesta esplicita del dev: comportamento
+identico sulle due piattaforme.
+
+**L'unico caso che cambia per l'app è la PWA**, che oggi cade nello stesso buco e col fix apre il
+modale.
+
+### `image-detail`: `object-fit: contain` sulle foto
+
+Le foto verticali venivano ritagliate. Causa: `wm-img` applica `object-fit: cover`
+(`img.component.scss`), giusto per card e box — devono riempire un riquadro di proporzioni fisse —
+ma sbagliato nel dettaglio.
+
+**Non era una divergenza di codice fra le piattaforme, ma lo stesso CSS in contenitori di forma
+diversa**: `ModalImageComponent` è unico e condiviso, però `modal-image.component.scss` lo rende
+fullscreen sotto i 768px e **quadrato 700×700** sopra. Con `cover`, una foto verticale in un
+quadrato perde sopra e sotto; in un fullscreen verticale il ritaglio è invisibile. Per questo il
+difetto si vedeva solo su desktop.
+
+Corretto **solo dentro `image-detail.component.scss`**, con `flex: 1 1 auto; min-height: 0` sul
+wrapper e `object-fit: contain; height: 100%` sull'immagine. `wm-img` **non è stato toccato**:
+almeno 8 componenti (`layer-box`, `home-layer`, `slug-box`, `search-box`, …) si aspettano `cover`,
+e cambiarlo globalmente avrebbe alterato ogni card dell'app.
+
+### Asimmetria residua, non risolta
+
+Il deep link a una singola immagine (`?…&gallery_index=N`) **apre il dettaglio nell'app e non sul
+web**: nell'app `wm-image-detail` è montato in base a `currentEcImageGalleryIndex$`, mentre sul web
+il modale viene aperto solo dal click in `showPhoto()`, e nulla reagisce al parametro nell'URL.
+Segnalata al dev, fuori dallo scope concordato.

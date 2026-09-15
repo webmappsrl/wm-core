@@ -63,6 +63,7 @@ Il dettaglio di ogni lavoro sta nel proprio cantiere sotto `docs/features/<slug>
 | Deep link | Perché il percorso nativo è stato scartato, ordine in `initialize()`, navigazione Home→Map | oc:8470, oc:7980 | [docs/knowledge/deep-link.md](docs/knowledge/deep-link.md) |
 | Filtro dei POI | Due stage tassonomia + layer ID, retrocompatibilità legacy, binding multi-direttiva | oc:8147, oc:7646 | [docs/knowledge/filtri-poi.md](docs/knowledge/filtri-poi.md) |
 | Home: tab, conteggi ed etichette | Scelta del tab risultati, badge non filtrato, chiavi i18n condivise badge/segment | oc:7643, oc:8221 | [docs/knowledge/home-ricerca-e-tab.md](docs/knowledge/home-ricerca-e-tab.md) |
+| Immagini: galleria e dettaglio | Un solo `wm-image-detail` in due contenitori, `isAppMobile` vs `isMobile`, `object-fit` nei box e nel dettaglio | oc:8406 | [docs/knowledge/immagini-e-galleria.md](docs/knowledge/immagini-e-galleria.md) |
 | Isolamento del TestBed | Reset fra spec file, campi `static`, config Karma del progetto | oc:7989 | [docs/knowledge/testbed-isolamento.md](docs/knowledge/testbed-isolamento.md) |
 | `layer-box` e `home-layer` | Overlay su CSS Grid, logo dentro `wm-img`, cuoricino preferiti | oc:8305, oc:8176, oc:8164 | [docs/knowledge/layer-box-e-home-layer.md](docs/knowledge/layer-box-e-home-layer.md) |
 | PostHog | `PosthogContextService`, contesto degli eventi, `user_id` e `userMoved` | oc:8115, oc:8127, oc:8159 | [docs/knowledge/posthog.md](docs/knowledge/posthog.md) |
