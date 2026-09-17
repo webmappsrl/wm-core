@@ -44,9 +44,13 @@
       *ngIf="properties?.image_gallery?.length"
       [imageGallery]="properties?.image_gallery"
     ></wm-tab-image-gallery>
+    <!-- `showLiveDistance` a false: i badge di distanza percorsa e rimanente vengono dallo stato di
+         navigazione globale, che riguarda la traccia corrente e non questo POI. Senza, aprendo un
+         POI correlato durante una navigazione live comparivano qui i numeri della traccia. -->
     <wm-tab-detail
       *ngIf="showTechnicalDetails$|async"
       [properties]="technicalProperties$|async"
+      [showLiveDistance]="false"
     ></wm-tab-detail>
     <wm-txn-where
       *ngIf="properties?.taxonomy_where as txnWhere"

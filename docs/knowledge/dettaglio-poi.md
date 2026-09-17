@@ -59,10 +59,18 @@ lo manda.
   comporta allo stesso modo nei due prodotti". Titolo e località sì, il pulsante di chiusura no.
 
 - **Un solo gate, e serve** (oc:8406): `hasContacts$` esiste per non lasciare il titolo
-  "Informazioni" sospeso sopra il vuoto. Non basterebbe un `*ngIf` sui campi, perché `related_url`
-  arriva come `[]` su 2.572 POI e in JavaScript un array vuoto è truthy. Per i link riusa
-  `normalizeRelatedUrls`, la stessa funzione con cui `wm-related-urls` decide cosa rendere: una
-  sola implementazione delle tre forme del campo, non due che possono divergere.
+  "Informazioni" sospeso sopra il vuoto. Un `*ngIf` sui campi non basterebbe, perché due di essi
+  sono truthy anche quando non producono nessuna riga: `related_url` arriva come `[]` su 2.572 POI,
+  e `contact_phone` può essere una stringa di sole etichette senza numeri, che `splitPhones` scarta
+  per intero. La regola che ne esce vale oltre questo componente: **ogni riga si chiede alla stessa
+  funzione che poi la disegna** — `normalizeRelatedUrls` per i link, `splitPhones` per i telefoni —
+  perché due condizioni scritte separatamente divergono al primo caso limite.
+
+- **`wm-tab-detail` monta senza la distanza live** (oc:8406): `[showLiveDistance]="false"`. Quel
+  componente legge `trackLiveDistanceVm` dallo stato di navigazione globale, non dalle `properties`
+  che riceve, quindi in un dettaglio che non è quello della traccia corrente i badge riporterebbero
+  i numeri di un'altra feature. Il default dell'input è `true`, così il dettaglio della traccia non
+  cambia.
 
 - **`wm-feature-useful-urls` non è montato da qui**, `wm-tab-image-gallery` sì (oc:8406): il primo
   porterebbe un secondo titolo, "Link utili", sopra righe che stanno già sotto "Informazioni", e

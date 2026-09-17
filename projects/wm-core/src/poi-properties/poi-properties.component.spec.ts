@@ -95,6 +95,11 @@ describe('PoiPropertiesComponent (oc:8406)', () => {
       ['related_url oggetto vuoto', {related_url: {}}, false],
       ['related_url con sola chiave vuota', {related_url: {'': 'https://example.com'}}, false],
       ['niente del tutto', {}, false],
+      // Il campo è truthy ma `splitPhones` scarta l'intera stringa, perché non c'è una cifra:
+      // senza questo caso il titolo "Informazioni" restava sopra una lista vuota. Forma vista in QA.
+      ['contact_phone di sole etichette', {contact_phone: 'Fixed Phone:,Cell Phone:,Other Phone:'}, false],
+      ['contact_phone non stringa', {contact_phone: {it: '06 111'}}, false],
+      ['contact_phone con un numero vero', {contact_phone: 'Fixed Phone:06 111,Cell Phone:'}, true],
     ];
 
     cases.forEach(([label, properties, expected]) => {

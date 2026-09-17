@@ -12,6 +12,7 @@ import {poi} from '@wm-core/store/features/features.selector';
 import {WmProperties} from '@wm-types/feature';
 import {derivePoiAddress} from '@wm-core/utils/derive-poi-address';
 import {normalizeRelatedUrls} from '@wm-core/related-urls/related-urls.component';
+import {splitPhones} from '@wm-core/phone/split-phones';
 
 @Component({
   standalone: false,
@@ -81,14 +82,19 @@ export class PoiPropertiesComponent {
    * titolo sospeso sopra il vuoto: `related_url` arriva come `[]` su 2.572 POI, e in JavaScript un
    * array vuoto è truthy, quindi un `*ngIf` sul campo non basterebbe.
    *
-   * Per i link riusa `normalizeRelatedUrls`, la stessa funzione con cui `wm-related-urls` decide
-   * cosa rendere: una sola implementazione delle tre forme in cui il backend manda quel campo —
-   * oggetto, stringa o array — invece di due che possono divergere.
+   * Ogni riga è chiesta alla stessa funzione che poi la disegna — `normalizeRelatedUrls` per i
+   * link, `splitPhones` per i telefoni — invece di guardare il campo grezzo. Chiedere al campo
+   * basterebbe per l'indirizzo e la mail, ma non per gli altri due: `related_url` arriva come `[]`,
+   * e `contact_phone` può essere una stringa di sole etichette senza numeri
+   * (`"Fixed Phone:,Cell Phone:,Other Phone:"`, forma vista in QA) che `splitPhones` scarta per
+   * intero. In entrambi i casi il campo è truthy ma la riga non viene disegnata, e il titolo
+   * resterebbe sospeso sopra una lista vuota.
    */
   hasContacts$: Observable<boolean> = this.currentPoiProperties$.pipe(
     map(
       properties =>
-        !!(properties?.address || properties?.contact_phone || properties?.contact_email) ||
+        !!(properties?.address || properties?.contact_email) ||
+        splitPhones(properties?.contact_phone).length > 0 ||
         normalizeRelatedUrls(properties?.related_url).length > 0,
     ),
   );

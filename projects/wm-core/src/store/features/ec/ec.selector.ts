@@ -269,15 +269,22 @@ export const nextRelatedPoiId = createSelector(
   currentEcRelatedPoiId,
   (relatedPois, relatedPoiId) => {
     // `currentEcRelatedPois` restituisce `?? null` quando non c'è un track corrente con
-    // related_pois: senza questa guardia `findIndex` lancia. I selettori vicini
-    // (`currentEcRelatedPoi`, `currentRelatedPoiIndex`) ce l'hanno già; questi due no, e non
-    // esplodevano solo perché i pulsanti del navigator sono gated su `currentRelatedPoisCount`.
+    // related_pois: senza la prima guardia `findIndex` lancia.
+    //
+    // La seconda guardia copre il caso in cui nessun POI correlato è selezionato: lì `findIndex`
+    // torna `-1`, e `relatedPois[-1 + 1]` sarebbe il **primo** correlato del track, cioè una
+    // navigazione verso un POI che non c'entra con quello aperto. Il navigator non lo mostrava
+    // perché il suo template ha un gate in più — `currentRelatedPoiIndex` filtra i null e somma 1,
+    // quindi con `-1` emette `0`, falsy — ma le scorciatoie da tastiera del popup della webapp no.
     if (relatedPois == null) {
       return null;
     }
     const index = relatedPois.findIndex(
       (p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId,
     );
+    if (index < 0) {
+      return null;
+    }
     return relatedPois[index + 1]?.properties?.id ?? null;
   },
 );
@@ -286,13 +293,16 @@ export const prevRelatedPoiId = createSelector(
   currentEcRelatedPois,
   currentEcRelatedPoiId,
   (relatedPois, relatedPoiId) => {
-    // Vedi `nextRelatedPoiId`: stessa guardia, stesso motivo.
+    // Vedi `nextRelatedPoiId`: stesse due guardie, stesso motivo.
     if (relatedPois == null) {
       return null;
     }
     const index = relatedPois.findIndex(
       (p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId,
     );
+    if (index < 0) {
+      return null;
+    }
     return relatedPois[index - 1]?.properties?.id ?? null;
   },
 );
