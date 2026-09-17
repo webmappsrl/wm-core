@@ -52,7 +52,7 @@ export const wmDE = {
   'Punto di interesse': 'POI',
   'Collegamenti esterni': 'Externe Links',
   'Downloads': 'Downloads',
-  'edit geohub': 'Geohub bearbeiten',
+  edit: 'Bearbeiten',
   'NCC': 'NCC',
   'Filtri attivi': 'Aktive Filter',
   'Reset filtri': 'Filter zurücksetzen',

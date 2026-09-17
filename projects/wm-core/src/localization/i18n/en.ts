@@ -54,7 +54,7 @@ export const wmEN = {
   'Punto di interesse': 'POI',
   'Collegamenti esterni': 'External Links',
   'Downloads': 'Downloads',
-  'edit geohub': 'Edit Geohub',
+  edit: 'Edit',
   'NCC': 'NCC',
   'Filtri attivi': 'Active Filters',
   'Reset filtri': 'Reset Filters',

@@ -51,7 +51,7 @@ export const wmPR = {
   'Punto di interesse': 'POI',
   'Collegamenti esterni': 'Links externos',
   'Downloads': 'Downloads',
-  'edit geohub': 'Editar geohub',
+  edit: 'Editar',
   'NCC': 'NCC',
   'Filtri attivi': 'Filtros ativos',
   'Reset filtri': 'Redefinir filtros',

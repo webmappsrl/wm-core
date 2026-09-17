@@ -51,7 +51,7 @@ export const wmES = {
   'Punto di interesse': 'POI',
   'Collegamenti esterni': 'Enlaces externos',
   'Downloads': 'Descargas',
-  'edit geohub': 'Editar geohub',
+  edit: 'Editar',
   'NCC': 'NCC',
   'Filtri attivi': 'Filtros activos',
   'Reset filtri': 'Restablecer filtros',

@@ -57,7 +57,7 @@ export const wmSQ = {
   'Punto di interesse': 'POI',
   'Collegamenti esterni': 'Lidhje të jashtme',
   'Downloads': 'Shkarkime',
-  'edit geohub': 'Modifiko Geohub',
+  edit: 'Modifiko',
   'NCC': 'NCC',
   'Filtri attivi': 'Filtrat aktivë',
   'Reset filtri': 'Rivendos filtrat',

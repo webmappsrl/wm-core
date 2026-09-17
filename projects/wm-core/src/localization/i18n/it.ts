@@ -58,7 +58,7 @@ export const wmIT = {
   'Punto di interesse': 'POI',
   'Collegamenti esterni': 'Collegamenti esterni',
   'Downloads': 'Downloads',
-  'edit geohub': 'Modifica geohub',
+  edit: 'Modifica',
   'NCC': 'NCC',
   'Filtri attivi': 'Filtri attivi',
   'Reset filtri': 'Reset filtri',

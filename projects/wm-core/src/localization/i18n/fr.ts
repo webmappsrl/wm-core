@@ -52,7 +52,7 @@ export const wmFR = {
   'Punto di interesse': 'POI',
   'Collegamenti esterni': 'Liens externes',
   'Downloads': 'Téléchargements',
-  'edit geohub': 'Modifier le geohub',
+  edit: 'Modifier',
   'NCC': 'NCC',
   'Filtri attivi': 'Filtres actifs',
   'Reset filtri': 'Réinitialiser les filtres',
