@@ -11,6 +11,7 @@ import {currentPoiProperties} from '@wm-core/store/features/ec/ec.selector';
 import {poi} from '@wm-core/store/features/features.selector';
 import {WmProperties} from '@wm-types/feature';
 import {derivePoiAddress} from '@wm-core/utils/derive-poi-address';
+import {normalizeRelatedUrls} from '@wm-core/related-urls/related-urls.component';
 
 @Component({
   standalone: false,
@@ -34,17 +35,13 @@ export class PoiPropertiesComponent {
     }),
     tap(properties => {
       this.showTechnicalDetails$.next(!!properties?.ele);
-      this.showContacts$.next(
-        !!(properties?.address || properties?.contact_phone || properties?.contact_email),
-      );
-      this.showUsefulUrls$.next(hasUsableRelatedUrls(properties?.related_url));
     }),
     shareReplay({bufferSize: 1, refCount: true}),
   );
   /**
-   * Same properties without `address`, derived once per emission instead of on every
-   * change detection: `wm-tab-detail` is OnPush and a new object each cycle would make
-   * it re-render every time. Indirizzo lives in the contacts group only.
+   * Le stesse properties senza `address`, derivate una volta per emissione e non a ogni ciclo di
+   * change detection: `wm-tab-detail` è OnPush, e un oggetto nuovo ogni giro lo farebbe
+   * ridisegnare ogni volta. L'indirizzo si legge solo nell'elenco dei contatti.
    */
   technicalProperties$: Observable<WmProperties> = this.currentPoiProperties$.pipe(
     map(properties => (properties == null ? properties : this.omitAddress(properties))),
@@ -79,9 +76,23 @@ export class PoiPropertiesComponent {
       return typeof last === 'string' && last.trim() !== '' ? last.trim() : null;
     }),
   );
-  showContacts$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  /**
+   * Se il gruppo "Informazioni" ha almeno una riga da mostrare. Serve solo a non lasciare il
+   * titolo sospeso sopra il vuoto: `related_url` arriva come `[]` su 2.572 POI, e in JavaScript un
+   * array vuoto è truthy, quindi un `*ngIf` sul campo non basterebbe.
+   *
+   * Per i link riusa `normalizeRelatedUrls`, la stessa funzione con cui `wm-related-urls` decide
+   * cosa rendere: una sola implementazione delle tre forme in cui il backend manda quel campo —
+   * oggetto, stringa o array — invece di due che possono divergere.
+   */
+  hasContacts$: Observable<boolean> = this.currentPoiProperties$.pipe(
+    map(
+      properties =>
+        !!(properties?.address || properties?.contact_phone || properties?.contact_email) ||
+        normalizeRelatedUrls(properties?.related_url).length > 0,
+    ),
+  );
   showTechnicalDetails$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  showUsefulUrls$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(
     private _store: Store,
@@ -90,14 +101,16 @@ export class PoiPropertiesComponent {
   ) {}
 
   /**
-   * Trusts HTML from conf/content editors for the info block.
+   * Il blocco `info` arriva dalla configurazione, scritto dai content editor, non da input utente:
+   * qui lo si marca come fidato per poterlo rendere con `innerHTML`.
    */
   sanitize(html: string) {
     return this._sanitizer.bypassSecurityTrustHtml(html);
   }
 
   /**
-   * Properties for `wm-tab-detail` without `address`, so Indirizzo stays in contacts only.
+   * Le properties per `wm-tab-detail` senza `address`, così la riga "Indirizzo" resta solo fra i
+   * contatti e non compare due volte.
    */
   omitAddress(properties: WmProperties): WmProperties {
     const {address: _address, ...rest} = properties;
@@ -105,38 +118,3 @@ export class PoiPropertiesComponent {
   }
 }
 
-/**
- * `true` solo se `related_url` porta almeno un link mostrabile.
- *
- * `!!related_url` non bastava: il backend invia `[]` su **2.572 POI** e **2.796 EcTrack**
- * (misurato su db_prod), e `![]` è `false`, quindi il blocco "Link utili" compariva col solo
- * titolo e nessuna riga — il titolo in `feature-useful-urls.component.html:1` non ha `*ngIf`.
- * L'oggetto vuoto `{}` invece **non esiste nei dati** (0 record su POI e track): non è quello il
- * caso da coprire.
- *
- * Le forme accettate sono una conseguenza deterministica di `EcPoi::getJson()`
- * (`geohub/app/Models/EcPoi.php:282`), che rimuove il campo solo se `!is_array && empty`: `false`
- * e `""` spariscono dal payload, mentre una stringa non vuota sopravvive e arriva al client come
- * stringa (76 POI sull'app 29). Le voci con etichetta vuota vengono scartate: 100 POI hanno una
- * chiave `""`, che renderebbe una riga senza testo.
- *
- * @param relatedUrl Il valore grezzo di `properties.related_url`.
- * @returns `true` se esiste almeno un link con etichetta e URL non vuoti.
- */
-export function hasUsableRelatedUrls(relatedUrl: unknown): boolean {
-  if (relatedUrl == null) {
-    return false;
-  }
-  if (typeof relatedUrl === 'string') {
-    return relatedUrl.trim() !== '';
-  }
-  if (Array.isArray(relatedUrl)) {
-    return relatedUrl.some(url => typeof url === 'string' && url.trim() !== '');
-  }
-  if (typeof relatedUrl === 'object') {
-    return Object.entries(relatedUrl as Record<string, unknown>).some(
-      ([label, url]) => label.trim() !== '' && typeof url === 'string' && url.trim() !== '',
-    );
-  }
-  return false;
-}

@@ -23,7 +23,7 @@ import {splitPhones, telHref} from './split-phones';
         }
         ion-label {
           font-weight: 600;
-          color: var(wm-feature-details-description-color), var(--wm-color-dark);
+          color: var(--wm-feature-details-description-color, var(--wm-color-dark));
         }
       }
     `,
@@ -34,15 +34,14 @@ export class WmPhoneComponent {
   phoneLabels: string[] = [];
 
   /**
-   * CSV `contact_phone` string; rendered as one `ion-item` per number.
+   * Il campo `contact_phone` arriva come stringa CSV con le etichette dentro: qui diventa un
+   * `ion-item` per numero.
    */
   @Input() set phone(value: string | null | undefined) {
     this.phoneLabels = splitPhones(value);
   }
 
-  /**
-   * Exposes `telHref` to the template.
-   */
+  /** Espone `telHref` al template. */
   telHref(label: string): string {
     return telHref(label);
   }

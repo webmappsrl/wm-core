@@ -33,6 +33,10 @@ describe('splitPhones (oc:8406)', () => {
     expect(splitPhones('Rifugio: 0123 456789')).toEqual(['Rifugio: 0123 456789']);
   });
 
+  it('conserva l’etichetta del fax: senza, sembrerebbe un telefono qualunque', () => {
+    expect(splitPhones('Fax: 0123 456789')).toEqual(['Fax: 0123 456789']);
+  });
+
   it('non taglia nulla quando il testo prima dei due punti contiene gia\u0300 un numero', () => {
     // Qui il prefisso E\u0300 un numero: tagliarlo perderebbe una linea reale
     expect(splitPhones('0124 442455; Paolo: 347 1932853')).toEqual([

@@ -42,7 +42,7 @@ describe('PoiPropertiesComponent (oc:8406)', () => {
     return new PoiPropertiesComponent(storeSpy, geolocationSpy, sanitizerSpy);
   }
 
-  it('address-only: apre Contatti, non Link utili né dettagli tecnici', done => {
+  it('deriva address da addr_complete e non apre i dettagli tecnici senza ele', done => {
     component = createComponent({
       addr_complete: 'Via Roma 1, Pisa',
       contact_phone: null,
@@ -52,36 +52,59 @@ describe('PoiPropertiesComponent (oc:8406)', () => {
     component.currentPoiProperties$.subscribe(props => {
       expect(props?.address).toBe('Via Roma 1, Pisa');
       expect(component.showTechnicalDetails$.value).toBeFalse();
-      expect(component.showContacts$.value).toBeTrue();
-      expect(component.showUsefulUrls$.value).toBeFalse();
       done();
     });
   });
 
-  it('phone + ele: apre Contatti e tecnici, non Link utili', done => {
+  it('ele apre i dettagli tecnici', done => {
     component = createComponent({
       contact_phone: '111, 222',
       ele: 100,
     });
     component.currentPoiProperties$.subscribe(() => {
-      expect(component.showContacts$.value).toBeTrue();
-      expect(component.showUsefulUrls$.value).toBeFalse();
       expect(component.showTechnicalDetails$.value).toBeTrue();
       done();
     });
   });
 
-  it('related_url only: apre Link utili, non Contatti', done => {
+  // Contatti e link utili non hanno più un gate proprio (scrum del 04/09/2026): l'elenco è unico
+  // e senza etichette, quindi ogni figlio si nasconde da sé e non c'è uno stato da calcolare in
+  // anticipo. Resta solo showTechnicalDetails$, che già esisteva nella mobile.
+  it('related_url non apre i dettagli tecnici', done => {
     component = createComponent({
       related_url: {Sito: 'https://example.com'},
       contact_phone: null,
       contact_email: null,
     });
     component.currentPoiProperties$.subscribe(() => {
-      expect(component.showContacts$.value).toBeFalse();
-      expect(component.showUsefulUrls$.value).toBeTrue();
       expect(component.showTechnicalDetails$.value).toBeFalse();
       done();
+    });
+  });
+
+  describe('hasContacts$ — il titolo non deve restare orfano', () => {
+    const cases: [string, any, boolean][] = [
+      ['solo indirizzo', {addr_complete: 'Via Roma 1, Pisa'}, true],
+      ['solo telefono', {contact_phone: '06 111'}, true],
+      ['solo mail', {contact_email: 'a@b.it'}, true],
+      ['solo link come oggetto', {related_url: {Sito: 'https://example.com'}}, true],
+      ['solo link come stringa', {related_url: 'https://example.com'}, true],
+      // Il caso che rendeva il titolo sospeso sopra il vuoto: `[]` è truthy in JavaScript, e
+      // arriva così su 2.572 POI.
+      ['related_url array vuoto', {related_url: []}, false],
+      ['related_url oggetto vuoto', {related_url: {}}, false],
+      ['related_url con sola chiave vuota', {related_url: {'': 'https://example.com'}}, false],
+      ['niente del tutto', {}, false],
+    ];
+
+    cases.forEach(([label, properties, expected]) => {
+      it(`${label} \u2192 ${expected}`, done => {
+        component = createComponent(properties);
+        component.hasContacts$.subscribe(result => {
+          expect(result).toBe(expected);
+          done();
+        });
+      });
     });
   });
 

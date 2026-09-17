@@ -7,7 +7,7 @@ risultati diversi fra webapp e app.
 
 | Componente | Ruolo |
 |---|---|
-| `wm-tab-image-gallery` | Sezione "Galleria": titolo + `wm-image-gallery`, con guardia interna su `imageGallery?.length > 0` |
+| `wm-tab-image-gallery` | Sezione "Galleria": titolo + `wm-image-gallery`, con guardia interna su `imageGallery?.length > 0`. Lo montano sia il dettaglio della traccia sia quello del POI, così la sezione si chiama allo stesso modo nelle due schermate |
 | `wm-image-gallery` | Lo swiper delle miniature. Il tap su una foto chiama `showPhoto(idx)` |
 | `wm-image-detail` | La foto a schermo intero, con swipe fra le immagini e contatore. Store-driven: legge `currentEcImageGallery` e `currentEcImageGalleryIndex`, nessun `@Input` |
 | `ModalImageComponent` | Un guscio: `ion-content fullscreen` + pulsante di chiusura, **con dentro `wm-image-detail`** |

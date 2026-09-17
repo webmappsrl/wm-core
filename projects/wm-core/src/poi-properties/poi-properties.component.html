@@ -18,6 +18,14 @@
     </div>
   </div>
   <div class="wm-poi-properties-body">
+    <!-- Le tassonomie stanno subito sotto il titolo, non in fondo (scrum del 04/09/2026):
+         «in generale le tassonomie vanno in cima per tanti motivi, fa parte dei filtri, quindi li
+         vedete subito». Prima stavano dopo descrizione e box configurabili in entrambi i prodotti:
+         nessuno dei due aveva ancora recepito la decisione. -->
+    <wm-poi-types-badges
+      *ngIf="properties?.taxonomy?.poi_types as poiTypes"
+      [poiTypes]="poiTypes"
+    ></wm-poi-types-badges>
     <ion-label *ngIf="distanceFromCurrentPoi$|async as distanceFromCurrentPoi">
       {{"Distanza da te" | wmtrans}}
       <span>{{distanceFromCurrentPoi|distance:'auto':0}}</span>
@@ -29,6 +37,9 @@
       [html]="excerpt|wmtrans"
     >
     </wm-inner-component-html>
+    <!-- `wm-tab-image-gallery`, cioè con l'etichetta "Galleria", come nel dettaglio della traccia:
+         le due schermate devono usare lo stesso vocabolario, altrimenti sembrano disegnate da due
+         persone diverse. -->
     <wm-tab-image-gallery
       *ngIf="properties?.image_gallery?.length"
       [imageGallery]="properties?.image_gallery"
@@ -48,10 +59,6 @@
 
     <wm-config-detail [groups]="properties?.config_detail"></wm-config-detail>
 
-    <wm-poi-types-badges
-      *ngIf="properties?.taxonomy?.poi_types as poiTypes"
-      [poiTypes]="poiTypes"
-    ></wm-poi-types-badges>
     <ng-container *ngIf="properties?.form">
       <wm-form
         class="wm-ugc-poi-form-readonly"
@@ -65,8 +72,16 @@
       <div class="wm-poi-properties-info" [innerHTML]="sanitize(info|wmtrans)"></div>
     </ng-container>
     <wm-get-directions></wm-get-directions>
-    <div class="wm-poi-contacts" *ngIf="showContacts$|async">
-      <div class="webmapp-title">{{'Contatti'|wmtrans}}</div>
+    <!-- Un solo gruppo, sotto un titolo solo: indirizzo, telefono, mail e link stanno insieme
+         perché "Contatti" mentirebbe sui link di approfondimento — su molti POI `related_url`
+         punta al comune o a Wikipedia — e due titoli separati richiederebbero di decidere in
+         anticipo quale dei due gruppi ha righe.
+         Il titolo non può restare orfano sopra zero righe: `hasContacts$` lo dice, e per i
+         link riusa `normalizeRelatedUrls`, la stessa funzione che `wm-related-urls` applica per
+         decidere cosa rendere. Serve perché `related_url` arriva come `[]` su 2.572 POI, e in
+         JavaScript un array vuoto è truthy. -->
+    <div class="wm-poi-properties-contacts" *ngIf="hasContacts$|async">
+      <div class="webmapp-title">{{'Informazioni'|wmtrans}}</div>
       <ion-list>
         <wm-address
           *ngIf="properties?.address as address"
@@ -75,15 +90,15 @@
         ></wm-address>
         <wm-phone *ngIf="properties?.contact_phone as phone" [phone]="phone"></wm-phone>
         <wm-email *ngIf="properties?.contact_email as email" [email]="email"></wm-email>
+        <wm-related-urls *ngIf="properties?.related_url as relatedUrl" [relatedUrls]="relatedUrl">
+        </wm-related-urls>
       </ion-list>
     </div>
-    <wm-feature-useful-urls *ngIf="showUsefulUrls$|async">
-      <wm-related-urls *ngIf="properties?.related_url as relatedUrl" [relatedUrls]="relatedUrl">
-      </wm-related-urls>
-    </wm-feature-useful-urls>
-    <div *ngIf="properties?.osm_url as osm" target="_blank">
-      <ion-icon class="wm-icn " name="link-outline" slot="start"></ion-icon>
-      <a class="webmapp-track-download-urls-item-label" [href]="osm">
+    <!-- `target` sull'anchor, non sul `div`: sul contenitore non significa niente, ed era il
+         motivo per cui il link OpenStreetMap apriva nella stessa scheda. Ereditato dalla mobile. -->
+    <div *ngIf="properties?.osm_url as osm">
+      <ion-icon class="wm-icn" name="link-outline" slot="start"></ion-icon>
+      <a class="wm-poi-properties-osm-link" [href]="osm" target="_blank" rel="noopener noreferrer">
         {{ "Vedi su OpenStreetMap" | wmtrans }}
       </a>
     </div>

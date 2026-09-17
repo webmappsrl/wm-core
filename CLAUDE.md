@@ -47,6 +47,14 @@ nel repo di quel prodotto.
   lavoro (com'è andato, immutabile), `knowledge/` la conoscenza per argomento (perché funziona
   così, per chi deve cambiarlo), `howto/` le procedure (come si fa). Le trappole non stanno in
   nessuna delle tre: stanno in `.claude/rules/`.
+- **Gli identificatori sono in inglese**, anche quando il testo che mostrano è in italiano:
+  `hasContacts$`, non `hasInformazioni$`. Vale per classi CSS, variabili CSS, membri e variabili
+  TypeScript; la prosa — commenti, documentazione, descrizioni dei test — resta in italiano.
+- **I nuovi selettori e le nuove classi CSS usano il prefisso `wm-`**, non `webmapp-`:
+  `wm-poi-properties`, `.wm-poi-properties-title`. Sui selettori la transizione è quasi finita —
+  restano `webmapp-title` e `webmapp-meta` — mentre un quarto delle classi nei template è ancora
+  `webmapp-`, concentrato in famiglie vecchie come `webmapp-pageroute-tabdetail-*`. Non vanno
+  reintrodotte, nemmeno toccando un file che le usa ancora.
 - **Documentazione, commenti e messaggi di commit sono in italiano.** I termini tecnici restano in
   inglese: commit, branch, merge, build, deploy, review.
 

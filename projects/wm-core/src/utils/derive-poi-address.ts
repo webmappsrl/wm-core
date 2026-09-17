@@ -6,19 +6,10 @@ export interface DerivedPoiAddress {
 }
 
 /**
- * Derives display `address` and URL-safe `address_link` from POI properties.
- * Does not mutate the store — callers merge the result into a local view model.
- *
- * Precedence for `address`: existing non-empty `address` → `addr_complete` →
- * join(`addr_locality`, `addr_street`, ', ').
- * `address_link` uses the same source (spaces → `+` for single-string sources;
- * locality/street joined with `+`).
- */
-/**
- * Drops empty segments from a comma-separated address: the backend emits values
- * like `",,"` or `",37013 Caprino Veronese VR,"` when only some address columns
- * are filled. Returns `''` when nothing but separators is left, so the caller
- * falls through to the next source instead of rendering an empty row.
+ * Scarta i segmenti vuoti da un indirizzo separato da virgole: il backend manda valori come `",,"`
+ * o `",37013 Caprino Veronese VR,"` quando solo alcune colonne dell'indirizzo sono compilate.
+ * Restituisce `''` quando resta solo punteggiatura, così chi chiama passa alla sorgente
+ * successiva invece di mostrare una riga vuota.
  */
 function cleanAddress(raw: string): string {
   return raw
@@ -28,6 +19,14 @@ function cleanAddress(raw: string): string {
     .join(', ');
 }
 
+/**
+ * Ricava l'`address` da mostrare e l'`address_link` adatto a un URL dalle properties di un POI.
+ * **Non muta lo store**: chi chiama unisce il risultato nel proprio view model.
+ *
+ * Per `address` l'ordine di precedenza e': un `address` già valorizzato, poi `addr_complete`, poi
+ * `addr_locality` e `addr_street` uniti da `, `. `address_link` viene dalla stessa sorgente, ma
+ * unito con `+`, che è la forma che finisce nell'URL di Google Maps.
+ */
 export function derivePoiAddress(
   props: WmProperties | null | undefined,
 ): DerivedPoiAddress {

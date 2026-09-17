@@ -284,3 +284,62 @@ guardia del nome, quindi un POI con località e senza nome avrebbe mostrato una 
 **Conseguenza per `wm-txn-where`, non risolta qui:** la sezione "Dove" non renderizza mai su queste
 app, per lo stesso motivo per cui non si poteva usare `taxonomy_where` come sorgente. Il difetto
 vale su entrambe le piattaforme ed è tracciato, non corretto.
+
+## Ordine ed etichette: due decisioni dello scrum del 04/09/2026
+
+Arrivate dalla trascrizione, non dal ticket, e recepite a lavoro quasi finito.
+
+- **`wm-poi-types-badges` spostato subito sotto il titolo.** Prima stava dopo descrizione e box
+  configurabili. Motivazione in call: le tassonomie fanno parte del vocabolario dei filtri, quindi
+  vanno lette per prime. Stavano in fondo in entrambi i prodotti, quindi nessuno se n'era accorto.
+
+- **Tolte le etichette "Contatti", "Link utili" e "Galleria" dal dettaglio del POI.** Indirizzo,
+  telefoni, mail e link stanno ora in un `ion-list` solo. Con le etichette cadono anche i due gate
+  `showContacts$` e `showUsefulUrls$`: senza un titolo che possa restare orfano sopra zero righe,
+  non c'è nulla da decidere in anticipo, e ogni figlio si nasconde da sé. Resta
+  `showTechnicalDetails$`, che è precedente a questo ticket e riguarda `wm-tab-detail`.
+
+- **`hasUsableRelatedUrls` eliminata insieme al suo spec.** Esisteva solo per non far comparire il
+  titolo "Link utili" sopra un elenco vuoto — il caso `[]`, che arriva su 2.572 POI. Senza titolo,
+  `wm-related-urls` non rende già nulla da sé, perché `normalizeRelatedUrls` restituisce un array
+  vuoto. Sparisce così anche la duplicazione fra le due funzioni, che analizzavano le stesse tre
+  forme di `related_url` in due modi diversi.
+
+- **Rimossa la chiave i18n `Contatti`** dalle sette lingue: nessun template la usa più. `Indirizzo`
+  resta, perché la consuma `tab-detail.component.html`, che è di altri consumer.
+
+- **I due wrapper con etichetta non sono stati toccati.** `wm-feature-useful-urls` e
+  `wm-tab-image-gallery` restano come sono: li monta anche il dettaglio della traccia, che non era
+  oggetto della decisione. Nel dettaglio del POI sono stati sostituiti dai componenti che
+  avvolgono, `wm-related-urls` e `wm-image-gallery`. Nel caso di `wm-feature-useful-urls` la
+  sostituzione non perde nulla: senza `[track]` quel componente rende solo il proprio titolo.
+
+## Etichette: la rimozione è stata ribaltata
+
+Quanto scritto sopra sulle etichette tolte vale come cronaca, non come stato finale. Il dev ha
+ribaltato la decisione il giorno dopo, perché il dettaglio della traccia le etichette le ha ancora
+e due schermate che trattano i titoli in modo diverso sembrano un lavoro a metà.
+
+Stato finale del componente:
+
+- **`wm-tab-image-gallery` è di nuovo montato**, quindi "Galleria" c'è come nella traccia.
+- **Un solo titolo, "Informazioni"**, sopra indirizzo, telefoni, mail e link insieme — non i due
+  "Contatti" e "Link utili", che erano la forma respinta in call. "Contatti" da solo mentirebbe:
+  `related_url` porta spesso pagine di approfondimento, non recapiti.
+- **`hasContacts$`** rimpiazza i due `BehaviorSubject`: una sola osservabile derivata, senza
+  side-effect nel `tap`, che dice se il gruppo ha almeno una riga. Riusa `normalizeRelatedUrls`
+  invece di duplicarne la logica, quindi `hasUsableRelatedUrls` resta eliminata.
+- **Chiave i18n `Informazioni`** nelle sette lingue, al posto di `Contatti` che era stata tolta.
+
+Nota su una premessa dello scrum: il criterio «se li ricevi già separati puoi suddividerli»
+poggiava sull'ipotesi, non verificata in call, che i campi arrivassero uniti. Profilando i payload
+di 45 app, `addr_complete`, `contact_phone`, `contact_email` e `related_url` sono campi distinti.
+L'unione resta la scelta giusta, ma per la ragione linguistica, non per un vincolo del dato.
+
+## Rientro delle righe
+
+Rimosso l'override di `--padding-start` che `poi-popup.component.scss` applicava al solo
+`wm-txn-where`: era la ragione per cui "Dove" partiva dal bordo mentre "Dettagli tecnici" e i
+contatti erano rientrati, e per cui la stessa sezione si vedeva diversa nel dettaglio della traccia.
+Senza l'eccezione tutte le righe usano il `--padding-start` di `ion-item`. Nessuna regola aggiunta
+in wm-core: il componente eredita lo stile standard.

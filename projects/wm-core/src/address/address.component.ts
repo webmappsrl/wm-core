@@ -24,7 +24,7 @@ import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
         }
         ion-label {
           font-weight: 600;
-          color: var(wm-feature-details-description-color), var(--wm-color-dark);
+          color: var(--wm-feature-details-description-color, var(--wm-color-dark));
         }
       }
     `,
@@ -36,7 +36,8 @@ export class WmAddressComponent {
   @Input() addressLink: string;
 
   /**
-   * Google Maps navigation URL (same pattern as wm-webapp poi-popup).
+   * URL di navigazione Google Maps. Usa `addressLink` se c'è — è la forma unita con `+`, adatta
+   * a finire in un URL — altrimenti ripiega sull'indirizzo mostrato a schermo.
    */
   get mapsHref(): string {
     const destination =

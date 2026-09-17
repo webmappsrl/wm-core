@@ -1,8 +1,11 @@
+// Questo blocco descrive un pannello a tutta area, non un componente montabile ovunque: entrambi i
+// consumer lo neutralizzano nel proprio foglio (wm-webapp in poi-popup.component.scss, webmapp-app
+// in map-details.component.scss). È debito noto, lasciato in piedi per non rifare il layout dei due
+// prodotti dentro oc:8406 — vedi docs/knowledge/dettaglio-poi.md.
 wm-poi-properties {
   position: absolute;
   display: block;
   bottom: 0;
-  height: 50%;
   border-radius: 15px;
   background: white;
   width: 100%;
@@ -16,8 +19,10 @@ wm-poi-properties {
   // (map.page.scss), che è la resa scelta come riferimento: usa le variabili di tema invece dei
   // px fissi che aveva il popup della webapp, quindi segue la scala tipografica per-istanza.
   .wm-poi-properties-header {
+    // Niente `width: 100%` qui: sommato ai margini laterali di `--wm-feature-details-margin`
+    // faceva 100% + 12px e produceva scroll orizzontale nel popup della webapp, che è stretto.
+    // Un blocco prende già tutta la larghezza disponibile, con i margini sottratti.
     margin: var(--wm-feature-details-margin);
-    width: 100%;
     position: relative;
     color: black;
     text-align: left;
@@ -58,7 +63,10 @@ wm-poi-properties {
     .wm-poi-properties-info {
       margin: var(--wm-feature-details-margin);
     }
-    .wm-poi-contacts {
+    // Indirizzo, telefoni, mail e link in un gruppo solo, sotto il titolo "Informazioni". Il
+    // titolo usa le stesse variabili degli altri del dettaglio — "Dettagli tecnici", "Galleria",
+    // "Link utili" della traccia — così le sezioni si somigliano fra le due schermate.
+    .wm-poi-properties-contacts {
       display: block;
       margin: var(--wm-feature-details-margin);
       .webmapp-title {

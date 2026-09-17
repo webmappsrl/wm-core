@@ -9,9 +9,18 @@ Cosa rende `wm-poi-properties` e cosa resta a chi lo monta.
 legge `currentPoiProperties`, `poi`, `confPOIFORMS` e `confOPTIONSShowEmbeddedHtml`, e non ha alcun
 `@Input`.
 
-Rende, nell'ordine: intestazione (località e nome), distanza dall'utente, excerpt, galleria,
-dettagli tecnici, "Dove", descrizione, box configurabili, badge dei tipi, form in sola lettura,
-`info`, indicazioni stradali, Contatti, Link utili, link OSM, audio, HTML incorporato.
+Rende, nell'ordine: intestazione (località e nome), **badge dei tipi**, distanza dall'utente,
+excerpt, "Galleria", dettagli tecnici, "Dove", descrizione, box configurabili, form in sola lettura,
+`info`, indicazioni stradali, "Informazioni", link OSM, audio, HTML incorporato.
+
+**Le tassonomie stanno sotto il titolo** (scrum del 04/09/2026): i badge dei tipi appartengono al
+vocabolario dei filtri, quindi si leggono per primi, non in fondo.
+
+**"Informazioni" è un gruppo solo**, con dentro indirizzo, telefoni, mail e link. Un titolo solo
+perché "Contatti" mentirebbe sui link di approfondimento — su molti POI `related_url` punta al
+comune o a Wikipedia — e perché due gruppi separati costringerebbero a decidere in anticipo quale
+dei due ha righe. Le altre sezioni tengono la propria etichetta, "Galleria" compresa, per usare lo
+stesso vocabolario del dettaglio della traccia.
 
 **Il confine con chi lo monta.** Nell'intestazione stanno località, nome e
 `wm-related-pois-navigator`; il **pulsante di chiusura no**, resta al contenitore. La ragione è che
@@ -23,13 +32,16 @@ lì la semantica differisce davvero: nel pannello chiude il dettaglio, nel popup
 | Cosa si vede | Sorgente | Nota |
 |---|---|---|
 | Località sopra il nome | `taxonomyWheres`, ultimo elemento | array ordinato regione → provincia → comune |
-| Indirizzo nei Contatti | `derivePoiAddress()` da `addr_complete`/`addr_locality`/`addr_street` | `address` non esiste nel payload |
+| Indirizzo in "Informazioni" | `derivePoiAddress()` da `addr_complete`/`addr_locality`/`addr_street` | `address` non esiste nel payload |
 | Telefoni | `splitPhones()` su `contact_phone` | il campo è una stringa CSV con etichette dentro |
-| Link utili | `normalizeRelatedUrls()` su `related_url` | il campo arriva come oggetto, stringa o array |
+| Link in "Informazioni" | `normalizeRelatedUrls()` su `related_url` | il campo arriva come oggetto, stringa o array |
 
-**`wm-txn-where` non renderizza nulla** sulle app verificate: consuma `taxonomy_where`, che è vuoto
-(0 POI su 3.252 dell'app 33, 0 su 3.721 dell'app 29), mentre il campo popolato è `taxonomyWheres`.
-È un difetto noto, non corretto.
+**`wm-txn-where` dipende dallo shard.** Consuma `taxonomy_where`, che su geohub è vuoto — 0 POI su
+3.252 dell'app 33, 0 su 3.721 dell'app 29 — mentre lì il campo popolato è `taxonomyWheres`, che è
+quello da cui l'intestazione prende il comune. Su `camminiditaliadev` invece `taxonomy_where` è
+valorizzato e la sezione "Dove" rende davvero, con Comune e Regione (verificato sul POI 377).
+Chi vede la sezione sparire non ha un difetto del componente davanti: ha un'app che quel campo non
+lo manda.
 
 ## Perché così
 
@@ -45,6 +57,24 @@ lì la semantica differisce davvero: nel pannello chiude il dettaglio, nel popup
 
 - **L'intestazione dentro, la chiusura fuori** (oc:8406): il criterio non è "sta in alto", è "si
   comporta allo stesso modo nei due prodotti". Titolo e località sì, il pulsante di chiusura no.
+
+- **Un solo gate, e serve** (oc:8406): `hasContacts$` esiste per non lasciare il titolo
+  "Informazioni" sospeso sopra il vuoto. Non basterebbe un `*ngIf` sui campi, perché `related_url`
+  arriva come `[]` su 2.572 POI e in JavaScript un array vuoto è truthy. Per i link riusa
+  `normalizeRelatedUrls`, la stessa funzione con cui `wm-related-urls` decide cosa rendere: una
+  sola implementazione delle tre forme del campo, non due che possono divergere.
+
+- **`wm-feature-useful-urls` non è montato da qui**, `wm-tab-image-gallery` sì (oc:8406): il primo
+  porterebbe un secondo titolo, "Link utili", sopra righe che stanno già sotto "Informazioni", e
+  senza `[track]` non rende nient'altro. Il secondo invece porta "Galleria", che è l'etichetta con
+  cui quella sezione si chiama anche nel dettaglio della traccia.
+
+- **Nessun override sul rientro delle righe** (oc:8406): "Dettagli tecnici", "Dove" e
+  "Informazioni" usano il `--padding-start` che `ion-item` porta di suo. Fino a oc:8406 la webapp
+  lo azzerava per il solo `wm-txn-where` in `poi-popup.component.scss`, e il risultato era doppio:
+  dentro il dettaglio "Dove" partiva dal bordo mentre le altre due sezioni erano rientrate, e la
+  stessa sezione si vedeva diversa qui e nel dettaglio della traccia. Tolta l'eccezione, spariscono
+  entrambe le divergenze.
 
 - **La normalizzazione dei dati sta qui, non nei consumer** (oc:8406): `address`, telefoni e link
   richiedono tutti una pulizia prima di essere mostrati, e farla nel consumer significa rifarla due
@@ -67,7 +97,24 @@ lì la semantica differisce davvero: nel pannello chiude il dettaglio, nel popup
   accorgessero.
 
 - **Categoria sopra il nome** (oc:8406, superata): al suo posto c'è ora il comune. La categoria
-  resta comunque visibile nel corpo, come chip, tramite `wm-poi-types-badges`.
+  resta comunque visibile, come chip, tramite `wm-poi-types-badges` — che sta subito sotto il
+  titolo, non più in fondo.
+
+- **Badge dei tipi in fondo, dopo descrizione e box configurabili** (oc:8406, superata): era così in
+  entrambi i prodotti, e l'unificazione l'aveva riprodotto copiando la mobile. La decisione di
+  spostarli sotto il titolo era già stata presa nello scrum del 04/09/2026, ma nessuno dei due
+  l'aveva recepita: il difetto tipico di una decisione presa a voce e non tracciata su un ticket.
+
+- **Etichette "Contatti" e "Link utili" con un gate ciascuno** (oc:8406, superata): il primo
+  tentativo separava i due gruppi e calcolava con due `BehaviorSubject` se mostrarli. Lo scrum
+  aveva respinto quella forma — troppa logica nel frontend per dividere dati che credeva
+  arrivassero uniti.
+
+- **Nessuna etichetta sui contatti** (oc:8406, superata): applicata alla lettera la decisione dello
+  scrum, il gruppo era rimasto senza titolo. È durata poco: il dettaglio della traccia le etichette
+  ce le ha ancora, e due schermate dello stesso prodotto che trattano i titoli in modo diverso
+  sembrano un lavoro lasciato a metà. Al posto dei due titoli respinti ne è arrivato uno solo,
+  "Informazioni".
 
 - **Posizionamento del pannello dentro il componente** (oc:8406): `poi-properties.component.scss`
   dichiara ancora `position: absolute; height: 100%; z-index: 2` sull'host. Non serve a nessuno dei
