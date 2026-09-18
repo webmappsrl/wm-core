@@ -608,10 +608,15 @@ export class WmGeoboxMapComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  /**
+   * Il tap su un POI della mappa chiude anche la navigazione fra correlati: `ec_related_poi` va
+   * azzerato insieme, altrimenti resta nell'URL e `removeLatest()` lo consuma prima di `poi`,
+   * costando un "indietro" che non sposta niente (oc:8406).
+   */
   setPoi(poi: WmFeature<Point>): void {
     this.resetSelectedUgcPoi$.next(!this.resetSelectedUgcPoi$.value);
     const id = poi?.properties?.id ?? null;
-    this._urlHandlerSvc.updateURL({poi: id ? +id : undefined});
+    this._urlHandlerSvc.updateURL({poi: id ? +id : undefined, ec_related_poi: undefined});
   }
 
   setUgcPoi(poi: WmFeature<Point>): void {

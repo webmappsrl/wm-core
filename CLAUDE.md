@@ -47,6 +47,14 @@ nel repo di quel prodotto.
   lavoro (com'è andato, immutabile), `knowledge/` la conoscenza per argomento (perché funziona
   così, per chi deve cambiarlo), `howto/` le procedure (come si fa). Le trappole non stanno in
   nessuna delle tre: stanno in `.claude/rules/`.
+- **Gli identificatori sono in inglese**, anche quando il testo che mostrano è in italiano:
+  `hasContacts$`, non `hasInformazioni$`. Vale per classi CSS, variabili CSS, membri e variabili
+  TypeScript; la prosa — commenti, documentazione, descrizioni dei test — resta in italiano.
+- **I nuovi selettori e le nuove classi CSS usano il prefisso `wm-`**, non `webmapp-`:
+  `wm-poi-properties`, `.wm-poi-properties-title`. Sui selettori la transizione è quasi finita —
+  restano `webmapp-title` e `webmapp-meta` — mentre un quarto delle classi nei template è ancora
+  `webmapp-`, concentrato in famiglie vecchie come `webmapp-pageroute-tabdetail-*`. Non vanno
+  reintrodotte, nemmeno toccando un file che le usa ancora.
 - **Documentazione, commenti e messaggi di commit sono in italiano.** I termini tecnici restano in
   inglese: commit, branch, merge, build, deploy, review.
 
@@ -61,8 +69,10 @@ Il dettaglio di ogni lavoro sta nel proprio cantiere sotto `docs/features/<slug>
 | Box informativi configurabili | Accordion custom `wm-config-detail`, apertura multipla, meccanismo di assestamento rimosso | oc:8181, oc:8458, oc:8427 | [docs/knowledge/config-detail.md](docs/knowledge/config-detail.md) |
 | Cache delle API e log in produzione | Header condizionale in `handleApiCache`, triage dei `console.*` | oc:8374, oc:8369 | [docs/knowledge/cache-e-log.md](docs/knowledge/cache-e-log.md) |
 | Deep link | Perché il percorso nativo è stato scartato, ordine in `initialize()`, navigazione Home→Map | oc:8470, oc:7980 | [docs/knowledge/deep-link.md](docs/knowledge/deep-link.md) |
+| Dettaglio di un POI | Cosa rende `wm-poi-properties` e cosa resta ai contenitori, da dove vengono indirizzo, telefoni e località | oc:8406 | [docs/knowledge/dettaglio-poi.md](docs/knowledge/dettaglio-poi.md) |
 | Filtro dei POI | Due stage tassonomia + layer ID, retrocompatibilità legacy, binding multi-direttiva | oc:8147, oc:7646 | [docs/knowledge/filtri-poi.md](docs/knowledge/filtri-poi.md) |
 | Home: tab, conteggi ed etichette | Scelta del tab risultati, badge non filtrato, chiavi i18n condivise badge/segment | oc:7643, oc:8221 | [docs/knowledge/home-ricerca-e-tab.md](docs/knowledge/home-ricerca-e-tab.md) |
+| Immagini: galleria e dettaglio | Un solo `wm-image-detail` in due contenitori, `isAppMobile` vs `isMobile`, `object-fit` nei box e nel dettaglio | oc:8406 | [docs/knowledge/immagini-e-galleria.md](docs/knowledge/immagini-e-galleria.md) |
 | Isolamento del TestBed | Reset fra spec file, campi `static`, config Karma del progetto | oc:7989 | [docs/knowledge/testbed-isolamento.md](docs/knowledge/testbed-isolamento.md) |
 | `layer-box` e `home-layer` | Overlay su CSS Grid, logo dentro `wm-img`, cuoricino preferiti | oc:8305, oc:8176, oc:8164 | [docs/knowledge/layer-box-e-home-layer.md](docs/knowledge/layer-box-e-home-layer.md) |
 | PostHog | `PosthogContextService`, contesto degli eventi, `user_id` e `userMoved` | oc:8115, oc:8127, oc:8159 | [docs/knowledge/posthog.md](docs/knowledge/posthog.md) |

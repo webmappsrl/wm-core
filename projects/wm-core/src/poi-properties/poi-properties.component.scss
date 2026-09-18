@@ -1,0 +1,114 @@
+// Questo blocco descrive un pannello a tutta area, non un componente montabile ovunque: entrambi i
+// consumer lo neutralizzano nel proprio foglio (wm-webapp in poi-popup.component.scss, webmapp-app
+// in map-details.component.scss). È debito noto, lasciato in piedi per non rifare il layout dei due
+// prodotti dentro oc:8406 — vedi docs/knowledge/dettaglio-poi.md.
+wm-poi-properties {
+  position: absolute;
+  display: block;
+  bottom: 0;
+  border-radius: 15px;
+  background: white;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  // L'excerpt non porta spaziatura propria: la dà il ritmo del corpo, come a tutti gli altri.
+  // Aveva `padding: 20px 0 3px 0`, cioè 20px sopra e 3 sotto: il riquadro era distanziato
+  // correttamente dai vicini, ma il testo dentro respirava sopra e toccava sotto, ed era la
+  // differenza che si notava a occhio.
+  .wm-excerpt {
+    padding: 0;
+  }
+
+  // Intestazione condivisa (oc:8406). I valori vengono dal pannello di webmapp-app
+  // (map.page.scss), che è la resa scelta come riferimento: usa le variabili di tema invece dei
+  // px fissi che aveva il popup della webapp, quindi segue la scala tipografica per-istanza.
+  .wm-poi-properties-header {
+    // Niente `width: 100%` qui: sommato ai margini laterali di `--wm-feature-details-margin`
+    // faceva 100% + 12px e produceva scroll orizzontale nel popup della webapp, che è stretto.
+    // Un blocco prende già tutta la larghezza disponibile, con i margini sottratti.
+    margin: var(--wm-feature-details-margin);
+    position: relative;
+    color: black;
+    text-align: left;
+
+    .wm-poi-properties-pre-title {
+      color: var(--wm-color-primary);
+      font-size: var(--wm-font-lg);
+      font-weight: var(--wm-font-weight-bold);
+      text-transform: uppercase;
+    }
+
+    .wm-poi-properties-title {
+      font-size: var(--wm-font-lg);
+      font-weight: var(--wm-font-weight-bold);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+
+      // Il nome prende lo spazio residuo, il navigatore dei POI correlati resta a destra
+      // sulla stessa riga: a larghezze strette è più compatto che metterlo sotto.
+      > div {
+        flex: 1;
+      }
+    }
+  }
+
+  .wm-poi-properties-body {
+    --padding-bottom: 30px;
+
+    // Un ritmo solo per tutte le sezioni. Quasi tutti i componenti del dettaglio portano già
+    // `--wm-feature-details-margin` per conto proprio, ma non tutti — l'excerpt usava padding, il
+    // link OSM e l'HTML incorporato non avevano niente, la distanza azzerava il margine sopra — e
+    // bastava un'eccezione per rompere la sequenza. Dichiararlo qui vale per ogni figlio diretto,
+    // compresi quelli che verranno aggiunti domani.
+    //
+    // Restano margini e non `gap`, che sarebbe la forma moderna: i margini verticali adiacenti
+    // **collassano**, quindi fra due blocchi resta un solo intervallo invece della somma dei due,
+    // e un componente che non rende nulla — `wm-config-detail` è sempre montato anche senza dati —
+    // collassa attraverso senza lasciare spazio vuoto. Con `display: flex` e `gap` ogni host vuoto
+    // produrrebbe un buco.
+    > * {
+      margin: var(--wm-feature-details-margin);
+    }
+
+    // L'HTML incorporato porta un padding del 5% su tutti i lati: dentro il dettaglio lo spazio lo
+    // dà il margine come agli altri.
+    > wm-inner-component-html {
+      padding: 0;
+    }
+
+    > ion-label {
+      display: block;
+      span {
+        font-weight: 700;
+      }
+    }
+    .wm-poi-properties-info {
+      margin: var(--wm-feature-details-margin);
+    }
+    // Indirizzo, telefoni, mail e link in un gruppo solo, sotto il titolo "Informazioni". Il
+    // titolo usa le stesse variabili degli altri del dettaglio — "Dettagli tecnici", "Galleria",
+    // "Link utili" della traccia — così le sezioni si somigliano fra le due schermate.
+    .wm-poi-properties-contacts {
+      display: block;
+      margin: var(--wm-feature-details-margin);
+      .webmapp-title {
+        font-weight: var(--wm-feature-details-title-font-weight);
+        font-size: var(--wm-feature-details-title-font-size);
+        color: var(--wm-feature-details-title-color);
+        font-family: var(--wm-feature-details-title-font-family);
+      }
+    }
+    .webmapp-pagepoi-info-body-photoslider {
+      padding: 10px 0;
+      overflow: visible;
+      .webmapp-pagepoi-info-body-photo {
+        height: 150px;
+        width: 250px;
+        &::part(image) {
+          border-radius: 15px;
+        }
+      }
+    }
+  }
+}
