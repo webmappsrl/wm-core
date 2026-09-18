@@ -1,7 +1,12 @@
 import {Point} from 'geojson';
 import {WmFeature} from '@wm-types/feature';
 
-import {nextRelatedPoiId, prevRelatedPoiId} from './ec.selector';
+import {
+  canNavigateRelatedPois,
+  isShowingRelatedPoi,
+  nextRelatedPoiId,
+  prevRelatedPoiId,
+} from './ec.selector';
 
 /**
  * I due selettori si testano con la loro `projector`, senza montare lo store: sono funzioni pure
@@ -40,5 +45,36 @@ describe('nextRelatedPoiId / prevRelatedPoiId (oc:8406)', () => {
         .withContext(`prev con id ${idNonPresente}`)
         .toBeNull();
     }
+  });
+});
+
+describe('isShowingRelatedPoi / canNavigateRelatedPois (oc:8406)', () => {
+  const correlato = {id: 20, name: 'Correlato'};
+  const diretto = {id: 77, name: 'Scelto dalla mappa'};
+
+  it('è vero solo se il dettaglio mostra il correlato', () => {
+    // `currentPoiProperties` restituisce lo stesso oggetto di uno dei due a monte
+    expect(isShowingRelatedPoi.projector(correlato, correlato)).toBeTrue();
+    expect(canNavigateRelatedPois.projector(true, 3)).toBeTrue();
+  });
+
+  // Il caso del difetto: `ec_related_poi` resta nell'URL dopo aver scelto un POI dalla mappa,
+  // quindi il track e il suo conteggio sono ancora in stato, ma il dettaglio mostra un altro POI.
+  it('è falso quando si mostra un POI scelto direttamente, anche col track in stato', () => {
+    expect(isShowingRelatedPoi.projector(diretto, correlato)).toBeFalse();
+    expect(canNavigateRelatedPois.projector(false, 3))
+      .withContext('con un POI diretto aperto non si naviga, per quanti correlati abbia il track')
+      .toBeFalse();
+  });
+
+  it('è falso senza nessun POI aperto', () => {
+    expect(isShowingRelatedPoi.projector(null, correlato)).toBeFalse();
+    expect(isShowingRelatedPoi.projector(correlato, null)).toBeFalse();
+    expect(isShowingRelatedPoi.projector(null, null)).toBeFalse();
+  });
+
+  it('un solo correlato non basta a navigare', () => {
+    expect(canNavigateRelatedPois.projector(true, 1)).toBeFalse();
+    expect(canNavigateRelatedPois.projector(true, 0)).toBeFalse();
   });
 });

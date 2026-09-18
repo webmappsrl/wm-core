@@ -264,6 +264,35 @@ export const currentRelatedPoisCount = createSelector(
   },
 );
 
+/**
+ * `true` quando il dettaglio aperto è davvero un POI correlato, e non un POI scelto direttamente.
+ *
+ * `currentPoiProperties` restituisce **lo stesso oggetto** di uno dei due selettori a monte, e
+ * preferisce quello del POI diretto: il confronto per riferimento dice quindi quale dei due si sta
+ * mostrando, senza rifare la logica del sentinella `{related: false}`.
+ *
+ * Serve perché `ec_related_poi` resta nell'URL anche dopo aver scelto un altro POI dalla mappa:
+ * `setPoi` aggiunge `poi` e azzera `ugc_poi`, non quello. Senza questa condizione il navigatore
+ * resterebbe acceso su un POI che non c'entra, con un contatore che conta un altro elenco.
+ */
+export const isShowingRelatedPoi = createSelector(
+  currentPoiProperties,
+  currentEcRelatedPoiProperties,
+  (current, related) => current != null && related != null && current === related,
+);
+
+/**
+ * L'unica condizione per cui la navigazione fra POI correlati ha senso: si sta mostrando un
+ * correlato e ce n'è più di uno. La usano **entrambi** i punti che navigano — i pulsanti del
+ * navigatore e le scorciatoie da tastiera del popup della webapp — perché due gate scritti
+ * separatamente divergono, ed è esattamente quello che era successo.
+ */
+export const canNavigateRelatedPois = createSelector(
+  isShowingRelatedPoi,
+  currentRelatedPoisCount,
+  (isRelated, count) => isRelated && count > 1,
+);
+
 export const nextRelatedPoiId = createSelector(
   currentEcRelatedPois,
   currentEcRelatedPoiId,
