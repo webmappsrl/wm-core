@@ -2,6 +2,12 @@
 
 # Unificare i componenti di dettaglio EcPoi — parte wm-core
 
+> **Lo stato finale non è qui.** Questo documento fotografa la **pianificazione**, e per convenzione
+> del repo resta com'era: `docs/features/` è il cantiere di come è andata, non la descrizione di
+> come funziona. Diverse scelte sono cambiate in corso d'opera — le etichette, l'intestazione, il
+> perimetro su wm-core — e ognuna è registrata con il suo perché in `notes.md`, che è il documento
+> da leggere per sapere dove si è arrivati. Le caselle qui sotto non vengono spuntate: lo stato di
+> avanzamento sta anch'esso in `notes.md`.
 ## Cosa cambia
 
 `PoiPropertiesComponent` (selector `wm-poi-properties`), oggi nel repo applicativo
