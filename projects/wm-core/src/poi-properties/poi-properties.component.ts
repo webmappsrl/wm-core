@@ -31,8 +31,8 @@ export class PoiPropertiesComponent {
       if (properties == null) {
         return properties;
       }
-      const {address, address_link} = derivePoiAddress(properties);
-      return {...properties, address, address_link};
+      const {address} = derivePoiAddress(properties);
+      return {...properties, address};
     }),
     tap(properties => {
       this.showTechnicalDetails$.next(!!properties?.ele);

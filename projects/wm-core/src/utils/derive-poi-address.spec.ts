@@ -3,7 +3,7 @@ import {WmProperties} from '@wm-types/feature';
 import {derivePoiAddress} from './derive-poi-address';
 
 describe('derivePoiAddress (oc:8406)', () => {
-  it('usa addr_complete per address e address_link', () => {
+  it('usa addr_complete per address', () => {
     const props = {
       addr_complete: 'Via Roma 1, Pisa',
       addr_locality: 'Pisa',
@@ -11,8 +11,7 @@ describe('derivePoiAddress (oc:8406)', () => {
     } as unknown as WmProperties;
 
     expect(derivePoiAddress(props)).toEqual({
-      address: 'Via Roma 1, Pisa',
-      address_link: 'Via+Roma+1,+Pisa',
+      address: 'Via Roma 1, Pisa'
     });
   });
 
@@ -23,8 +22,7 @@ describe('derivePoiAddress (oc:8406)', () => {
     } as unknown as WmProperties;
 
     expect(derivePoiAddress(props)).toEqual({
-      address: 'Pisa, Via Roma 1',
-      address_link: 'Pisa+Via Roma 1',
+      address: 'Pisa, Via Roma 1'
     });
   });
 
@@ -37,14 +35,13 @@ describe('derivePoiAddress (oc:8406)', () => {
     } as unknown as WmProperties;
 
     expect(derivePoiAddress(props)).toEqual({
-      address: 'Indirizzo backend',
-      address_link: 'Indirizzo+backend',
+      address: 'Indirizzo backend'
     });
   });
 
   it('con null/undefined restituisce stringhe vuote', () => {
-    expect(derivePoiAddress(null)).toEqual({address: '', address_link: ''});
-    expect(derivePoiAddress(undefined)).toEqual({address: '', address_link: ''});
+    expect(derivePoiAddress(null)).toEqual({address: ''});
+    expect(derivePoiAddress(undefined)).toEqual({address: ''});
   });
 
   it('scarta i segmenti vuoti degli indirizzi sporchi del backend', () => {

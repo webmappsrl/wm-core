@@ -33,15 +33,17 @@ import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
 })
 export class WmAddressComponent {
   @Input() address: string;
-  @Input() addressLink: string;
 
   /**
-   * URL di navigazione Google Maps. Usa `addressLink` se c'è — è la forma unita con `+`, adatta
-   * a finire in un URL — altrimenti ripiega sull'indirizzo mostrato a schermo.
+   * URL di navigazione Google Maps, costruito dall'indirizzo mostrato a schermo.
+   *
+   * **Non da `address_link`**, che pure esisteva per questo: quel campo unisce con `+` per
+   * pre-codificare gli spazi, ma `encodeURIComponent` trasforma poi quei `+` in `%2B`, cioè in un
+   * più letterale dentro l'indirizzo — `Via%2BRoma%2B1%2C%2BPisa` invece di
+   * `Via%20Roma%201%2C%20Pisa`. Le due codifiche si annullavano a vicenda e chi toccava il link
+   * finiva su una ricerca sbagliata.
    */
   get mapsHref(): string {
-    const destination =
-      this.addressLink != null && this.addressLink !== '' ? this.addressLink : this.address;
-    return `https://www.google.com/maps?daddr=${encodeURIComponent(destination)}&navigate=yes`;
+    return `https://www.google.com/maps?daddr=${encodeURIComponent(this.address)}&navigate=yes`;
   }
 }
