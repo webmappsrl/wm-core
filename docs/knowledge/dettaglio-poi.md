@@ -63,13 +63,19 @@ lo manda.
   `wm-webapp`. Dice due cose insieme: che il dettaglio aperto **è** un POI correlato, e che ce n'è
   più di uno.
 
-  La prima metà non è ovvia e vale la pena saperla: `ec_related_poi` resta nell'URL anche dopo che
-  si è scelto un altro POI dalla mappa — `setPoi` aggiunge `poi` e azzera `ugc_poi`, non quello —
-  quindi il conteggio dei correlati del track non basta a decidere. `isShowingRelatedPoi` lo
-  stabilisce confrontando **per riferimento** `currentPoiProperties` con
+  La prima metà è quella che non si deduce: il conteggio dei correlati del track **non basta**,
+  perché il track resta in stato anche quando il dettaglio aperto è un altro POI.
+  `isShowingRelatedPoi` lo stabilisce confrontando **per riferimento** `currentPoiProperties` con
   `currentEcRelatedPoiProperties`: il primo restituisce lo stesso oggetto di uno dei due selettori
   a monte e preferisce quello del POI diretto, quindi il confronto dice quale dei due si sta
   mostrando senza riprodurre la logica del sentinella `{related: false}`.
+
+  **`setPoi` azzera anche `ec_related_poi`** — sia quello di `url-handler`, per le liste, sia
+  quello di `geobox-map`, per il tap sulla mappa. Prima non lo faceva, e il parametro restava
+  nell'URL: con il gate a posto non si vedeva nulla, ma `removeLatest()` controlla
+  `ec_related_poi` **prima** di `poi`, quindi il primo "indietro" lo consumava senza spostare
+  niente e ne serviva un secondo. Il gate e l'azzeramento servono tutti e due: il primo protegge
+  la resa, il secondo tiene pulita la cronologia.
 
   **Che il gate sia uno solo conta più di com'è scritto**: prima erano due, il template del
   navigatore e il filtro nel popup, e sono divergiti due volte — con l'indice negativo, e con
