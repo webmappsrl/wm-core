@@ -58,6 +58,24 @@ lo manda.
 - **L'intestazione dentro, la chiusura fuori** (oc:8406): il criterio non è "sta in alto", è "si
   comporta allo stesso modo nei due prodotti". Titolo e località sì, il pulsante di chiusura no.
 
+- **Un solo gate per la navigazione fra POI correlati** (oc:8406): `canNavigateRelatedPois`, usato
+  sia dai pulsanti di `wm-related-pois-navigator` sia dalle scorciatoie da tastiera del popup di
+  `wm-webapp`. Dice due cose insieme: che il dettaglio aperto **è** un POI correlato, e che ce n'è
+  più di uno.
+
+  La prima metà non è ovvia e vale la pena saperla: `ec_related_poi` resta nell'URL anche dopo che
+  si è scelto un altro POI dalla mappa — `setPoi` aggiunge `poi` e azzera `ugc_poi`, non quello —
+  quindi il conteggio dei correlati del track non basta a decidere. `isShowingRelatedPoi` lo
+  stabilisce confrontando **per riferimento** `currentPoiProperties` con
+  `currentEcRelatedPoiProperties`: il primo restituisce lo stesso oggetto di uno dei due selettori
+  a monte e preferisce quello del POI diretto, quindi il confronto dice quale dei due si sta
+  mostrando senza riprodurre la logica del sentinella `{related: false}`.
+
+  **Che il gate sia uno solo conta più di com'è scritto**: prima erano due, il template del
+  navigatore e il filtro nel popup, e sono divergiti due volte — con l'indice negativo, e con
+  l'`ec_related_poi` rimasto nell'URL. In entrambi i casi le frecce navigavano dove i pulsanti
+  erano nascosti.
+
 - **Il ritmo verticale lo impone il corpo, non i singoli componenti** (oc:8406):
   `.wm-poi-properties-body > *` porta `--wm-feature-details-margin`, quindi ogni sezione è
   distanziata allo stesso modo, comprese quelle che verranno aggiunte. Prima quasi tutti i
@@ -71,7 +89,7 @@ lo manda.
   rende nulla — `wm-config-detail` è sempre montato anche senza dati — collassa attraverso senza
   lasciare spazio vuoto. Con `display: flex` e `gap` ogni host vuoto produrrebbe un buco.
 
-- **Un solo gate, e serve** (oc:8406): `hasContacts$` esiste per non lasciare il titolo
+- **Il gate di "Informazioni" non è ridondante** (oc:8406): `hasContacts$` esiste per non lasciare il titolo
   "Informazioni" sospeso sopra il vuoto. Un `*ngIf` sui campi non basterebbe, perché due di essi
   sono truthy anche quando non producono nessuna riga: `related_url` arriva come `[]` su 2.572 POI,
   e `contact_phone` può essere una stringa di sole etichette senza numeri, che `splitPhones` scarta
