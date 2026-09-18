@@ -1,0 +1,7 @@
+# Rilievi del lint accettati come falsi positivi. Restano nell'output come `suppressed`,
+# quindi si vedono ancora, ma non vanno rispiegati a ogni passata.
+#
+# layer-box-e-home-layer.md:16 — il «deve» è dentro la citazione di un requisito del cliente
+# («il nome del layer deve restare sempre completamente leggibile»), riportata per spiegare la
+# deroga che è stata presa. Non è un'istruzione a chi scrive codice.
+trap-in-page:docs/knowledge/layer-box-e-home-layer.md:16
