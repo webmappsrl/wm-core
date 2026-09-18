@@ -11,8 +11,12 @@ wm-poi-properties {
   width: 100%;
   height: 100%;
   z-index: 2;
+  // L'excerpt non porta spaziatura propria: la dà il ritmo del corpo, come a tutti gli altri.
+  // Aveva `padding: 20px 0 3px 0`, cioè 20px sopra e 3 sotto: il riquadro era distanziato
+  // correttamente dai vicini, ma il testo dentro respirava sopra e toccava sotto, ed era la
+  // differenza che si notava a occhio.
   .wm-excerpt {
-    padding: 20px 0px 3px 0px;
+    padding: 0;
   }
 
   // Intestazione condivisa (oc:8406). I valori vengono dal pannello di webmapp-app
@@ -52,10 +56,29 @@ wm-poi-properties {
   .wm-poi-properties-body {
     --padding-bottom: 30px;
 
+    // Un ritmo solo per tutte le sezioni. Quasi tutti i componenti del dettaglio portano già
+    // `--wm-feature-details-margin` per conto proprio, ma non tutti — l'excerpt usava padding, il
+    // link OSM e l'HTML incorporato non avevano niente, la distanza azzerava il margine sopra — e
+    // bastava un'eccezione per rompere la sequenza. Dichiararlo qui vale per ogni figlio diretto,
+    // compresi quelli che verranno aggiunti domani.
+    //
+    // Restano margini e non `gap`, che sarebbe la forma moderna: i margini verticali adiacenti
+    // **collassano**, quindi fra due blocchi resta un solo intervallo invece della somma dei due,
+    // e un componente che non rende nulla — `wm-config-detail` è sempre montato anche senza dati —
+    // collassa attraverso senza lasciare spazio vuoto. Con `display: flex` e `gap` ogni host vuoto
+    // produrrebbe un buco.
+    > * {
+      margin: var(--wm-feature-details-margin);
+    }
+
+    // L'HTML incorporato porta un padding del 5% su tutti i lati: dentro il dettaglio lo spazio lo
+    // dà il margine come agli altri.
+    > wm-inner-component-html {
+      padding: 0;
+    }
+
     > ion-label {
       display: block;
-      margin: var(--wm-feature-details-margin);
-      margin-top: 0px;
       span {
         font-weight: 700;
       }

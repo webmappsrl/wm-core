@@ -58,6 +58,19 @@ lo manda.
 - **L'intestazione dentro, la chiusura fuori** (oc:8406): il criterio non è "sta in alto", è "si
   comporta allo stesso modo nei due prodotti". Titolo e località sì, il pulsante di chiusura no.
 
+- **Il ritmo verticale lo impone il corpo, non i singoli componenti** (oc:8406):
+  `.wm-poi-properties-body > *` porta `--wm-feature-details-margin`, quindi ogni sezione è
+  distanziata allo stesso modo, comprese quelle che verranno aggiunte. Prima quasi tutti i
+  componenti dichiaravano quel margine per conto proprio, ma non tutti: l'excerpt usava un padding
+  `20px 0 3px 0` — il riquadro era spaziato bene, il testo dentro no, ed era la differenza che si
+  notava a occhio — il link OSM e l'HTML incorporato non avevano niente, la distanza azzerava il
+  margine sopra.
+
+  **Restano margini e non `gap`**, che sarebbe la forma moderna: i margini verticali adiacenti
+  collassano, quindi fra due blocchi resta un solo intervallo, e soprattutto un componente che non
+  rende nulla — `wm-config-detail` è sempre montato anche senza dati — collassa attraverso senza
+  lasciare spazio vuoto. Con `display: flex` e `gap` ogni host vuoto produrrebbe un buco.
+
 - **Un solo gate, e serve** (oc:8406): `hasContacts$` esiste per non lasciare il titolo
   "Informazioni" sospeso sopra il vuoto. Un `*ngIf` sui campi non basterebbe, perché due di essi
   sono truthy anche quando non producono nessuna riga: `related_url` arriva come `[]` su 2.572 POI,
