@@ -9,6 +9,10 @@
 > da leggere per sapere dove si è arrivati. Le caselle qui sotto non vengono spuntate: lo stato di
 > avanzamento sta anch'esso in `notes.md`.
 
+> **Stato raggiunto (correzione rispetto al Goal sotto):** `derivePoiAddress` → solo `{address}`
+> (`address_link` rimosso); UI un solo gruppo **«Informazioni»** (non Contatti/Link utili separati).
+> Vedi [overview.md § Stato raggiunto](overview.md) e `notes.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Promuovere `PoiPropertiesComponent` in wm-core, derivare `address`/`address_link` via util pura (non nello store), e far sì che `wm-phone` gestisca CSV multipli con `tel:` validi.

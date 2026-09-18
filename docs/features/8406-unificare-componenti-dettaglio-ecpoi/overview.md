@@ -8,6 +8,19 @@
 > perimetro su wm-core — e ognuna è registrata con il suo perché in `notes.md`, che è il documento
 > da leggere per sapere dove si è arrivati. Le caselle qui sotto non vengono spuntate: lo stato di
 > avanzamento sta anch'esso in `notes.md`.
+
+## Stato raggiunto (post-implementazione)
+
+Fatti che correggono il corpo di pianificazione sotto (dettaglio in `notes.md` e in
+[docs/knowledge/dettaglio-poi.md](../../knowledge/dettaglio-poi.md)):
+
+- `wm-poi-properties` vive in wm-core, store-only, esportato da `WmCoreModule`.
+- `derivePoiAddress()` restituisce **solo** `{address}` — `address_link` è stato rimosso
+  (il link Maps usa `encodeURIComponent(address)`).
+- Un solo gruppo UI **«Informazioni»** (i18n), con indirizzo / telefoni / email / `related_url`.
+  Non esistono più le sezioni separate «Contatti» / «Link utili» previste sotto.
+- `contact_phone` CSV → N `tel:` via `splitPhones`; `wm-related-urls` normalizza `related_url`.
+
 ## Cosa cambia
 
 `PoiPropertiesComponent` (selector `wm-poi-properties`), oggi nel repo applicativo
