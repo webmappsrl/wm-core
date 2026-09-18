@@ -71,8 +71,14 @@ wm-home-layer > wm-img:has(> wm-img.wm-home-layer-logo-overlay) > .wm-box-title:
   content: '';
   position: absolute;
   left: 0;
-  top: 30px;
-  bottom: 30px;
+  // Altezza fissa (oc:8589): un offset top/bottom simmetrico dipende
+  // dall'altezza auto del blocco titolo, che varia con il numero di righe —
+  // un titolo su una riga produceva un separatore quasi invisibile (~3px)
+  // contro uno su due righe (~34px). 40px resta sotto l'altezza minima del
+  // box titolo su una riga (~63px), quindi non sporge mai.
+  height: 40px;
+  top: 50%;
+  transform: translateY(-50%);
   width: 2px;
   // Valore hardcoded invece di var(--wm-color-primary) di proposito: questa
   // variante è specifica di camminiditalia (nessun altro shard la usa),
