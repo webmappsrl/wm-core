@@ -84,10 +84,12 @@ export class CameraService {
   /**
    * Same action sheet as addPhotos() (Scatta una foto / Dalla libreria / Annulla)
    * but returns a single Photo — used for profile avatar upload. Does not touch
-   * addPhotos(), which is shared by the UGC flows and returns Photo[]. Caps the
-   * capture at 1600px/quality 80 via an explicit options override passed to
-   * shotPhoto()/getPhotos() — the shared UGC defaults (full resolution) stay
-   * untouched for every other caller.
+   * addPhotos(), which is shared by the UGC flows and returns Photo[]. Caps both
+   * branches at 1600px/quality 80: the camera branch via an explicit options
+   * override passed to shotPhoto(), the gallery branch via the same values
+   * passed directly to Camera.getPhoto({source: CameraSource.Photos, ...})
+   * (guarantees a single result on every platform — the shared UGC gallery
+   * picker, getPhotos()/Camera.pickImages(), stays untouched for addPhotos()).
    */
   async addProfilePhoto(): Promise<Photo> {
     return new Promise<Photo>((resolve, reject) => {
@@ -106,13 +108,16 @@ export class CameraService {
             {
               text: this._lanSvc.instant('Dalla libreria'),
               handler: () => {
-                this.getPhotos(null, {quality: 80, width: 1600})
-                  .then(photos => {
-                    if (photos.length === 0) {
-                      reject();
-                      return;
-                    }
-                    resolve(photos[0]);
+                Camera.getPhoto({
+                  quality: 80,
+                  width: 1600,
+                  resultType: CameraResultType.Uri,
+                  source: CameraSource.Photos,
+                  webUseInput: this._deviceSvc.isBrowser ? undefined : true,
+                })
+                  .then(photo => {
+                    photo.exif = this._sanitizeObjectValues(photo.exif);
+                    resolve(photo);
                   })
                   .catch(() => reject());
               },
@@ -219,11 +224,11 @@ export class CameraService {
     return String(input);
   }
   /**
-   * @param options optional overrides merged into the default gallery options
-   * (e.g. `{quality: 80, width: 1600}` for the avatar flow). Left unset, this
-   * keeps the original full-resolution behavior relied upon by the UGC photo
-   * flows (`addPhotos()`) — those must never be resized as a side effect of
-   * an option only the avatar flow actually needs.
+   * @param options optional overrides merged into the default gallery options.
+   * Used by the UGC multi-photo flows (`addPhotos()` in this service,
+   * `WmImagePickerComponent.addPhotosFromLibrary()`) — the avatar/profile flow
+   * no longer calls this method, see `addProfilePhoto()` (uses
+   * `Camera.getPhoto()` directly for a guaranteed single result).
    */
   async getPhotos(dateLimit: Date = null, options?: Partial<GalleryImageOptions>): Promise<Photo[]> {
     if (!(await Camera.checkPermissions())) {
