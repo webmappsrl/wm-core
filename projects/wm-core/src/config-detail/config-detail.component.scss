@@ -77,6 +77,12 @@ wm-config-detail {
   padding: 12px 16px;
   background: #ffffff;
   border: none;
+  // Su iOS/WebKit un bottone non completamente stilizzato prende il colore blu di default degli
+  // elementi interattivi (Chromium/Android non lo fa) — .wm-config-detail-title eredita questo
+  // colore dal bottone padre, quindi il fix va qui e non va duplicato sul titolo (oc:8583).
+  color: var(--wm-color-dark, #323031);
+  -webkit-appearance: none;
+  appearance: none;
   cursor: pointer;
   font: inherit;
   text-align: left;
