@@ -1,10 +1,49 @@
-# Varianti per shard: `fileReplacements` e classi base
+# Varianti per shard: `fileReplacements`, classi base e CSS per app
 
 ## Come funziona oggi
 
 Una variante di shard è un file `.ts` **gemello** del componente di default, instradato dai `fileReplacements` dichiarati nell'`angular.json` del consumer che fa il build. Il vincolo di schema Angular riguarda solo il `.ts`: la variante può puntare allo stesso `templateUrl` del default quando la struttura DOM non cambia, e avere `styleUrls` propri. Gli `styleUrls` di componenti diversi possono condividere liberamente partial SCSS — `home-layer-shared.scss` esiste per questo.
 
 Due varianti `.camminiditalia` oggi: `wm-home-layer` (oc:8391) e `wm-searchbar` (oc:8414), entrambe con una classe base condivisa (`WmHomeLayerBaseComponent`, `SearchBarBaseComponent`).
+
+## Il CSS per app, caricato a runtime
+
+Accanto alle varianti compilate esiste un secondo meccanismo, indipendente e molto più usato:
+un **foglio di stile per app**, iniettato a runtime dal `MetaComponent`
+(`meta/meta.component.ts:44-54`).
+
+Nel costruttore, se `EnvironmentService` espone sia `shardName` sia `appId`, viene creato un
+`<link rel="stylesheet" id="client-theme">` con `href` costruito così:
+
+```
+theme/<shardName>/<appId>.css
+```
+
+e aggiunto in coda al `<head>`. Non c'è nessuna verifica che il file esista: se manca, il
+browser riceve un 404 e semplicemente non applica nulla — senza errori in console e senza che
+niente lo segnali.
+
+**Il file non sta qui.** Vive nel repo del prodotto che fa il build, servito come asset statico:
+`core/src/theme/` in webmapp-app, `src/theme/` in wm-webapp. Sono due insiemi separati, e per
+una stessa app può esistere da una parte e non dall'altra — è esattamente così che i due
+prodotti sono arrivati a rendere lo stesso dettaglio in ordine diverso (oc:8406): il tema
+dell'app 75 esiste solo sulla mobile, mentre sulla webapp quell'URL risponde 404.
+
+**Perchè riguarda chi lavora qui.** Quei fogli prendono di mira i componenti di wm-core **per
+nome** — selettore di elemento o classe — e in più di un caso li riordinano con `order:` dentro
+i contenitori flex del dettaglio. Rinominare un componente, una classe o una variabile CSS
+**scollega quelle regole in silenzio**: un selettore che non corrisponde a nulla non è un errore
+per build, test o lint, e in flexbox un figlio senza `order` vale 0, quindi risale sopra tutti
+gli altri invece di restare dov'era. È successo con oc:8406 e corretto sotto oc:8613.
+
+La stessa cautela vale per le **variabili**: un tema può azzerarne una (`--wm-feature-details-margin:
+0px !important` nel tema dell'app 75) perchè la spaziatura la governa per conto proprio. Spostare
+uno spazio dal `padding` di un componente a quel margine è neutro ovunque, tranne dove il margine
+è azzerato: lì lo spazio sparisce e basta.
+
+**Regola pratica**: dopo un refactor che rinomina o rispazia elementi resi da questa libreria, i
+temi dei due consumer vanno controllati a mano. I selettori orfani si elencano confrontando i
+`selector:` dichiarati nel codice con i tag usati nei fogli di tema.
 
 ## Quando estrarre una base, e quando no
 

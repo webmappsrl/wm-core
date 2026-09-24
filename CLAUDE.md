@@ -79,7 +79,7 @@ Il dettaglio di ogni lavoro sta nel proprio cantiere sotto `docs/features/<slug>
 | Profilo altimetrico e distanza | Badge live distance, proiezione GPS→traccia, etichetta dislivello sugli anelli | oc:8177, oc:8493, oc:8284 | [docs/knowledge/profilo-altimetrico-e-distanza.md](docs/knowledge/profilo-altimetrico-e-distanza.md) |
 | Profilo utente | Modale di editing, avatar e fallback a iniziali, compressione parametrizzata | oc:8163 | [docs/knowledge/profilo-utente.md](docs/knowledge/profilo-utente.md) |
 | UGC | Pre-selezione del layer da GPS, foto condivise fra POI e track, condivisione social | oc:7639, oc:5125, oc:8183 | [docs/knowledge/ugc.md](docs/knowledge/ugc.md) |
-| Varianti per shard | `fileReplacements`, quando estrarre una classe base, filtri della searchbar camminiditalia | oc:8391, oc:8414 | [docs/knowledge/varianti-per-shard.md](docs/knowledge/varianti-per-shard.md) |
+| Varianti per shard | `fileReplacements`, quando estrarre una classe base, filtri della searchbar camminiditalia, il CSS per app caricato a runtime | oc:8391, oc:8414, oc:8406, oc:8613 | [docs/knowledge/varianti-per-shard.md](docs/knowledge/varianti-per-shard.md) |
 
 ## Trappole
 
