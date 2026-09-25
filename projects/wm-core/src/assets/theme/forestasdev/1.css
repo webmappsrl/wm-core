@@ -163,9 +163,15 @@ wm-layer-box div img {
 /* end wm-layer-box component */
 
 /* start wm-status-filter component */
+/* Sfondo trasparente e non bianco (oc:8613): la regola vuole un chip senza vestito —
+   toglie ombra e bordo e sottolinea il testo, per farlo sembrare un link — e il bianco
+   funzionava solo perche' dietro c'era il pannello bianco della webapp
+   (`--wm-color-light: #ffffff`). Da quando il tema arriva anche all'app, dove il fondo e'
+   diverso, quel bianco si vedeva come un riquadro attorno a "Torna alla home".
+   Trasparente esprime l'intento e rende identico su entrambi. */
 wm-status-filter ion-chip,
 .wm-reset-filters {
-  --background: white;
+  --background: transparent;
   --box-shadow: none;
   --color: #4d4d4d;
   text-decoration: underline;
@@ -176,7 +182,7 @@ wm-status-filter ion-chip,
   font-size: 14px;
   line-height: 28px;
   border-style: none;
-  background-color: white;
+  background-color: transparent;
 }
 wm-status-filter ion-grid ion-row > ion-col:first-child {
   margin-right: -103px;
