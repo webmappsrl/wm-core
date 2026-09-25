@@ -441,13 +441,23 @@ wm-home-result .wm-home-content {
 wm-status-filter * {
   font-family: var(--wm-75-font-family-utility) !important;
 }
-wm-map-details wm-status-filter ion-col {
+/* I selettori doppi qui sotto valgono su entrambi i prodotti: il primo ramo e' il
+   contenitore del dettaglio sulla mobile (`wm-map-details`), il secondo quello sulla webapp
+   (`.details-container`). Ciascuno resta inerte sull'altro prodotto.
+   Il prefisso non e' decorativo: `wm-home-layer` e `wm-status-filter` si montano anche nella
+   home (`wm-home`, home.component.html:38,41), e senza scope queste regole si applicherebbero
+   anche li'. La forma e' additiva e non sostitutiva: il ramo mobile e' identico a prima,
+   quindi su quel lato la resa non cambia per costruzione. (oc:8613) */
+wm-map-details wm-status-filter ion-col,
+.details-container wm-status-filter ion-col {
   padding: 0px !important;
 }
-wm-map-details wm-status-filter ion-col span {
+wm-map-details wm-status-filter ion-col span,
+.details-container wm-status-filter ion-col span {
   color: var(--ion-text-color) !important;
 }
-wm-map-details wm-status-filter ion-chip {
+wm-map-details wm-status-filter ion-chip,
+.details-container wm-status-filter ion-chip {
   --background: #f8f8fe;
   margin-right: 0px;
   margin-left: 0px;
@@ -456,33 +466,40 @@ wm-map-details wm-status-filter ion-chip {
 wm-map-details ion-card ion-card-content:has(wm-home-layer) {
   height: calc(100% + 70px) !important;
 }
-wm-map-details wm-home-layer wm-img {
+wm-map-details wm-home-layer wm-img,
+.details-container wm-home-layer wm-img {
   min-height: auto !important;
   margin: 8px !important;
 }
-wm-map-details wm-home-layer wm-img {
+wm-map-details wm-home-layer wm-img,
+.details-container wm-home-layer wm-img {
   margin-right: 0px !important;
   margin-left: 0px !important;
 }
-wm-map-details wm-home-layer wm-img img {
+wm-map-details wm-home-layer wm-img img,
+.details-container wm-home-layer wm-img img {
   display: none;
 }
-wm-map-details wm-home-layer wm-img .wm-box-title {
+wm-map-details wm-home-layer wm-img .wm-box-title,
+.details-container wm-home-layer wm-img .wm-box-title {
   font-family: var(--wm-75-font-family-title) !important;
   font-size: var(--wm-font-size-4xl) !important;
   color: var(--ion-text-color);
   position: relative;
   padding: 0px;
 }
-wm-map-details wm-home-layer .wm-description span {
+wm-map-details wm-home-layer .wm-description span,
+.details-container wm-home-layer .wm-description span {
   font-size: var(--wm-font-size-base) !important;
   line-height: 26px !important;
   color: var(--ion-text-color);
 }
-wm-map-details wm-home-layer wm-tab-description::after {
+wm-map-details wm-home-layer wm-tab-description::after,
+.details-container wm-home-layer wm-tab-description::after {
   display: none !important;
 }
-wm-map-details wm-home-layer wm-tab-description .webmapp-pageroute-tabdescription-description {
+wm-map-details wm-home-layer wm-tab-description .webmapp-pageroute-tabdescription-description,
+.details-container wm-home-layer wm-tab-description .webmapp-pageroute-tabdescription-description {
   margin-top: 8px !important;
 }
 
