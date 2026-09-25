@@ -1,0 +1,44 @@
+/* start track-details component */
+webmapp-track-description {
+  margin-top: -15px;
+  order: 2;
+}
+wm-gallery {
+  order: 3;
+}
+.wm-track-details-related-url {
+  order: 4;
+}
+.wm-track-details-activities {
+  order: 5;
+}
+.wm-track-details-title-technical-details {
+  order: 6;
+}
+wm-slope-chart {
+  align-self: flex-start;
+  order: 7;
+  width: 100%;
+}
+.wm-track-details-download {
+  order: 8;
+}
+.wm-track-details-track-related-poi {
+  order: 9;
+}
+.wm-track-details-edit-geohub {
+  order: 10;
+}
+.webmapp-track-title {
+  order: -2;
+}
+.wm-alert {
+  order: -1;
+}
+webmapp-track-technical-data {
+  margin-top: 15px;
+}
+webmapp-track-download-urls {
+  margin-top: -10px;
+}
+/* end track-details component */

@@ -1,0 +1,398 @@
+/* start wm-select-filter component */
+wm-select-filter div.chip-list ion-chip {
+  height: 36px;
+  border-style: none !important;
+}
+wm-select-filter ion-accordion div[slot='content'] .chip-list ion-chip span {
+  padding: 4px 8px;
+  min-width: 24px;
+  max-width: 50px;
+  height: 26px;
+  background: #fffaf2;
+  border: 1px solid var(--wm-color-primary);
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--wm-color-primary);
+  margin-top: -2px;
+  margin-left: 4px;
+}
+wm-select-filter ion-accordion div[slot='content'] div ion-chip,
+wm-select-filter ion-accordion div[slot='content'] div ion-chip ion-label {
+  margin-left: 10px;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 140%;
+}
+wm-select-filter ion-accordion ion-item,
+wm-slider-filter ion-accordion ion-item {
+  --ion-color-light: 'white';
+}
+.wm-filters-count {
+  padding: 4px 8px;
+  min-width: 24px;
+  max-width: 50px;
+  height: 26px;
+  background: #fffaf2;
+  border: 1px solid var(--wm-color-primary);
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--wm-color-primary);
+  margin-top: -2px;
+  margin-left: 4px;
+}
+/* end wm-select-filter component */
+
+/* start wm-filters component */
+wm-filters ion-list ion-col span:nth-child(2) {
+  padding: 4px 8px;
+  min-width: 24px;
+  max-width: 50px;
+  height: 26px;
+  background: #fffaf2;
+  border: 1px solid var(--wm-color-primary);
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--wm-color-primary);
+}
+wm-filters .wm-selected-filters .wm-active-filter {
+  box-sizing: border-box;
+  border-style: solid !important;
+  background: white;
+  border-width: 1px 2px 2px 1px;
+  border-style: solid;
+  border-color: #4d4d4d;
+  border-radius: 4px;
+}
+wm-filters .wm-selected-filters > .wm-active-filter > span,
+wm-status-filter ion-grid .wm-active-filter > span {
+  margin-left: 10px;
+}
+wm-filters .wm-filter-content {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 28px;
+  color: #4d4d4d;
+}
+wm-filters .wm-filters-title,
+wm-status-filter .wm-filters-title {
+  line-height: unset;
+}
+wm-filters .wm-selected-filters ion-chip ion-icon {
+  margin-top: -2px;
+}
+wm-filters ion-item ion-chip ion-label {
+  color: #4d4d4d;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+}
+wm-filters .wm-selected-filters ion-chip ion-label {
+  margin-top: 0px;
+}
+/* end wm-filters component */
+
+/* start webmapp-search component */
+webmapp-search {
+  box-sizing: border-box;
+  background-color: #f7f7f7;
+  border: 15px solid #f7f7f7;
+}
+webmapp-search div {
+  background-color: white;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.09);
+  border-radius: 4px;
+}
+webmapp-search input {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  background-color: white !important;
+  color: rgba(92, 92, 92, 0.63);
+}
+/* end webmapp-search component */
+
+/* start wm-home-page component */
+webmapp-title {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 1vw;
+  line-height: 10px;
+  color: #333333;
+}
+/* end wm-home-page component */
+
+/* start wm-horizontal-scroll-box component */
+wm-horizontal-scroll-box .wm-items-container wm-box {
+  margin-right: -13px !important;
+  min-width: unset !important;
+  width: 100% !important;
+  height: 185.9px;
+}
+wm-horizontal-scroll-box .wm-box .wm-result-img {
+  border-radius: 0px;
+  min-width: 125px;
+}
+wm-horizontal-scroll-box .wm-box-title,
+wm-layer-box .wm-box-title {
+  font-size: 20px !important;
+  font-style: normal !important;
+  font-weight: 600 !important;
+  line-height: 20px !important;
+}
+wm-horizontal-scroll-box .wm-item-arrow {
+  display: none !important;
+}
+wm-horizontal-scroll-box .wm-items-container .wm-box-title {
+  font-size: 14px !important;
+}
+/* end wm-horizontal-scroll-box component */
+
+/* start wm-layer-box component */
+wm-layer-box div img {
+  border-radius: 0px !important;
+}
+/* end wm-layer-box component */
+
+/* start wm-status-filter component */
+wm-status-filter ion-chip,
+.wm-reset-filters {
+  --background: white;
+  --box-shadow: none;
+  --color: #4d4d4d;
+  text-decoration: underline;
+  margin-top: -6px;
+  text-transform: none;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 28px;
+  border-style: none;
+  background-color: white;
+}
+wm-status-filter ion-grid ion-row > ion-col:first-child {
+  margin-right: -103px;
+  margin-top: 6px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 10px;
+  color: #333333;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+wm-status-filter ion-grid ion-row ion-col span {
+  padding: 4px 8px;
+  min-width: 24px;
+  height: 26px;
+  background: #fffaf2;
+  border: 1px solid var(--wm-color-primary);
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--wm-color-primary);
+  margin-top: -9px;
+  margin-left: 4px;
+}
+wm-status-filter ion-grid ion-row .chip-list ion-chip {
+  box-sizing: border-box;
+  border-style: solid !important;
+  background: white;
+  border-width: 1px 2px 2px 1px;
+  border-style: solid;
+  border-color: #4d4d4d;
+  border-radius: 4px;
+  background-color: white;
+  flex: 1 0 48%;
+  margin-top: unset;
+}
+wm-status-filter ion-grid ion-row .chip-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  justify-content: flex-start;
+}
+wm-status-filter .chip-list ion-chip ion-icon {
+  margin-top: -2px !important;
+}
+wm-status-filter ion-grid ion-row ion-col {
+  display: flex;
+  flex-wrap: nowrap;
+}
+wm-status-filter .chip-list ion-chip ion-label {
+  line-height: 16px;
+}
+wm-status-filter .chip-list ion-chip {
+  text-decoration: none !important;
+}
+wm-status-filter div {
+  margin-top: -3px;
+}
+/* end wm-status-filter component */
+
+/* start wm-home-layer component */
+wm-home-layer {
+  display: initial !important;
+}
+wm-home-layer wm-img {
+  margin: 0px !important;
+  height: 176px;
+}
+wm-home-layer .wm-description {
+  margin: 20px !important;
+  max-height: unset !important;
+}
+wm-home-layer .wm-description p {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 30px;
+}
+wm-home-layer .wm-box-title {
+  bottom: -15px !important;
+  margin-left: -10px;
+}
+wm-home-layer wm-img .wm-img-image {
+  border-radius: 0px !important;
+}
+/* end wm-home-layer component */
+
+/* start wm-home-result component */
+wm-home-result .wm-box {
+  border-radius: 0px;
+  box-shadow: none !important;
+}
+wm-home-result ion-segment ion-segment-button ion-label {
+  color: #4d4d4d;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 28px;
+}
+wm-home-result ion-segment ion-segment-button ion-label span {
+  padding: 4px 8px;
+  min-width: 24px;
+  max-width: 50px;
+  height: 26px;
+  background: #f2f5ff;
+  border: 1px solid #1271b7;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 18px;
+  color: #1271b7;
+}
+wm-home-result ion-segment ion-segment-button[value='pois'] ion-label span {
+  padding: 4px 8px;
+  min-width: 24px;
+  max-width: 50px;
+  height: 26px;
+  background: #fff6fc;
+  border: 1px solid #b7127f;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 18px;
+  color: #b7127f;
+}
+wm-home-result wm-search-box ion-card,
+wm-home-result wm-poi-box ion-card {
+  border-radius: 0px;
+  width: 100%;
+  height: 100%;
+  max-height: 350px;
+  box-shadow: unset;
+  background-color: #fcfcfc;
+  padding: 0;
+}
+wm-home-result wm-search-box wm-img,
+wm-home-result wm-poi-box wm-img {
+  height: 100% !important;
+}
+wm-home-result wm-search-box .wm-box-taxonomy {
+  display: none !important;
+}
+wm-home-result wm-search-box ion-card ion-card-header ion-card-subtitle {
+  display: none;
+}
+wm-home-result wm-img .wm-img-image,
+wm-home-result wm-poi-box wm-img .wm-img-image {
+  width: 100%;
+  height: 268px;
+  border-radius: 0px !important;
+}
+wm-home-result wm-search-box ion-card ion-card-header,
+wm-home-result wm-poi-box ion-card ion-card-header {
+  background-color: #fcfcfc;
+  margin-top: 85px;
+  width: 100%;
+  height: 82px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+wm-home-result wm-search-box ion-card .wm-search-box-properties {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  align-content: stretch;
+  align-items: stretch;
+}
+wm-home-result wm-search-box ion-card ion-card-header ion-card-title,
+wm-home-result wm-poi-box ion-card .wm-box-name {
+  font-style: normal;
+  font-weight: 600;
+  line-height: 26px;
+  font-size: 20px;
+}
+wm-home-result wm-search-box ion-card ion-card-header ion-card-title {
+  margin-left: -5px;
+  border-bottom: 2px solid #f0f0f0;
+  padding: 5px;
+}
+wm-home-result wm-poi-box ion-card .wm-box-name {
+  color: #333333;
+}
+wm-home-result wm-poi-box ion-card {
+  width: 100%;
+}
+/* end wm-home-result component */
+
+/* start webmapp-map-page component */
+
+webmapp-map-page .webmapp-menubtn.webmapp-menubtn {
+  width: 37px;
+  height: 44px;
+  border-radius: 0px 4px 4px 0px;
+  box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2);
+}
+webmapp-map-page .webmapp-menubtn.webmapp-menubtn-opened {
+  left: 521px !important;
+  width: 37px;
+  height: 44px;
+  border-radius: 0px 4px 4px 0px;
+  box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2);
+}
+webmapp-map-page .details-container.details-container-visible,
+webmapp-map-page .details-container wm-track-properties {
+  width: 521px !important;
+}
+/* end webmapp-map-page component */
+
+/* start wm-features-in-viewport component */
+.details-container.details-container-visible ~ wm-geobox-map wm-features-in-viewport {
+  left: 521px !important;
+  width: calc(100% - 521px) !important;
+}
+/* end wm-features-in-viewport component */
