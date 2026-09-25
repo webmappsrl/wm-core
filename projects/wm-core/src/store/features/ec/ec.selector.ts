@@ -264,13 +264,56 @@ export const currentRelatedPoisCount = createSelector(
   },
 );
 
+/**
+ * `true` quando il dettaglio aperto è davvero un POI correlato, e non un POI scelto direttamente.
+ *
+ * `currentPoiProperties` restituisce **lo stesso oggetto** di uno dei due selettori a monte, e
+ * preferisce quello del POI diretto: il confronto per riferimento dice quindi quale dei due si sta
+ * mostrando, senza rifare la logica del sentinella `{related: false}`.
+ *
+ * Serve perché `ec_related_poi` resta nell'URL anche dopo aver scelto un altro POI dalla mappa:
+ * `setPoi` aggiunge `poi` e azzera `ugc_poi`, non quello. Senza questa condizione il navigatore
+ * resterebbe acceso su un POI che non c'entra, con un contatore che conta un altro elenco.
+ */
+export const isShowingRelatedPoi = createSelector(
+  currentPoiProperties,
+  currentEcRelatedPoiProperties,
+  (current, related) => current != null && related != null && current === related,
+);
+
+/**
+ * L'unica condizione per cui la navigazione fra POI correlati ha senso: si sta mostrando un
+ * correlato e ce n'è più di uno. La usano **entrambi** i punti che navigano — i pulsanti del
+ * navigatore e le scorciatoie da tastiera del popup della webapp — perché due gate scritti
+ * separatamente divergono, ed è esattamente quello che era successo.
+ */
+export const canNavigateRelatedPois = createSelector(
+  isShowingRelatedPoi,
+  currentRelatedPoisCount,
+  (isRelated, count) => isRelated && count > 1,
+);
+
 export const nextRelatedPoiId = createSelector(
   currentEcRelatedPois,
   currentEcRelatedPoiId,
   (relatedPois, relatedPoiId) => {
+    // `currentEcRelatedPois` restituisce `?? null` quando non c'è un track corrente con
+    // related_pois: senza la prima guardia `findIndex` lancia.
+    //
+    // La seconda guardia copre il caso in cui nessun POI correlato è selezionato: lì `findIndex`
+    // torna `-1`, e `relatedPois[-1 + 1]` sarebbe il **primo** correlato del track, cioè una
+    // navigazione verso un POI che non c'entra con quello aperto. Il navigator non lo mostrava
+    // perché il suo template ha un gate in più — `currentRelatedPoiIndex` filtra i null e somma 1,
+    // quindi con `-1` emette `0`, falsy — ma le scorciatoie da tastiera del popup della webapp no.
+    if (relatedPois == null) {
+      return null;
+    }
     const index = relatedPois.findIndex(
       (p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId,
     );
+    if (index < 0) {
+      return null;
+    }
     return relatedPois[index + 1]?.properties?.id ?? null;
   },
 );
@@ -279,9 +322,16 @@ export const prevRelatedPoiId = createSelector(
   currentEcRelatedPois,
   currentEcRelatedPoiId,
   (relatedPois, relatedPoiId) => {
+    // Vedi `nextRelatedPoiId`: stesse due guardie, stesso motivo.
+    if (relatedPois == null) {
+      return null;
+    }
     const index = relatedPois.findIndex(
       (p: WmFeature<Point>) => +p?.properties?.id === +relatedPoiId,
     );
+    if (index < 0) {
+      return null;
+    }
     return relatedPois[index - 1]?.properties?.id ?? null;
   },
 );

@@ -28,6 +28,14 @@ import {
 export class WmTabDetailComponent {
   @Input()
   properties: GeoJsonProperties;
+  /**
+   * Se mostrare le righe "Da"/"A" con i badge della distanza live. Vale solo per una traccia:
+   * `trackLiveDistanceVm$` legge lo stato di navigazione **globale**, non queste `properties`,
+   * quindi in un contenitore che non sta rendendo la traccia corrente quei badge riporterebbero
+   * numeri di un'altra feature. Chi monta il componente per un POI lo mette a `false` (oc:8406).
+   */
+  @Input()
+  showLiveDistance = true;
   @Output('slopeChartHover')
   slopeChartHover: EventEmitter<ISlopeChartHoverElements> =
     new EventEmitter<ISlopeChartHoverElements>();

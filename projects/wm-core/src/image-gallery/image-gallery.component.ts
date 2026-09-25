@@ -71,9 +71,22 @@ export class ImageGalleryComponent {
     }
   }
 
+  /**
+   * Apre il dettaglio dell'immagine. `wm-image-detail` è lo stesso componente su entrambe le
+   * piattaforme, cambia solo il contenitore: sul web è avvolto da `ModalImageComponent`
+   * (fullscreen, con il proprio pulsante di chiusura), nell'app è montato inline dal pannello
+   * dei dettagli, che lo mostra quando `gallery_index` è valorizzato.
+   *
+   * La condizione è su `isAppMobile` e non su `isMobile` (oc:8406): `isMobile` guarda lo user
+   * agent (`Platform.is('android'|'ios')`), quindi era vera anche per la webapp aperta da
+   * telefono o tablet — che però non monta la vista inline, essendo quella del pannello
+   * dell'app. Il risultato era che lì il tap su una foto non apriva nulla e cambiava solo l'URL.
+   * `isAppMobile` è `isMobile && !isBrowser`, cioè "dentro l'app nativa": il modale si apre ora
+   * su qualunque browser, desktop o mobile, e l'app nativa conserva la vista inline.
+   */
   async showPhoto(idx) {
     this._urlHandlerSvc.updateURL({gallery_index: idx});
-    if (!this._deviceSvc.isMobile) {
+    if (!this._deviceSvc.isAppMobile) {
       const modal = await this._modalCtrl.create({
         component: ModalImageComponent
       });

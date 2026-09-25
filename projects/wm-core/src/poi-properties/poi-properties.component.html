@@ -1,0 +1,115 @@
+<!-- TODO: unire ugc-properties con poi-properties? -->
+<ng-container *ngIf="currentPoiProperties$|async as properties">
+  <!-- Intestazione: località, nome e navigazione fra POI correlati (oc:8406).
+       Prima era markup duplicato nei due prodotti — nell'header del pannello di webmapp-app e
+       nel chrome del popup di wm-webapp — con rese divergenti che nulla segnalava. Il pulsante
+       di chiusura resta invece ai contenitori: lì la semantica è davvero diversa (il pannello
+       chiude il dettaglio, il popup azzera anche il POI correlato). -->
+  <div
+    class="wm-poi-properties-header"
+    *ngIf="(municipality$|async) || properties?.name"
+  >
+    <div class="wm-poi-properties-pre-title" *ngIf="municipality$|async as municipality">
+      {{municipality}}
+    </div>
+    <div class="wm-poi-properties-title" *ngIf="properties?.name as name">
+      <div>{{name|wmtrans}}</div>
+      <wm-related-pois-navigator></wm-related-pois-navigator>
+    </div>
+  </div>
+  <div class="wm-poi-properties-body">
+    <!-- Le tassonomie stanno subito sotto il titolo, non in fondo (scrum del 04/09/2026):
+         «in generale le tassonomie vanno in cima per tanti motivi, fa parte dei filtri, quindi li
+         vedete subito». Prima stavano dopo descrizione e box configurabili in entrambi i prodotti:
+         nessuno dei due aveva ancora recepito la decisione. -->
+    <wm-poi-types-badges
+      *ngIf="properties?.taxonomy?.poi_types as poiTypes"
+      [poiTypes]="poiTypes"
+    ></wm-poi-types-badges>
+    <ion-label *ngIf="distanceFromCurrentPoi$|async as distanceFromCurrentPoi">
+      {{"Distanza da te" | wmtrans}}
+      <span>{{distanceFromCurrentPoi|distance:'auto':0}}</span>
+    </ion-label>
+    <wm-inner-component-html
+      class="wm-excerpt"
+      *ngIf="properties?.excerpt as excerpt"
+      [enableDismiss]="false"
+      [html]="excerpt|wmtrans"
+    >
+    </wm-inner-component-html>
+    <!-- `wm-tab-image-gallery`, cioè con l'etichetta "Galleria", come nel dettaglio della traccia:
+         le due schermate devono usare lo stesso vocabolario, altrimenti sembrano disegnate da due
+         persone diverse. -->
+    <wm-tab-image-gallery
+      *ngIf="properties?.image_gallery?.length"
+      [imageGallery]="properties?.image_gallery"
+    ></wm-tab-image-gallery>
+    <!-- `showLiveDistance` a false: i badge di distanza percorsa e rimanente vengono dallo stato di
+         navigazione globale, che riguarda la traccia corrente e non questo POI. Senza, aprendo un
+         POI correlato durante una navigazione live comparivano qui i numeri della traccia. -->
+    <wm-tab-detail
+      *ngIf="showTechnicalDetails$|async"
+      [properties]="technicalProperties$|async"
+      [showLiveDistance]="false"
+    ></wm-tab-detail>
+    <wm-txn-where
+      *ngIf="properties?.taxonomy_where as txnWhere"
+      [taxonomyWheres]="txnWhere"
+    ></wm-txn-where>
+    <wm-tab-description
+      *ngIf="properties?.description as description"
+      [description]="description"
+    ></wm-tab-description>
+
+    <wm-config-detail [groups]="properties?.config_detail"></wm-config-detail>
+
+    <ng-container *ngIf="properties?.form">
+      <wm-form
+        class="wm-ugc-poi-form-readonly"
+        [disabled]="true"
+        [confPOIFORMS]="confPOIFORMS$|async"
+        [init]="properties?.form"
+        (formGroupEvt)="formGroup = $event"
+      ></wm-form>
+    </ng-container>
+    <ng-container *ngIf="properties?.info as info">
+      <div class="wm-poi-properties-info" [innerHTML]="sanitize(info|wmtrans)"></div>
+    </ng-container>
+    <wm-get-directions></wm-get-directions>
+    <!-- Un solo gruppo, sotto un titolo solo: indirizzo, telefono, mail e link stanno insieme
+         perché "Contatti" mentirebbe sui link di approfondimento — su molti POI `related_url`
+         punta al comune o a Wikipedia — e due titoli separati richiederebbero di decidere in
+         anticipo quale dei due gruppi ha righe.
+         Il titolo non può restare orfano sopra zero righe: `hasContacts$` lo dice, e per i
+         link riusa `normalizeRelatedUrls`, la stessa funzione che `wm-related-urls` applica per
+         decidere cosa rendere. Serve perché `related_url` arriva come `[]` su 2.572 POI, e in
+         JavaScript un array vuoto è truthy. -->
+    <div class="wm-poi-properties-contacts" *ngIf="hasContacts$|async">
+      <div class="webmapp-title">{{'Informazioni'|wmtrans}}</div>
+      <ion-list>
+        <wm-address
+          *ngIf="properties?.address as address"
+          [address]="address"
+        ></wm-address>
+        <wm-phone *ngIf="properties?.contact_phone as phone" [phone]="phone"></wm-phone>
+        <wm-email *ngIf="properties?.contact_email as email" [email]="email"></wm-email>
+        <wm-related-urls *ngIf="properties?.related_url as relatedUrl" [relatedUrls]="relatedUrl">
+        </wm-related-urls>
+      </ion-list>
+    </div>
+    <!-- `target` sull'anchor, non sul `div`: sul contenitore non significa niente, ed era il
+         motivo per cui il link OpenStreetMap apriva nella stessa scheda. Ereditato dalla mobile. -->
+    <div *ngIf="properties?.osm_url as osm">
+      <ion-icon class="wm-icn" name="link-outline" slot="start"></ion-icon>
+      <a class="wm-poi-properties-osm-link" [href]="osm" target="_blank" rel="noopener noreferrer">
+        {{ "Vedi su OpenStreetMap" | wmtrans }}
+      </a>
+    </div>
+    <wm-track-audio *ngIf="properties?.audio" [audio]="properties?.audio"></wm-track-audio>
+    <wm-inner-component-html
+      *ngIf="(confOPTIONSShowEmbeddedHtml$|async) && properties?.embedded_html"
+      [enableDismiss]="false"
+      [html]="properties.embedded_html"
+    ></wm-inner-component-html>
+  </div>
+</ng-container>

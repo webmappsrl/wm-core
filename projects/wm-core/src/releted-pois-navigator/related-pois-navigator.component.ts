@@ -2,6 +2,7 @@ import {Component, ChangeDetectionStrategy, ViewEncapsulation} from '@angular/co
 import {Store} from '@ngrx/store';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {
+  canNavigateRelatedPois,
   currentRelatedPoiIndex,
   currentRelatedPoisCount,
   nextRelatedPoiId,
@@ -13,6 +14,9 @@ import {filter, map, take} from 'rxjs/operators';
   standalone: false,
   selector: 'wm-related-pois-navigator',
   template: `
+    <!-- Il gate esterno dice che il dettaglio aperto è davvero un POI correlato: vedi il commento
+         su canNavigate$ qui sotto. -->
+    <ng-container *ngIf="canNavigate$|async">
     <ng-container *ngIf="currentRelatedPoisCount$|async as currentRelatedPoisCount">
       <ng-container *ngIf="currentRelatedPoiIndex$|async as currentRelatedPoiIndex">
         <ng-container *ngIf="currentRelatedPoisCount > 1">
@@ -39,6 +43,7 @@ import {filter, map, take} from 'rxjs/operators';
           </ion-button>
         </ng-container>
       </ng-container>
+    </ng-container>
     </ng-container>
   `,
   styles: [`
@@ -71,6 +76,15 @@ import {filter, map, take} from 'rxjs/operators';
   encapsulation: ViewEncapsulation.None,
 })
 export class WmRelatedPoisNavigatorComponent {
+  /**
+   * Il gate della navigazione, condiviso con le scorciatoie da tastiera del popup di `wm-webapp`:
+   * si sta mostrando un POI correlato **e** ce n'è più di uno.
+   *
+   * Non basta il conteggio dei correlati del track: `ec_related_poi` resta nell'URL anche dopo
+   * aver scelto un altro POI dalla mappa, e senza questa condizione il navigatore restava acceso
+   * su un POI che non c'entra, con un contatore riferito a un altro elenco.
+   */
+  canNavigate$ = this._store.select(canNavigateRelatedPois);
   currentRelatedPoisCount$ = this._store.select(currentRelatedPoisCount);
   currentRelatedPoiIndex$ = this._store.select(currentRelatedPoiIndex).pipe(filter(index => index != null), map(index => index+1));
   nextRelatedPoiId$ = this._store.select(nextRelatedPoiId);
