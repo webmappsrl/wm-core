@@ -23,11 +23,18 @@ e aggiunto in coda al `<head>`. Non c'è nessuna verifica che il file esista: s
 browser riceve un 404 e semplicemente non applica nulla — senza errori in console e senza che
 niente lo segnali.
 
-**Il file non sta qui.** Vive nel repo del prodotto che fa il build, servito come asset statico:
-`core/src/theme/` in webmapp-app, `src/theme/` in wm-webapp. Sono due insiemi separati, e per
-una stessa app può esistere da una parte e non dall'altra — è esattamente così che i due
-prodotti sono arrivati a rendere lo stesso dettaglio in ordine diverso (oc:8406): il tema
-dell'app 75 esiste solo sulla mobile, mentre sulla webapp quell'URL risponde 404.
+**Il file sta qui**, in [`projects/wm-core/src/assets/theme/`](../../projects/wm-core/src/assets/theme/README.md),
+un file per app: `<shardName>/<appId>.css`. Entrambi i prodotti lo pubblicano con una voce di
+`assets` in `angular.json` che punta a quella cartella con `output: "theme"`, così l'URL costruito
+qui sopra risolve su tutti e due.
+
+Fino a oc:8613 non era così: ogni prodotto teneva i propri in `core/src/theme/` (webmapp-app) e
+`src/theme/` (wm-webapp), due insiemi **disgiunti**. Una stessa app poteva avere il suo CSS da una
+parte e non dall'altra — è esattamente così che i due prodotti sono arrivati a rendere lo stesso
+dettaglio in modo diverso (oc:8406): il tema dell'app 75 esisteva solo sulla mobile, e sulla webapp
+quell'URL rispondeva 404. Le cartelle `core/src/theme/` e `src/theme/` esistono ancora, ma oggi
+contengono **solo** gli SCSS di shard usati a compile-time da `stylePreprocessorOptions`: sono
+un'altra cosa, non confonderle con i fogli per app.
 
 **Perchè riguarda chi lavora qui.** Quei fogli prendono di mira i componenti di wm-core **per
 nome** — selettore di elemento o classe — e in più di un caso li riordinano con `order:` dentro
