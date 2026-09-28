@@ -343,3 +343,26 @@ Rimosso l'override di `--padding-start` che `poi-popup.component.scss` applicava
 contatti erano rientrati, e per cui la stessa sezione si vedeva diversa nel dettaglio della traccia.
 Senza l'eccezione tutte le righe usano il `--padding-start` di `ion-item`. Nessuna regola aggiunta
 in wm-core: il componente eredita lo stile standard.
+
+## Seguito della review interna — 28/09/2026
+
+Il cantiere è immutabile: queste righe si aggiungono.
+
+**Due modifiche a servizi e componenti condivisi non erano registrate**, e sono proprio quelle che
+escono dal dettaglio POI per arrivare altrove.
+
+- **`0080a0b`** tocca `url-handler.service.ts` e `geobox-map.component.ts`: scegliere un POI ora
+  azzera `ec_related_poi`. Cambia il comportamento dell'«indietro» **anche sulla mobile**, non solo
+  nel dettaglio: chi aveva aperto un POI correlato e poi ne sceglie un altro dalla mappa non si
+  ritrova più il navigatore acceso su un elenco che non c'entra.
+- **`98e08d7`** corregge in `email.component.ts` un `color:` che era **sintatticamente invalido** —
+  `var(wm-feature-details-description-color), var(--wm-color-dark)`, con la variabile senza `--` e
+  il fallback fuori dalla `var()`. Prima non si applicava affatto e il colore era quello ereditato;
+  ora si applica. È un cambio di resa **ovunque compaia `wm-email`**, non solo nel dettaglio POI. Il
+  messaggio di quel commit dice «tutti su file nati con questo ticket», e non è vero.
+
+**Il fix `telHref`, `buildMapsHref` e gli spec sul contratto di `isShowingRelatedPoi`** sono
+correzioni di dominio di questo ticket ma portano lo scope `oc:8613`, perché fatte dentro quel
+ciclo di review: `6fa8fe3`, `c56099e`, `f74b643`, `8a2069f`, `da09fb8`. `git log --grep oc:8406` non
+li trova. Fanno invece scope `oc:8406`, perché difetti di dominio trovati nel secondo ciclo,
+`d13c56a` (lo schema dei `related_url`) e `66d2e98` (il contenitore del dettaglio immagine).
