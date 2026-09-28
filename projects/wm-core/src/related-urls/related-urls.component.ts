@@ -54,28 +54,62 @@ export class WmRelatedUrlsComponent {
   }
 }
 
-/** Uno schema RFC 3986: una lettera seguita da lettere, cifre, `+`, `-`, `.` e poi i due punti. */
-const HAS_SCHEME = /^[a-z][a-z0-9+.-]*:/i;
+/**
+ * Gli unici schemi che possono finire in un `href`. Tutto il resto viene **scartato**.
+ *
+ * Non è una precauzione teorica: `[href]` su `<ion-item>` è un **input di componente**, non un
+ * attributo del DOM, quindi Angular non lo sanitizza — Ionic lo rende tale e quale dentro un
+ * `<a href>`. Un `related_url` salvato dall'editor con `javascript:…` eseguirebbe nell'origine
+ * dell'app, dove il token sta in `localStorage`. Prima di oc:8406 il vecchio
+ * `window.open('https://' + url)` lo rendeva innocuo per costruzione; quando quel codice è stato
+ * tolto, la protezione è sparita con lui (oc:8613).
+ */
+const ALLOWED_SCHEMES = ['http', 'https', 'mailto', 'tel'];
 
-/** `https//host` e `http//host`: lo schema c'è ma mancano i due punti. Visto in 1 valore su 1147. */
+/** `https//host`: lo schema c'è ma mancano i due punti. Visto in 1 valore su 1147. */
 const SCHEME_WITHOUT_COLON = /^(https?)\/\//i;
 
+/** Quello che sta prima dei due punti, se ha la forma di uno schema RFC 3986. */
+const SCHEME_CANDIDATE = /^([a-z][a-z0-9+.-]*):/i;
+
 /**
- * L'etichetta mostrata resta il valore così com'è arrivato; questo è solo il bersaglio dell'`href`.
- *
- * Un valore senza schema — `www.prolocox.it` — in un `href` è un percorso **relativo**: la webapp
- * aprirebbe `https://<host>/…/www.prolocox.it` e l'app `capacitor://localhost/…`. Prima di oc:8406
- * il codice toglieva lo schema e riprefissava sempre `https://`, quindi questo caso funzionava; il
- * fix per non forzare TLS sui siti che non lo supportano ha tolto anche quella correzione.
- * Misurato sui POI delle app 75, 29 e 33: **235 URL su 1147** non hanno schema, il 20,5%.
- *
- * `http://` resta `http://`: il motivo per cui il `replace` era stato tolto vale ancora.
+ * `host:porta` — `localhost:3000`, `www.sito.it:8080` — ha la stessa forma di uno schema, ma dopo
+ * i due punti ha una cifra. Nessuno schema che ci interessi comincia con una cifra, quindi la
+ * distinzione è sicura: `javascript:alert(1)` ha una lettera e resta fuori.
  */
-function withScheme(url: string): string {
-  if (SCHEME_WITHOUT_COLON.test(url)) {
-    return url.replace(SCHEME_WITHOUT_COLON, '$1://');
+const HOST_WITH_PORT = /^[a-z][a-z0-9+.-]*:[0-9]/i;
+
+/**
+ * Il bersaglio dell'`href`, oppure `null` se quel valore non deve diventare un link.
+ *
+ * Tre casi, in ordine:
+ *
+ * - **schema riconosciuto** (`http`, `https`, `mailto`, `tel`): passa com'è. `http://` resta
+ *   `http://`, perché forzare TLS rompe i siti che non lo supportano — è il motivo per cui il
+ *   vecchio `replace` era stato tolto;
+ * - **niente schema**, o qualcosa che gli somiglia ma è un host — `www.sito.it:8080` ha un punto,
+ *   `localhost:3000` ha una cifra dopo i due punti: riceve `https://`. Senza, finirebbe
+ *   in `href` come percorso **relativo**, e la webapp aprirebbe `https://<host>/…/www.sito.it`.
+ *   Misurato sui POI delle app 75, 29 e 33: 235 URL su 1147 senza schema, il 20,5%;
+ * - **schema sconosciuto** (`javascript:`, `data:`, `vbscript:`): **scartato**. Meglio una voce in
+ *   meno che un link che esegue codice.
+ */
+function safeHref(url: string): string | null {
+  const conColon = SCHEME_WITHOUT_COLON.test(url)
+    ? url.replace(SCHEME_WITHOUT_COLON, '$1://')
+    : url;
+  const candidato = conColon.match(SCHEME_CANDIDATE);
+  if (candidato == null) {
+    return `https://${conColon}`;
   }
-  return HAS_SCHEME.test(url) ? url : `https://${url}`;
+  if (ALLOWED_SCHEMES.includes(candidato[1].toLowerCase())) {
+    return conColon;
+  }
+  // Non è uno schema ma un host: o contiene un punto, o dopo i due punti c'è una porta.
+  if (candidato[1].includes('.') || HOST_WITH_PORT.test(conColon)) {
+    return `https://${conColon}`;
+  }
+  return null;
 }
 
 /**
@@ -97,17 +131,23 @@ export function normalizeRelatedUrls(value: unknown): RelatedUrlEntry[] {
   }
   if (typeof value === 'string') {
     const url = value.trim();
-    return url === '' ? [] : [{label: url, url: withScheme(url)}];
+    if (url === '') {
+      return [];
+    }
+    const href = safeHref(url);
+    return href == null ? [] : [{label: url, url: href}];
   }
   if (Array.isArray(value)) {
     return value
       .filter((url): url is string => typeof url === 'string' && url.trim() !== '')
-      .map(url => ({label: url.trim(), url: withScheme(url.trim())}));
+      .map(url => ({label: url.trim(), url: safeHref(url.trim())}))
+      .filter((entry): entry is RelatedUrlEntry => entry.url != null);
   }
   if (typeof value === 'object') {
     return Object.entries(value as Record<string, unknown>)
       .filter(([label, url]) => label.trim() !== '' && typeof url === 'string' && url.trim() !== '')
-      .map(([label, url]) => ({label: label.trim(), url: withScheme((url as string).trim())}));
+      .map(([label, url]) => ({label: label.trim(), url: safeHref((url as string).trim())}))
+      .filter((entry): entry is RelatedUrlEntry => entry.url != null);
   }
   return [];
 }

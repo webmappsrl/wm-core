@@ -67,10 +67,38 @@ describe('normalizeRelatedUrls: lo schema (oc:8613)', () => {
     expect(normalizeRelatedUrls('http://www.comune.it')[0].url).toBe('http://www.comune.it');
   });
 
-  it('non tocca gli schemi già presenti, compresi quelli non http', () => {
+  it('non tocca gli schemi ammessi', () => {
     expect(normalizeRelatedUrls('https://a.it')[0].url).toBe('https://a.it');
     expect(normalizeRelatedUrls('mailto:a@b.it')[0].url).toBe('mailto:a@b.it');
     expect(normalizeRelatedUrls('tel:+390123')[0].url).toBe('tel:+390123');
+  });
+
+  // `[href]` su `<ion-item>` è un input di componente, non un attributo del DOM: Angular non lo
+  // sanitizza e Ionic lo rende tale e quale in un `<a href>`. Un `related_url` salvato con
+  // `javascript:` eseguirebbe nell'origine dell'app, dove sta il token (oc:8613).
+  it('scarta gli schemi che possono eseguire codice', () => {
+    expect(normalizeRelatedUrls('javascript:alert(document.cookie)')).toEqual([]);
+    expect(normalizeRelatedUrls('JavaScript:alert(1)'))
+      .withContext('il confronto non deve dipendere dalle maiuscole')
+      .toEqual([]);
+    expect(normalizeRelatedUrls('data:text/html,<script>x</script>')).toEqual([]);
+    expect(normalizeRelatedUrls('vbscript:msgbox')).toEqual([]);
+  });
+
+  it('scarta lo schema pericoloso anche dentro un array o un oggetto', () => {
+    expect(normalizeRelatedUrls(['javascript:alert(1)', 'www.buono.it'])).toEqual([
+      {label: 'www.buono.it', url: 'https://www.buono.it'},
+    ]);
+    expect(normalizeRelatedUrls({Cattivo: 'javascript:alert(1)', Buono: 'https://a.it'})).toEqual([
+      {label: 'Buono', url: 'https://a.it'},
+    ]);
+  });
+
+  // `www.sito.it:8080` e `localhost:3000` hanno la forma di uno schema ma sono host con la porta:
+  // prima di oc:8406 funzionavano, e scartarli o lasciarli relativi sarebbe un difetto.
+  it('riconosce un host con la porta e non lo scambia per uno schema', () => {
+    expect(normalizeRelatedUrls('www.sito.it:8080/x')[0].url).toBe('https://www.sito.it:8080/x');
+    expect(normalizeRelatedUrls('localhost:3000')[0].url).toBe('https://localhost:3000');
   });
 
   it('ripara lo schema a cui mancano i due punti, invece di prefissarlo di nuovo', () => {
