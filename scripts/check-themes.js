@@ -49,22 +49,32 @@ function trova(dir) {
 
 const trovati = trova(TEMI);
 
-// L'elenco atteso, esplicito. Contare «almeno uno» non basta: il caso che si ripete non e' la
-// cartella vuota ma il pin indietro di un commit, cioe' un insieme *parziale* — chi aggiunge il
-// decimo cliente e non allinea il pin trova nove temi, legge «nove trovati» e lo manda in
-// produzione senza il suo CSS. Aggiungere un cliente richiede quindi una riga qui: e' voluto,
-// perche' e' l'unico punto in cui quell'aggiunta viene dichiarata invece che dedotta. (oc:8613)
-const ATTESI = [
-  'camminiditalia/1.css',
-  'camminiditaliadev/1.css',
-  'forestas/1.css',
-  'forestasdev/1.css',
-  'forestasuat/1.css',
-  'geohub/29.css',
-  'geohub/32.css',
-  'geohub/33.css',
-  'geohub/75.css',
-];
+// L'elenco atteso sta dal lato di **chi consuma**, non qui.
+//
+// Prima stava in questo file, ed era inutile contro il caso che conta: se il submodule è pinnato
+// indietro, il consumer si porta dietro sia i temi vecchi sia l'elenco vecchio, i due coincidono
+// e il gate passa. Un elenco che viaggia insieme a ciò che controlla non controlla niente.
+//
+// Ora ogni prodotto dichiara nel proprio `theme-manifest.json` i clienti che si aspetta di
+// servire. Il file sta nella radice di build del consumer, che è già la cwd di tutti i punti di
+// innesto — `prebuild`, gli script di deploy e Surge, il passo di preview, il gulpfile che gira
+// nella copia dell'istanza — quindi non è stato necessario cambiarne nessuno. Aggiungere un
+// cliente diventa: il file qui, una riga nel manifest di ciascun prodotto, il bump del pin. Se il
+// pin resta indietro, il manifest ne chiede dieci e se ne trovano nove: il gate si ferma, ed è il
+// suo lavoro. (oc:8613)
+const MANIFEST = path.join(process.cwd(), 'theme-manifest.json');
+
+function leggiAttesi() {
+  if (!fs.existsSync(MANIFEST)) return null;
+  try {
+    const dichiarati = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
+    return Array.isArray(dichiarati) ? dichiarati : undefined;
+  } catch (e) {
+    return undefined;
+  }
+}
+
+const attesi = leggiAttesi();
 
 if (trovati == null || trovati.length === 0) {
   console.error('');
@@ -82,31 +92,54 @@ if (trovati == null || trovati.length === 0) {
   process.exit(1);
 }
 
-const mancanti = ATTESI.filter(t => !trovati.includes(t));
-const inattesi = trovati.filter(t => !ATTESI.includes(t));
+if (attesi === undefined) {
+  console.error('');
+  console.error(`✖ ${MANIFEST} non è leggibile come elenco JSON.`);
+  console.error('  Deve contenere un array di percorsi: ["geohub/29.css", "forestas/1.css", …]');
+  console.error('');
+  process.exit(1);
+}
+
+if (attesi === null) {
+  console.error('');
+  console.error(`✖ Manca ${MANIFEST}: questo prodotto non dichiara quali clienti si aspetta di servire.`);
+  console.error('');
+  console.error("  Senza quell'elenco il controllo non può accorgersi di un pin del submodule rimasto");
+  console.error("  indietro, che è il caso per cui esiste. Crea il file con i temi attesi, oggi:");
+  console.error('');
+  console.error('    ' + JSON.stringify(trovati, null, 2).split('\n').join('\n    '));
+  console.error('');
+  process.exit(1);
+}
+
+const mancanti = attesi.filter(t => !trovati.includes(t));
+const inattesi = trovati.filter(t => !attesi.includes(t));
 
 if (mancanti.length > 0) {
+  const quanti = mancanti.length === 1 ? 'Manca 1 tema' : `Mancano ${mancanti.length} temi`;
   console.error('');
-  const q = mancanti.length === 1 ? 'Manca 1 tema' : `Mancano ${mancanti.length} temi`;
-  console.error(`✖ ${q} per istanza su ${ATTESI.length}: quel cliente andrebbe in produzione senza il proprio CSS.`);
+  console.error(`✖ ${quanti} su ${attesi.length} dichiarati: quel cliente andrebbe in produzione senza il proprio CSS.`);
   console.error('');
-  console.error(`  Cercati in: ${TEMI}`);
-  console.error(`  Mancanti:   ${mancanti.join(', ')}`);
+  console.error(`  Dichiarati in: ${MANIFEST}`);
+  console.error(`  Cercati in:    ${TEMI}`);
+  console.error(`  Mancanti:      ${mancanti.join(', ')}`);
   console.error('');
-  console.error('  Se il submodule wm-core è indietro, allinea il pin.');
-  console.error("  Se invece un tema è stato tolto di proposito, va tolto anche dall'elenco ATTESI in questo script.");
+  console.error('  Causa più probabile: il pin di wm-core è indietro rispetto al commit che ha');
+  console.error('  aggiunto quel cliente. Allinealo. Se invece il tema è stato tolto di proposito,');
+  console.error('  va tolto anche dal manifest.');
   console.error('');
   process.exit(1);
 }
 
 if (inattesi.length > 0) {
+  const quanti = inattesi.length === 1 ? "C'è 1 tema" : `Ci sono ${inattesi.length} temi`;
   console.error('');
-  const q = inattesi.length === 1 ? "C'è 1 tema" : `Ci sono ${inattesi.length} temi`;
-  console.error(`✖ ${q} che l'elenco ATTESI non conosce: ${inattesi.join(', ')}`);
+  console.error(`✖ ${quanti} che il manifest non dichiara: ${inattesi.join(', ')}`);
   console.error('');
-  console.error("  Un tema nuovo va dichiarato qui, altrimenti la guardia non si accorgerà se un domani sparisce.");
+  console.error("  Un cliente nuovo va dichiarato qui, altrimenti il gate non si accorgerà se un");
+  console.error('  domani sparisce.');
   console.error('');
   process.exit(1);
 }
 
-console.log(`[check-themes] ${trovati.length} temi per istanza trovati: ${trovati.join(', ')}`);
+console.log(`[check-themes] ${trovati.length} temi per istanza trovati, tutti dichiarati nel manifest.`);
