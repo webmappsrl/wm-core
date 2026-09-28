@@ -3,6 +3,7 @@ import {WmFeature} from '@wm-types/feature';
 
 import {
   canNavigateRelatedPois,
+  currentPoiProperties,
   isShowingRelatedPoi,
   nextRelatedPoiId,
   prevRelatedPoiId,
@@ -76,5 +77,36 @@ describe('isShowingRelatedPoi / canNavigateRelatedPois (oc:8406)', () => {
   it('un solo correlato non basta a navigare', () => {
     expect(canNavigateRelatedPois.projector(true, 1)).toBeFalse();
     expect(canNavigateRelatedPois.projector(true, 0)).toBeFalse();
+  });
+});
+
+/**
+ * `isShowingRelatedPoi` confronta le due properties **per riferimento**, e regge solo finché
+ * `currentPoiProperties` restituisce lo stesso oggetto di uno dei due selettori a monte invece di
+ * una copia. È una proprietà di quel selettore che niente dichiara e niente impediva di rompere:
+ * basterebbe uno spread — `{...properties, address}` è esattamente ciò che il componente fa a
+ * valle — perché il confronto diventi sempre falso, e navigatore dei correlati e frecce da
+ * tastiera sparissero senza un errore e senza un test rosso. I test qui sopra non lo
+ * intercettano, perché passano alla `projector` lo stesso oggetto due volte.
+ *
+ * Questi invece falliscono il giorno in cui qualcuno copia (oc:8613).
+ */
+describe('currentPoiProperties: il contratto su cui poggia isShowingRelatedPoi (oc:8613)', () => {
+  const diretto = {id: 77, name: 'Scelto dalla mappa'};
+  const correlato = {id: 20, name: 'Correlato'};
+
+  it('restituisce lo stesso oggetto del POI diretto, non una copia', () => {
+    expect(currentPoiProperties.projector(diretto, correlato)).toBe(diretto);
+  });
+
+  it('restituisce lo stesso oggetto del correlato quando non c è un POI diretto', () => {
+    expect(currentPoiProperties.projector(null, correlato)).toBe(correlato);
+  });
+
+  it('e il confronto per riferimento di isShowingRelatedPoi ne discende', () => {
+    const mostrato = currentPoiProperties.projector(null, correlato);
+    expect(isShowingRelatedPoi.projector(mostrato, correlato))
+      .withContext('se currentPoiProperties copiasse, questo sarebbe falso')
+      .toBeTrue();
   });
 });
