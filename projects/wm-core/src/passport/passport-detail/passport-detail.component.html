@@ -14,16 +14,16 @@
   <div class="wm-passport-detail-layout" *ngIf="vm$ | async as vm; else loading">
     <div
       class="wm-passport-detail-ring"
-      [style.background-image]="layerImage ? 'linear-gradient(rgba(255,255,255,.88), rgba(255,255,255,.88)), url(' + layerImage + ')' : null"
+      [style.background-image]="layerImage ? 'linear-gradient(rgba(255,255,255,.88), rgba(255,255,255,.88)), url(&quot;' + layerImage + '&quot;)' : null"
     >
       <div
         class="wm-passport-detail-ring-progress"
         [style.--wm-passport-ring-deg]="ringDegrees(vm.progress.percent) + 'deg'"
       >
-        <div
-          class="wm-passport-detail-ring-logo"
-          [style.background-image]="layerLogo ? 'url(' + layerLogo + ')' : null"
-        ></div>
+        <!-- stesso wm-img della home del layer: un url() CSS senza virgolette si rompe con spazi o parentesi nell'URL -->
+        <div class="wm-passport-detail-ring-logo">
+          <wm-img *ngIf="layerLogo | hasLogo" [src]="layerLogo"></wm-img>
+        </div>
       </div>
       <div class="wm-passport-detail-head">
         {{ 'passport.detail.count' | wmtrans: {completed: vm.progress.completedStages, total: vm.progress.totalStages} }}
