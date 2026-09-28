@@ -1,4 +1,6 @@
-<!-- TODO: unire ugc-properties con poi-properties? -->
+<!-- Il ramo UGC ha il proprio componente, `wm-ugc-poi-properties`, e i due restano separati:
+     unificarli è il follow-up F1 di oc:8406, deferito con la sua ragione — due dei quattro difetti
+     del ramo UGC sono irreversibili lato dati. Non è un TODO senza padrone. -->
 <ng-container *ngIf="currentPoiProperties$|async as properties">
   <!-- Intestazione: località, nome e navigazione fra POI correlati (oc:8406).
        Prima era markup duplicato nei due prodotti — nell'header del pannello di webmapp-app e

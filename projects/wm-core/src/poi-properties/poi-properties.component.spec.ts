@@ -25,12 +25,9 @@ describe('PoiPropertiesComponent (oc:8406)', () => {
       if (selector === currentPoiProperties) {
         return of(properties);
       }
-      if (selector === poi) {
-        return of(null);
-      }
-      if (selector === confOPTIONSShowEmbeddedHtml || selector === confPOIFORMS) {
-        return of(null);
-      }
+      // Ogni altro selettore usato dal componente — `poi`, `confOPTIONSShowEmbeddedHtml`,
+      // `confPOIFORMS` — non conta per questi test: un solo ramo invece di tre identici, che
+      // sembravano setup e non lo erano.
       return of(null);
     });
     geolocationSpy = jasmine.createSpyObj('GeolocationService', [
@@ -67,9 +64,10 @@ describe('PoiPropertiesComponent (oc:8406)', () => {
     });
   });
 
-  // Contatti e link utili non hanno più un gate proprio (scrum del 04/09/2026): l'elenco è unico
-  // e senza etichette, quindi ogni figlio si nasconde da sé e non c'è uno stato da calcolare in
-  // anticipo. Resta solo showTechnicalDetails$, che già esisteva nella mobile.
+  // Contatti e link utili non hanno più **due** gate separati (scrum del 04/09/2026): l'elenco è
+  // unico e senza etichette. Un gate resta — `hasContacts$`, testato più sotto — perché il titolo
+  // «Informazioni» non deve comparire sopra una lista vuota; quello che è sparito è il gate che
+  // apriva i dettagli tecnici, che ora dipende dalla sola `ele`.
   it('related_url non apre i dettagli tecnici', done => {
     component = createComponent({
       related_url: {Sito: 'https://example.com'},

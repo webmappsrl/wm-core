@@ -65,7 +65,8 @@ export class PoiPropertiesComponent {
    *
    * È un array di stringhe ordinato dal generale allo specifico — regione, provincia, comune —
    * quindi si prende l'ultimo elemento. Mostrare tutti i livelli concatenati occuperebbe due
-   * righe nel popup della webapp, che a 1024px di viewport è largo ~205px.
+   * righe nel popup della webapp, che è stretto: da oc:8406 vale `--wm-poi-popup-width`,
+   * 400px e 320px sotto i 1024px, e prima era il 20% della viewport.
    */
   municipality$: Observable<string | null> = this.currentPoiProperties$.pipe(
     map(properties => {

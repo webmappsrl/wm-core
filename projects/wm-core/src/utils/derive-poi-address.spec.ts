@@ -15,7 +15,7 @@ describe('derivePoiAddress (oc:8406)', () => {
     });
   });
 
-  it('con solo locality e street fa join con virgola e plus', () => {
+  it('con solo locality e street fa join con virgola', () => {
     const props = {
       addr_locality: 'Pisa',
       addr_street: 'Via Roma 1',

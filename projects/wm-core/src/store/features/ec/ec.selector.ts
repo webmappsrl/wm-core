@@ -271,9 +271,11 @@ export const currentRelatedPoisCount = createSelector(
  * preferisce quello del POI diretto: il confronto per riferimento dice quindi quale dei due si sta
  * mostrando, senza rifare la logica del sentinella `{related: false}`.
  *
- * Serve perché `ec_related_poi` resta nell'URL anche dopo aver scelto un altro POI dalla mappa:
- * `setPoi` aggiunge `poi` e azzera `ugc_poi`, non quello. Senza questa condizione il navigatore
- * resterebbe acceso su un POI che non c'entra, con un contatore che conta un altro elenco.
+ * Serve perché `ec_related_poi` può restare nell'URL dopo aver scelto un altro POI: senza questa
+ * condizione il navigatore resterebbe acceso su un POI che non c'entra, con un contatore che conta
+ * un altro elenco. Da `0080a0b` i due percorsi che scelgono un POI — `url-handler.service` e
+ * `geobox-map` — lo azzerano, ma il selettore non si appoggia a quella pulizia: la coerenza la
+ * decide qui, dove si legge, invece di dipendere da chi scrive.
  */
 export const isShowingRelatedPoi = createSelector(
   currentPoiProperties,
