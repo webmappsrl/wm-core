@@ -163,14 +163,22 @@ wm-layer-box div img {
 /* end wm-layer-box component */
 
 /* start wm-status-filter component */
-/* Sfondo trasparente e non bianco (oc:8613): la regola vuole un chip senza vestito — toglie
-   ombra e bordo e sottolinea il testo, per farlo sembrare un link. Il bianco otteneva quel
-   risultato solo dove il fondo era bianco, cioè **sull'app**: lì `--wm-color-light` vale
-   `#ffffff` e la card del pannello ha `background: white`. Sulla webapp invece il pannello è
-   `#f4f5f8`, quindi da quando il tema arriva anche qui quel bianco si vedeva come un riquadro
-   attorno a "Torna alla home".
-   Trasparente esprime l'intento e rende uguale su entrambi: il testo resta leggibile in tutti e
-   due i casi, 8,4:1 sul bianco e 7,7:1 su #f4f5f8. */
+/* Sfondo trasparente e non bianco (oc:8613). **Decisione presa dal dev guardando lo schermo, non
+   da rivedere.**
+
+   La regola vuole un chip senza vestito: toglie ombra e bordo e sottolinea il testo, per farlo
+   sembrare un link. Il bianco otteneva quel risultato **solo dove il fondo era già bianco**, e i
+   due prodotti hanno pannelli diversi — `#ffffff` sull'app, `#f4f5f8` sulla webapp — quindi lo
+   stesso valore rendeva in due modi: invisibile da una parte, un riquadro attorno a "Torna alla
+   home" dall'altra.
+
+   `transparent` dice quello che la regola voleva dire e **rende uguale su entrambi**, perché
+   prende il colore del pannello qualunque sia. Il testo resta leggibile nei due casi: 8,4:1 sul
+   bianco e 7,7:1 su #f4f5f8, entrambi sopra la soglia AAA.
+
+   Nota per chi rivede: questi quattro temi sono **nati sulla webapp**, quindi lì il bianco è ciò
+   che si vedeva prima di oc:8613 e `transparent` cambia quella resa. È un cambio voluto e
+   verificato a schermo su entrambi i prodotti, non un effetto collaterale dell'unificazione. */
 wm-status-filter ion-chip,
 .wm-reset-filters {
   --background: transparent;
