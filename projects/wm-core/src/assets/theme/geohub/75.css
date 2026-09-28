@@ -717,6 +717,16 @@ wm-poi-properties > .wm-poi-properties-body wm-inner-component-html {
 wm-poi-properties > .wm-poi-properties-body wm-inner-component-html:not(.wm-excerpt) {
   padding: 24px 16px !important;
 }
+
+/* E l'excerpt riprende il padding che aveva in produzione, `20px 0 3px`: oc:8406 lo ha azzerato
+   in wm-core e ha spostato lo spazio su `--wm-feature-details-margin`, che qui vale
+   `0px !important` (riga 26). Senza questa riga il testo si attacca alla riga di separazione dei
+   contatti, mentre in produzione ha 20px sopra. Misurato su 75.mobile.webmapp.it/map?poi=42659.
+   `!important` per lo stesso motivo della regola qui sopra: il foglio del componente e' iniettato
+   dopo questo. (oc:8613) */
+wm-poi-properties > .wm-poi-properties-body .wm-excerpt {
+  padding: 20px 0 3px !important;
+}
 wm-poi-properties > .wm-poi-properties-body wm-tab-description::after,
 wm-poi-properties > .wm-poi-properties-body wm-tab-image-gallery::after,
 wm-poi-properties > .wm-poi-properties-body wm-get-directions::after {
