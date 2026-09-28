@@ -175,10 +175,19 @@ wm-layer-box div img {
    da rivedere.**
 
    La regola vuole un chip senza vestito: toglie ombra e bordo e sottolinea il testo, per farlo
-   sembrare un link. Il bianco otteneva quel risultato **solo dove il fondo era già bianco**, e i
-   due prodotti hanno pannelli diversi — `#ffffff` sull'app, `#f4f5f8` sulla webapp — quindi lo
-   stesso valore rendeva in due modi: invisibile da una parte, un riquadro attorno a "Torna alla
-   home" dall'altra.
+   sembrare un link. Il bianco otteneva quel risultato **solo dove il fondo era già bianco**, e non
+   lo è dappertutto.
+
+   **`wm-status-filter` monta in due punti, con sfondi diversi**, e il tema non ne tocca nessuno:
+   nel pannello della mappa il fondo è **bianco** (`map-details.component.scss` sull'app,
+   `.details-container` sulla webapp), nella home è **grigio** — `#f2f2f2` sull'app da
+   `--wm-color-greybackground`, `#f4f5f8` sulla webapp. Il riquadro attorno a "Torna alla home" si
+   vedeva quindi **nella home**, non nel pannello: è lì che è stato osservato e misurato.
+
+   Vale la pena dirlo per intero perché entrambe le mezze verità sono state scritte in due
+   documenti diversi — «si vedeva sulla webapp» e «si vedeva sull'app» — ed erano vere ciascuna per
+   il proprio contenitore. Un'affermazione vera in un contesto, scritta come se valesse sempre, è
+   costata mezza giornata su un altro punto di questo stesso ticket.
 
    `transparent` dice quello che la regola voleva dire e **rende uguale su entrambi**, perché
    prende il colore del pannello qualunque sia. Il testo resta leggibile nei due casi: 8,4:1 sul
