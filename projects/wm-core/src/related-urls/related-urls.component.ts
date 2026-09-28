@@ -62,7 +62,7 @@ export class WmRelatedUrlsComponent {
  * `<a href>`. Un `related_url` salvato dall'editor con `javascript:…` eseguirebbe nell'origine
  * dell'app, dove il token sta in `localStorage`. Prima di oc:8406 il vecchio
  * `window.open('https://' + url)` lo rendeva innocuo per costruzione; quando quel codice è stato
- * tolto, la protezione è sparita con lui (oc:8613).
+ * tolto, la protezione è sparita con lui (oc:8406).
  */
 const ALLOWED_SCHEMES = ['http', 'https', 'mailto', 'tel'];
 

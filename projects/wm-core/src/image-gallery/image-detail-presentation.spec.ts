@@ -5,13 +5,13 @@ import {ModalImageComponent} from '@wm-core/modal-image/modal-image.component';
 
 /**
  * Il contenitore del dettaglio immagine lo dichiara il **prodotto**, non il dispositivo: la webapp
- * `modal`, l'app `inline`. Fino a oc:8613 la scelta era dedotta da `isAppMobile`, e la build web
+ * `modal`, l'app `inline`. Fino a oc:8406 la scelta era dedotta da `isAppMobile`, e la build web
  * della mobile — `mobileweb` — finiva nel ramo della webapp aprendo il modale **sopra** la vista
  * inline che il pannello monta comunque.
  *
  * Il difetto stava in un `if` senza spec: due casi bastano a proteggerlo.
  */
-describe('ImageGalleryComponent.showPhoto: il contenitore (oc:8613)', () => {
+describe('ImageGalleryComponent.showPhoto: il contenitore (oc:8406)', () => {
   const crea = (presentation: 'modal' | 'inline') => {
     const modalCtrl = jasmine.createSpyObj('ModalController', ['create']);
     modalCtrl.create.and.returnValue(Promise.resolve({present: () => Promise.resolve()}));
@@ -43,7 +43,7 @@ describe('ImageGalleryComponent.showPhoto: il contenitore (oc:8613)', () => {
       .withContext("l'indice serve comunque: è quello che il contenitore osserva")
       .toHaveBeenCalledWith({gallery_index: 2});
     expect(modalCtrl.create)
-      .withContext('due visori sovrapposti, ed è il difetto che oc:8613 ha corretto')
+      .withContext('due visori sovrapposti, ed è il difetto che oc:8406 ha corretto')
       .not.toHaveBeenCalled();
   });
 });

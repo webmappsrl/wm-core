@@ -85,7 +85,7 @@ export class ImageGalleryComponent {
    * **Il contenitore lo dichiara il prodotto**, con `WM_IMAGE_DETAIL_PRESENTATION`: dedurlo dal
    * dispositivo non funziona, perché la build web della mobile è `mobileweb` e ci finiva dentro il
    * ramo della webapp, aprendo il modale sopra la vista inline che il pannello monta comunque
-   * (oc:8613).
+   * (oc:8406).
    */
   async showPhoto(idx) {
     this._urlHandlerSvc.updateURL({gallery_index: idx});

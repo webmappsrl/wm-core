@@ -9,7 +9,7 @@ export type WmImageDetailPresentation = 'modal' | 'inline';
 /**
  * **Lo decide il prodotto, non il dispositivo.**
  *
- * Fino a oc:8613 `wm-image-gallery` apriva il modale quando `isAppMobile` era falso, cioè «non
+ * Fino a oc:8406 `wm-image-gallery` apriva il modale quando `isAppMobile` era falso, cioè «non
  * siamo dentro l'app nativa». Ma `isAppMobile` è `isMobile && !isBrowser`, e la build **web** della
  * mobile — `mobile.webmapp.it` aperta da telefono, e la PWA — è `mobileweb`: lì `isBrowser` è vero,
  * quindi si apriva il modale **oltre** alla vista inline che il pannello monta comunque. Due visori

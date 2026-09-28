@@ -24,7 +24,7 @@ risultati diversi fra webapp e app.
 Non esiste un secondo componente di dettaglio, né override nei due prodotti: cercarne uno quando
 qualcosa si comporta diversamente è tempo perso. **La differenza è sempre nel contenitore.**
 
-## Il contenitore lo dichiara il prodotto (oc:8613)
+## Il contenitore lo dichiara il prodotto (oc:8406)
 
 `showPhoto()` apre il modale così:
 

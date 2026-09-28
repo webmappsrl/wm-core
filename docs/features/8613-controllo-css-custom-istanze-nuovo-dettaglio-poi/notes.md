@@ -86,7 +86,13 @@ aveva visto, tutti corretti qui.
 - **La guardia sui temi non vedeva un pin rimasto indietro.** `ATTESI` stava in questo repo, cioè
   insieme ai file che controlla: un consumer pinnato indietro portava con sé entrambi e i due
   coincidevano. Ora l'elenco è un `theme-manifest.json` nella radice di build di ciascun prodotto —
-  già la cwd di tutti i punti di innesto, quindi nessuno dei venti è cambiato.
+  già la cwd di tutti i punti di innesto — **ventuno**, nove sulla webapp e dodici sulla mobile —
+  quindi nessuno di loro ha dovuto cambiare *per lo spostamento dell'elenco*. Sono poi cambiati
+  tutti, ma per un'altra ragione e in un secondo momento: `40c3097` e `625a4e13` li hanno portati a
+  invocare `npm run check-themes` invece del percorso, così quel percorso è scritto una volta per
+  repo. L'affermazione regge quindi sulla **cwd**, non sul fatto che nessuno li abbia toccati; e la
+  cwd del gulpfile non è `core/` ma `instances/<nome>`, che è una copia e contiene anch'essa il
+  manifest.
 
 E un difetto nella correzione del primo ciclo: **`telHref` perdeva il prefisso internazionale**
 quando era separato dal numero da due spazi, `"+39  0341 481111"`. Il frammento `+39` ha tre cifre,

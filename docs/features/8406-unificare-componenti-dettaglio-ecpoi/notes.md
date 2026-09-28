@@ -363,6 +363,9 @@ escono dal dettaglio POI per arrivare altrove.
 
 **Il fix `telHref`, `buildMapsHref` e gli spec sul contratto di `isShowingRelatedPoi`** sono
 correzioni di dominio di questo ticket ma portano lo scope `oc:8613`, perché fatte dentro quel
-ciclo di review: `6fa8fe3`, `c56099e`, `f74b643`, `8a2069f`, `da09fb8`. `git log --grep oc:8406` non
-li trova. Fanno invece scope `oc:8406`, perché difetti di dominio trovati nel secondo ciclo,
-`d13c56a` (lo schema dei `related_url`) e `66d2e98` (il contenitore del dettaglio immagine).
+ciclo di review: `6fa8fe3`, `c56099e`, `f74b643`, `8a2069f`. `git log --grep oc:8406` non li trova.
+(`da09fb8` è invece già `docs(oc:8406)`, quindi si trova da sé.) Fanno invece scope `oc:8406`, perché difetti di dominio trovati nel secondo ciclo,
+`d13c56a` e `64edf3b` (lo schema dei `related_url`, poi la allowlist) e `66d2e98` (il contenitore
+del dettaglio immagine). Quest'ultimo però **non basta da solo**: `3b8fec2`, che porta scope
+`oc:8613`, aggiunge in `wm-webapp` il provider `'modal'` senza il quale sulla webapp il dettaglio
+immagine non si aprirebbe più. I due vanno letti insieme.

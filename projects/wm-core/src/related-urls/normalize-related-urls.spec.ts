@@ -56,7 +56,7 @@ describe('normalizeRelatedUrls', () => {
  * aprirebbe `https://<host>/…/www.prolocox.it`. Misurato sui POI delle app 75, 29 e 33: 235 URL
  * su 1147 non hanno schema, il 20,5% (oc:8406, trovato in review).
  */
-describe('normalizeRelatedUrls: lo schema (oc:8613)', () => {
+describe('normalizeRelatedUrls: lo schema (oc:8406)', () => {
   it('aggiunge https:// a un valore che non ha schema', () => {
     expect(normalizeRelatedUrls('www.prolocox.it')[0].url).toBe('https://www.prolocox.it');
     expect(normalizeRelatedUrls(['www.a.it'])[0].url).toBe('https://www.a.it');
@@ -75,7 +75,7 @@ describe('normalizeRelatedUrls: lo schema (oc:8613)', () => {
 
   // `[href]` su `<ion-item>` è un input di componente, non un attributo del DOM: Angular non lo
   // sanitizza e Ionic lo rende tale e quale in un `<a href>`. Un `related_url` salvato con
-  // `javascript:` eseguirebbe nell'origine dell'app, dove sta il token (oc:8613).
+  // `javascript:` eseguirebbe nell'origine dell'app, dove sta il token (oc:8406).
   it('scarta gli schemi che possono eseguire codice', () => {
     expect(normalizeRelatedUrls('javascript:alert(document.cookie)')).toEqual([]);
     expect(normalizeRelatedUrls('JavaScript:alert(1)'))
