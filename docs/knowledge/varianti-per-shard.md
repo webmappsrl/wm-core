@@ -36,6 +36,34 @@ quell'URL rispondeva 404. Le cartelle `core/src/theme/` e `src/theme/` esistono 
 contengono **solo** gli SCSS di shard usati a compile-time da `stylePreprocessorOptions`: sono
 un'altra cosa, non confonderle con i fogli per app.
 
+### Perché a runtime e non compilati dentro
+
+Il bundle della webapp è **uno solo e multi-tenant**: `app.geohub.webmapp.it` serve tutti gli shard
+e tutte le app, con lo shard deciso a runtime dall'hostname. Una personalizzazione per app non può
+quindi essere compilata nel bundle. L'unica alternativa sarebbe un bundle per cliente, che è ciò che
+si fa solo per `camminiditalia`, e solo perché lì servono i `fileReplacements`.
+
+### Quali sono, oggi
+
+Nove file per otto app. Le regole `order` sono la parte che fa più danno quando si scollega un
+selettore, quindi il conteggio sta in tabella:
+
+| App | Shard | File | `order` | Cosa tocca |
+|---|---|---|---|---|
+| Federazione Italiana Escursionismo (29) | `geohub` | `geohub/29.css` | 11 | dettaglio traccia |
+| Sentieri CAI Parma (33) | `geohub` | `geohub/33.css` | 9 | dettaglio traccia |
+| Sardegna Sentieri (32) | `geohub` | `geohub/32.css` | — | filtri, ricerca, box della home |
+| Forestas (1) | `forestas`, `forestasdev`, `forestasuat` | `forestas/1.css` e i due gemelli | — | come sopra |
+| Ville e Giardini Medicei (75) | `geohub` | `geohub/75.css` | 25 | dettaglio POI e traccia, home, filtri |
+| Cammini d'Italia (1) | `camminiditalia`, `camminiditaliadev` | `camminiditalia/1.css` e il gemello | — | home |
+
+Attenzione a contarle: `grep -c "order:"` conta anche `border:`, serve `grep -cE '(^|[^-a-z])order *:'`.
+
+**Sei file, due contenuti**: i quattro di Forestas e Sardegna hanno lo stesso md5, e così i due di
+Cammini d'Italia. Finché stavano in due repo separati la duplicazione era invisibile; ora è a vista,
+e una modifica va scritta quattro volte.
+
+
 **Perchè riguarda chi lavora qui.** Quei fogli prendono di mira i componenti di wm-core **per
 nome** — selettore di elemento o classe — e in più di un caso li riordinano con `order:` dentro
 i contenitori flex del dettaglio. Rinominare un componente, una classe o una variabile CSS
