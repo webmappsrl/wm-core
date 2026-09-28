@@ -25,13 +25,13 @@
   </ion-note>
 
   <form [formGroup]="form">
-    <ion-item lines="full" class="wm-passport-form-notes">
+    <ion-item lines="none" class="wm-passport-form-serial">
       <ion-input
-        formControlName="notes"
+        formControlName="serialNumber"
         labelPlacement="stacked"
-        [label]="'passport.form.notes' | wmtrans"
-        [helperText]="'passport.form.notesHint' | wmtrans"
-        [placeholder]="'passport.form.notesPlaceholder' | wmtrans"
+        [label]="'passport.form.serial' | wmtrans"
+        [helperText]="'passport.form.serialHint' | wmtrans"
+        [placeholder]="'passport.form.serialPlaceholder' | wmtrans"
       ></ion-input>
     </ion-item>
 

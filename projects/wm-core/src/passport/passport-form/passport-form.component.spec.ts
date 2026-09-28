@@ -84,25 +84,25 @@ describe('WmPassportFormComponent (oc:8166)', () => {
     expect(svc.submitCertification).not.toHaveBeenCalled();
   });
 
-  it('il testo libero è opzionale e viene inviato solo se presente', async () => {
+  it('il numero seriale è opzionale e viene inviato solo se presente', async () => {
     const cmp = create();
     fill(cmp);
-    cmp.form.controls.notes.setValue('  CG-2026-00341  ');
+    cmp.form.controls.serialNumber.setValue('  CG-2026-00341  ');
 
     await cmp.submit();
 
     const req = svc.submitCertification.calls.mostRecent().args[0];
-    expect(req).toEqual(jasmine.objectContaining({layerId: 3, notes: 'CG-2026-00341', disclaimerAccepted: true}));
+    expect(req).toEqual(jasmine.objectContaining({layerId: 3, serialNumber: 'CG-2026-00341', disclaimerAccepted: true}));
     expect(req.photos.length).toBe(1);
   });
 
-  it('senza testo libero la richiesta non ha il campo notes', async () => {
+  it('senza numero seriale la richiesta non ha il campo serialNumber', async () => {
     const cmp = create();
     fill(cmp);
 
     await cmp.submit();
 
-    expect('notes' in svc.submitCertification.calls.mostRecent().args[0]).toBeFalse();
+    expect('serialNumber' in svc.submitCertification.calls.mostRecent().args[0]).toBeFalse();
   });
 
   it('invio riuscito: toast di conferma e ritorno al dettaglio', async () => {

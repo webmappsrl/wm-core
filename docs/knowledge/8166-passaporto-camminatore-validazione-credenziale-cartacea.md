@@ -6,8 +6,8 @@ Nell'istanza camminiditalia (app e webapp) la home del layer mostra l'avanzament
 due punti: un **anello attorno al logo** e un **badge** «X% completato · N/M tappe percorse». Il
 tap sul badge apre una **modale a tutto schermo** con il dettaglio del cammino (tappe e stato) e,
 se il cammino non è completato e non c'è una richiesta in attesa, il pulsante **«Richiedi
-certificazione»**: porta a un form con 1-6 foto della credenziale cartacea, un campo libero
-opzionale e un disclaimer. Dopo l'invio il dettaglio mostra «In revisione». La UI segue il
+certificazione»**: porta a un form con 1-6 foto della credenziale cartacea, il numero seriale
+(opzionale) e un disclaimer. Dopo l'invio il dettaglio mostra «In revisione». La UI segue il
 wireframe `webmapp-app/docs/features/passaporto-camminatore-wireframe.html` (viste 1, V0b-V3).
 
 Tutto il codice sta in `projects/wm-core/src/passport/`:
@@ -36,7 +36,9 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
   dedicato `Passaporto`, unito al resto solo a lavoro completo, backend compreso.
 - **Il ciclo si chiude all'invio** (oc:8166): stati di approvazione e rifiuto, e i relativi tipi,
   arrivano con i ticket successivi. Una richiesta resta «In revisione» finché non esistono.
-- **Seriale sempre opzionale** (call del 03/09 con il cliente): non tutti i cammini lo hanno.
+- **Seriale sempre opzionale** (call del 03/09 con il cliente): non tutti i cammini lo hanno. Nel
+  multipart il campo è `serial_number`; il campo libero per «altre informazioni» è stato tolto
+  (oc:8166).
 - **Direttiva e non componente per l'anello** (oc:8166): i selettori della variante di
   `wm-home-layer` presuppongono il logo figlio diretto di `wm-img`.
 - **`ion-nav` con `setRoot()` in `ngAfterViewInit`** (oc:8166): con i binding `[root]`/`[rootParams]`

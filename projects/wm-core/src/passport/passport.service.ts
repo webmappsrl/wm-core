@@ -28,7 +28,7 @@ const MOCK_LATENCY_MS = 400;
  * Contratto ipotizzato:
  * - progresso: `GET /api/layer/{layer}/progress`
  * - stato richiesta: `GET /api/layer/{layer}/certification`
- * - invio: `POST /api/layer/{layer}/certification` (multipart: `images[]`, `notes`, `disclaimer_accepted`)
+ * - invio: `POST /api/layer/{layer}/certification` (multipart: `images[]`, `serial_number`, `disclaimer_accepted`)
  */
 @Injectable({providedIn: 'root'})
 export class PassportService {

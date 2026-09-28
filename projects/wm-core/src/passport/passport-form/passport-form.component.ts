@@ -47,7 +47,7 @@ export class WmPassportFormComponent implements OnInit, OnDestroy, PassportLeave
   readonly needsPrivacyAgree$ = this._store.select(needsPrivacyAgree);
 
   form = new FormGroup({
-    notes: new FormControl<string>(''),
+    serialNumber: new FormControl<string>(''),
     disclaimer: new FormControl<boolean>(false, {nonNullable: true}),
   });
   photos: Photo[] = [];
@@ -113,12 +113,12 @@ export class WmPassportFormComponent implements OnInit, OnDestroy, PassportLeave
     this._cdr.markForCheck();
     try {
       const photos = await Promise.all(this.photos.map(p => this._toBlob(p)));
-      const notes = this.form.controls.notes.value?.trim();
+      const serialNumber = this.form.controls.serialNumber.value?.trim();
       await firstValueFrom(
         this._passportSvc.submitCertification({
           layerId: this.layerId,
           photos,
-          ...(notes ? {notes} : {}),
+          ...(serialNumber ? {serialNumber} : {}),
           disclaimerAccepted: true,
         }),
       );

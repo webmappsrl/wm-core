@@ -11,7 +11,7 @@ Tipi in `@wm-types/passport` (`wm-types/src/passport.ts`); implementazione mock 
 |---|---|---|---|
 | Progresso del cammino | `GET /api/layer/{layer}/progress` | — | `PassportProgress`: `layerId`, `totalStages`, `completedStages`, `percent` (0-100), `stages[]` con `trackId`, `name`, `status` (`completed` / `in_progress` / `not_started`), `completedAt?`, `percent?` |
 | Stato della richiesta | `GET /api/layer/{layer}/certification` | — | `PassportCertification`: `layerId`, `status` (`none` / `pending`), `submittedAt?` (ISO 8601) |
-| Invio della richiesta | `POST /api/layer/{layer}/certification` | multipart: `images[]` (1-6 immagini), `notes` (opzionale), `disclaimer_accepted` | `PassportCertification` con `status: pending` |
+| Invio della richiesta | `POST /api/layer/{layer}/certification` | multipart: `images[]` (1-6 immagini), `serial_number` (opzionale), `disclaimer_accepted` | `PassportCertification` con `status: pending` |
 
 Le chiamate vanno verso `EnvironmentService.origin` e ricevono `App-id` e `Authorization` da
 `AuthInterceptor`, come le altre chiamate dello shard. Gli stati `approved` e `rejected` non fanno
@@ -97,6 +97,15 @@ il lint non si è potuto eseguire (vedi «Bug trovati»); la verifica manuale su
   Task 2 e 3 con le opzioni di acquisizione (default invariati per gli UGC).
 
 ## Decisioni
+
+- **Campo del form: solo «Numero seriale»** (richiesta a posteriori del developer, 28/09, mentre
+  sviluppa il backend): label «Numero seriale» come nel wireframe, sempre opzionale, con sotto
+  «Inserisci il numero seriale se richiesto dal cammino» e senza riga di separazione. Nel
+  multipart il campo è `serial_number` al posto di `notes`, e nel tipo `serialNumber`. Il campo
+  libero per «altre informazioni» proposto nella call del 03/09 non c'è più.
+- **Logo del layer nel dettaglio con `wm-img`** (trovato dal developer): con un `background-image`
+  senza virgolette nell'`url()` il logo non compariva; dentro l'anello `wm-img` ha i minimi di
+  100px azzerati, altrimenti il logo usciva dal cerchio.
 
 - **Home del layer riallineata al wireframe 1/V0b dopo la verifica del developer:** il riquadro
   del badge usa i colori del wireframe (bordo 2px tratteggiato `#2F9E44`, fondo `#eaf7ee`, testi
