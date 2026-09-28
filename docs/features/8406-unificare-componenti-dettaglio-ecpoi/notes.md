@@ -369,3 +369,14 @@ ciclo di review: `6fa8fe3`, `c56099e`, `f74b643`, `8a2069f`. `git log --grep oc:
 del dettaglio immagine). Quest'ultimo però **non basta da solo**: `3b8fec2`, che porta scope
 `oc:8613`, aggiunge in `wm-webapp` il provider `'modal'` senza il quale sulla webapp il dettaglio
 immagine non si aprirebbe più. I due vanno letti insieme.
+
+**Altri tre a scope misto, dal terzo giro di review (28/09/2026).** La storia non si riscrive, si
+registra qui:
+
+| Commit | Scope che porta | Cosa contiene di un altro ticket |
+|---|---|---|
+| `0457f3c` (wm-core) | `fix(oc:8613)` | `INTERNATIONAL_PREFIX` in `split-phones.ts` con il suo spec, `image-detail-presentation.spec.ts` nuovo, la pulizia di `poi-properties.component.spec.ts`: tutto dominio di oc:8406 |
+| `9348a1e6` (webmapp-app) | `fix(oc:8613)` | il provider `'inline'` della mobile, controparte di `66d2e98`; anche il commento in `app.module.ts` porta «(oc:8613)» |
+| `58c9519` (wm-webapp) | `fix(oc:8406)` | al contrario: riscrive la rettifica nel `plan.md` del cantiere di oc:8613 |
+
+Chi filtra `git log --grep oc:8406` non trova i primi due e trova il terzo credendolo tutto suo.

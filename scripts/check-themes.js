@@ -58,13 +58,22 @@ const trovati = trova(TEMI);
 // indietro, il consumer si porta dietro sia i temi vecchi sia l'elenco vecchio, i due coincidono
 // e il gate passa. Un elenco che viaggia insieme a ciò che controlla non controlla niente.
 //
-// Ora ogni prodotto dichiara nel proprio `theme-manifest.json` i clienti che si aspetta di
-// servire. Il file sta nella radice di build del consumer, che è già la cwd di tutti i punti di
-// innesto — `prebuild`, gli script di deploy e Surge, il passo di preview, il gulpfile che gira
-// nella copia dell'istanza — quindi non è stato necessario cambiarne nessuno. Aggiungere un
-// cliente diventa: il file qui, una riga nel manifest di ciascun prodotto, il bump del pin. Se il
-// pin resta indietro, il manifest ne chiede dieci e se ne trovano nove: il gate si ferma, ed è il
-// suo lavoro. (oc:8613)
+// Ora ogni prodotto dichiara nel proprio `theme-manifest.json` l'elenco che si aspetta di
+// trovare qui. Non «i clienti che quel prodotto vuole servire»: deve **coincidere con questa
+// cartella**, perché la voce di `assets` pubblica comunque tutto ciò che trova e i due prodotti
+// servono gli stessi file — un tema in più fa fallire la build quanto uno in meno.
+//
+// Il file sta nella radice di build del consumer, che è già la cwd di tutti i punti di innesto —
+// `prebuild`, gli script di deploy e Surge, il passo di preview, il gulpfile che gira nella copia
+// dell'istanza — quindi lo spostamento dell'elenco non ha richiesto di toccarne nessuno. Dopo, e
+// per un'altra ragione, quasi tutti sono passati a `npm run check-themes` così da scrivere il
+// percorso una volta per repo; **il gulpfile no**, e non può: `npm run` sposta la cwd alla radice
+// del pacchetto, e lì il gate guarderebbe la cartella sbagliata.
+//
+// Aggiungere un cliente tocca **quattro posti**: il file qui, l'elenco in
+// `.github/workflows/test.yml`, il manifest di ciascuno dei due prodotti — poi il bump del pin. Se
+// il pin resta indietro, il manifest ne chiede dieci e se ne trovano nove: il gate si ferma, ed è
+// il suo lavoro. (oc:8613)
 const MANIFEST = path.join(process.cwd(), 'theme-manifest.json');
 
 /**

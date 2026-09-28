@@ -14,6 +14,11 @@ Il tema dell'app 75 aveva selettori che non combaciavano più col markup dopo oc
 rinominati sui nomi nuovi. Ma **due rinomine su tre non erano rinomine**: il nome vecchio non
 agganciava niente nemmeno prima, quindi riscriverlo non ha ripristinato una resa, l'ha **creata**.
 
+> Attenzione all'unità di misura, perché due lettori diversi ci sono già inciampati: le **rinomine**
+> sono tre e due sono state annullate, ma i **punti del file** riportati indietro sono tre — 258,
+> 684 e 699 — perché `wm-tab-audio` compare due volte. Il titolo qui sopra conta invece le
+> **regole** riaccese, cinque, contando anche le due dell'intestazione.
+
 | Regola | Nome vecchio | Esito |
 |---|---|---|
 | `wm-excerpt` → `.wm-excerpt` | elemento inesistente | l'`order: 7` si è acceso e ha portato l'excerpt sopra «Informazioni»; in produzione sta in fondo |
@@ -91,11 +96,13 @@ aveva visto, tutti corretti qui.
   coincidevano. Ora l'elenco è un `theme-manifest.json` nella radice di build di ciascun prodotto —
   già la cwd di tutti i punti di innesto — **ventuno**, nove sulla webapp e dodici sulla mobile —
   quindi nessuno di loro ha dovuto cambiare *per lo spostamento dell'elenco*. Sono poi cambiati
-  tutti, ma per un'altra ragione e in un secondo momento: `40c3097` e `625a4e13` li hanno portati a
-  invocare `npm run check-themes` invece del percorso, così quel percorso è scritto una volta per
-  repo. L'affermazione regge quindi sulla **cwd**, non sul fatto che nessuno li abbia toccati; e la
-  cwd del gulpfile non è `core/` ma `instances/<nome>`, che è una copia e contiene anch'essa il
-  manifest.
+  quasi tutti, ma per un'altra ragione e in un secondo momento: `40c3097` e `625a4e13` li hanno
+  portati a invocare `npm run check-themes` invece del percorso, così quel percorso è scritto una
+  volta per repo. **Undici su dodici**: il gulpfile è rimasto a `node <percorso>` e non può fare
+  altrimenti, perché `npm run` porta la cwd alla radice del pacchetto e il gate guarderebbe la
+  cartella sbagliata. L'affermazione regge quindi sulla **cwd**, non sul fatto che nessuno li abbia
+  toccati; e la cwd del gulpfile non è `core/` ma `instances/<nome>`, che è una copia e contiene
+  anch'essa il manifest.
 
 E un difetto nella correzione del primo ciclo: **`telHref` perdeva il prefisso internazionale**
 quando era separato dal numero da due spazi, `"+39  0341 481111"`. Il frammento `+39` ha tre cifre,

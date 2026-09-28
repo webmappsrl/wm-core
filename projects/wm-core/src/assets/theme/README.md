@@ -3,14 +3,18 @@
 Un file per app: `<shardName>/<appId>.css`. Lo carica `meta/meta.component.ts:50`, che costruisce
 `theme/<shardName>/<appId>.css` e lo inietta come `<link id="client-theme">` in fondo al `<head>`.
 
-L'URL è **costruito, non dichiarato**: nessuna build referenzia questi file, quindi se uno manca
-non c'è nessun errore — l'app riceve un 404 e resta senza personalizzazione.
+L'URL è **costruito, non dichiarato**: nessuna build referenzia questi file, quindi **a runtime**
+un tema che manca non dà nessun errore — l'app riceve un 404 e resta senza personalizzazione. È il
+motivo per cui esiste il gate descritto sotto: prima di oc:8613 niente se ne accorgeva, e un deploy
+senza il CSS del cliente era verde.
 
 **Un elenco però ora c'è, ed è in quattro posti**: questa cartella, l'elenco nel workflow
 `.github/workflows/test.yml` di questo repo, e il `theme-manifest.json` di ciascuno dei due
 prodotti. Serve proprio perché l'URL è costruito: senza, nessuno saprebbe distinguere «questa app
-non ha un tema» da «il tema c'è ma il pin del submodule è indietro». **Nessuno dei quattro segnala
-se ne dimentichi un altro**: te ne accorgi quando una build si ferma (oc:8613).
+non ha un tema» da «il tema c'è ma il pin del submodule è indietro». **Il workflow ne controlla
+due**: se questa cartella e il suo elenco divergono, la PR di wm-core diventa rossa. **I due
+manifest no**, perché stanno in altri repo — se ne dimentichi uno, te ne accorgi quando la build di
+quel prodotto si ferma (oc:8613).
 
 **Cosa dichiara il manifest.** Non «i clienti che quel prodotto vuole servire»: deve **coincidere
 con questa cartella**. Un tema in più rispetto al manifest fa fallire la build, e uno in meno pure,

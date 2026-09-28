@@ -190,8 +190,9 @@ wm-layer-box div img {
    costata mezza giornata su un altro punto di questo stesso ticket.
 
    `transparent` dice quello che la regola voleva dire e **rende uguale su entrambi**, perché
-   prende il colore del pannello qualunque sia. Il testo resta leggibile nei due casi: 8,4:1 sul
-   bianco e 7,7:1 su #f4f5f8, entrambi sopra la soglia AAA.
+   prende il colore del pannello qualunque sia. Il testo resta leggibile su tutti e tre gli sfondi
+   che incontra: 8,4:1 sul bianco del pannello, 7,7:1 su #f4f5f8 (home della webapp) e 7,5:1 su
+   #f2f2f2 (home dell'app). Tutti sopra la soglia AAA, l'ultimo di poco.
 
    Nota per chi rivede: questi quattro temi sono **nati sulla webapp**, quindi lì il bianco è ciò
    che si vedeva prima di oc:8613 e `transparent` cambia quella resa. È un cambio voluto e

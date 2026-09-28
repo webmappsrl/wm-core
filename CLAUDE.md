@@ -31,9 +31,10 @@ nel repo di quel prodotto.
   cartelle che esistono solo dentro un prodotto. Restano coperti dalla CI dei due consumer, dove
   l'ambiente c'è già.
 - **L'elenco dei clienti vive in quattro posti**: la cartella `assets/theme/`, l'elenco nel
-  workflow, e il `theme-manifest.json` di ciascuno dei due prodotti. **Nessuno dei quattro segnala
-  se ne dimentichi un altro**: te ne accorgi quando una build si ferma. Aggiungere o dismettere un
-  cliente li tocca tutti e quattro (oc:8613).
+  workflow, e il `theme-manifest.json` di ciascuno dei due prodotti. Aggiungere o dismettere un
+  cliente li tocca tutti e quattro. **Il workflow ne controlla due**: cartella ed elenco che
+  divergono fanno diventare rossa la PR qui. **I due manifest vivono in altri repo e nessuno li
+  segnala**: te ne accorgi quando la build di quel prodotto si ferma (oc:8613).
 
 ## Comandi
 

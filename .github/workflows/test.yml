@@ -8,7 +8,9 @@
 # girare qui richiederebbe di ricostruire l'ambiente di un consumer — checkout di wm-webapp con i
 # submodule, `npm ci` nel padre — cioè un job lento e legato a un altro repo.
 #
-# I 336 spec restano quindi coperti dalla CI dei due prodotti, che è dove l'ambiente esiste già.
+# Gli spec restano quindi coperti dalla CI dei due prodotti, che è dove l'ambiente esiste già —
+# ma **solo dopo il bump del pin**: finché un prodotto punta a un commit più vecchio di questo, la
+# sua CI verifica quel commit, non ciò che stai leggendo.
 name: Temi per istanza
 
 on:
@@ -32,8 +34,10 @@ jobs:
       # l'intenzione resta scritta nella storia.
       #
       # Quando cambia, cambiano anche i `theme-manifest.json` dei due prodotti: sono quattro posti
-      # in tutto — la cartella, questo elenco, i due manifest — e nessuno dei quattro segnala se
-      # ne dimentichi un altro. Te ne accorgi quando una build si ferma.
+      # in tutto — la cartella, questo elenco, i due manifest. Questo job ne copre **due**: se la
+      # cartella e questo elenco divergono, la PR diventa rossa qui. I due manifest no, perché
+      # stanno in altri repo: se ne dimentichi uno, qui resta verde e te ne accorgi quando la build
+      # di quel prodotto si ferma.
       - name: I nove temi attesi
         run: |
           CARTELLA=projects/wm-core/src/assets/theme

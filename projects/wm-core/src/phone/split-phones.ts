@@ -51,8 +51,12 @@ const MIN_DIGITS = 4;
 
 /**
  * `+39`, `+1`, `+352`: un frammento così è un prefisso internazionale, non un numero. Al massimo
- * tre cifre, perché i prefissi ITU-T E.164 non vanno oltre — quattro allargava la finestra senza
- * motivo, e un frammento di quattro cifre è già un numero corto.
+ * tre cifre, perché i prefissi ITU-T E.164 non vanno oltre.
+ *
+ * Il limite **documenta l'intento, non cambia il comportamento**: con `MIN_DIGITS` a 4 un
+ * frammento di quattro cifre viene restituito come numero prima ancora di arrivare qui, quindi
+ * `{1,4}` non avrebbe mai potuto agganciare la quarta. I due valori sono però accoppiati: se
+ * `MIN_DIGITS` salisse, questa differenza comincerebbe a contare.
  */
 const INTERNATIONAL_PREFIX = /^\+[0-9]{1,3}$/;
 
