@@ -1,0 +1,87 @@
+<!-- Dettaglio del cammino, wireframe V1/V3 (oc:8166) -->
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="host?.close()" [attr.aria-label]="'Chiudi' | wmtrans">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ layerTitle }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="wm-passport-detail" [scrollY]="false">
+  <div class="wm-passport-detail-layout" *ngIf="vm$ | async as vm; else loading">
+    <div
+      class="wm-passport-detail-ring"
+      [style.background-image]="layerImage ? 'linear-gradient(rgba(255,255,255,.88), rgba(255,255,255,.88)), url(' + layerImage + ')' : null"
+    >
+      <div
+        class="wm-passport-detail-ring-progress"
+        [style.--wm-passport-ring-deg]="ringDegrees(vm.progress.percent) + 'deg'"
+      >
+        <div
+          class="wm-passport-detail-ring-logo"
+          [style.background-image]="layerLogo ? 'url(' + layerLogo + ')' : null"
+        ></div>
+      </div>
+      <div class="wm-passport-detail-head">
+        {{ 'passport.detail.count' | wmtrans: {completed: vm.progress.completedStages, total: vm.progress.totalStages} }}
+      </div>
+      <div class="wm-passport-detail-sub">
+        <ng-container *ngIf="vm.progress.percent === 100; else notDone">
+          {{ 'passport.detail.completed' | wmtrans }}
+        </ng-container>
+        <ng-template #notDone>
+          <ng-container *ngIf="vm.progress.completedStages === 0; else remaining">
+            {{ 'passport.detail.none' | wmtrans }}
+          </ng-container>
+          <ng-template #remaining>
+            {{ 'passport.detail.remaining' | wmtrans: {remaining: vm.progress.totalStages - vm.progress.completedStages} }}
+          </ng-template>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- fuori dallo scroll: resta visibile anche con molte tappe, come nel wireframe -->
+    <button *ngIf="vm.showCta" type="button" class="wm-passport-detail-cta" (click)="host?.openForm()">
+      <span class="wm-passport-detail-cta-title">📷 {{ 'passport.cta.title' | wmtrans }}</span>
+      <span class="wm-passport-detail-cta-hint">{{ 'passport.cta.hint' | wmtrans }}</span>
+    </button>
+
+    <div *ngIf="vm.certification.status === 'pending'" class="wm-passport-detail-pending" role="status">
+      <span class="wm-passport-detail-pending-chip">⏳ {{ 'passport.pending.title' | wmtrans }}</span>
+      <span class="wm-passport-detail-pending-hint">
+        {{ 'passport.pending.hint' | wmtrans: {date: shortDate(vm.certification.submittedAt)} }}
+      </span>
+    </div>
+
+    <div class="wm-passport-detail-stages">
+      <div
+        *ngFor="let stage of vm.progress.stages; let i = index"
+        class="wm-passport-stage"
+        [class.wm-passport-stage--todo]="stage.status === 'not_started'"
+      >
+        <ng-container [ngSwitch]="stage.status">
+          <div *ngSwitchCase="'completed'" class="wm-passport-stage-icon wm-passport-stage-icon--done" aria-hidden="true">✓</div>
+          <div
+            *ngSwitchCase="'in_progress'"
+            class="wm-passport-stage-icon wm-passport-stage-icon--progress"
+            [style.--wm-passport-ring-deg]="ringDegrees(stage.percent) + 'deg'"
+            aria-hidden="true"
+          >{{ stage.percent }}%</div>
+          <div *ngSwitchDefault class="wm-passport-stage-icon wm-passport-stage-icon--todo" aria-hidden="true">{{ i + 1 }}</div>
+        </ng-container>
+        <div class="wm-passport-stage-name">{{ stage.name }}</div>
+        <div class="wm-passport-stage-date" [ngSwitch]="stage.status">
+          <ng-container *ngSwitchCase="'completed'">{{ shortDate(stage.completedAt) }}</ng-container>
+          <span *ngSwitchCase="'in_progress'" class="wm-passport-stage-date--progress">{{ stage.percent }}%</span>
+          <ng-container *ngSwitchDefault>—</ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #loading>
+    <div class="wm-passport-detail-loading"><ion-spinner></ion-spinner></div>
+  </ng-template>
+</ion-content>

@@ -1,0 +1,29 @@
+// Form di richiesta, wireframe V2 (oc:8166).
+.wm-passport-form-intro {
+  color: var(--ion-color-medium);
+}
+
+.wm-passport-form-label {
+  margin: 16px 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.wm-passport-form-notes {
+  margin-top: 16px;
+}
+
+.wm-passport-form-disclaimer {
+  --min-height: 44px;
+  margin-top: 12px;
+}
+
+.wm-passport-form ion-note {
+  display: block;
+  margin: 4px 0 8px;
+}
+
+.wm-passport-form-submit {
+  min-height: 44px;
+  margin-top: 24px;
+}

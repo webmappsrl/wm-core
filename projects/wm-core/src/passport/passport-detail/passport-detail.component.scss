@@ -1,0 +1,168 @@
+@import '../passport-theme';
+
+// Dettaglio del cammino, wireframe V1/V3 (oc:8166).
+.wm-passport-detail-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.wm-passport-detail-ring {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 20px 16px;
+  border-bottom: 1px solid #ddd;
+  background-size: cover;
+  background-position: center;
+}
+
+.wm-passport-detail-ring-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: conic-gradient(
+    $passport-green 0deg var(--wm-passport-ring-deg, 0deg),
+    $passport-ring-bg var(--wm-passport-ring-deg, 0deg) 360deg
+  );
+}
+
+.wm-passport-detail-ring-logo {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: #fff center / contain no-repeat;
+}
+
+.wm-passport-detail-head {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+}
+
+.wm-passport-detail-sub {
+  font-size: 13px;
+  color: #888;
+  text-align: center;
+}
+
+.wm-passport-detail-cta {
+  @include passport-tappable-box;
+  gap: 4px;
+  flex-shrink: 0;
+  margin: 12px 16px;
+  padding: 12px 14px;
+}
+
+.wm-passport-detail-cta-title {
+  @include passport-box-title;
+  font-size: 15px;
+}
+
+.wm-passport-detail-cta-hint {
+  @include passport-box-hint;
+}
+
+.wm-passport-detail-pending {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  margin: 12px 16px;
+  padding: 12px 14px;
+  border: 2px dashed $passport-amber;
+  border-radius: 10px;
+  background: $passport-amber-bg;
+}
+
+.wm-passport-detail-pending-chip {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: $passport-amber-chip;
+  color: $passport-amber-text;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.wm-passport-detail-pending-hint {
+  font-size: 13px;
+  color: $passport-amber-text;
+}
+
+.wm-passport-detail-stages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.wm-passport-stage {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.wm-passport-stage-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 12px;
+}
+
+.wm-passport-stage-icon--done {
+  background: $passport-green;
+  color: #fff;
+}
+
+.wm-passport-stage-icon--progress {
+  background: conic-gradient(
+    $passport-green 0deg var(--wm-passport-ring-deg, 0deg),
+    #eee var(--wm-passport-ring-deg, 0deg) 360deg
+  );
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.wm-passport-stage-icon--todo {
+  border: 1.5px solid #ccc;
+  color: #bbb;
+  font-size: 11px;
+}
+
+.wm-passport-stage-name {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+}
+
+.wm-passport-stage--todo .wm-passport-stage-name {
+  color: #999;
+}
+
+.wm-passport-stage-date {
+  font-size: 12px;
+  color: #999;
+}
+
+.wm-passport-stage-date--progress {
+  color: $passport-green;
+  font-weight: 700;
+}
+
+.wm-passport-detail-loading {
+  display: flex;
+  justify-content: center;
+  padding: 32px;
+}

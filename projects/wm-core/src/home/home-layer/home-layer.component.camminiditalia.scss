@@ -1,4 +1,5 @@
 @import './home-layer-shared.scss';
+@import '../../passport/passport-theme';
 
 // Apertura layer camminiditalia (oc:8305, portato da CSS a componente in
 // oc:8391): foto pulita in alto + fascia bianca sotto con logo + divisore +
@@ -86,3 +87,24 @@ wm-home-layer > wm-img:has(> wm-img.wm-home-layer-logo-overlay) > .wm-box-title:
   // flessibilità reale qui — stessa scelta già presente nel CSS di origine.
   background-color: #ef7821;
 }
+
+// Passaporto (oc:8166, wireframe 1/V0b): anello di avanzamento attorno al logo. I gradi arrivano
+// da `[wmPassportLogoRing]` in `--wm-passport-ring-deg`; la classe c'è solo per l'utente loggato
+// su un layer con tappe. Il padding lascia vedere l'anello, il logo resta su fondo bianco.
+wm-home-layer > wm-img > wm-img.wm-home-layer-logo-overlay.wm-passport-logo-ring {
+  padding: 5px;
+  box-sizing: border-box;
+  background: conic-gradient(
+    $passport-green 0deg var(--wm-passport-ring-deg, 0deg),
+    $passport-ring-bg var(--wm-passport-ring-deg, 0deg) 360deg
+  );
+}
+
+wm-home-layer > wm-img > wm-img.wm-home-layer-logo-overlay.wm-passport-logo-ring > .wm-img-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: contain;
+  background: #fff;
+}
+
