@@ -600,10 +600,21 @@ wm-map-details ion-card ion-card-content:has(wm-image-detail) {
   height: calc(100% + 70px) !important;
 }
 
-wm-map-details ion-card ion-card-header .webmapp-pagepoi-info-header-pre-title {
-  display: none;
+/* Intestazione del POI. Fino a oc:8406 il nome e la sua riga sopra stavano nell'header del
+   pannello della mobile (`ion-card-header .webmapp-pagepoi-info-header-*`), markup che quel
+   refactor ha cancellato: le due regole sono rimaste scollegate e oc:8613 non le aveva tradotte.
+   Ora l'intestazione la rende `wm-poi-properties`, che è lo stesso componente sui due prodotti,
+   quindi il selettore si ancora al componente e non al contenitore: niente forma additiva, qui
+   non serve distinguere mobile e webapp.
+
+   Il pre-titolo resta nascosto perché su questa app non c'è mai stato: prima portava la
+   categoria, oggi porterebbe il comune — contenuto diverso, stessa riga che il cliente non
+   vuole. `!important` perché il foglio del componente dichiara sullo stesso elemento con la
+   stessa specificità ed è iniettato dopo questo (oc:8613). */
+wm-poi-properties .wm-poi-properties-header .wm-poi-properties-pre-title {
+  display: none !important;
 }
-wm-map-details ion-card ion-card-header .webmapp-pagepoi-info-header-title {
+wm-poi-properties .wm-poi-properties-header .wm-poi-properties-title {
   font-family: var(--wm-75-font-family-title) !important;
   font-size: var(--wm-font-size-4xl) !important;
   line-height: 29px !important;
@@ -673,12 +684,20 @@ wm-poi-properties > .wm-poi-properties-body wm-track-audio {
 }
 wm-poi-properties > .wm-poi-properties-body wm-inner-component-html {
   order: 11;
-  /* Su questa app `--wm-feature-details-margin` vale `0px !important` (riga 26): la spaziatura
-     la dà il padding di ciascun blocco, non il margine comune. Da oc:8406 wm-core azzera il
-     padding proprio dell'HTML incorporato e sposta lo spazio su quel margine — qui inesistente,
-     quindi il riquadro si attaccava alla linea di separazione dei contatti.
-     `!important` perché la regola del componente ha la stessa specificità di questa ed è
-     iniettata dopo il foglio statico, quindi vincerebbe. (oc:8613) */
+}
+/* Su questa app `--wm-feature-details-margin` vale `0px !important` (riga 26): la spaziatura la
+   dà il padding di ciascun blocco, non il margine comune. Da oc:8406 wm-core azzera il padding
+   proprio dell'HTML incorporato e sposta lo spazio su quel margine, qui inesistente: il riquadro
+   si attaccava alla linea di separazione dei contatti. `!important` perché la regola del
+   componente ha la stessa specificità di questa ed è iniettata dopo il foglio statico, quindi
+   vincerebbe. (oc:8613)
+
+   `:not(.wm-excerpt)` perché nel corpo del POI gli `wm-inner-component-html` sono due: l'HTML
+   incorporato, per cui questa spaziatura è pensata, e l'excerpt, a cui wm-core assegna
+   `padding: 0` di proposito (`poi-properties.component.scss:18`). Senza l'esclusione l'excerpt
+   prendeva 24px sopra e sotto e 16px ai lati che nessuno aveva chiesto. L'`order: 11` resta
+   invece su entrambi, com'era prima. */
+wm-poi-properties > .wm-poi-properties-body wm-inner-component-html:not(.wm-excerpt) {
   padding: 24px 16px !important;
 }
 wm-poi-properties > .wm-poi-properties-body wm-tab-description::after,
