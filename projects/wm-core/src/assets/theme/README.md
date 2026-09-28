@@ -3,15 +3,40 @@
 Un file per app: `<shardName>/<appId>.css`. Lo carica `meta/meta.component.ts:50`, che costruisce
 `theme/<shardName>/<appId>.css` e lo inietta come `<link id="client-theme">` in fondo al `<head>`.
 
-L'URL è **costruito, non dichiarato**: un'app senza il suo file riceve un 404 e resta senza
-personalizzazione. Non c'è nessun elenco da tenere aggiornato, e non c'è nessun errore quando il
-file manca.
+L'URL è **costruito, non dichiarato**: nessuna build referenzia questi file, quindi se uno manca
+non c'è nessun errore — l'app riceve un 404 e resta senza personalizzazione.
 
-**Vale per un'app nuova, non per un tema che viene tolto.** I deploy dei due prodotti copiano
-sopra quello che trovano e non cancellano niente — `scp -r` sulla webapp, `rsync -av` senza
-`--delete` sulla mobile — quindi cancellare un file da qui **non lo toglie dalla produzione**: il
-cliente continua a vedere il proprio CSS finché qualcuno non rimuove il file dal server a mano.
-Disattivare un tema è due operazioni, non una (oc:8613).
+**Un elenco però ora c'è, ed è in quattro posti**: questa cartella, l'elenco nel workflow
+`.github/workflows/test.yml` di questo repo, e il `theme-manifest.json` di ciascuno dei due
+prodotti. Serve proprio perché l'URL è costruito: senza, nessuno saprebbe distinguere «questa app
+non ha un tema» da «il tema c'è ma il pin del submodule è indietro». **Nessuno dei quattro segnala
+se ne dimentichi un altro**: te ne accorgi quando una build si ferma (oc:8613).
+
+**Cosa dichiara il manifest.** Non «i clienti che quel prodotto vuole servire»: deve **coincidere
+con questa cartella**. Un tema in più rispetto al manifest fa fallire la build, e uno in meno pure,
+perché la voce di `assets` pubblica comunque tutto quello che trova — i due prodotti servono gli
+stessi nove file. Il manifest è quindi una copia dell'elenco tenuta **dal lato del consumer**, ed è
+lì e non qui perché solo da lì si può dire «il tuo pin è indietro».
+
+Aggiungere un cliente: il file qui, l'elenco nel workflow, i due manifest, il bump dei pin.
+Dismetterne uno: gli stessi quattro posti, più il file da togliere **a mano dal server** — vedi
+sotto.
+
+**Il 404 vale per un'app nuova, non per un tema che viene tolto.** I deploy dei due prodotti copiano
+sopra quello che trovano e non cancellano niente. Non è una differenza fra i prodotti: **entrambi
+usano sia `scp` sia `rsync`**, a seconda dello script, e **nessuno dei due passa `--delete`**:
+
+| | `scp` | `rsync` senza `--delete` |
+|---|---|---|
+| `wm-webapp` | `deploy-default.js`, `deploy-cai` | `deploy-camminiditalia.js` |
+| `webmapp-app` | `deploy-cai-to-web`, `deploy-to-web-verbose`, `deploy-to-web-assets` | `deploy-to-web-default.js`, `deploy-to-web-camminiditalia.js` |
+
+Quindi cancellare un file da qui **non lo toglie dalla produzione**: il cliente continua a vedere
+il proprio CSS finché qualcuno non rimuove il file dal server a mano. Disattivare un tema è due
+operazioni, non una.
+
+`--delete` è stato valutato e **rimandato** (oc:8613): su un percorso sbagliato cancella quello che
+trova, e va scritto e provato a parte.
 
 Stanno qui, e non nei due prodotti, perché la stessa app deve vedersi allo stesso modo sulla webapp
 e sull'app: prima `wm-webapp/src/theme/` e `webmapp-app/core/src/theme/` ne tenevano insiemi

@@ -22,8 +22,10 @@
  *
  *     node src/app/shared/wm-core/scripts/check-themes.js
  *
- * I temi li cerca rispetto a se stesso, non alla cartella da cui è lanciato, quindi funziona da
- * qualunque cwd.
+ * **I temi** li cerca rispetto a se stesso, non alla cartella da cui è lanciato. **Il manifest no**:
+ * quello lo cerca in `process.cwd()`, perché è del prodotto e ogni prodotto ha il suo. Quindi lo
+ * script va lanciato dalla radice di build del consumer — che è già la cwd di tutti i punti di
+ * innesto, compreso il gulpfile che gira nella copia dell'istanza.
  *
  * Nota sul caso limite: se il submodule è così indietro da non contenere nemmeno questo script,
  * `node` esce comunque diverso da zero con «Cannot find module …/wm-core/scripts/check-themes.js» —
@@ -65,17 +67,23 @@ const trovati = trova(TEMI);
 // suo lavoro. (oc:8613)
 const MANIFEST = path.join(process.cwd(), 'theme-manifest.json');
 
-function leggiAttesi() {
-  if (!fs.existsSync(MANIFEST)) return null;
+/**
+ * `{themes}` se il manifest è leggibile, `{error}` altrimenti. Due errori diversi — il file che
+ * manca e il file illeggibile — vogliono due messaggi diversi, e tenerli distinti come `null` e
+ * `undefined` li faceva fondere al primo `== null` che qualcuno avesse scritto.
+ */
+function leggiManifest() {
+  if (!fs.existsSync(MANIFEST)) return {error: 'assente'};
+  let dichiarati;
   try {
-    const dichiarati = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
-    return Array.isArray(dichiarati) ? dichiarati : undefined;
+    dichiarati = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
   } catch (e) {
-    return undefined;
+    return {error: 'illeggibile'};
   }
+  return Array.isArray(dichiarati) ? {themes: dichiarati} : {error: 'illeggibile'};
 }
 
-const attesi = leggiAttesi();
+const manifest = leggiManifest();
 
 if (trovati == null || trovati.length === 0) {
   console.error('');
@@ -93,7 +101,7 @@ if (trovati == null || trovati.length === 0) {
   process.exit(1);
 }
 
-if (attesi === undefined) {
+if (manifest.error === 'illeggibile') {
   console.error('');
   console.error(`✖ ${MANIFEST} non è leggibile come elenco JSON.`);
   console.error('  Deve contenere un array di percorsi: ["geohub/29.css", "forestas/1.css", …]');
@@ -101,18 +109,21 @@ if (attesi === undefined) {
   process.exit(1);
 }
 
-if (attesi === null) {
+if (manifest.error === 'assente') {
   console.error('');
-  console.error(`✖ Manca ${MANIFEST}: questo prodotto non dichiara quali clienti si aspetta di servire.`);
+  console.error(`✖ Manca ${MANIFEST}: questo prodotto non dichiara i temi che deve servire.`);
   console.error('');
   console.error("  Senza quell'elenco il controllo non può accorgersi di un pin del submodule rimasto");
-  console.error("  indietro, che è il caso per cui esiste. Crea il file con i temi attesi, oggi:");
+  console.error('  indietro, che è il caso per cui esiste.');
   console.error('');
-  console.error('    ' + JSON.stringify(trovati, null, 2).split('\n').join('\n    '));
+  console.error('  **Non copiare i temi che trovi qui adesso**: se il pin è indietro certificheresti');
+  console.error('  proprio lo stato sbagliato. Prendi il file da `develop`, oppure dal manifest');
+  console.error("  dell'altro prodotto, che deve essere identico a questo.");
   console.error('');
   process.exit(1);
 }
 
+const attesi = manifest.themes;
 const mancanti = attesi.filter(t => !trovati.includes(t));
 const inattesi = trovati.filter(t => !attesi.includes(t));
 
@@ -138,8 +149,8 @@ if (inattesi.length > 0) {
   console.error('');
   console.error(`✖ ${quanti} che il manifest non dichiara: ${inattesi.join(', ')}`);
   console.error('');
-  console.error("  Un cliente nuovo va dichiarato qui, altrimenti il gate non si accorgerà se un");
-  console.error('  domani sparisce.');
+  console.error(`  Un cliente nuovo va dichiarato nel manifest, ${MANIFEST}, altrimenti il gate`);
+  console.error('  non si accorgerà se un domani sparisce.');
   console.error('');
   process.exit(1);
 }

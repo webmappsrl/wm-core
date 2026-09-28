@@ -49,8 +49,12 @@ const NUMBER_SEPARATOR = /[;:]|\s{2,}/;
 /** Sotto questa soglia di cifre un frammento è un'etichetta, non un numero (`"Rifugio 2"`). */
 const MIN_DIGITS = 4;
 
-/** `+39`, `+1`, `+352`: un frammento così è un prefisso internazionale, non un numero. */
-const INTERNATIONAL_PREFIX = /^\+[0-9]{1,4}$/;
+/**
+ * `+39`, `+1`, `+352`: un frammento così è un prefisso internazionale, non un numero. Al massimo
+ * tre cifre, perché i prefissi ITU-T E.164 non vanno oltre — quattro allargava la finestra senza
+ * motivo, e un frammento di quattro cifre è già un numero corto.
+ */
+const INTERNATIONAL_PREFIX = /^\+[0-9]{1,3}$/;
 
 /**
  * Costruisce il corpo di un href `tel:` a partire dall'etichetta mostrata: solo cifre e `+`.

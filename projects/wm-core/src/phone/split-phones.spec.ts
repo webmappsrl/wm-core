@@ -81,6 +81,16 @@ describe('telHref (oc:8406)', () => {
     expect(telHref('+1  212 5551234')).toBe('+12125551234');
   });
 
+  it("dimentica il prefisso se fra lui e il numero c'è un'etichetta", () => {
+    // `+39` viene tenuto da parte, ma il frammento dopo è `Rifugio 2`, che non è un numero:
+    // il prefisso va scartato con lui, altrimenti finirebbe attaccato al numero sbagliato.
+    expect(telHref('+39  Rifugio 2: 0341 481111')).toBe('0341481111');
+  });
+
+  it('con il solo prefisso non inventa un numero', () => {
+    expect(telHref('+39')).toBe('+39');
+  });
+
   it('su un valore che non prevediamo resta il comportamento di prima', () => {
     expect(telHref('123')).toBe('123');
     expect(telHref('')).toBe('');

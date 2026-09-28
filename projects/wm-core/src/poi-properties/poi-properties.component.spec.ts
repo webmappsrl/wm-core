@@ -4,8 +4,6 @@ import {of} from 'rxjs';
 
 import {GeolocationService} from '@wm-core/services/geolocation.service';
 import {currentPoiProperties} from '@wm-core/store/features/ec/ec.selector';
-import {poi} from '@wm-core/store/features/features.selector';
-import {confOPTIONSShowEmbeddedHtml, confPOIFORMS} from '@wm-core/store/conf/conf.selector';
 
 import {PoiPropertiesComponent} from './poi-properties.component';
 
@@ -25,9 +23,9 @@ describe('PoiPropertiesComponent (oc:8406)', () => {
       if (selector === currentPoiProperties) {
         return of(properties);
       }
-      // Ogni altro selettore usato dal componente — `poi`, `confOPTIONSShowEmbeddedHtml`,
-      // `confPOIFORMS` — non conta per questi test: un solo ramo invece di tre identici, che
-      // sembravano setup e non lo erano.
+      // Ogni altro selettore usato dal componente non conta per questi test: un solo ramo invece
+      // di tre identici, che sembravano setup e non lo erano. Fondendoli sono rimasti orfani
+      // anche i loro import.
       return of(null);
     });
     geolocationSpy = jasmine.createSpyObj('GeolocationService', [
