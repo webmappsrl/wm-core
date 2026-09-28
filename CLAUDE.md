@@ -25,11 +25,15 @@ nel repo di quel prodotto.
   regola, vista dall'altro lato, sta nel suo `CLAUDE.md`.
 - **Una modifica qui arriva a entrambi i prodotti.** Prima di cambiare un componente condiviso,
   considera che i consumer hanno temi e varianti propri che questo repo non vede.
-- **La CI di questo repo è una sola e minima**: `.github/workflows/test.yml` esegue i test unitari
-  e conta i nove temi per istanza. Il conteggio è un numero scritto nel workflow, non un manifest —
-  quello sta dal lato di chi consuma, perché è il prodotto a dichiarare quali clienti si aspetta di
-  servire. Chi aggiunge o toglie un cliente aggiorna **tre** posti: il file qui, `ATTESI` nel
-  workflow, e il `theme-manifest.json` di ciascun prodotto (oc:8613).
+- **La CI di questo repo controlla i temi, non i test.** `.github/workflows/test.yml` confronta
+  l'elenco dei nove temi per istanza con quello atteso, per nome. **I test unitari qui non girano**:
+  questo repo da solo non compila, perché `tsconfig.json` risolve `@wm-types/*` e `@map-core/*` in
+  cartelle che esistono solo dentro un prodotto. Restano coperti dalla CI dei due consumer, dove
+  l'ambiente c'è già.
+- **L'elenco dei clienti vive in quattro posti**: la cartella `assets/theme/`, l'elenco nel
+  workflow, e il `theme-manifest.json` di ciascuno dei due prodotti. **Nessuno dei quattro segnala
+  se ne dimentichi un altro**: te ne accorgi quando una build si ferma. Aggiungere o dismettere un
+  cliente li tocca tutti e quattro (oc:8613).
 
 ## Comandi
 

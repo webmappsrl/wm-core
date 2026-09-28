@@ -1,12 +1,15 @@
-# Controlli su ogni PR di questa libreria (oc:8613).
+# Controllo sui temi per istanza, a ogni PR di questa libreria (oc:8613).
 #
-# Fino a oc:8613 questo repo aveva un solo workflow, `release_please.yml`, che fa le release: una
-# PR passava verde anche con uno spec rotto o con un tema di un cliente cancellato. I test
-# giravano solo nella CI dei due prodotti, cioè **dopo**, e i temi li controllava solo il gate al
-# momento della build.
+# **Qui non girano i test unitari, ed è deliberato.** Il primo tentativo li includeva, ma questo
+# repo da solo non compila: `tsconfig.json` risolve `@wm-types/*` in `../wm-types/src` e
+# `@map-core/*` in `../map-core/src`, cartelle che esistono solo **dentro un prodotto**, dove
+# wm-core sta accanto ai suoi fratelli. Un checkout del solo wm-core non le trova, e `package.json`
+# non dichiara nemmeno i pacchetti che nei prodotti arrivano dal `node_modules` del padre. Farli
+# girare qui richiederebbe di ricostruire l'ambiente di un consumer — checkout di wm-webapp con i
+# submodule, `npm ci` nel padre — cioè un job lento e legato a un altro repo.
 #
-# Da qui il problema si vede dove si crea.
-name: Test
+# I 336 spec restano quindi coperti dalla CI dei due prodotti, che è dove l'ambiente esiste già.
+name: Temi per istanza
 
 on:
   pull_request:
@@ -14,48 +17,43 @@ on:
     branches: [develop, main]
 
 jobs:
-  unit:
-    runs-on: ubuntu-latest
-    name: Test unitari
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: npm
-
-      - name: Installa le dipendenze
-        run: npm install --legacy-peer-deps
-
-      - name: Setup Chrome
-        uses: browser-actions/setup-chrome@v1
-
-      # Stessa invocazione che usano i due prodotti nella propria CI.
-      - name: Test
-        run: npx ng test wm-core --configuration=ci
-
   temi:
     runs-on: ubuntu-latest
     name: I temi per istanza ci sono tutti
     steps:
       - uses: actions/checkout@v4
 
-      # Quanti temi ci aspettiamo. Non è un manifest: quello sta dal lato di chi consuma, perché è
-      # il prodotto a dichiarare quali clienti si aspetta di servire. Questo numero serve solo a
-      # far diventare rossa la PR di chi ne aggiunge o ne toglie uno **senza dirlo**: la correzione
-      # è aggiornare questa riga, e con quella l'intenzione resta scritta nella storia.
+      # L'elenco atteso, per nome e non solo per numero: un conteggio non vedrebbe una rinomina né
+      # uno spostamento fra shard, che sono i modi in cui un tema si perde davvero.
       #
-      # Quando cambia, va aggiornato anche il `theme-manifest.json` dei due prodotti, altrimenti la
-      # loro build si ferma — ed è voluto.
-      - name: Conta i temi
+      # Non è un manifest: quello sta dal lato di chi consuma, perché il gate di build deve poter
+      # dire «il tuo pin è indietro». Questo serve a far diventare rossa la PR di chi aggiunge o
+      # toglie un cliente **senza dirlo**: la correzione è aggiornare questo elenco, e con quella
+      # l'intenzione resta scritta nella storia.
+      #
+      # Quando cambia, cambiano anche i `theme-manifest.json` dei due prodotti: sono quattro posti
+      # in tutto — la cartella, questo elenco, i due manifest — e nessuno dei quattro segnala se
+      # ne dimentichi un altro. Te ne accorgi quando una build si ferma.
+      - name: I nove temi attesi
         run: |
-          ATTESI=9
           CARTELLA=projects/wm-core/src/assets/theme
-          TROVATI=$(find "$CARTELLA" -mindepth 2 -name '*.css' | wc -l | tr -d ' ')
-          echo "Attesi $ATTESI, trovati $TROVATI:"
-          find "$CARTELLA" -mindepth 2 -name '*.css' | sed "s|$CARTELLA/|  |" | sort
-          if [ "$TROVATI" != "$ATTESI" ]; then
-            echo "::error::I temi per istanza sono $TROVATI invece di $ATTESI. Se il cambio è voluto, aggiorna ATTESI in questo workflow e il theme-manifest.json dei due prodotti; altrimenti qualcuno ha cancellato o rinominato il CSS di un cliente."
+          cat > /tmp/attesi.txt <<'ATTESI'
+          camminiditalia/1.css
+          camminiditaliadev/1.css
+          forestas/1.css
+          forestasdev/1.css
+          forestasuat/1.css
+          geohub/29.css
+          geohub/32.css
+          geohub/33.css
+          geohub/75.css
+          ATTESI
+          sed -i 's/^ *//' /tmp/attesi.txt
+          # Un solo livello, come fa `trova()` in check-themes.js: <shard>/<appId>.css
+          find "$CARTELLA" -mindepth 2 -maxdepth 2 -name '*.css' \
+            | sed "s|$CARTELLA/||" | sort > /tmp/trovati.txt
+          if ! diff -u /tmp/attesi.txt /tmp/trovati.txt; then
+            echo "::error::L'elenco dei temi per istanza non coincide con quello atteso. Se il cambio è voluto — un cliente aggiunto, dismesso o rinominato — aggiorna questo workflow e il theme-manifest.json dei due prodotti; altrimenti qualcuno ha cancellato o spostato il CSS di un cliente."
             exit 1
           fi
+          echo "I nove temi ci sono tutti, con i nomi attesi."
