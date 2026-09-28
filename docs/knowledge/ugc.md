@@ -10,6 +10,8 @@
 
 **Le foto sono condivise fra editing POI e track** tramite `UgcPropertiesBaseComponent`, una classe astratta plain-TS senza decoratori né template, che espone `_photos`, `photosChanged()` e il getter `photos`.
 
+**Il limite di foto del picker conta anche quelle già sincronizzate** (oc:8166): `WmImagePickerComponent` passa a `pickImages` un `limit` pari ai posti rimasti e ricontrolla il totale al momento dell'inserimento, anche con la selezione multipla. Prima uno snapshot letto prima degli `await` faceva entrare una sola foto su più scelte, e `takePhoto()` non controllava il massimo. `captureOptions` (larghezza, qualità, GPS) è opzionale: senza, gli UGC acquisiscono come prima.
+
 **La condivisione social è un contratto Output/Input**, non un dispatch NgRx: `@Output('share-track')` emette la traccia al tap e al retry, `@Input('shareResult')` riceve `{success, errorMessage?}` — `null` è un no-op. Il pulsante resta disabilitato finché `isTrackSynced$` non conferma che la traccia ha un `id` dal backend.
 
 ## Perché così

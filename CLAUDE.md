@@ -65,18 +65,19 @@ Il dettaglio di ogni lavoro sta nel proprio cantiere sotto `docs/features/<slug>
 | Home: tab, conteggi ed etichette | Scelta del tab risultati, badge non filtrato, chiavi i18n condivise badge/segment | oc:7643, oc:8221 | [docs/knowledge/home-ricerca-e-tab.md](docs/knowledge/home-ricerca-e-tab.md) |
 | Isolamento del TestBed | Reset fra spec file, campi `static`, config Karma del progetto | oc:7989 | [docs/knowledge/testbed-isolamento.md](docs/knowledge/testbed-isolamento.md) |
 | `layer-box` e `home-layer` | Overlay su CSS Grid, logo dentro `wm-img`, cuoricino preferiti | oc:8305, oc:8176, oc:8164 | [docs/knowledge/layer-box-e-home-layer.md](docs/knowledge/layer-box-e-home-layer.md) |
+| Passaporto del camminatore | Badge, anello e dettaglio in camminiditalia, service mock e contratto, modale con `ion-nav` | oc:8166 | [docs/knowledge/8166-passaporto-camminatore-validazione-credenziale-cartacea.md](docs/knowledge/8166-passaporto-camminatore-validazione-credenziale-cartacea.md) |
 | PostHog | `PosthogContextService`, contesto degli eventi, `user_id` e `userMoved` | oc:8115, oc:8127, oc:8159 | [docs/knowledge/posthog.md](docs/knowledge/posthog.md) |
 | Profilo altimetrico e distanza | Badge live distance, proiezione GPS→traccia, etichetta dislivello sugli anelli | oc:8177, oc:8493, oc:8284 | [docs/knowledge/profilo-altimetrico-e-distanza.md](docs/knowledge/profilo-altimetrico-e-distanza.md) |
 | Profilo utente | Modale di editing, avatar e fallback a iniziali, compressione parametrizzata | oc:8163 | [docs/knowledge/profilo-utente.md](docs/knowledge/profilo-utente.md) |
-| UGC | Pre-selezione del layer da GPS, foto condivise fra POI e track, condivisione social | oc:7639, oc:5125, oc:8183 | [docs/knowledge/ugc.md](docs/knowledge/ugc.md) |
-| Varianti per shard | `fileReplacements`, quando estrarre una classe base, filtri della searchbar camminiditalia | oc:8391, oc:8414 | [docs/knowledge/varianti-per-shard.md](docs/knowledge/varianti-per-shard.md) |
+| UGC | Pre-selezione del layer da GPS, foto condivise fra POI e track, condivisione social | oc:7639, oc:5125, oc:8183, oc:8166 | [docs/knowledge/ugc.md](docs/knowledge/ugc.md) |
+| Varianti per shard | `fileReplacements`, quando estrarre una classe base, filtri della searchbar camminiditalia | oc:8391, oc:8414, oc:8166 | [docs/knowledge/varianti-per-shard.md](docs/knowledge/varianti-per-shard.md) |
 
 ## Trappole
 
 Le trappole — ciò che non si deduce leggendo il codice e che si scopre solo sbagliando — stanno
 in `.claude/rules/`, un file per soggetto, con il frontmatter `paths:` che le carica quando si
 toccano i file corrispondenti: `box-e-immagini`, `spec-e-testbed`, `form-e-cva`,
-`varianti-e-classi-base`, `posthog-e-log`, `template-wm-map`. Ogni rule rimanda alla pagina di
+`varianti-e-classi-base`, `posthog-e-log`, `template-wm-map`, `modali-e-ion-nav`. Ogni rule rimanda alla pagina di
 conoscenza per il perché.
 
 ## Lavori senza una pagina dedicata
