@@ -37,7 +37,7 @@ dell'app, non di chi la serve. Con due insiemi disgiunti nessun meccanismo potev
 divergenza: Ville e Giardini Medicei (75) aveva il suo tema solo sull'app, e nessuno lo sapeva.
 
 Il costo va nominato: aggiungere un cliente adesso è un commit qui più un bump del pin in due
-prodotti, cioè il ciclo di rilascio di una libreria applicato a una consegna. Con nove clienti è
+prodotti, cioè il ciclo di rilascio di una libreria applicato a una consegna. Con sei clienti è
 sostenibile; la contropartita è che le divergenze smettono di essere invisibili.
 
 ## Out of scope
@@ -53,4 +53,7 @@ sostenibile; la contropartita è che le divergenze smettono di essere invisibili
 `docs/knowledge/varianti-per-shard.md`, `CLAUDE.md`, `.claude/rules/css-per-istanza.md`.
 
 Sotto la review interna di fine ciclo si sono aggiunti `projects/wm-core/src/phone/split-phones.ts`,
-`projects/wm-core/src/address/maps-href.ts` e due spec: vedi `notes.md`.
+`projects/wm-core/src/address/maps-href.ts`, `projects/wm-core/src/address/address.component.ts`,
+`projects/wm-core/src/related-urls/related-urls.component.ts`,
+`projects/wm-core/src/image-detail/image-detail-presentation.ts`,
+`projects/wm-core/src/image-gallery/image-gallery.component.ts` e quattro spec: vedi `notes.md`.

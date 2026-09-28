@@ -12,7 +12,8 @@
  * Il caso concreto che ha motivato il controllo: il submodule è pinnato a un commit precedente alla
  * creazione della cartella — condizione normale finché le PR di wm-core non sono mergiate, perché i
  * pin si aggiornano dopo il merge. Prima di oc:8613 un pin indietro dava codice vecchio ma
- * funzionante; da quando i temi stanno qui, dà nove clienti senza personalizzazione.
+ * funzionante; da quando i temi stanno qui, dà nove fogli — sei clienti — senza
+ * personalizzazione.
  *
  * **Sta in wm-core e non nei due prodotti** perché il problema è di wm-core: è qui che i file vivono
  * e da qui che possono mancare. Tenerne una copia per prodotto avrebbe creato il terzo caso di

@@ -24,30 +24,38 @@ risultati diversi fra webapp e app.
 Non esiste un secondo componente di dettaglio, né override nei due prodotti: cercarne uno quando
 qualcosa si comporta diversamente è tempo perso. **La differenza è sempre nel contenitore.**
 
-## `isAppMobile`, non `isMobile` (oc:8406)
+## Il contenitore lo dichiara il prodotto (oc:8613)
 
 `showPhoto()` apre il modale così:
 
 ```ts
 this._urlHandlerSvc.updateURL({gallery_index: idx});
-if (!this._deviceSvc.isAppMobile) {
+if (this._presentation === 'modal') {
   // apre ModalImageComponent
 }
 ```
 
-La condizione **deve** essere su `isAppMobile`, non su `isMobile`:
+dove `_presentation` arriva da `WM_IMAGE_DETAIL_PRESENTATION`, un `InjectionToken` con default
+`inline`. **`wm-webapp` dichiara `modal`**, `webmapp-app` non dichiara niente.
 
-- `isMobile` è `Platform.is('android') || Platform.is('ios')`, cioè **user agent**: è vero anche
-  per la webapp aperta da un telefono o un tablet;
-- `isAppMobile` è `isMobile && !isBrowser`, cioè **dentro l'app nativa**.
+La domanda giusta non è su quale dispositivo gira, ma **se il contenitore monta già la vista
+inline**: `webmapp-app` la monta in `map.page.html` su ogni piattaforma, `wm-webapp` non la monta
+mai. È una proprietà del prodotto, e dedurla dal dispositivo ha sbagliato due volte.
 
-Con `isMobile` la webapp da telefono non apriva né il modale (escluso dalla condizione) né la
-vista inline (che monta solo il pannello dell'app): il tap su una foto non apriva nulla e si
-limitava a cambiare l'URL. Il difetto era invisibile da desktop e in app, cioè nei due contesti in
-cui normalmente si prova.
+**Il primo tentativo, `isMobile`** (prima di oc:8406). `isMobile` è
+`Platform.is('android') || Platform.is('ios')`, cioè **user agent**: era vero anche per la webapp
+aperta da telefono, che però non monta la vista inline. Lì il tap su una foto non apriva nulla e
+cambiava solo l'URL — invisibile da desktop e in app, cioè nei due contesti in cui si prova.
 
-La distinzione fra le due proprietà va usata per quello che davvero separano — **stare dentro
-l'app**, non la dimensione dello schermo.
+**Il secondo, `isAppMobile`** (oc:8406). È `isMobile && !isBrowser`, cioè «dentro l'app nativa»:
+correggeva la webapp, ma lasciava fuori la build **web** della mobile — `mobile.webmapp.it` da
+telefono, e la PWA — che è `mobileweb`, quindi `isBrowser` vero e `isAppMobile` **falso**. Lì si
+apriva il modale **oltre** alla vista inline che il pannello monta comunque: due visori
+sovrapposti, e chiudendo il modale si azzerava anche l'inline.
+
+Il default `inline` è scelto perché sbagli nella direzione meno costosa: chi la vista ce l'ha già
+non rischia il doppione, e chi non ce l'ha se ne accorge al primo clic invece che su una
+piattaforma su tre.
 
 ## `object-fit`: `cover` nei box, `contain` nel dettaglio
 

@@ -6,7 +6,7 @@ Com'è andata in questo repo. Il **perché** del meccanismo sta in
 [docs/knowledge/varianti-per-shard.md](../../knowledge/varianti-per-shard.md); le trappole in
 [.claude/rules/css-per-istanza.md](../../../.claude/rules/css-per-istanza.md).
 
-## Il riaggancio ha riacceso quattro regole che erano morte
+## Il riaggancio ha riacceso cinque regole che erano morte
 
 È l'errore centrale del ciclo, trovato dalla review interna di fine lavoro e corretto.
 
@@ -68,6 +68,30 @@ Tre modi diversi, tutti incontrati qui:
   nuovi falliscono il giorno in cui qualcuno aggiunge uno spread a `currentPoiProperties`.
 - **Due dati sbagliati** nella pagina canonica: «nove file per otto app» (le app sono sei) e la
   riga di Cammini d'Italia data per «tutta sulla home».
+
+## Secondo ciclo di review, stesso giorno
+
+Una review indipendente sugli stessi range ha trovato **tre bloccanti** che il primo ciclo non
+aveva visto, tutti corretti qui.
+
+- **Un `related_url` senza schema diventava un link relativo.** `[href]` riceveva il valore dopo il
+  solo `trim()`: `www.prolocox.it` apriva `https://<host>/…/www.prolocox.it` sulla webapp e
+  `capacitor://localhost/…` sull'app. Misurato sui POI delle app 75, 29 e 33: **235 URL su 1147**
+  senza schema, il 20,5%. `withScheme()` antepone `https://` solo dove manca; `http://` resta, per
+  la stessa ragione per cui il vecchio `replace` era stato tolto. Nei dati c'era anche
+  `https//host`, schema senza i due punti: viene riparato, non prefissato una seconda volta.
+- **Due visori della galleria sulla build web della mobile.** La condizione era su `isAppMobile`,
+  ma `mobileweb` non è l'app nativa: si apriva il modale oltre alla vista inline. La decisione
+  passa al prodotto con `WM_IMAGE_DETAIL_PRESENTATION`, default `inline`.
+- **La guardia sui temi non vedeva un pin rimasto indietro.** `ATTESI` stava in questo repo, cioè
+  insieme ai file che controlla: un consumer pinnato indietro portava con sé entrambi e i due
+  coincidevano. Ora l'elenco è un `theme-manifest.json` nella radice di build di ciascun prodotto —
+  già la cwd di tutti i punti di innesto, quindi nessuno dei venti è cambiato.
+
+E un difetto nella correzione del primo ciclo: **`telHref` perdeva il prefisso internazionale**
+quando era separato dal numero da due spazi, `"+39  0341 481111"`. Il frammento `+39` ha tre cifre,
+sotto la soglia, e veniva scartato con tutto il resto. Ora un frammento che è **solo** un prefisso
+viene tenuto da parte e riattaccato al numero che segue.
 
 ## Aperto, di proposito
 
