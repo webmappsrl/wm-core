@@ -95,6 +95,25 @@ doverlo dimostrare; l'altro prodotto entra dal ramo nuovo, e ciascuno resta iner
 contenitore non c'è. Sostituire il selettore invece di affiancarlo significa doversi chiedere ogni
 volta se la resa del primo prodotto è ancora quella, ed è un dubbio che non vale la pena comprare.
 
+**I due rami non sono equivalenti fra loro**, ed è la parte che si dimentica. «Additiva» garantisce
+che il prodotto che già funzionava non cambi — quel ramo è identico al byte — ma non che i due si
+comportino allo stesso modo, perché i contenitori hanno **specificità diverse**: `wm-map-details` è
+un elemento, `.details-container` è una classe. Ogni ramo webapp ha quindi una classe in più del
+corrispondente ramo mobile, e vince confronti che l'altro perde.
+
+Il caso che l'ha mostrato è la copertina della scheda del layer nel tema dell'app 75:
+
+```
+.details-container wm-home-layer wm-img img   (0,1,3)  vince   → sulla webapp è display:none
+wm-map-details wm-home-layer wm-img img       (0,0,4)  perde
+wm-img .wm-img-image                          (0,1,1)           img.component.scss:17
+```
+
+Sull'app la copertina resta `display: block` e non si vede solo perché il contenitore è alto zero;
+sulla webapp è davvero nascosta dal tema. Stessa dichiarazione, due esiti. Non è un difetto — sulla
+webapp il tema ottiene ciò che dichiarava — ma chi aggiunge un ramo deve **misurare l'esito sui due
+prodotti**, non dedurlo dal fatto che la dichiarazione è la stessa.
+
 **Il prefisso del contenitore non è sempre decorativo.** Sull'app `wm-home-layer` e
 `wm-status-filter` si montano in due punti — nel pannello dei dettagli e dentro `wm-home` nella
 pagina home — quindi toglierlo allargherebbe la regola a una vista che non la voleva. Verificato che
