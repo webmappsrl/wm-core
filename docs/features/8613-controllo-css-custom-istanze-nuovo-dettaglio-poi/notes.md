@@ -77,8 +77,11 @@ aveva visto, tutti corretti qui.
 - **Un `related_url` senza schema diventava un link relativo.** `[href]` riceveva il valore dopo il
   solo `trim()`: `www.prolocox.it` apriva `https://<host>/…/www.prolocox.it` sulla webapp e
   `capacitor://localhost/…` sull'app. Misurato sui POI delle app 75, 29 e 33: **235 URL su 1147**
-  senza schema, il 20,5%. `withScheme()` antepone `https://` solo dove manca; `http://` resta, per
-  la stessa ragione per cui il vecchio `replace` era stato tolto. Nei dati c'era anche
+  senza schema, il 20,5%. La prima correzione anteponeva `https://` solo dove mancava, lasciando
+  `http://` com'era. **Il terzo giro di review l'ha però trovata insufficiente**: lasciava passare
+  anche `javascript:` e `data:`, e `[href]` su `<ion-item>` è un input di componente, che Angular
+  non sanitizza. Ora `safeHref()` ha una allowlist — `http`, `https`, `mailto`, `tel` — e scarta
+  tutto il resto, riconoscendo `host:porta` per non buttare via link buoni. Nei dati c'era anche
   `https//host`, schema senza i due punti: viene riparato, non prefissato una seconda volta.
 - **Due visori della galleria sulla build web della mobile.** La condizione era su `isAppMobile`,
   ma `mobileweb` non è l'app nativa: si apriva il modale oltre alla vista inline. La decisione
