@@ -600,21 +600,20 @@ wm-map-details ion-card ion-card-content:has(wm-image-detail) {
   height: calc(100% + 70px) !important;
 }
 
-/* Intestazione del POI. Fino a oc:8406 il nome e la sua riga sopra stavano nell'header del
-   pannello della mobile (`ion-card-header .webmapp-pagepoi-info-header-*`), markup che quel
-   refactor ha cancellato: le due regole sono rimaste scollegate e oc:8613 non le aveva tradotte.
-   Ora l'intestazione la rende `wm-poi-properties`, che è lo stesso componente sui due prodotti,
-   quindi il selettore si ancora al componente e non al contenitore: niente forma additiva, qui
-   non serve distinguere mobile e webapp.
+/* Intestazione del POI. Queste due regole puntano a `.webmapp-pagepoi-info-header-*`, markup che
+   oc:8406 ha rimosso dall'header del pannello della mobile — ma erano **gia' inerti prima**:
+   in produzione (75.mobile.webmapp.it) l'intestazione sta in
+   `webmapp-map-page .webmapp-info-header-container .webmapp-pagepoi-info-header`, non dentro
+   `wm-map-details ion-card ion-card-header`, quindi il selettore non ha mai agganciato. La
+   produzione infatti mostra il pre-titolo e un titolo Merriweather 18px, cioe' il default.
 
-   Il pre-titolo resta nascosto perché su questa app non c'è mai stato: prima portava la
-   categoria, oggi porterebbe il comune — contenuto diverso, stessa riga che il cliente non
-   vuole. `!important` perché il foglio del componente dichiara sullo stesso elemento con la
-   stessa specificità ed è iniettato dopo questo (oc:8613). */
-wm-poi-properties .wm-poi-properties-header .wm-poi-properties-pre-title {
-  display: none !important;
+   Tradotte sui nuovi `.wm-poi-properties-pre-title` / `-title` non ripristinerebbero niente: le
+   attiverebbero per la prima volta, nascondendo una riga che il cliente vede e cambiando il font
+   del titolo. Provato e annullato sotto oc:8613: la baseline e' la produzione. */
+wm-map-details ion-card ion-card-header .webmapp-pagepoi-info-header-pre-title {
+  display: none;
 }
-wm-poi-properties .wm-poi-properties-header .wm-poi-properties-title {
+wm-map-details ion-card ion-card-header .webmapp-pagepoi-info-header-title {
   font-family: var(--wm-75-font-family-title) !important;
   font-size: var(--wm-font-size-4xl) !important;
   line-height: 29px !important;
@@ -669,7 +668,12 @@ wm-poi-properties > .wm-poi-properties-body .wm-poi-properties-info {
 wm-poi-properties > .wm-poi-properties-body wm-get-directions {
   order: 6;
 }
-wm-poi-properties > .wm-poi-properties-body .wm-excerpt {
+/* `wm-excerpt` e' il nome di un elemento che non esiste: l'excerpt e' un
+   `wm-inner-component-html` con `class="wm-excerpt"`. La regola e' quindi inerte, e l'excerpt
+   ricade sull'`order: 11` generale degli `wm-inner-component-html` — che e' dove la produzione
+   lo mette, in fondo, dopo «Informazioni». Rinominarla in `.wm-excerpt` la accende e porta il
+   riquadro a meta' scheda: fatto sotto oc:8613 e annullato, non era un ripristino. */
+wm-poi-properties > .wm-poi-properties-body wm-excerpt {
   order: 7;
 }
 wm-poi-properties > .wm-poi-properties-body wm-tab-detail {
