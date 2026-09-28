@@ -52,6 +52,39 @@ è azzerato: lì lo spazio sparisce e basta.
 temi dei due consumer vanno controllati a mano. I selettori orfani si elencano confrontando i
 `selector:` dichiarati nel codice con i tag usati nei fogli di tema.
 
+### Una regola che deve valere su entrambi i prodotti si scrive additiva
+
+Un tema nato per un prodotto è spesso scopato al suo contenitore, che nell'altro non esiste. Per
+estenderlo si **affianca** un selettore, non si sostituisce:
+
+```css
+wm-map-details wm-home-layer wm-img,      /* contenitore dell'app */
+.details-container wm-home-layer wm-img { /* contenitore della webapp */ }
+```
+
+Così il ramo che già funzionava resta identico e la sua resa non cambia **per costruzione**, senza
+doverlo dimostrare; l'altro prodotto entra dal ramo nuovo, e ciascuno resta inerte dove il proprio
+contenitore non c'è. Sostituire il selettore invece di affiancarlo significa doversi chiedere ogni
+volta se la resa del primo prodotto è ancora quella, ed è un dubbio che non vale la pena comprare.
+
+**Il prefisso del contenitore non è sempre decorativo.** Sull'app `wm-home-layer` e
+`wm-status-filter` si montano in due punti — nel pannello dei dettagli e dentro `wm-home` nella
+pagina home — quindi toglierlo allargherebbe la regola a una vista che non la voleva. Verificato che
+i due punti di montaggio sono vivi nello stesso momento quando un layer è aperto.
+
+### Non tutto si traduce, e va bene così
+
+Il criterio è **cosa dichiara la regola**, non come si chiama il selettore. Sei regole del tema
+dell'app 75 restano solo sull'app perché dipendono da com'è fatto il suo contenitore: un
+`padding-bottom` che fa spazio alla tab bar, un `::after` che disegna la linguetta sopra il foglio
+scorrevole, e quattro `:has(...)` che compensano l'altezza di `ion-card-content`. Sulla webapp non
+ci sono né la card né la tab bar, il pannello parte da `top: 0` e l'altezza gliela dà un'altra
+variabile: tradurle produrrebbe una striscia fuori dal viewport e dell'overflow.
+
+Una regola inerte su un prodotto **non è un difetto da correggere**: prima di riagganciarne una,
+misurare se agganciava. Riscrivere un selettore inerte non ripristina niente, lo attiva per la prima
+volta.
+
 ## Quando estrarre una base, e quando no
 
 La policy generale del repo principale è **non** estrarre una classe base: è stata scartata due volte, su `home.component.ts` e `profile.page.ts`. Le due estrazioni esistenti sono deviazioni motivate, non un'abrogazione della regola:
