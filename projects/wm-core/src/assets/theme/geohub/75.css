@@ -253,7 +253,9 @@ wm-track-properties wm-tab-image-gallery {
 wm-track-properties .wm-track-details-track-related-poi {
   order: 12 !important;
 }
-wm-track-properties wm-track-audio {
+/* Stessa cosa sul dettaglio traccia: `wm-tab-audio` non aggancia niente, e la rinomina in
+   `wm-track-audio` accenderebbe un `order: 13 !important` mai attivo in produzione. */
+wm-track-properties wm-tab-audio {
   order: 13 !important;
 }
 wm-track-properties .wm-track-details-download {
@@ -280,7 +282,13 @@ wm-tab-image-gallery,
 wm-track-related-poi {
   position: relative;
 }
+/* `wm-feature-useful-urls` e' stato sostituito da `.wm-poi-properties-contacts` sotto oc:8613,
+   ma il componente e' ancora vivo e reso in altri tre punti (`track-properties`,
+   `ugc-track-properties`, `draw-ugc`): sostituirlo toglieva lo stile la', invece di spostarlo.
+   Affiancato invece che sostituito, cosi' il dettaglio POI prende il nome nuovo e gli altri
+   contesti tengono quello vecchio. */
 .wm-poi-properties-contacts::after,
+wm-feature-useful-urls::after,
 wm-tab-howto::after,
 wm-tab-description::after,
 wm-get-directions::after,
@@ -683,7 +691,12 @@ wm-poi-properties > .wm-poi-properties-body .wm-poi-properties-contacts {
   order: 9;
   position: relative;
 }
-wm-poi-properties > .wm-poi-properties-body wm-track-audio {
+/* `wm-tab-audio` non esiste in nessuno dei due prodotti e non e' mai esistito: la regola e'
+   inerte, e in produzione l'audio non prende nessun `order`. Rinominarla in `wm-track-audio`,
+   che invece e' un componente vero, la accende e sposta il blocco fra «Informazioni» e l'HTML
+   incorporato: fatto sotto oc:8613 e annullato, non era un ripristino. (L'app 75 non ha
+   comunque nessun POI con audio: zero su 57.) */
+wm-poi-properties > .wm-poi-properties-body wm-tab-audio {
   order: 10;
 }
 wm-poi-properties > .wm-poi-properties-body wm-inner-component-html {
@@ -778,14 +791,17 @@ wm-tab-image-gallery ion-label {
   font-size: var(--wm-font-size-xl) !important;
 }
 .wm-poi-properties-contacts .webmapp-title,
+wm-feature-useful-urls .webmapp-title,
 wm-tab-howto .webmapp-title {
   font-size: var(--wm-font-size-xl) !important;
   font-family: var(--wm-75-font-family-title) !important;
 }
-.wm-poi-properties-contacts ion-item {
+.wm-poi-properties-contacts ion-item,
+wm-feature-useful-urls ion-item {
   --inner-border-width: 0px;
 }
-.wm-poi-properties-contacts ion-item ion-label {
+.wm-poi-properties-contacts ion-item ion-label,
+wm-feature-useful-urls ion-item ion-label {
   font-family: var(--wm-75-font-family-utility) !important;
   font-size: var(--wm-font-size-sm) !important;
 }
