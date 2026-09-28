@@ -49,6 +49,9 @@ const NUMBER_SEPARATOR = /[;:]|\s{2,}/;
 /** Sotto questa soglia di cifre un frammento è un'etichetta, non un numero (`"Rifugio 2"`). */
 const MIN_DIGITS = 4;
 
+/** `+39`, `+1`, `+352`: un frammento così è un prefisso internazionale, non un numero. */
+const INTERNATIONAL_PREFIX = /^\+[0-9]{1,4}$/;
+
 /**
  * Costruisce il corpo di un href `tel:` a partire dall'etichetta mostrata: solo cifre e `+`.
  *
@@ -63,11 +66,16 @@ export function telHref(label: string): string {
   if (label == null || typeof label !== 'string') {
     return '';
   }
+  let prefix = '';
   for (const fragment of label.split(NUMBER_SEPARATOR)) {
     const digitsOnly = fragment.replace(/[^0-9+]/g, '');
     if ((digitsOnly.match(/[0-9]/g) ?? []).length >= MIN_DIGITS) {
-      return digitsOnly;
+      return prefix + digitsOnly;
     }
+    // Un frammento che è solo il prefisso internazionale non basta da sé, ma non va nemmeno
+    // buttato: `"+39  0341 481111"`, con due spazi, si divide proprio lì e senza questo il
+    // numero uscirebbe senza `+39`. Chiamato dall'Italia funziona lo stesso, dall'estero no.
+    prefix = INTERNATIONAL_PREFIX.test(digitsOnly) ? digitsOnly : '';
   }
   // Nessun frammento abbastanza lungo: si torna al comportamento di prima invece di restituire
   // niente, così un numero corto o in una forma che non prevediamo resta comunque chiamabile.

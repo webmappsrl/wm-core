@@ -74,6 +74,13 @@ describe('telHref (oc:8406)', () => {
     expect(telHref('Rifugio 2: 0341 910119')).toBe('0341910119');
   });
 
+  it('tiene il prefisso internazionale anche quando è separato da due spazi', () => {
+    // Il doppio spazio fa scattare il separatore proprio fra prefisso e numero: senza la
+    // guardia usciva `0341481111`, chiamabile dall'Italia ma non dall'estero (oc:8613).
+    expect(telHref('+39  0341 481111')).toBe('+390341481111');
+    expect(telHref('+1  212 5551234')).toBe('+12125551234');
+  });
+
   it('su un valore che non prevediamo resta il comportamento di prima', () => {
     expect(telHref('123')).toBe('123');
     expect(telHref('')).toBe('');
