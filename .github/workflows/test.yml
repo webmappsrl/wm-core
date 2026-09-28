@@ -1,0 +1,61 @@
+# Controlli su ogni PR di questa libreria (oc:8613).
+#
+# Fino a oc:8613 questo repo aveva un solo workflow, `release_please.yml`, che fa le release: una
+# PR passava verde anche con uno spec rotto o con un tema di un cliente cancellato. I test
+# giravano solo nella CI dei due prodotti, cioè **dopo**, e i temi li controllava solo il gate al
+# momento della build.
+#
+# Da qui il problema si vede dove si crea.
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches: [develop, main]
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    name: Test unitari
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Installa le dipendenze
+        run: npm install --legacy-peer-deps
+
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      # Stessa invocazione che usano i due prodotti nella propria CI.
+      - name: Test
+        run: npx ng test wm-core --configuration=ci
+
+  temi:
+    runs-on: ubuntu-latest
+    name: I temi per istanza ci sono tutti
+    steps:
+      - uses: actions/checkout@v4
+
+      # Quanti temi ci aspettiamo. Non è un manifest: quello sta dal lato di chi consuma, perché è
+      # il prodotto a dichiarare quali clienti si aspetta di servire. Questo numero serve solo a
+      # far diventare rossa la PR di chi ne aggiunge o ne toglie uno **senza dirlo**: la correzione
+      # è aggiornare questa riga, e con quella l'intenzione resta scritta nella storia.
+      #
+      # Quando cambia, va aggiornato anche il `theme-manifest.json` dei due prodotti, altrimenti la
+      # loro build si ferma — ed è voluto.
+      - name: Conta i temi
+        run: |
+          ATTESI=9
+          CARTELLA=projects/wm-core/src/assets/theme
+          TROVATI=$(find "$CARTELLA" -mindepth 2 -name '*.css' | wc -l | tr -d ' ')
+          echo "Attesi $ATTESI, trovati $TROVATI:"
+          find "$CARTELLA" -mindepth 2 -name '*.css' | sed "s|$CARTELLA/|  |" | sort
+          if [ "$TROVATI" != "$ATTESI" ]; then
+            echo "::error::I temi per istanza sono $TROVATI invece di $ATTESI. Se il cambio è voluto, aggiorna ATTESI in questo workflow e il theme-manifest.json dei due prodotti; altrimenti qualcuno ha cancellato o rinominato il CSS di un cliente."
+            exit 1
+          fi

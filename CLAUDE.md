@@ -25,6 +25,11 @@ nel repo di quel prodotto.
   regola, vista dall'altro lato, sta nel suo `CLAUDE.md`.
 - **Una modifica qui arriva a entrambi i prodotti.** Prima di cambiare un componente condiviso,
   considera che i consumer hanno temi e varianti propri che questo repo non vede.
+- **La CI di questo repo è una sola e minima**: `.github/workflows/test.yml` esegue i test unitari
+  e conta i nove temi per istanza. Il conteggio è un numero scritto nel workflow, non un manifest —
+  quello sta dal lato di chi consuma, perché è il prodotto a dichiarare quali clienti si aspetta di
+  servire. Chi aggiunge o toglie un cliente aggiorna **tre** posti: il file qui, `ATTESI` nel
+  workflow, e il `theme-manifest.json` di ciascun prodotto (oc:8613).
 
 ## Comandi
 
