@@ -50,3 +50,40 @@ describe('normalizeRelatedUrls', () => {
     expect(entries.length).toBe(2);
   });
 });
+
+/**
+ * Un valore senza schema in un `href` è un percorso relativo, non un link esterno: la webapp
+ * aprirebbe `https://<host>/…/www.prolocox.it`. Misurato sui POI delle app 75, 29 e 33: 235 URL
+ * su 1147 non hanno schema, il 20,5% (oc:8406, trovato in review).
+ */
+describe('normalizeRelatedUrls: lo schema (oc:8613)', () => {
+  it('aggiunge https:// a un valore che non ha schema', () => {
+    expect(normalizeRelatedUrls('www.prolocox.it')[0].url).toBe('https://www.prolocox.it');
+    expect(normalizeRelatedUrls(['www.a.it'])[0].url).toBe('https://www.a.it');
+    expect(normalizeRelatedUrls({'Pro Loco': 'www.a.it'})[0].url).toBe('https://www.a.it');
+  });
+
+  it('lascia http:// com è: il motivo per cui non si forza TLS vale ancora', () => {
+    expect(normalizeRelatedUrls('http://www.comune.it')[0].url).toBe('http://www.comune.it');
+  });
+
+  it('non tocca gli schemi già presenti, compresi quelli non http', () => {
+    expect(normalizeRelatedUrls('https://a.it')[0].url).toBe('https://a.it');
+    expect(normalizeRelatedUrls('mailto:a@b.it')[0].url).toBe('mailto:a@b.it');
+    expect(normalizeRelatedUrls('tel:+390123')[0].url).toBe('tel:+390123');
+  });
+
+  it('ripara lo schema a cui mancano i due punti, invece di prefissarlo di nuovo', () => {
+    // valore reale, app 29
+    expect(normalizeRelatedUrls('https//www.campingilpoggetto.com/')[0].url).toBe(
+      'https://www.campingilpoggetto.com/',
+    );
+  });
+
+  it('l etichetta mostrata resta il valore arrivato, non quello corretto', () => {
+    const [entry] = normalizeRelatedUrls('www.prolocox.it');
+
+    expect(entry.label).toBe('www.prolocox.it');
+    expect(entry.url).toBe('https://www.prolocox.it');
+  });
+});

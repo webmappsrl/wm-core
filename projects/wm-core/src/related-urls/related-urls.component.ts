@@ -54,6 +54,30 @@ export class WmRelatedUrlsComponent {
   }
 }
 
+/** Uno schema RFC 3986: una lettera seguita da lettere, cifre, `+`, `-`, `.` e poi i due punti. */
+const HAS_SCHEME = /^[a-z][a-z0-9+.-]*:/i;
+
+/** `https//host` e `http//host`: lo schema c'è ma mancano i due punti. Visto in 1 valore su 1147. */
+const SCHEME_WITHOUT_COLON = /^(https?)\/\//i;
+
+/**
+ * L'etichetta mostrata resta il valore così com'è arrivato; questo è solo il bersaglio dell'`href`.
+ *
+ * Un valore senza schema — `www.prolocox.it` — in un `href` è un percorso **relativo**: la webapp
+ * aprirebbe `https://<host>/…/www.prolocox.it` e l'app `capacitor://localhost/…`. Prima di oc:8406
+ * il codice toglieva lo schema e riprefissava sempre `https://`, quindi questo caso funzionava; il
+ * fix per non forzare TLS sui siti che non lo supportano ha tolto anche quella correzione.
+ * Misurato sui POI delle app 75, 29 e 33: **235 URL su 1147** non hanno schema, il 20,5%.
+ *
+ * `http://` resta `http://`: il motivo per cui il `replace` era stato tolto vale ancora.
+ */
+function withScheme(url: string): string {
+  if (SCHEME_WITHOUT_COLON.test(url)) {
+    return url.replace(SCHEME_WITHOUT_COLON, '$1://');
+  }
+  return HAS_SCHEME.test(url) ? url : `https://${url}`;
+}
+
 /**
  * Normalizza `related_url` in voci mostrabili, gestendo le tre forme che il backend può inviare.
  * Scarta gli URL vuoti e le voci con etichetta vuota — 100 POI hanno una chiave `""`, che
@@ -73,17 +97,17 @@ export function normalizeRelatedUrls(value: unknown): RelatedUrlEntry[] {
   }
   if (typeof value === 'string') {
     const url = value.trim();
-    return url === '' ? [] : [{label: url, url}];
+    return url === '' ? [] : [{label: url, url: withScheme(url)}];
   }
   if (Array.isArray(value)) {
     return value
       .filter((url): url is string => typeof url === 'string' && url.trim() !== '')
-      .map(url => ({label: url.trim(), url: url.trim()}));
+      .map(url => ({label: url.trim(), url: withScheme(url.trim())}));
   }
   if (typeof value === 'object') {
     return Object.entries(value as Record<string, unknown>)
       .filter(([label, url]) => label.trim() !== '' && typeof url === 'string' && url.trim() !== '')
-      .map(([label, url]) => ({label: label.trim(), url: (url as string).trim()}));
+      .map(([label, url]) => ({label: label.trim(), url: withScheme((url as string).trim())}));
   }
   return [];
 }
