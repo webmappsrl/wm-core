@@ -45,8 +45,9 @@ si fa solo per `camminiditalia`, e solo perché lì servono i `fileReplacements`
 
 ### Quali sono, oggi
 
-Nove file per otto app. Le regole `order` sono la parte che fa più danno quando si scollega un
-selettore, quindi il conteggio sta in tabella:
+Nove file per **sei** app: i tre shard di Forestas e i due di Cammini d'Italia portano lo
+stesso `appId` su domini diversi. Le regole `order` sono la parte che fa più danno quando si
+scollega un selettore, quindi il conteggio sta in tabella:
 
 | App | Shard | File | `order` | Cosa tocca |
 |---|---|---|---|---|
@@ -55,7 +56,7 @@ selettore, quindi il conteggio sta in tabella:
 | Sardegna Sentieri (32) | `geohub` | `geohub/32.css` | — | filtri, ricerca, box della home |
 | Forestas (1) | `forestas`, `forestasdev`, `forestasuat` | `forestas/1.css` e i due gemelli | — | come sopra |
 | Ville e Giardini Medicei (75) | `geohub` | `geohub/75.css` | 25 | dettaglio POI e traccia, home, filtri |
-| Cammini d'Italia (1) | `camminiditalia`, `camminiditaliadev` | `camminiditalia/1.css` e il gemello | — | home |
+| Cammini d'Italia (1) | `camminiditalia`, `camminiditaliadev` | `camminiditalia/1.css` e il gemello | — | home, e il filtro di stato nel pannello |
 
 Attenzione a contarle: `grep -c "order:"` conta anche `border:`, serve `grep -cE '(^|[^-a-z])order *:'`.
 
