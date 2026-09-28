@@ -60,4 +60,22 @@ describe('telHref (oc:8406)', () => {
     expect(telHref('+39 06 123')).toBe('+3906123');
     expect(telHref('06-123.456')).toBe('06123456');
   });
+
+  // Le due voci qui sotto sono le stesse che `splitPhones` conserva intere di proposito (vedi i
+  // casi sopra): l'etichetta mostra entrambi i numeri, ma l'href ne puo' chiamare uno solo.
+  // Prima di oc:8613 le cifre venivano concatenate e usciva un numero inesistente.
+  it('con due numeri nella stessa voce chiama il primo, non la loro concatenazione', () => {
+    expect(telHref('0124 442455; Paolo: 347 1932853')).toBe('0124442455');
+    expect(telHref('+39 0543 965314  whatsapp: +39 3518901906')).toBe('+390543965314');
+  });
+
+  it('salta l etichetta parlante e prende il numero che la segue', () => {
+    expect(telHref('Rifugio: 0341 910119')).toBe('0341910119');
+    expect(telHref('Rifugio 2: 0341 910119')).toBe('0341910119');
+  });
+
+  it('su un valore che non prevediamo resta il comportamento di prima', () => {
+    expect(telHref('123')).toBe('123');
+    expect(telHref('')).toBe('');
+  });
 });

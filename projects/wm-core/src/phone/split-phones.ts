@@ -40,8 +40,36 @@ export function splitPhones(raw: string | null | undefined): string[] {
 }
 
 /**
+ * Separa i numeri dentro una stessa voce: il punto e virgola, i due punti di un'etichetta
+ * parlante e due o più spazi consecutivi. Il singolo spazio no, perché separa i gruppi di uno
+ * stesso numero (`"+39 0543 965314"`).
+ */
+const NUMBER_SEPARATOR = /[;:]|\s{2,}/;
+
+/** Sotto questa soglia di cifre un frammento è un'etichetta, non un numero (`"Rifugio 2"`). */
+const MIN_DIGITS = 4;
+
+/**
  * Costruisce il corpo di un href `tel:` a partire dall'etichetta mostrata: solo cifre e `+`.
+ *
+ * Quando la voce ne contiene più d'uno prende **il primo**. `splitPhones` divide solo sulla
+ * virgola, quindi conserva di proposito voci come `"0124 442455; Paolo: 347 1932853"` — reale, e
+ * pinnato negli spec — dove i numeri sono due. Togliendo tutto tranne cifre e `+` sull'intera
+ * etichetta usciva `tel:01244424553471932853`, cioè la loro concatenazione: un numero che non
+ * esiste, e il tap apriva il dialer su quello. L'etichetta mostrata resta invece intera, perché
+ * all'utente serve vedere entrambi.
  */
 export function telHref(label: string): string {
+  if (label == null || typeof label !== 'string') {
+    return '';
+  }
+  for (const fragment of label.split(NUMBER_SEPARATOR)) {
+    const digitsOnly = fragment.replace(/[^0-9+]/g, '');
+    if ((digitsOnly.match(/[0-9]/g) ?? []).length >= MIN_DIGITS) {
+      return digitsOnly;
+    }
+  }
+  // Nessun frammento abbastanza lungo: si torna al comportamento di prima invece di restituire
+  // niente, così un numero corto o in una forma che non prevediamo resta comunque chiamabile.
   return label.replace(/[^0-9+]/g, '');
 }
