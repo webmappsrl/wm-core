@@ -49,6 +49,23 @@ function trova(dir) {
 
 const trovati = trova(TEMI);
 
+// L'elenco atteso, esplicito. Contare «almeno uno» non basta: il caso che si ripete non e' la
+// cartella vuota ma il pin indietro di un commit, cioe' un insieme *parziale* — chi aggiunge il
+// decimo cliente e non allinea il pin trova nove temi, legge «nove trovati» e lo manda in
+// produzione senza il suo CSS. Aggiungere un cliente richiede quindi una riga qui: e' voluto,
+// perche' e' l'unico punto in cui quell'aggiunta viene dichiarata invece che dedotta. (oc:8613)
+const ATTESI = [
+  'camminiditalia/1.css',
+  'camminiditaliadev/1.css',
+  'forestas/1.css',
+  'forestasdev/1.css',
+  'forestasuat/1.css',
+  'geohub/29.css',
+  'geohub/32.css',
+  'geohub/33.css',
+  'geohub/75.css',
+];
+
 if (trovati == null || trovati.length === 0) {
   console.error('');
   console.error("✖ I temi per istanza non ci sono: la build produrrebbe un'app senza i CSS dei clienti.");
@@ -61,6 +78,33 @@ if (trovati == null || trovati.length === 0) {
   console.error('  Causa più probabile: il submodule wm-core è a un commit che precede oc:8613.');
   console.error('  Verifica con:  git -C src/app/shared/wm-core log --oneline -1');
   console.error('  e allinealo al commit della PR di wm-core prima di buildare.');
+  console.error('');
+  process.exit(1);
+}
+
+const mancanti = ATTESI.filter(t => !trovati.includes(t));
+const inattesi = trovati.filter(t => !ATTESI.includes(t));
+
+if (mancanti.length > 0) {
+  console.error('');
+  const q = mancanti.length === 1 ? 'Manca 1 tema' : `Mancano ${mancanti.length} temi`;
+  console.error(`✖ ${q} per istanza su ${ATTESI.length}: quel cliente andrebbe in produzione senza il proprio CSS.`);
+  console.error('');
+  console.error(`  Cercati in: ${TEMI}`);
+  console.error(`  Mancanti:   ${mancanti.join(', ')}`);
+  console.error('');
+  console.error('  Se il submodule wm-core è indietro, allinea il pin.');
+  console.error("  Se invece un tema è stato tolto di proposito, va tolto anche dall'elenco ATTESI in questo script.");
+  console.error('');
+  process.exit(1);
+}
+
+if (inattesi.length > 0) {
+  console.error('');
+  const q = inattesi.length === 1 ? "C'è 1 tema" : `Ci sono ${inattesi.length} temi`;
+  console.error(`✖ ${q} che l'elenco ATTESI non conosce: ${inattesi.join(', ')}`);
+  console.error('');
+  console.error("  Un tema nuovo va dichiarato qui, altrimenti la guardia non si accorgerà se un domani sparisce.");
   console.error('');
   process.exit(1);
 }
