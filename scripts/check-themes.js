@@ -127,7 +127,8 @@ if (mancanti.length > 0) {
   console.error('');
   console.error('  Causa più probabile: il pin di wm-core è indietro rispetto al commit che ha');
   console.error('  aggiunto quel cliente. Allinealo. Se invece il tema è stato tolto di proposito,');
-  console.error('  va tolto anche dal manifest.');
+  console.error('  va tolto anche dal manifest — e ricordati che i deploy non cancellano sul');
+  console.error('  server: il file resta in produzione finché non lo rimuovi a mano.');
   console.error('');
   process.exit(1);
 }

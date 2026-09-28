@@ -7,6 +7,12 @@ L'URL è **costruito, non dichiarato**: un'app senza il suo file riceve un 404 e
 personalizzazione. Non c'è nessun elenco da tenere aggiornato, e non c'è nessun errore quando il
 file manca.
 
+**Vale per un'app nuova, non per un tema che viene tolto.** I deploy dei due prodotti copiano
+sopra quello che trovano e non cancellano niente — `scp -r` sulla webapp, `rsync -av` senza
+`--delete` sulla mobile — quindi cancellare un file da qui **non lo toglie dalla produzione**: il
+cliente continua a vedere il proprio CSS finché qualcuno non rimuove il file dal server a mano.
+Disattivare un tema è due operazioni, non una (oc:8613).
+
 Stanno qui, e non nei due prodotti, perché la stessa app deve vedersi allo stesso modo sulla webapp
 e sull'app: prima `wm-webapp/src/theme/` e `webmapp-app/core/src/theme/` ne tenevano insiemi
 disgiunti, e la stessa istanza poteva avere il suo CSS su una piattaforma sola — è il caso di Ville
