@@ -1,5 +1,6 @@
 /* eslint-disable @angular-eslint/template/eqeqeq */
 import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
+import {buildMapsHref} from './maps-href';
 
 @Component({
   standalone: false,
@@ -44,6 +45,6 @@ export class WmAddressComponent {
    * finiva su una ricerca sbagliata.
    */
   get mapsHref(): string {
-    return `https://www.google.com/maps?daddr=${encodeURIComponent(this.address)}&navigate=yes`;
+    return buildMapsHref(this.address);
   }
 }

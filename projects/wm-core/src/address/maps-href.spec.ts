@@ -1,4 +1,5 @@
 import {WmAddressComponent} from './address.component';
+import {buildMapsHref} from './maps-href';
 
 /**
  * Il link di Google Maps si costruisce da `address`, non dal vecchio `address_link`: quel campo
@@ -26,5 +27,25 @@ describe('WmAddressComponent.mapsHref (oc:8406)', () => {
 
   it('regge un indirizzo vuoto senza rompere l’URL', () => {
     expect(href('')).toBe('https://www.google.com/maps?daddr=&navigate=yes');
+  });
+});
+
+/**
+ * La stessa funzione la usa anche `wm-webapp` nel ramo UGC del popup, dove prima la template
+ * string era copiata a mano e senza spec (oc:8613).
+ */
+describe('buildMapsHref (oc:8613)', () => {
+  it('è la stessa cosa che rende il componente', () => {
+    const cmp = new WmAddressComponent();
+    cmp.address = 'Via Roma 1, Pisa';
+
+    expect(buildMapsHref('Via Roma 1, Pisa')).toBe(cmp.mapsHref);
+  });
+
+  it('regge null e undefined come una stringa vuota', () => {
+    const vuoto = 'https://www.google.com/maps?daddr=&navigate=yes';
+
+    expect(buildMapsHref(null)).toBe(vuoto);
+    expect(buildMapsHref(undefined)).toBe(vuoto);
   });
 });
