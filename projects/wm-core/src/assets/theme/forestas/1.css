@@ -28,6 +28,14 @@ wm-select-filter ion-accordion div[slot='content'] div ion-chip ion-label {
 }
 wm-select-filter ion-accordion ion-item,
 wm-slider-filter ion-accordion ion-item {
+  /* Le virgolette rendono questo valore una **stringa**, non un colore: la dichiarazione è
+     **inerte**, e qualunque `var(--ion-color-light)` usata come colore ricade sul default di
+     Ionic. Verificato a runtime: `background-color: var(--prova)` con `--prova: 'white'` rende
+     `rgba(0, 0, 0, 0)`.
+     Lasciata com'è di proposito (oc:8613): la riga precede il nostro lavoro, quindi togliere le
+     virgolette non ripristinerebbe niente — attiverebbe per la prima volta una regola mai attiva,
+     cambiando la resa di quattro clienti. Stessa ragione per cui restano inerti `.wm-alert` e le
+     regole `order` di FIE e CAI Parma. */
   --ion-color-light: 'white';
 }
 .wm-filters-count {
