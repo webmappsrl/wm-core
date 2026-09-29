@@ -1,0 +1,17 @@
+@import '../passport-theme';
+
+// Riepilogo del passaporto nella home del layer, wireframe 1/V0b (oc:8166).
+wm-passport-progress-badge .wm-passport-progress-badge {
+  @include passport-tappable-box;
+  width: 100%;
+  margin: 0;
+}
+
+wm-passport-progress-badge .wm-passport-progress-badge-percent {
+  @include passport-box-title;
+  font-size: 16px;
+}
+
+wm-passport-progress-badge .wm-passport-progress-badge-stages {
+  @include passport-box-hint;
+}

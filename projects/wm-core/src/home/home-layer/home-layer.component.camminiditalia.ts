@@ -4,7 +4,7 @@ import {WmHomeLayerBaseComponent} from './home-layer-base.component';
 @Component({
   standalone: false,
   selector: 'wm-home-layer',
-  templateUrl: './home-layer.component.html',
+  templateUrl: './home-layer.component.camminiditalia.html',
   styleUrls: ['./home-layer.component.camminiditalia.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,

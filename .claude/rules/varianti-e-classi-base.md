@@ -3,6 +3,8 @@ paths:
   - "projects/wm-core/src/**/*.camminiditalia.ts"
   - "projects/wm-core/src/**/*base.component.ts"
   - "projects/wm-core/src/**/*-shared.scss"
+  - "projects/wm-core/src/home/home-layer/**"
+  - "projects/wm-core/src/search-bar/**"
 ---
 
 # Trappole: varianti per shard e classi base
@@ -18,6 +20,9 @@ Contesto, e il criterio per decidere **se** estrarre una base:
 - **Solo il `.ts` deve essere gemello**, per il vincolo di schema di `fileReplacements`. Il
   template non va duplicato: la variante può puntare allo stesso `templateUrl` del default quando
   la struttura DOM non cambia, e avere `styleUrls` propri.
+- **Se la struttura DOM cambia, la variante ha un template suo, copia del default: una correzione
+  al template di default va riportata a mano nella copia.** Oggi succede per `home-layer`
+  (oc:8166) e `search-bar` (oc:8414), e nessun controllo lo segnala.
 - **Splittare uno SCSS fra base e variante può far sparire lo stile del default.** È già successo:
   regole generiche finite solo nel file della variante hanno lasciato tutti gli altri shard senza
   stile — titolo come testo semplice, logo non dimensionato. Dopo uno split, verifica che nel file

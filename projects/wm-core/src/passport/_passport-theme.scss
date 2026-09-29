@@ -1,0 +1,37 @@
+// Colori e riquadro «nuovo» del passaporto, presi dal wireframe (oc:8166). Unico punto da cambiare
+// per badge, dettaglio e anello del logo.
+$passport-green: #2f9e44;
+$passport-green-bg: #eaf7ee;
+$passport-green-dark: #1d6b30;
+$passport-green-text: #3d7a4a;
+$passport-ring-bg: #e0ddd6;
+$passport-amber: #c99b3f;
+$passport-amber-bg: #fdf3e0;
+$passport-amber-chip: #fbe4b0;
+$passport-amber-text: #8a6412;
+
+// Riquadro tratteggiato cliccabile (badge nella home del layer, CTA nel dettaglio).
+@mixin passport-tappable-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 2px dashed $passport-green;
+  border-radius: 10px;
+  background: $passport-green-bg;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+@mixin passport-box-title {
+  font-weight: 800;
+  color: $passport-green-dark;
+}
+
+@mixin passport-box-hint {
+  font-size: 13px;
+  color: $passport-green-text;
+}

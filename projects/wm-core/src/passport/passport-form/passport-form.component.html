@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="host?.back()" [attr.aria-label]="'Indietro' | wmtrans">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'passport.cta.title' | wmtrans }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="wm-passport-form ion-padding">
+  <p class="wm-passport-form-intro">{{ 'passport.form.intro' | wmtrans }}</p>
+
+  <h3 class="wm-passport-form-label">
+    {{ 'passport.form.photos' | wmtrans }} ({{ photos.length }}/{{ maxPhotos }}) *
+  </h3>
+  <wm-image-picker
+    [maxPhotos]="maxPhotos"
+    [captureOptions]="captureOptions"
+    (photosChanged)="onPhotos($event)"
+  ></wm-image-picker>
+  <ion-note *ngIf="triedSubmit && !photosValid" color="danger" role="alert">
+    {{ 'passport.form.errorPhotos' | wmtrans }}
+  </ion-note>
+
+  <form [formGroup]="form">
+    <ion-item lines="none" class="wm-passport-form-serial">
+      <ion-input
+        formControlName="serialNumber"
+        labelPlacement="stacked"
+        [label]="'passport.form.serial' | wmtrans"
+        [helperText]="'passport.form.serialHint' | wmtrans"
+        [placeholder]="'passport.form.serialPlaceholder' | wmtrans"
+      ></ion-input>
+    </ion-item>
+
+    <wm-privacy-agree-button *ngIf="needsPrivacyAgree$ | async"></wm-privacy-agree-button>
+
+    <ion-item lines="none" class="wm-passport-form-disclaimer">
+      <ion-checkbox formControlName="disclaimer" labelPlacement="end" justify="start">
+        <span class="ion-text-wrap">{{ 'passport.form.disclaimer' | wmtrans }}</span>
+      </ion-checkbox>
+    </ion-item>
+    <ion-note *ngIf="triedSubmit && !form.controls.disclaimer.value" color="danger" role="alert">
+      {{ 'passport.form.errorDisclaimer' | wmtrans }}
+    </ion-note>
+  </form>
+
+  <ion-button class="wm-passport-form-submit" expand="block" [disabled]="submitting" (click)="submit()">
+    <ion-spinner *ngIf="submitting" name="crescent" slot="start"></ion-spinner>
+    {{ 'passport.form.submit' | wmtrans }}
+  </ion-button>
+</ion-content>

@@ -30,6 +30,22 @@ export interface IPhotoItem extends IRegisterItem {
   rawData?: string;
 }
 
+/** Opzioni di `shotPhoto()`; i default riproducono il comportamento precedente a oc:8166. */
+export interface ShotPhotoOptions {
+  quality?: number;
+  /** Se `false` lo scatto non avvia la geolocalizzazione. Default `true`. */
+  startNavigation?: boolean;
+  saveToGallery?: boolean;
+}
+
+/**
+ * Opzioni di acquisizione di un picker di foto (oc:8166): larghezza e qualità valgono per
+ * fotocamera e galleria, `startNavigation` solo per lo scatto.
+ */
+export interface CaptureOptions extends Pick<ShotPhotoOptions, 'quality' | 'startNavigation'> {
+  maxWidth?: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -316,14 +332,17 @@ export class CameraService {
    * option. Left unset (the default) for `addPhotos()`'s UGC callers, where full
    * resolution may be intentional/acceptable; `addProfilePhoto()` passes 1600 to cap
    * the avatar capture at the same size already used for the gallery path.
+   * @param options qualità, avvio della geolocalizzazione e salvataggio in galleria
+   * (oc:8166); senza opzioni: `quality` 90, GPS avviato, salvataggio in galleria.
    */
-  async shotPhoto(maxWidth?: number): Promise<Photo> {
-    if (!this._geoLocationSvc.active) await this._geoLocationSvc.startNavigation();
+  async shotPhoto(maxWidth?: number, options: ShotPhotoOptions = {}): Promise<Photo> {
+    const {quality = 90, startNavigation = true, saveToGallery = true} = options;
+    if (startNavigation && !this._geoLocationSvc.active) await this._geoLocationSvc.startNavigation();
     const photo: Photo = await Camera.getPhoto({
-      quality: 90,
+      quality,
       // allowEditing: true,
       resultType: CameraResultType.Uri,
-      saveToGallery: true, //boolean	Whether to save the photo to the gallery. If the photo was picked from the gallery, it will only be saved if edited. Default: false
+      saveToGallery, //boolean	Whether to save the photo to the gallery. If the photo was picked from the gallery, it will only be saved if edited. Default: false
       ...(maxWidth != null && {width: maxWidth}), //	number	The width of the saved image
       // height: 10000,//	number	The height of the saved image
       // preserveAspectRatio: true, //	boolean	Whether to preserve the aspect ratio of the image.If this flag is true, the width and height will be used as max values and the aspect ratio will be preserved.This is only relevant when both a width and height are passed.When only width or height is provided the aspect ratio is always preserved(and this option is a no- op).A future major version will change this behavior to be default, and may also remove this option altogether.Default: false

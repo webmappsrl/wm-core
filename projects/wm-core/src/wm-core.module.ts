@@ -77,6 +77,11 @@ import {ImageDetailComponent} from './image-detail/image-detail.component';
 import {WmFeaturesInViewportComponent} from './features-in-viewport/features-in-viewport.component';
 import {WmDifficultyComponent} from './difficulty/difficulty.component';
 import {WmImagePickerComponent} from './image-picker/image-picker.component';
+import {WmPassportProgressBadgeComponent} from './passport/passport-progress-badge/passport-progress-badge.component';
+import {WmPassportModalComponent} from './passport/passport-modal/passport-modal.component';
+import {WmPassportDetailComponent} from './passport/passport-detail/passport-detail.component';
+import {WmPassportFormComponent} from './passport/passport-form/passport-form.component';
+import {WmPassportLogoRingDirective} from './passport/passport-logo-ring/passport-logo-ring.directive';
 import {ModalGetDirectionsComponent} from './modal-get-directions/modal-get-directions.component';
 import {ModalReleaseUpdateComponent} from './modal-release-update/modal-release-update.component';
 import {WmDrawUgcComponent} from './draw-ugc/draw-ugc.component';
@@ -151,6 +156,11 @@ export const declarations = [
   WmFeaturesInViewportComponent,
   WmDifficultyComponent,
   WmImagePickerComponent,
+  WmPassportProgressBadgeComponent,
+  WmPassportModalComponent,
+  WmPassportDetailComponent,
+  WmPassportFormComponent,
+  WmPassportLogoRingDirective,
   ModalGetDirectionsComponent,
   ModalReleaseUpdateComponent,
   WmDrawUgcComponent,
