@@ -1901,3 +1901,30 @@ git commit -m "chore(oc:8166): aggiorna wm-core e wm-types con il passaporto"
 ```
 
 La modifica preesistente su `core/src/environments/environment.ts` non va inclusa.
+
+---
+
+### Task 10: API reali per stato e invio della certificazione (29/09/2026)
+
+> ⚠️ L'implementazione ha deviato da questo task: [notes.md](notes.md#task-10)
+
+Aggiunto dopo la chiusura del primo ciclo, su richiesta del developer, quando il backend locale di
+camminiditalia ha esposto le rotte (`routes/api.php`, `CertificationRequestController`).
+
+**File:**
+- Modifica: `passport/passport.service.ts`, `passport/passport.service.spec.ts`
+
+**Contratto del backend:**
+- `GET /api/layer/{id}/certification` → `{status: "none"}` oppure `{status: "pending", submitted_at}`
+- `POST /api/layer/{id}/certification` multipart `images[]`, `serial_number`, `disclaimer_accepted`
+  → 201 `{status, submitted_at}`; 409 se c'è già una richiesta in attesa; 413 e 422 per file e
+  validazione. Autenticazione `auth:api`, token aggiunto da `AuthInterceptor`.
+- Nessuna rotta per il progresso delle tappe: `getProgress` resta mock.
+
+- [x] **Passo 1:** spec del service con un `HttpClient` finto: URL delle due chiamate, mapping di
+  `submitted_at` in `submittedAt`, corpo multipart (`images[]` con nome file, `serial_number` solo
+  se presente, `disclaimer_accepted`), 409 trattato come richiesta già in attesa.
+- [x] **Passo 2:** implementazione in `PassportService`; tolti `localStorage`, `resetMock`,
+  `simulateSubmitError` e `wmPassportMock`.
+- [ ] **Passo 3:** suite, build AOT camminiditalia, verifica dal vivo del developer sul backend
+  locale.

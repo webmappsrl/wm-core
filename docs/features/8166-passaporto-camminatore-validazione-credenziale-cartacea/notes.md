@@ -2,28 +2,33 @@
 
 # Notes — Passaporto camminatore: validazione credenziale cartacea
 
-## Contratto API ipotizzato
+## Contratto API
 
-Tipi in `@wm-types/passport` (`wm-types/src/passport.ts`); implementazione mock in
-`projects/wm-core/src/passport/passport.service.ts`. Base del ticket backend collegato.
+Tipi in `@wm-types/passport` (`wm-types/src/passport.ts`); implementazione in
+`projects/wm-core/src/passport/passport.service.ts`. Dal 29/09 stato e invio usano il backend
+camminiditalia (`CertificationRequestController`, `StoreCertificationRequestRequest`); il progresso
+delle tappe è ancora mock, perché il backend non ha una rotta per il progresso.
 
 | Operazione | Rotta | Richiesta | Risposta |
 |---|---|---|---|
-| Progresso del cammino | `GET /api/layer/{layer}/progress` | — | `PassportProgress`: `layerId`, `totalStages`, `completedStages`, `percent` (0-100), `stages[]` con `trackId`, `name`, `status` (`completed` / `in_progress` / `not_started`), `completedAt?`, `percent?` |
-| Stato della richiesta | `GET /api/layer/{layer}/certification` | — | `PassportCertification`: `layerId`, `status` (`none` / `pending`), `submittedAt?` (ISO 8601) |
-| Invio della richiesta | `POST /api/layer/{layer}/certification` | multipart: `images[]` (1-6 immagini), `serial_number` (opzionale), `disclaimer_accepted` | `PassportCertification` con `status: pending` |
+| Stato della richiesta | `GET /api/layer/{layer}/certification` | — | 200 `{status: "none"}` oppure `{status: "pending", submitted_at}` (ISO 8601) |
+| Invio della richiesta | `POST /api/layer/{layer}/certification` | multipart: `images[]` (1-6, jpeg/png/webp/heic/heif, max 8 MB l'una), `serial_number` (opzionale), `disclaimer_accepted` | 201 `{status: "pending", submitted_at}`; 409 se c'è già una richiesta in attesa; 413 file troppo grandi; 422 validazione |
+| Progresso del cammino | nessuna (mock) | — | `PassportProgress` |
 
-Le chiamate vanno verso `EnvironmentService.origin` e ricevono `App-id` e `Authorization` da
-`AuthInterceptor`, come le altre chiamate dello shard. Gli stati `approved` e `rejected` non fanno
-parte di questo ciclo.
+Autenticazione `auth:api`, con `Authorization` e `App-id` aggiunti da `AuthInterceptor` sulle
+chiamate verso `EnvironmentService.origin`; `throttle:10,1` sull'invio. Il frontend converte
+`submitted_at` in `submittedAt`, nomina le foto `credenziale_<n>.<estensione del tipo>`, tratta
+un 409 rileggendo lo stato (l'utente vede «In revisione») e considera «nessuna richiesta» ogni
+stato diverso da `pending`: il backend oggi restituisce solo le richieste in attesa.
 
-**Mock:** il totale delle tappe è il numero reale di track del layer (`layerFeaturesTotalCount`);
-le tappe percorse dipendono dall'id del layer (resto della divisione per 3: 0%, 64%, 100%). Le
-richieste inviate stanno in `localStorage` sotto `wm-passport-mock-certifications`. Da console:
-`wmPassportMock.simulateSubmitError = true` fa fallire gli invii, `wmPassportMock.resetMock()`
-cancella le richieste.
+**Mock rimasto:** il totale delle tappe è il numero reale di track del layer; le tappe percorse
+dipendono dall'id del layer (resto della divisione per 3: 0%, 64%, 100%).
 
 ## Divergenze dal piano, task per task
+
+### Task 10
+
+Aggiunto il 29/09 dopo la chiusura del primo ciclo, quando il backend locale ha esposto le rotte. Il backend non ha una rotta per il progresso, quindi solo stato e invio sono passati alle API vere; il progresso resta mock. Tolti `localStorage`, `resetMock`, `simulateSubmitError` e `wmPassportMock`.
 
 ### Task 1
 
@@ -180,7 +185,6 @@ valido, così il tap mostra gli errori vicino ai campi.
   - con utente sloggato o senza consenso il pulsante «Invia» non mostra nessun messaggio;
   - se la navigazione al dettaglio fallisce dopo un invio riuscito compare «Invio non riuscito»;
   - foto identiche scelte nella stessa selezione della galleria passano entrambe (preesistente);
-  - il mock si espone su `globalThis` come `wmPassportMock` (solo in sviluppo): va tolto con il backend reale;
 
 - Ticket backend camminiditalia collegato a oc:8166: modello, migration, le tre rotte del
   contratto, sezione «validazioni» per il gestore, email di notifica.
@@ -188,5 +192,6 @@ valido, così il tap mostra gli errori vicino ai campi.
 - Testo legale del disclaimer al posto del segnaposto.
 - Verifica su dispositivo di fotocamera e galleria, quando esisterà il backend.
 - Pubblicare `Passaporto` su origin in wm-types prima della PR.
-- Ticket backend: con l'HTTP reale badge, anello e dettaglio chiamano ciascuno il progresso; valutare una cache (`shareReplay` per layer) o una feature NgRx nel service reale.
+- Rotta del progresso delle tappe nel backend (dipende da oc:8165): poi `getProgress` passa all'HTTP. Con l'HTTP reale badge, anello e dettaglio chiamano ciascuno il progresso: valutare una cache (`shareReplay` per layer) o una feature NgRx.
+- Stati `approved` e `rejected`: il backend li ha nel modello ma la GET restituisce solo le richieste in attesa.
 - Trappola di `ion-nav` (`[root]`/`[rootParams]`) da portare in `.claude/rules/` di wm-core in fase di aggiornamento del contesto.

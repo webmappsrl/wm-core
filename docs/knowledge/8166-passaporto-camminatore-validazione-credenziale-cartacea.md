@@ -12,11 +12,12 @@ wireframe `webmapp-app/docs/features/passaporto-camminatore-wireframe.html` (vis
 
 Tutto il codice sta in `projects/wm-core/src/passport/`:
 
-- **`PassportService`** è l'unico punto che parla con il backend. Oggi è un **mock** (backend
-  camminiditalia non ancora fatto): progresso deterministico per id del layer, richieste inviate
-  in `localStorage`, esposto come `wmPassportMock` in console solo con `isDevMode()`. Il
-  contratto ipotizzato — `GET /api/layer/{layer}/progress`, `GET` e `POST
-  /api/layer/{layer}/certification` — è tipizzato in `@wm-types/passport`.
+- **`PassportService`** è l'unico punto che parla con il backend. Stato e invio della richiesta
+  usano le rotte di camminiditalia (`GET` e `POST /api/layer/{layer}/certification`, `auth:api`):
+  un 409 vuol dire richiesta già in attesa e l'app mostra «In revisione». Il **progresso delle
+  tappe è ancora un mock** (deterministico per id del layer), perché il backend non ha la rotta.
+  Il contratto è tipizzato in `@wm-types/passport`; il frontend converte `submitted_at` in
+  `submittedAt`.
 - **`visibleProgress(layerId)`** è l'unica regola di visibilità: `null` se l'utente non è loggato
   o il layer non ha tappe. La usano badge e anello, e non fa parte del mock.
 - **Anello del logo:** direttiva `[wmPassportLogoRing]` sul logo esistente, non un componente che
@@ -30,8 +31,8 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
 
 ## Perché così
 
-- **Solo frontend, con mock** (oc:8166, call del 28/09/2026): il backend va in un ticket collegato;
-  il mock sta dietro un service unico perché passare all'HTTP reale non tocchi componenti né store.
+- **Un service unico davanti al backend** (oc:8166, call del 28/09/2026): il frontend è nato con il
+  backend mockato; il passaggio alle API vere di stato e invio (29/09) ha toccato solo il service.
 - **Nessun flag di attivazione** (oc:8166): la protezione contro l'uscita del mock è il branch
   dedicato `Passaporto`, unito al resto solo a lavoro completo, backend compreso.
 - **Il ciclo si chiude all'invio** (oc:8166): stati di approvazione e rifiuto, e i relativi tipi,
@@ -50,6 +51,8 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
 
 - **Dettaglio con componenti Ionic standard** (oc:8166, superata): `ion-chip` e `ion-list` non
   seguivano il wireframe; rifatto su V1/V3 dopo la verifica del developer.
+- **Certificazione mockata in `localStorage`** (oc:8166, superata il 29/09): sostituita dalle API
+  vere del backend camminiditalia, insieme ai comandi di prova da console `wmPassportMock`.
 - **`getProgress` con `take(1)`** (oc:8166, superata): se il conteggio delle track non era ancora
   caricato, il badge non compariva più. Lo stream ora resta aperto.
 - **Rischio aperto per il backend reale:** badge, anello e dettaglio chiamano ciascuno il

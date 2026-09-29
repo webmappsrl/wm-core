@@ -1,9 +1,11 @@
-import {Injectable, isDevMode} from '@angular/core';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {Injectable} from '@angular/core';
 import {Store} from '@ngrx/store';
-import {Observable, defer, of, throwError} from 'rxjs';
-import {delay, distinctUntilChanged, map, switchMap} from 'rxjs/operators';
-import {isLogged} from '@wm-core/store/auth/auth.selectors';
+import {Observable, of, throwError} from 'rxjs';
+import {catchError, delay, distinctUntilChanged, map, switchMap} from 'rxjs/operators';
 import {layerFeaturesTotalCount} from '@wm-core/store/features/ec/ec.selector';
+import {isLogged} from '@wm-core/store/auth/auth.selectors';
+import {EnvironmentService} from '@wm-core/services/environment.service';
 import {
   PassportCertification,
   PassportCertificationRequest,
@@ -11,34 +13,44 @@ import {
   PassportStage,
 } from '@wm-types/passport';
 
-/** Chiave `localStorage` del mock delle richieste inviate. Sparisce con il backend reale. */
-export const PASSPORT_MOCK_STORAGE_KEY = 'wm-passport-mock-certifications';
-
-/** Latenza simulata delle chiamate mock, per vedere loader e stati intermedi. */
+/** Latenza simulata del progresso mock, per vedere il loader. */
 const MOCK_LATENCY_MS = 400;
+
+/** Risposta del backend camminiditalia per stato e invio della richiesta di certificazione. */
+interface CertificationResponse {
+  status: string;
+  submitted_at?: string;
+}
+
+/** Estensione del nome file per tipo MIME, fra quelli accettati dal backend. */
+const EXTENSION_BY_TYPE: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/heic': 'heic',
+  'image/heif': 'heif',
+};
 
 /**
  * Service del passaporto del camminatore (oc:8166).
  *
- * ⚠️ MOCK: il backend camminiditalia non esiste ancora. Tutte le operazioni sono simulate e
- * verranno sostituite dall'implementazione reale (chiamate HTTP verso `EnvironmentService.origin`)
- * con il ticket backend collegato a oc:8166. Il contratto è in `@wm-types/passport`; componenti e
- * store non devono cambiare quando si sostituisce questo service.
+ * Stato e invio della richiesta di certificazione usano il backend camminiditalia
+ * (`CertificationRequestController`), con il token aggiunto da `AuthInterceptor`:
+ * - `GET /api/layer/{layer}/certification` → `{status: "none"}` oppure `{status: "pending", submitted_at}`
+ * - `POST /api/layer/{layer}/certification` (multipart: `images[]`, `serial_number`,
+ *   `disclaimer_accepted`) → 201 `{status, submitted_at}`, 409 se c'è già una richiesta in attesa.
  *
- * Contratto ipotizzato:
- * - progresso: `GET /api/layer/{layer}/progress`
- * - stato richiesta: `GET /api/layer/{layer}/certification`
- * - invio: `POST /api/layer/{layer}/certification` (multipart: `images[]`, `serial_number`, `disclaimer_accepted`)
+ * ⚠️ MOCK: il progresso delle tappe è ancora simulato, perché il backend non ha una rotta per
+ * il progresso (dipende da oc:8165). Il contratto è in `@wm-types/passport`: quando la rotta
+ * esisterà cambierà solo `getProgress`, non componenti né store.
  */
 @Injectable({providedIn: 'root'})
 export class PassportService {
-  /** Solo mock: se `true` ogni invio fallisce, per provare lo stato di errore. */
-  simulateSubmitError = false;
-
-  constructor(private _store: Store) {
-    // Solo mock e solo in sviluppo: accesso da console per la verifica manuale.
-    if (isDevMode()) (globalThis as any).wmPassportMock = this;
-  }
+  constructor(
+    private _store: Store,
+    private _http: HttpClient,
+    private _environmentSvc: EnvironmentService,
+  ) {}
 
   /**
    * Avanzamento del cammino per l'utente corrente.
@@ -60,7 +72,7 @@ export class PassportService {
 
   /**
    * Progresso da mostrare nel passaporto: `null` se l'utente non è loggato o il layer non ha
-   * tappe. È l'unica regola di visibilità per badge e anello del logo, e non fa parte del mock.
+   * tappe. È l'unica regola di visibilità per badge e anello del logo.
    *
    * @param layerId Id del layer, `null` se assente.
    * @returns Observable con il progresso, o `null` se non va mostrato nulla.
@@ -73,47 +85,82 @@ export class PassportService {
   }
 
   /**
-   * Stato della richiesta di certificazione per il layer.
-   * MOCK: legge le richieste inviate da `localStorage`.
+   * Stato della richiesta di certificazione dell'utente per il layer.
    *
    * @param layerId Id del layer (cammino).
    * @returns Observable con lo stato della richiesta.
    */
   getCertification(layerId: number): Observable<PassportCertification> {
-    return defer(() => {
-      const submittedAt = this._readMock()[layerId];
-      const res: PassportCertification = submittedAt
-        ? {layerId, status: 'pending', submittedAt}
-        : {layerId, status: 'none'};
-      return of(res);
-    }).pipe(delay(MOCK_LATENCY_MS));
+    return this._http
+      .get<CertificationResponse>(this._certificationUrl(layerId))
+      .pipe(map(res => this._toCertification(layerId, res)));
   }
 
   /**
-   * Invia la richiesta di certificazione.
-   * MOCK: non invia nulla, salva in `localStorage` la data di invio per il layer.
+   * Invia la richiesta di certificazione. Un 409 vuol dire che una richiesta è già in attesa: si
+   * rilegge lo stato e lo si restituisce, così l'utente vede «In revisione» e non un errore.
    *
-   * @param req Richiesta con foto, note opzionali e accettazione del disclaimer.
+   * @param req Richiesta con foto, numero seriale opzionale e accettazione del disclaimer.
    * @returns Observable con lo stato della richiesta dopo l'invio.
    */
   submitCertification(req: PassportCertificationRequest): Observable<PassportCertification> {
-    return defer(() => {
-      if (this.simulateSubmitError) {
-        return throwError(() => new Error('Invio simulato fallito (mock oc:8166)'));
-      }
-      const submittedAt = new Date().toISOString();
-      this._writeMock({...this._readMock(), [req.layerId]: submittedAt});
-      return of<PassportCertification>({layerId: req.layerId, status: 'pending', submittedAt});
-    }).pipe(delay(MOCK_LATENCY_MS));
-  }
-
-  /** Solo mock: cancella le richieste simulate salvate. */
-  resetMock(): void {
-    localStorage.removeItem(PASSPORT_MOCK_STORAGE_KEY);
+    return this._http
+      .post<CertificationResponse>(this._certificationUrl(req.layerId), this._toFormData(req))
+      .pipe(
+        map(res => this._toCertification(req.layerId, res)),
+        catchError((err: unknown) =>
+          err instanceof HttpErrorResponse && err.status === 409
+            ? this.getCertification(req.layerId)
+            : throwError(() => err),
+        ),
+      );
   }
 
   /**
-   * Solo mock: costruisce un avanzamento fittizio e deterministico.
+   * URL della rotta di certificazione del layer.
+   *
+   * @param layerId Id del layer.
+   * @returns L'URL assoluto.
+   */
+  private _certificationUrl(layerId: number): string {
+    return `${this._environmentSvc.origin}/api/layer/${layerId}/certification`;
+  }
+
+  /**
+   * Converte la risposta del backend nel tipo del frontend. Gli stati che il frontend non gestisce
+   * ancora (approvata, rifiutata) valgono come «nessuna richiesta».
+   *
+   * @param layerId Id del layer.
+   * @param res Risposta del backend.
+   * @returns Lo stato della richiesta.
+   */
+  private _toCertification(layerId: number, res: CertificationResponse): PassportCertification {
+    return res?.status === 'pending'
+      ? {layerId, status: 'pending', submittedAt: res.submitted_at}
+      : {layerId, status: 'none'};
+  }
+
+  /**
+   * Costruisce il multipart della richiesta.
+   *
+   * @param req Richiesta di certificazione.
+   * @returns Il corpo multipart.
+   */
+  private _toFormData(req: PassportCertificationRequest): FormData {
+    const data = new FormData();
+    req.photos.forEach((photo, index) => {
+      const ext = EXTENSION_BY_TYPE[photo.type] ?? 'jpg';
+      data.append('images[]', photo, `credenziale_${index + 1}.${ext}`);
+    });
+    if (req.serialNumber) {
+      data.append('serial_number', req.serialNumber);
+    }
+    data.append('disclaimer_accepted', '1');
+    return data;
+  }
+
+  /**
+   * MOCK: costruisce un avanzamento fittizio e deterministico.
    *
    * @param layerId Id del layer.
    * @param total Numero di track del layer.
@@ -134,27 +181,5 @@ export class PassportService {
     });
     const percent = total ? Math.round((completed / total) * 100) : 0;
     return {layerId: Number(layerId), totalStages: total, completedStages: completed, percent, stages};
-  }
-
-  /**
-   * Solo mock: legge la mappa layerId → data di invio.
-   *
-   * @returns Mappa delle richieste inviate, vuota se assente o illeggibile.
-   */
-  private _readMock(): Record<number, string> {
-    try {
-      return JSON.parse(localStorage.getItem(PASSPORT_MOCK_STORAGE_KEY) ?? '{}') ?? {};
-    } catch {
-      return {};
-    }
-  }
-
-  /**
-   * Solo mock: salva la mappa layerId → data di invio.
-   *
-   * @param value Mappa da salvare.
-   */
-  private _writeMock(value: Record<number, string>): void {
-    localStorage.setItem(PASSPORT_MOCK_STORAGE_KEY, JSON.stringify(value));
   }
 }
