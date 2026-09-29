@@ -1,0 +1,63 @@
+# Controllo sui temi per istanza, a ogni PR di questa libreria (oc:8613).
+#
+# **Qui non girano i test unitari, ed è deliberato.** Il primo tentativo li includeva, ma questo
+# repo da solo non compila: `tsconfig.json` risolve `@wm-types/*` in `../wm-types/src` e
+# `@map-core/*` in `../map-core/src`, cartelle che esistono solo **dentro un prodotto**, dove
+# wm-core sta accanto ai suoi fratelli. Un checkout del solo wm-core non le trova, e `package.json`
+# non dichiara nemmeno i pacchetti che nei prodotti arrivano dal `node_modules` del padre. Farli
+# girare qui richiederebbe di ricostruire l'ambiente di un consumer — checkout di wm-webapp con i
+# submodule, `npm ci` nel padre — cioè un job lento e legato a un altro repo.
+#
+# Gli spec restano quindi coperti dalla CI dei due prodotti, che è dove l'ambiente esiste già —
+# ma **solo dopo il bump del pin**: finché un prodotto punta a un commit più vecchio di questo, la
+# sua CI verifica quel commit, non ciò che stai leggendo.
+name: Temi per istanza
+
+on:
+  pull_request:
+  push:
+    branches: [develop, main]
+
+jobs:
+  temi:
+    runs-on: ubuntu-latest
+    name: I temi per istanza ci sono tutti
+    steps:
+      - uses: actions/checkout@v4
+
+      # L'elenco atteso, per nome e non solo per numero: un conteggio non vedrebbe una rinomina né
+      # uno spostamento fra shard, che sono i modi in cui un tema si perde davvero.
+      #
+      # Non è un manifest: quello sta dal lato di chi consuma, perché il gate di build deve poter
+      # dire «il tuo pin è indietro». Questo serve a far diventare rossa la PR di chi aggiunge o
+      # toglie un cliente **senza dirlo**: la correzione è aggiornare questo elenco, e con quella
+      # l'intenzione resta scritta nella storia.
+      #
+      # Quando cambia, cambiano anche i `theme-manifest.json` dei due prodotti: sono quattro posti
+      # in tutto — la cartella, questo elenco, i due manifest. Questo job ne copre **due**: se la
+      # cartella e questo elenco divergono, la PR diventa rossa qui. I due manifest no, perché
+      # stanno in altri repo: se ne dimentichi uno, qui resta verde e te ne accorgi quando la build
+      # di quel prodotto si ferma.
+      - name: I nove temi attesi
+        run: |
+          CARTELLA=projects/wm-core/src/assets/theme
+          cat > /tmp/attesi.txt <<'ATTESI'
+          camminiditalia/1.css
+          camminiditaliadev/1.css
+          forestas/1.css
+          forestasdev/1.css
+          forestasuat/1.css
+          geohub/29.css
+          geohub/32.css
+          geohub/33.css
+          geohub/75.css
+          ATTESI
+          sed -i 's/^ *//' /tmp/attesi.txt
+          # Un solo livello, come fa `trova()` in check-themes.js: <shard>/<appId>.css
+          find "$CARTELLA" -mindepth 2 -maxdepth 2 -name '*.css' \
+            | sed "s|$CARTELLA/||" | sort > /tmp/trovati.txt
+          if ! diff -u /tmp/attesi.txt /tmp/trovati.txt; then
+            echo "::error::L'elenco dei temi per istanza non coincide con quello atteso. Se il cambio è voluto — un cliente aggiunto, dismesso o rinominato — aggiorna questo workflow e il theme-manifest.json dei due prodotti; altrimenti qualcuno ha cancellato o spostato il CSS di un cliente."
+            exit 1
+          fi
+          echo "I nove temi ci sono tutti, con i nomi attesi."

@@ -146,11 +146,17 @@ export class UrlHandlerService {
     }
   }
 
+  /**
+   * Scegliere un POI direttamente chiude la navigazione fra i POI correlati, quindi azzera anche
+   * `ec_related_poi` (oc:8406). Senza, quel parametro restava nell'URL: a schermo non si vedeva,
+   * perché il navigatore è gated su `canNavigateRelatedPois`, ma `removeLatest()` lo consuma
+   * **prima** di `poi`, e il primo "indietro" non faceva nulla di visibile.
+   */
   setPoi(id: string | number): void {
     this._ugcOpened$.pipe(take(1)).subscribe(ugcOpened => {
       const queryParams = ugcOpened
-        ? {ugc_poi: id ? id : undefined, poi: undefined}
-        : {poi: id ? id : undefined, ugc_poi: undefined};
+        ? {ugc_poi: id ? id : undefined, poi: undefined, ec_related_poi: undefined}
+        : {poi: id ? id : undefined, ugc_poi: undefined, ec_related_poi: undefined};
       this.updateURL(queryParams, ['map']);
     });
   }

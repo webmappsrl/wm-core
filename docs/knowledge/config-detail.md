@@ -8,6 +8,31 @@ Un accordion custom, **non** `ion-accordion`: header `<button>` nativo, `aria-ex
 
 I tipi condivisi stanno in `@wm-types/config` (`ConfigDetailBox`, `ConfigDetailInfoBox`, `ConfigDetailInfoBoxItem`, senza prefisso `I`); wm-core estende solo `ILAYER.config_detail`. I consumer (`home-layer`, `track-properties`) espongono solo `[groups]="…?.config_detail"`: il dispatch di `box_type` è centralizzato nel componente.
 
+## Dove provarli: solo Cammini d'Italia dev
+
+I box **non esistono in produzione su nessuna istanza**, e non esistono affatto sugli shard usati
+di solito per le prove. Il solo caso d'uso popolato è sullo **shard dev di Cammini d'Italia**, sul
+POI **Santa Barbara**, con due soli blocchi creati a mano come esempio ("storia" e "content").
+
+Puntando l'app a geohub o al Cammini d'Italia di **produzione**, `config_detail` è vuoto e
+`wm-config-detail` non rende nulla: misurato 0 POI su 3.252 dell'app 33 e 0 su 3.721 dell'app 29.
+Non è un difetto del componente, e cercarlo nel codice è tempo perso — in call è successo anche a
+chi i box li aveva creati, andando sull'istanza sbagliata.
+
+Chi deve verificare una modifica al componente sui POI parte da lì, o si crea altri blocchi sul
+dev: in produzione non si possono creare. Verificato in oc:8406 sul POI **377** di
+`camminiditaliadev`, che è il primo riscontro del componente funzionante sul dettaglio POI della
+webapp — il gap da cui era nato quel ticket.
+
+**Il conteggio, misurato su tutte le 45 app di geohub: 0 POI con `config_detail`.** Non è che sia
+raro su quello shard: non c'è affatto.
+
+**Lo spazio fra i box non è uniforme, ed è voluto:** 12px fra box dello stesso gruppo, **40px**
+quando ne comincia uno nuovo — la classe `--group-start`, che il componente assegna leggendo i dati.
+Un `config_detail` fatto di gruppi da un box solo mostra quindi sempre e solo il distacco grande, e
+sembra spaziatura sbagliata invece che separazione fra gruppi. Prima di ritoccare quei 40px si tenga
+presente che vengono da oc:8181 e ricalcano il sito di riferimento del cliente.
+
 ## Perché così
 
 - **Nessun tetto agli item aperti e nessun "chiudi tutto"** (oc:8458): il rischio di performance con iframe multipli è stato valutato e accettato in fase di challenge — il contenuto di `config_detail` lo cura il content editor, non arriva da input libero.

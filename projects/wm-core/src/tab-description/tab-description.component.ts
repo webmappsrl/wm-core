@@ -6,6 +6,7 @@ import {
   ElementRef,
   ViewChild,
   AfterViewInit,
+  OnDestroy,
 } from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {LangService} from '@wm-core/localization/lang.service';
@@ -23,7 +24,9 @@ type TranslationValue = string | Record<string, string | null> | null | undefine
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class WmTabDescriptionComponent implements AfterViewInit {
+export class WmTabDescriptionComponent implements AfterViewInit, OnDestroy {
+  /** Handle del timer di misura, per poterlo cancellare in ngOnDestroy e al cambio descrizione. */
+  private _truncationCheckInterval: ReturnType<typeof setInterval> | null = null;
   htmlDescription$: BehaviorSubject<TranslationValue> = new BehaviorSubject<TranslationValue>(null);
 
   @Input() set description(value: TranslationValue) {
@@ -45,6 +48,18 @@ export class WmTabDescriptionComponent implements AfterViewInit {
     } else {
       this.htmlDescription$.next(processedValue);
     }
+
+    // Senza questo reset la descrizione successiva eredita lo stato della precedente: l'istanza
+    // viene riusata, non ricreata, quando cambia solo il binding — è quello che accade navigando
+    // tra POI correlati, sia sul web sia su mobile. Il sintomo è "Mostra altro" su una descrizione
+    // di una riga, o la sua assenza su una lunga.
+    // `_checkIfContentIsTruncated()` è sicuro da chiamare anche prima di `ngAfterViewInit`: legge
+    // `descriptionElement?.nativeElement` con optional chaining e riprova ogni 50ms finché
+    // l'elemento non esiste, e si auto-cancella prima di riarmarsi, quindi i timer non si
+    // accumulano al cambio descrizione.
+    this.isExpanded$.next(false);
+    this.showExpandButton$.next(false);
+    this._checkIfContentIsTruncated();
   }
   @ViewChild('descriptionElement') descriptionElement: ElementRef;
 
@@ -93,18 +108,36 @@ export class WmTabDescriptionComponent implements AfterViewInit {
     return tempDiv.innerHTML;
   }
 
+  /**
+   * L'interval si azzerava solo quando `scrollHeight > 0`: se il componente veniva distrutto
+   * prima della misura — nel popup web è dentro un `*ngIf` con una transizione da 500ms — restava
+   * un timer a 20 Hz che chiama `getComputedStyle`, cioè un reflow forzato, per ogni istanza mai
+   * misurata. Su mobile l'app si riavvia; una webapp su tablet/kiosk non ricarica mai la pagina.
+   */
   private _checkIfContentIsTruncated() {
-    const interval = setInterval(() => {
+    this._clearTruncationCheck();
+    this._truncationCheckInterval = setInterval(() => {
       const element = this.descriptionElement?.nativeElement;
       const scrollHeight = element?.scrollHeight;
       if (scrollHeight && scrollHeight > 0) {
-        clearInterval(interval);
+        this._clearTruncationCheck();
         const lineHeight = parseInt(window.getComputedStyle(element).lineHeight);
         const maxHeight = lineHeight * MAX_LINES;
 
         this.showExpandButton$.next(scrollHeight > maxHeight);
       }
     }, 50);
+  }
+
+  private _clearTruncationCheck(): void {
+    if (this._truncationCheckInterval != null) {
+      clearInterval(this._truncationCheckInterval);
+      this._truncationCheckInterval = null;
+    }
+  }
+
+  ngOnDestroy(): void {
+    this._clearTruncationCheck();
   }
 
   private _cleanTranslationObject(value: TranslationValue): TranslationValue {

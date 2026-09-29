@@ -1,6 +1,17 @@
 wm-track-properties {
   display: flex;
   flex-direction: column;
+
+  // Lo slot `[bottom]` deve restare in fondo anche quando un tema per istanza riordina le sezioni
+  // (oc:8613). Il contenitore è flex, e un figlio senza `order` vale 0: basta che un tema assegni
+  // `order: 1..14` alle sezioni — è quello che fa `geohub/75.css` — perché il contenuto proiettato
+  // qui, che un `order` non ce l'ha, scavalchi tutto e finisca in cima. Il sintomo era il pulsante
+  // "Modifica" della webapp sopra l'intestazione del percorso. Il nome dello slot dice già dove va:
+  // qui lo si rende vero anche in un contenitore riordinato.
+  > [bottom] {
+    order: 100;
+  }
+
   bottom: 0;
   border-radius: 15px;
   background: white;
