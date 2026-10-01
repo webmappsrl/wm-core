@@ -1,4 +1,4 @@
-<!-- Dettaglio del cammino, wireframe V1/V3 (oc:8166) -->
+<!-- Dettaglio del cammino, wireframe V1/V3 (oc:8166) ed E1–E5 (oc:8671) -->
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
@@ -26,18 +26,18 @@
         </div>
       </div>
       <div class="wm-passport-detail-head">
-        {{ 'passport.detail.count' | wmtrans: {completed: vm.progress.completedStages, total: vm.progress.totalStages} }}
+        {{ '{{completed}} di {{total}} tappe' | wmtrans: {completed: vm.progress.completedStages, total: vm.progress.totalStages} }}
       </div>
       <div class="wm-passport-detail-sub">
         <ng-container *ngIf="vm.progress.percent === 100; else notDone">
-          {{ 'passport.detail.completed' | wmtrans }}
+          {{ 'Cammino completato' | wmtrans }}
         </ng-container>
         <ng-template #notDone>
           <ng-container *ngIf="vm.progress.completedStages === 0; else remaining">
-            {{ 'passport.detail.none' | wmtrans }}
+            {{ 'Nessuna tappa registrata via GPS' | wmtrans }}
           </ng-container>
           <ng-template #remaining>
-            {{ 'passport.detail.remaining' | wmtrans: {remaining: vm.progress.totalStages - vm.progress.completedStages} }}
+            {{ 'Completa le restanti {{remaining}} per sbloccare il timbro' | wmtrans: {remaining: vm.progress.totalStages - vm.progress.completedStages} }}
           </ng-template>
         </ng-template>
       </div>
@@ -45,15 +45,47 @@
 
     <!-- fuori dallo scroll: resta visibile anche con molte tappe, come nel wireframe -->
     <button *ngIf="vm.showCta" type="button" class="wm-passport-detail-cta" (click)="host?.openForm()">
-      <span class="wm-passport-detail-cta-title">📷 {{ 'passport.cta.title' | wmtrans }}</span>
-      <span class="wm-passport-detail-cta-hint">{{ 'passport.cta.hint' | wmtrans }}</span>
+      <span class="wm-passport-detail-cta-title">📷 {{ 'Richiedi certificazione' | wmtrans }}</span>
+      <span class="wm-passport-detail-cta-hint">{{ 'Hai timbrato la credenziale cartacea? Carica la foto per validare il cammino' | wmtrans }}</span>
     </button>
 
-    <div *ngIf="vm.certification.status === 'pending'" class="wm-passport-detail-pending" role="status">
-      <span class="wm-passport-detail-pending-chip">⏳ {{ 'passport.pending.title' | wmtrans }}</span>
+    <div *ngIf="vm.certification?.status === 'pending'" class="wm-passport-detail-pending" role="status">
+      <span class="wm-passport-detail-pending-chip">⏳ {{ 'In revisione' | wmtrans }}</span>
       <span class="wm-passport-detail-pending-hint">
-        {{ 'passport.pending.hint' | wmtrans: {date: shortDate(vm.certification.submittedAt)} }}
+        {{ 'Inviata il {{date}} — riceverai un esito via email' | wmtrans: {date: shortDate(vm.certification?.submittedAt)} }}
       </span>
+    </div>
+
+    <!-- esito del gestore (oc:8671): stessa posizione della CTA e del chip «In revisione» -->
+    <div
+      *ngIf="vm.outcome"
+      class="wm-passport-detail-outcome"
+      [class.wm-passport-detail-outcome--rejected]="vm.outcome === 'rejected'"
+      role="status"
+    >
+      <div class="wm-passport-detail-outcome-row">
+        <span class="wm-passport-detail-outcome-chip">
+          <ng-container *ngIf="vm.outcome === 'approved'; else rejectedChip">
+            ✓ {{ 'Approvata' | wmtrans }}
+          </ng-container>
+          <ng-template #rejectedChip>✕ {{ 'Non accettata' | wmtrans }}</ng-template>
+        </span>
+        <span *ngIf="vm.certification.decidedAt" class="wm-passport-detail-outcome-date">
+          {{ 'Decisa il {{date}}' | wmtrans: {date: shortDate(vm.certification.decidedAt)} }}
+        </span>
+      </div>
+      <wm-passport-note *ngIf="vm.certification.decisionNote" [note]="vm.certification.decisionNote"></wm-passport-note>
+      <div *ngIf="vm.showEmailHint" class="wm-passport-detail-outcome-hint">
+        <ng-container *ngIf="vm.outcome === 'approved'; else rejectedHint">
+          {{ 'Le tappe riconosciute sono elencate nell\'email che ti abbiamo inviato.' | wmtrans }}
+        </ng-container>
+        <ng-template #rejectedHint>
+          {{ 'Trovi il motivo nell\'email che ti abbiamo inviato. Puoi inviare nuove foto della credenziale.' | wmtrans }}
+        </ng-template>
+      </div>
+      <button *ngIf="vm.showRetry" type="button" class="wm-passport-detail-retry" (click)="host?.openForm()">
+        📷 {{ 'Invia una nuova richiesta' | wmtrans }}
+      </button>
     </div>
 
     <div class="wm-passport-detail-stages">

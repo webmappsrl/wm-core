@@ -5,15 +5,15 @@
         <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>{{ 'passport.cta.title' | wmtrans }}</ion-title>
+    <ion-title>{{ 'Richiedi certificazione' | wmtrans }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="wm-passport-form ion-padding">
-  <p class="wm-passport-form-intro">{{ 'passport.form.intro' | wmtrans }}</p>
+  <p class="wm-passport-form-intro">{{ 'Carica una o più foto della credenziale cartacea timbrata alle tappe percorse. La richiesta verrà revisionata dal gestore del cammino.' | wmtrans }}</p>
 
   <h3 class="wm-passport-form-label">
-    {{ 'passport.form.photos' | wmtrans }} ({{ photos.length }}/{{ maxPhotos }}) *
+    {{ 'Foto credenziale' | wmtrans }} ({{ photos.length }}/{{ maxPhotos }}) *
   </h3>
   <wm-image-picker
     [maxPhotos]="maxPhotos"
@@ -21,7 +21,7 @@
     (photosChanged)="onPhotos($event)"
   ></wm-image-picker>
   <ion-note *ngIf="triedSubmit && !photosValid" color="danger" role="alert">
-    {{ 'passport.form.errorPhotos' | wmtrans }}
+    {{ 'Aggiungi almeno una foto della credenziale' | wmtrans }}
   </ion-note>
 
   <form [formGroup]="form">
@@ -29,9 +29,9 @@
       <ion-input
         formControlName="serialNumber"
         labelPlacement="stacked"
-        [label]="'passport.form.serial' | wmtrans"
-        [helperText]="'passport.form.serialHint' | wmtrans"
-        [placeholder]="'passport.form.serialPlaceholder' | wmtrans"
+        [label]="'Numero seriale' | wmtrans"
+        [helperText]="'Inserisci il numero seriale se richiesto dal cammino' | wmtrans"
+        [placeholder]="'es. CG-2026-00341' | wmtrans"
       ></ion-input>
     </ion-item>
 
@@ -39,16 +39,16 @@
 
     <ion-item lines="none" class="wm-passport-form-disclaimer">
       <ion-checkbox formControlName="disclaimer" labelPlacement="end" justify="start">
-        <span class="ion-text-wrap">{{ 'passport.form.disclaimer' | wmtrans }}</span>
+        <span class="ion-text-wrap">{{ '[TESTO SEGNAPOSTO — da sostituire con il disclaimer legale] Accetto che nome, cognome e foto della credenziale siano trattati per validare il cammino.' | wmtrans }}</span>
       </ion-checkbox>
     </ion-item>
     <ion-note *ngIf="triedSubmit && !form.controls.disclaimer.value" color="danger" role="alert">
-      {{ 'passport.form.errorDisclaimer' | wmtrans }}
+      {{ 'Accetta il disclaimer per inviare la richiesta' | wmtrans }}
     </ion-note>
   </form>
 
   <ion-button class="wm-passport-form-submit" expand="block" [disabled]="submitting" (click)="submit()">
     <ion-spinner *ngIf="submitting" name="crescent" slot="start"></ion-spinner>
-    {{ 'passport.form.submit' | wmtrans }}
+    {{ 'Invia richiesta' | wmtrans }}
   </ion-button>
 </ion-content>

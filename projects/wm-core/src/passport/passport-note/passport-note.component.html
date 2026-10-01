@@ -1,0 +1,14 @@
+<!-- Nota del gestore, wireframe E5 (oc:8671) -->
+<div class="wm-passport-note">
+  <div class="wm-passport-note-label">{{ 'Nota del gestore' | wmtrans }}</div>
+  <div #text class="wm-passport-note-text" [class.wm-passport-note-text--open]="expanded">«{{ note }}»</div>
+  <button
+    *ngIf="showToggle"
+    type="button"
+    class="wm-passport-note-toggle"
+    [attr.aria-expanded]="expanded"
+    (click)="toggle()"
+  >
+    {{ (expanded ? 'Mostra meno' : 'Leggi tutto') | wmtrans }}
+  </button>
+</div>

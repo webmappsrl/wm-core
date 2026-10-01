@@ -28,3 +28,6 @@ Contesto e perché: [docs/knowledge/testbed-isolamento.md](../../docs/knowledge/
 - **`posthog-capacitor.client.spec.ts` chiama `resetTestingModule()` dentro il corpo di un
   `it()`**, non in un hook: un nuovo `describe` eredita il TestBed già istanziato. Difenditi col
   reset nel tuo `beforeEach`; quel file non è stato normalizzato.
+- **Non spiare i plugin Capacitor (`App`, `Camera`…) con `spyOn`**: sono Proxy e lo spy non si
+  aggancia, la chiamata vera parte comunque. Avvolgi la chiamata in un metodo del service e spia
+  quello (`spyOn<any>(svc, '_addResumeListener')`) (oc:8671).

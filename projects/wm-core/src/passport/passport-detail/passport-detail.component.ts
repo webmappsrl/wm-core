@@ -1,6 +1,13 @@
-import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
-import {map, switchMap} from 'rxjs/operators';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewEncapsulation,
+} from '@angular/core';
+import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
+import {catchError, map, switchMap, tap} from 'rxjs/operators';
 import {PassportCertification, PassportProgress} from '@wm-types/passport';
 import {LangService} from '@wm-core/localization/lang.service';
 import {PassportService} from '../passport.service';
@@ -9,9 +16,22 @@ import {passportRingDegrees} from '../passport.utils';
 /** Dati del dettaglio del cammino. */
 export interface PassportDetailVm {
   progress: PassportProgress;
-  certification: PassportCertification;
-  /** CTA visibile solo se il cammino non è completato e non c'è una richiesta in attesa. */
+  /** Ultima richiesta di certificazione; `null` se la prima lettura è fallita (stato sconosciuto). */
+  certification: PassportCertification | null;
+  /** CTA visibile solo se il cammino non è completato e non c'è ancora nessuna richiesta. */
   showCta: boolean;
+  /**
+   * «Invia una nuova richiesta» dopo un esito (oc:8671): sempre dopo un rifiuto, dopo
+   * un'approvazione solo se il cammino non è completato.
+   */
+  showRetry: boolean;
+  /** Esito del gestore da mostrare, `null` se non c'è ancora una decisione. */
+  outcome: 'approved' | 'rejected' | null;
+  /**
+   * Rimando all'email di esito: sempre per l'approvata, che vi elenca le tappe riconosciute; per la
+   * non accettata solo senza nota, perché altrimenti il motivo è già nella nota.
+   */
+  showEmailHint: boolean;
 }
 
 /** Operazioni della modale host usate dal dettaglio. */
@@ -21,9 +41,10 @@ export interface PassportDetailHost {
 }
 
 /**
- * Dettaglio del cammino nel passaporto (oc:8166, wireframe V1/V3): radice dell'`ion-nav`
- * della modale. Quando il template si sottoscrive, e ogni volta che torna in primo piano,
- * verifica se esiste una richiesta di certificazione inviata.
+ * Dettaglio del cammino nel passaporto (oc:8166, oc:8671; wireframe V1/V3/E1–E5): radice
+ * dell'`ion-nav` della modale. Quando il template si sottoscrive, ogni volta che torna in primo
+ * piano nell'`ion-nav` e a ogni `resume` dell'app, rilegge l'ultima richiesta di certificazione e
+ * ne mostra lo stato o l'esito.
  */
 @Component({
   standalone: false,
@@ -33,7 +54,7 @@ export interface PassportDetailHost {
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class WmPassportDetailComponent {
+export class WmPassportDetailComponent implements OnInit, OnDestroy {
   @Input() layerId: number;
   @Input() layerTitle: string;
   /** Logo al centro dell'anello e immagine sbiadita di sfondo, come nel wireframe. */
@@ -52,6 +73,10 @@ export class WmPassportDetailComponent {
   private readonly _refresh$ = new BehaviorSubject<void>(undefined);
   /** La prima entrata non ricarica: i dati arrivano già con la sottoscrizione del template. */
   private _entered = false;
+  /** Ultimo stato letto con successo, mostrato se una rilettura fallisce. */
+  private _lastCertification: PassportCertification | null = null;
+  /** Ascolto del ritorno dell'app in primo piano, attivo finché la modale è aperta. */
+  private _resumeSub: Subscription | null = null;
 
   constructor(
     private _passportSvc: PassportService,
@@ -61,15 +86,39 @@ export class WmPassportDetailComponent {
       switchMap(() =>
         combineLatest([
           this._passportSvc.getProgress(this.layerId),
-          this._passportSvc.getCertification(this.layerId),
+          // l'errore resta dentro la singola rilettura: se chiudesse lo stream, il dettaglio non si
+          // aggiornerebbe più fino alla riapertura della modale (oc:8671)
+          this._passportSvc.getCertification(this.layerId).pipe(
+            tap(certification => (this._lastCertification = certification)),
+            catchError(() => of(this._lastCertification)),
+          ),
         ]),
       ),
-      map(([progress, certification]) => ({
-        progress,
-        certification,
-        showCta: progress.percent < 100 && certification.status === 'none',
-      })),
+      map(([progress, certification]) => {
+        const status = certification?.status;
+        const notDone = progress.percent < 100;
+        const outcome = status === 'approved' || status === 'rejected' ? status : null;
+        return {
+          progress,
+          certification,
+          showCta: notDone && status === 'none',
+          showRetry: outcome === 'rejected' || (outcome === 'approved' && notDone),
+          outcome,
+          showEmailHint: outcome === 'approved' || (outcome === 'rejected' && !certification.decisionNote),
+        };
+      }),
     );
+  }
+
+  /** Rilegge lo stato a ogni ritorno dell'app in primo piano, per vedere l'esito appena arriva. */
+  ngOnInit(): void {
+    this._resumeSub = this._passportSvc.appResume$().subscribe(() => this.refresh());
+  }
+
+  /** Alla chiusura della modale smette di ascoltare il ritorno in primo piano. */
+  ngOnDestroy(): void {
+    this._resumeSub?.unsubscribe();
+    this._resumeSub = null;
   }
 
   /** Ionic chiama questo hook quando il dettaglio torna in primo piano nell'`ion-nav`. */

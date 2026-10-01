@@ -1,0 +1,51 @@
+@import '../passport-theme';
+
+// Nota del gestore, wireframe E5 (oc:8671).
+.wm-passport-note {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: $passport-note-bg;
+}
+
+.wm-passport-note-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: $passport-note-label;
+}
+
+.wm-passport-note-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.4;
+  color: $passport-text;
+  overflow-wrap: anywhere;
+}
+
+// aperta: il dettaglio non scorre, quindi la nota ha un tetto e scorre da sola
+.wm-passport-note-text--open {
+  display: block;
+  -webkit-line-clamp: unset;
+  max-height: 33vh;
+  overflow-y: auto;
+}
+
+.wm-passport-note-toggle {
+  min-height: 32px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: $passport-link;
+  cursor: pointer;
+}

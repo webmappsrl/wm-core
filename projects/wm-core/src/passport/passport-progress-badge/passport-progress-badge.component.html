@@ -5,9 +5,9 @@
   (click)="openDetail()"
 >
   <span class="wm-passport-progress-badge-percent">
-    {{ 'passport.badge.percent' | wmtrans: {percent: vm.percent} }}
+    {{ '{{percent}}% completato' | wmtrans: {percent: vm.percent} }}
   </span>
   <span class="wm-passport-progress-badge-stages">
-    {{ 'passport.badge.stages' | wmtrans: {completed: vm.completed, total: vm.total} }}
+    {{ '{{completed}}/{{total}} tappe percorse · tocca per i dettagli' | wmtrans: {completed: vm.completed, total: vm.total} }}
   </span>
 </button>

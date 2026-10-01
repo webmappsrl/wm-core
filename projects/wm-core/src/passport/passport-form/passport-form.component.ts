@@ -123,10 +123,10 @@ export class WmPassportFormComponent implements OnInit, OnDestroy, PassportLeave
         }),
       );
       this.photos = [];
-      await this._toast('passport.form.sent');
+      await this._toast('Richiesta inviata');
       await this.host.backToDetail();
     } catch {
-      await this._toast('passport.form.error');
+      await this._toast('Invio non riuscito, riprova');
     } finally {
       this.submitting = false;
       this._cdr.markForCheck();
@@ -142,7 +142,7 @@ export class WmPassportFormComponent implements OnInit, OnDestroy, PassportLeave
     if (this.photos.length === 0) return true;
     if (this.submitting) return false;
     const alert = await this._alertCtrl.create({
-      message: this._langSvc.instant('passport.form.leave'),
+      message: this._langSvc.instant('Hai foto non inviate. Vuoi uscire e perderle?'),
       buttons: [
         {text: this._langSvc.instant('Annulla'), role: 'cancel'},
         {text: this._langSvc.instant('Esci'), role: 'confirm'},
