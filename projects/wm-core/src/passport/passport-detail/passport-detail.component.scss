@@ -89,27 +89,64 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-shrink: 0;
-  margin: 12px 16px;
-  padding: 12px 14px;
-  border: 2px dashed $passport-amber;
-  border-radius: 10px;
-  background: $passport-amber-bg;
+  @include passport-status-box($passport-amber, $passport-amber-bg);
 }
 
 .wm-passport-detail-pending-chip {
-  flex-shrink: 0;
-  padding: 4px 10px;
-  border-radius: 12px;
-  background: $passport-amber-chip;
-  color: $passport-amber-text;
-  font-size: 13px;
-  font-weight: 700;
+  @include passport-status-chip($passport-amber-chip, $passport-amber-text);
 }
 
 .wm-passport-detail-pending-hint {
   font-size: 13px;
   color: $passport-amber-text;
+}
+
+.wm-passport-detail-outcome {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  @include passport-status-box($passport-green, $passport-green-bg);
+}
+
+.wm-passport-detail-outcome--rejected {
+  border-color: $passport-red;
+  background: $passport-red-bg;
+}
+
+.wm-passport-detail-outcome-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.wm-passport-detail-outcome-chip {
+  @include passport-status-chip($passport-green-chip, $passport-green-dark);
+}
+
+.wm-passport-detail-outcome--rejected .wm-passport-detail-outcome-chip {
+  background: $passport-red-chip;
+  color: $passport-red-text;
+}
+
+.wm-passport-detail-outcome-date,
+.wm-passport-detail-outcome-hint {
+  font-size: 13px;
+  line-height: 1.35;
+  color: $passport-outcome-text;
+}
+
+// stesso bottone nei due esiti (oc:8671)
+.wm-passport-detail-retry {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 8px;
+  background: $passport-green-dark;
+  color: $passport-on-green;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .wm-passport-detail-stages {

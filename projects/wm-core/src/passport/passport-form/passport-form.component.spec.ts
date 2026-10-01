@@ -111,7 +111,7 @@ describe('WmPassportFormComponent (oc:8166)', () => {
 
     await cmp.submit();
 
-    expect(toastCtrl.create).toHaveBeenCalledWith(jasmine.objectContaining({message: 'passport.form.sent'}));
+    expect(toastCtrl.create).toHaveBeenCalledWith(jasmine.objectContaining({message: 'Richiesta inviata'}));
     expect(host.backToDetail).toHaveBeenCalled();
     expect(cmp.photos.length).toBe(0);
   });
@@ -144,7 +144,7 @@ describe('WmPassportFormComponent (oc:8166)', () => {
 
     await cmp.submit();
 
-    expect(toastCtrl.create).toHaveBeenCalledWith(jasmine.objectContaining({message: 'passport.form.error'}));
+    expect(toastCtrl.create).toHaveBeenCalledWith(jasmine.objectContaining({message: 'Invio non riuscito, riprova'}));
     expect(cmp.photos.length).toBe(2);
     expect(cmp.submitting).toBeFalse();
     expect(host.backToDetail).not.toHaveBeenCalled();

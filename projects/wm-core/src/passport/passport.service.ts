@@ -1,14 +1,18 @@
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Store} from '@ngrx/store';
+import {App} from '@capacitor/app';
+import {PluginListenerHandle} from '@capacitor/core';
 import {Observable, of, throwError} from 'rxjs';
 import {catchError, delay, distinctUntilChanged, map, switchMap} from 'rxjs/operators';
 import {layerFeaturesTotalCount} from '@wm-core/store/features/ec/ec.selector';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {EnvironmentService} from '@wm-core/services/environment.service';
+import {LangService} from '@wm-core/localization/lang.service';
 import {
   PassportCertification,
   PassportCertificationRequest,
+  PassportCertificationStatus,
   PassportProgress,
   PassportStage,
 } from '@wm-types/passport';
@@ -20,7 +24,12 @@ const MOCK_LATENCY_MS = 400;
 interface CertificationResponse {
   status: string;
   submitted_at?: string;
+  decided_at?: string | null;
+  decision_note?: string | null;
 }
+
+/** Stati della richiesta che il backend può restituire, oltre a `none`. */
+const KNOWN_STATUSES: PassportCertificationStatus[] = ['pending', 'approved', 'rejected'];
 
 /** Estensione del nome file per tipo MIME, fra quelli accettati dal backend. */
 const EXTENSION_BY_TYPE: Record<string, string> = {
@@ -36,9 +45,12 @@ const EXTENSION_BY_TYPE: Record<string, string> = {
  *
  * Stato e invio della richiesta di certificazione usano il backend camminiditalia
  * (`CertificationRequestController`), con il token aggiunto da `AuthInterceptor`:
- * - `GET /api/layer/{layer}/certification` → `{status: "none"}` oppure `{status: "pending", submitted_at}`
+ * - `GET /api/layer/{layer}/certification` → l'ultima richiesta dell'utente per il layer:
+ *   `{status: "none"}` oppure `{status: "pending"|"approved"|"rejected", submitted_at, decided_at,
+ *   decision_note}` (oc:8671)
  * - `POST /api/layer/{layer}/certification` (multipart: `images[]`, `serial_number`,
  *   `disclaimer_accepted`) → 201 `{status, submitted_at}`, 409 se c'è già una richiesta in attesa.
+ *   Porta `Accept-Language` con la lingua dell'app, per la lingua della mail di esito (oc:8671).
  *
  * ⚠️ MOCK: il progresso delle tappe è ancora simulato, perché il backend non ha una rotta per
  * il progresso (dipende da oc:8165). Il contratto è in `@wm-types/passport`: quando la rotta
@@ -50,7 +62,25 @@ export class PassportService {
     private _store: Store,
     private _http: HttpClient,
     private _environmentSvc: EnvironmentService,
+    private _langSvc: LangService,
   ) {}
+
+  /**
+   * Ritorno dell'app in primo piano (oc:8671), per rileggere lo stato della richiesta dopo la mail
+   * di esito. Usa il `resume` di `@capacitor/app`, che scatta sul nativo e, nel browser, al cambio
+   * di visibilità della pagina. Non `DeviceService.onForeground`: ascolta `document 'resume'`, che
+   * nel browser non arriva, ed è un `ReplaySubject(1)` che emetterebbe appena ci si iscrive.
+   *
+   * @returns Observable che emette a ogni ritorno in primo piano; la disiscrizione rimuove il listener.
+   */
+  appResume$(): Observable<void> {
+    return new Observable<void>(subscriber => {
+      const handle = this._addResumeListener(() => subscriber.next());
+      return () => {
+        handle.then(h => h.remove());
+      };
+    });
+  }
 
   /**
    * Avanzamento del cammino per l'utente corrente.
@@ -105,7 +135,11 @@ export class PassportService {
    */
   submitCertification(req: PassportCertificationRequest): Observable<PassportCertification> {
     return this._http
-      .post<CertificationResponse>(this._certificationUrl(req.layerId), this._toFormData(req))
+      .post<CertificationResponse>(
+        this._certificationUrl(req.layerId),
+        this._toFormData(req),
+        this._languageOptions(),
+      )
       .pipe(
         map(res => this._toCertification(req.layerId, res)),
         catchError((err: unknown) =>
@@ -114,6 +148,28 @@ export class PassportService {
             : throwError(() => err),
         ),
       );
+  }
+
+  /**
+   * Registra il listener `resume` di Capacitor. Metodo a parte perché `App` è un Proxy di
+   * Capacitor, che nei test non si lascia spiare.
+   *
+   * @param callback Funzione chiamata a ogni ritorno in primo piano.
+   * @returns La promise dell'handle del listener.
+   */
+  private _addResumeListener(callback: () => void): Promise<PluginListenerHandle> {
+    return App.addListener('resume', callback);
+  }
+
+  /**
+   * Opzioni HTTP con la lingua scelta nell'app, da cui il backend sceglie la lingua della mail di
+   * esito (oc:8671). Solo per l'invio: un header globale cambierebbe le risposte di ogni backend.
+   *
+   * @returns Le opzioni con `Accept-Language`, vuote se la lingua non è ancora impostata.
+   */
+  private _languageOptions(): {headers?: HttpHeaders} {
+    const lang = this._langSvc.currentLang;
+    return lang ? {headers: new HttpHeaders({'Accept-Language': lang})} : {};
   }
 
   /**
@@ -127,17 +183,27 @@ export class PassportService {
   }
 
   /**
-   * Converte la risposta del backend nel tipo del frontend. Gli stati che il frontend non gestisce
-   * ancora (approvata, rifiutata) valgono come «nessuna richiesta».
+   * Converte la risposta del backend nel tipo del frontend. Uno stato sconosciuto vale come
+   * «nessuna richiesta»; una nota vuota o di soli spazi come nota assente.
    *
    * @param layerId Id del layer.
    * @param res Risposta del backend.
    * @returns Lo stato della richiesta.
    */
   private _toCertification(layerId: number, res: CertificationResponse): PassportCertification {
-    return res?.status === 'pending'
-      ? {layerId, status: 'pending', submittedAt: res.submitted_at}
-      : {layerId, status: 'none'};
+    const status = res?.status as PassportCertificationStatus;
+    if (!KNOWN_STATUSES.includes(status)) {
+      return {layerId, status: 'none'};
+    }
+    const certification: PassportCertification = {layerId, status, submittedAt: res.submitted_at};
+    if (res.decided_at) {
+      certification.decidedAt = res.decided_at;
+    }
+    const note = res.decision_note?.trim();
+    if (note) {
+      certification.decisionNote = note;
+    }
+    return certification;
   }
 
   /**

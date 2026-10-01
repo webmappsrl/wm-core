@@ -9,9 +9,9 @@ describe('PassportService (oc:8166)', () => {
   const counts = {'3': {tracks: 12}, '4': {tracks: 30}, '5': {tracks: 6}, '9': {tracks: 0}};
   let http: {get: jasmine.Spy; post: jasmine.Spy};
 
-  function create(logged = true): PassportService {
+  function create(logged = true, currentLang: string | undefined = 'it'): PassportService {
     const store = {select: (sel: unknown) => (sel === isLogged ? of(logged) : of(counts))} as any;
-    return new PassportService(store, http as any, {origin: ORIGIN} as any);
+    return new PassportService(store, http as any, {origin: ORIGIN} as any, {currentLang} as any);
   }
 
   const request = (serialNumber?: string) => ({
@@ -57,7 +57,7 @@ describe('PassportService (oc:8166)', () => {
 
     it('se il conteggio delle track arriva dopo, il progresso si aggiorna', done => {
       const counts$ = new BehaviorSubject<any>({'3': {tracks: 0}});
-      const late = new PassportService({select: () => counts$} as any, http as any, {origin: ORIGIN} as any);
+      const late = new PassportService({select: () => counts$} as any, http as any, {origin: ORIGIN} as any, {} as any);
       const totals: number[] = [];
       const sub = late.getProgress(3).subscribe(p => {
         totals.push(p.totalStages);
@@ -101,10 +101,54 @@ describe('PassportService (oc:8166)', () => {
       expect(c).toEqual({layerId: 3, status: 'pending', submittedAt: '2026-09-29T10:00:00+02:00'});
     });
 
-    it('uno stato che il frontend non gestisce ancora (approved, rejected) diventa none', async () => {
-      http.get.and.returnValue(of({status: 'approved', submitted_at: '2026-09-29T10:00:00+02:00'}));
+    it('approvata con nota: stato, date e nota (oc:8671)', async () => {
+      http.get.and.returnValue(
+        of({
+          status: 'approved',
+          submitted_at: '2026-09-30T11:14:00+00:00',
+          decided_at: '2026-09-30T11:29:00+00:00',
+          decision_note: 'Timbri 2 e 5 leggibili',
+        }),
+      );
 
-      expect((await firstValueFrom(create().getCertification(3))).status).toBe('none');
+      const c = await firstValueFrom(create().getCertification(3));
+
+      expect(c).toEqual({
+        layerId: 3,
+        status: 'approved',
+        submittedAt: '2026-09-30T11:14:00+00:00',
+        decidedAt: '2026-09-30T11:29:00+00:00',
+        decisionNote: 'Timbri 2 e 5 leggibili',
+      });
+    });
+
+    it('rifiutata senza nota: decisionNote assente (oc:8671)', async () => {
+      http.get.and.returnValue(
+        of({
+          status: 'rejected',
+          submitted_at: '2026-09-30T11:14:00+00:00',
+          decided_at: '2026-09-30T11:29:00+00:00',
+          decision_note: null,
+        }),
+      );
+
+      const c = await firstValueFrom(create().getCertification(3));
+
+      expect(c.status).toBe('rejected');
+      expect(c.decidedAt).toBe('2026-09-30T11:29:00+00:00');
+      expect(c.decisionNote).toBeUndefined();
+    });
+
+    it('nota vuota o di soli spazi vale come assente (oc:8671)', async () => {
+      http.get.and.returnValue(of({status: 'rejected', decided_at: '2026-09-30T11:29:00+00:00', decision_note: '   '}));
+
+      expect((await firstValueFrom(create().getCertification(3))).decisionNote).toBeUndefined();
+    });
+
+    it('uno stato sconosciuto diventa none', async () => {
+      http.get.and.returnValue(of({status: 'cancelled', submitted_at: '2026-09-29T10:00:00+02:00'}));
+
+      expect(await firstValueFrom(create().getCertification(3))).toEqual({layerId: 3, status: 'none'});
     });
   });
 
@@ -147,6 +191,81 @@ describe('PassportService (oc:8166)', () => {
       http.post.and.returnValue(throwError(() => new HttpErrorResponse({status: 422})));
 
       await expectAsync(firstValueFrom(create().submitCertification(request()))).toBeRejected();
+    });
+
+    it("il POST manda Accept-Language con la lingua scelta nell'app (oc:8671)", async () => {
+      http.post.and.returnValue(of({status: 'pending', submitted_at: '2026-09-30T11:14:00+00:00'}));
+
+      await firstValueFrom(create(true, 'en').submitCertification(request()));
+
+      const options = http.post.calls.mostRecent().args[2];
+      expect(options.headers.get('Accept-Language')).toBe('en');
+    });
+
+    it('senza lingua impostata il POST non manda Accept-Language (oc:8671)', async () => {
+      http.post.and.returnValue(of({status: 'pending', submitted_at: '2026-09-30T11:14:00+00:00'}));
+
+      await firstValueFrom(create(true, '').submitCertification(request()));
+
+      const options = http.post.calls.mostRecent().args[2];
+      expect(options?.headers?.has('Accept-Language') ?? false).toBeFalse();
+    });
+
+    it('il GET non manda Accept-Language (oc:8671)', async () => {
+      http.get.and.returnValue(of({status: 'none'}));
+
+      await firstValueFrom(create(true, 'en').getCertification(3));
+
+      expect(http.get.calls.mostRecent().args.length).toBe(1);
+    });
+  });
+
+  describe('ritorno in primo piano: appResume$ (oc:8671)', () => {
+    let resumeCb: () => void;
+    let remove: jasmine.Spy;
+    let register: (value: {remove: () => Promise<void>}) => void;
+
+    let addListener: jasmine.Spy;
+
+    // `App` di Capacitor è un Proxy e non si lascia spiare: lo spy va sul metodo che lo avvolge
+    function createWithListener(): PassportService {
+      const svc = create();
+      addListener = spyOn<any>(svc, '_addResumeListener').and.callFake((cb: () => void) => {
+        resumeCb = cb;
+        return new Promise(resolve => (register = resolve));
+      });
+      return svc;
+    }
+
+    beforeEach(() => {
+      remove = jasmine.createSpy('remove').and.resolveTo();
+    });
+
+    it('emette a ogni resume e rimuove il listener alla disiscrizione', async () => {
+      const emitted: void[] = [];
+      const sub = createWithListener().appResume$().subscribe(v => emitted.push(v));
+      register({remove});
+      await Promise.resolve();
+
+      resumeCb();
+      resumeCb();
+      sub.unsubscribe();
+      await Promise.resolve();
+
+      expect(addListener).toHaveBeenCalledTimes(1);
+      expect(emitted.length).toBe(2);
+      expect(remove).toHaveBeenCalledTimes(1);
+    });
+
+    it('rimuove il listener anche se la disiscrizione arriva prima della registrazione', async () => {
+      const sub = createWithListener().appResume$().subscribe();
+      sub.unsubscribe();
+
+      register({remove});
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(remove).toHaveBeenCalledTimes(1);
     });
   });
 

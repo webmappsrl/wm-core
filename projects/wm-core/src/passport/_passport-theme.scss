@@ -35,3 +35,36 @@ $passport-amber-text: #8a6412;
   font-size: 13px;
   color: $passport-green-text;
 }
+
+// Esito della richiesta di certificazione (oc:8671): non accettata in rosso, etichetta della nota.
+$passport-red: #c0392b;
+$passport-red-bg: #fbeceb;
+$passport-red-chip: #f6d3cf;
+$passport-red-text: #8e2a1f;
+$passport-green-chip: #cfeed8;
+$passport-note-label: #6b6b6b;
+$passport-note-bg: #fff;
+$passport-text: #333;
+$passport-outcome-text: #444;
+$passport-link: #2874a6;
+$passport-on-green: #fff;
+
+// Riquadro di stato della richiesta fuori dallo scroll (in revisione, esito): cambiano solo i colori.
+@mixin passport-status-box($border, $bg) {
+  flex-shrink: 0;
+  margin: 12px 16px;
+  padding: 12px 14px;
+  border: 2px dashed $border;
+  border-radius: 10px;
+  background: $bg;
+}
+
+@mixin passport-status-chip($bg, $color) {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: $bg;
+  color: $color;
+  font-size: 13px;
+  font-weight: 700;
+}

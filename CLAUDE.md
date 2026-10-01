@@ -25,6 +25,10 @@ nel repo di quel prodotto.
   regola, vista dall'altro lato, sta nel suo `CLAUDE.md`.
 - **Una modifica qui arriva a entrambi i prodotti.** Prima di cambiare un componente condiviso,
   considera che i consumer hanno temi e varianti propri che questo repo non vede.
+- **Nei file `localization/i18n/*.ts` la chiave è il testo italiano**, ripetuto come valore anche in
+  `it.ts` (`'Richiedi certificazione': 'Demander la certification'`), mai una chiave strutturata
+  come `passport.cta.title`. Prima di aggiungerne una, cerca se lo stesso testo esiste già: due
+  chiavi uguali nello stesso file non compilano.
 
 ## Comandi
 
