@@ -18,7 +18,7 @@ export const openDownloads = createAction('[User Activity] Open User downloads')
 export const closeDownloads = createAction('[User Activity] Close User downloads');
 export const inputTyped = createAction(
   '[User Activity] set input typed',
-  props<{inputTyped: string | null}>(),
+  props<{inputTyped: string | null; restored?: boolean}>(),
 );
 export const setLoading = createAction('[User Activity] Set Loading', props<{loading: boolean}>());
 

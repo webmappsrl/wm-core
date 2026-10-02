@@ -40,6 +40,17 @@ export class UrlHandlerService {
     filter: undefined,
     gallery_index: undefined,
   };
+  /**
+   * Gli ultimi parametri letti da `initialize()`. Diversi da `_currentQueryParams$`, che
+   * `navigateTo()` aggiorna già prima che la navigazione avvenga (oc:8684).
+   */
+  private _lastReadParams: Params = {};
+  /**
+   * Copia del testo di ricerca tolto dall'URL all'apertura di una `track` o di un `poi`: la X
+   * della track (`closeTrack()`) lo rimette nell'URL. Si cancella non appena nell'URL non c'è
+   * più nessuna track (oc:8684).
+   */
+  private _savedSearch: string | null = null;
 
   private _ugcOpened$ = this._store.select(ugcOpened);
 
@@ -82,6 +93,22 @@ export class UrlHandlerService {
       // precedenti (oc:8470).
       this._currentQueryParams$.next(params);
 
+      // Un link o un ricaricamento che apre una `track`/`poi` con `search` si normalizza: `search`
+      // esce dall'URL senza aggiungere un passo alla cronologia e resta come copia salvata. I
+      // dispatch partono alla lettura successiva, quella senza `search`; `_lastReadParams` resta
+      // quello di prima, e alla lettura successiva la condizione non vale più perché `search` non
+      // c'è. Una `search` aggiunta con track/poi invariati (la search bar col popup di un POI
+      // aperto) non si normalizza: è una ricerca digitata (oc:8684).
+      if (this._opensTrackOrPoiWithSearch(params, this._lastReadParams)) {
+        this._savedSearch = this._decodeQueryParam(params.search);
+        this.navigateTo([], {...params, search: undefined}, {replaceUrl: true});
+        return;
+      }
+      // Senza track nell'URL la copia salvata non ha più contesto, comunque la si sia chiusa.
+      if (params.track == null) {
+        this._savedSearch = null;
+      }
+
       this._store.dispatch(currentEcLayerId({currentEcLayerId: params.layer ?? null}));
       this._store.dispatch(currentEcTrackId({currentEcTrackId: params.track ?? null}));
       this._store.dispatch(currentEcPoiId({currentEcPoiId: params.poi ?? null}));
@@ -95,21 +122,53 @@ export class UrlHandlerService {
           currentEcImageGalleryIndex: params.gallery_index ? +params.gallery_index : null,
         }),
       );
-      this._store.dispatch(inputTyped({inputTyped: this._decodeQueryParam(params.search)}));
+      // Una ricerca che ricompare quando si chiude una track o un poi (X, indietro del browser) è
+      // ripristinata, non digitata: PostHog non la conta. Se track/poi restano nell'URL, la
+      // ricerca è digitata ora (oc:8684).
+      const restored =
+        params.search != null &&
+        params.search !== this._lastReadParams.search &&
+        params.track == null &&
+        params.poi == null &&
+        (this._lastReadParams.track != null || this._lastReadParams.poi != null);
+      this._store.dispatch(
+        inputTyped({inputTyped: this._decodeQueryParam(params.search), restored}),
+      );
       this._checkIfUgcIsOpened(params);
 
       // Traccia gli eventi PostHog per i cambiamenti di URL sulla app mobile
       this._mobileTrackUrlChange(params);
+
+      this._lastReadParams = params;
     });
   }
 
-  navigateTo(routes: string[] = [], queryParams: Params = this._emptyParams): void {
+  navigateTo(
+    routes: string[] = [],
+    queryParams: Params = this._emptyParams,
+    extras?: {replaceUrl?: boolean},
+  ): void {
     this._currentQueryParams$.next(queryParams);
     this._router.navigate(routes, {
       relativeTo: this._route,
       queryParams,
       queryParamsHandling: '',
+      ...extras,
     });
+  }
+
+  /**
+   * Chiude la track aperta e, se all'apertura era stata tolta una ricerca, la rimette nell'URL
+   * (oc:8684). Senza copia salvata si comporta come la chiusura di sempre.
+   */
+  closeTrack(): void {
+    const savedSearch = this._savedSearch;
+    this._savedSearch = null;
+    const queryParams: Params = {track: undefined};
+    if (savedSearch) {
+      queryParams.search = savedSearch;
+    }
+    this.updateURL(queryParams);
   }
 
   /**
@@ -139,6 +198,13 @@ export class UrlHandlerService {
           newParams[fieldsToRemove] = undefined;
         });
       }
+    }
+    // Aprire una `track` o un `poi` azzera la ricerca e ne salva una copia per la X della track.
+    // Senza `search` la copia non si tocca: aprire un POI dalla track non la sovrascrive. Le
+    // aperture UGC restano come prima (oc:8684).
+    if (this._opensTrackOrPoiWithSearch(newParams, oldParams)) {
+      this._savedSearch = this._decodeQueryParam(newParams.search);
+      newParams.search = undefined;
     }
     if (JSON.stringify(newParams) !== JSON.stringify(oldParams)) {
       this._checkIfUgcIsOpened(newParams);
@@ -227,6 +293,18 @@ export class UrlHandlerService {
     } catch {
       return value;
     }
+  }
+
+  /**
+   * Vero se `next` apre una `track` o un `poi` diversi da quelli di `previous` mentre la ricerca è
+   * ancora presente: è il caso in cui `search` si toglie e se ne salva una copia (oc:8684).
+   * Aggiungere `search` con track/poi invariati non è un'apertura. Il confronto è volutamente
+   * lasco (`!=`): lo stesso id può arrivare come numero da `updateURL()` e come stringa dall'URL.
+   */
+  private _opensTrackOrPoiWithSearch(next: Params, previous: Params): boolean {
+    const opensTrack = next.track != null && next.track != previous.track;
+    const opensPoi = next.poi != null && next.poi != previous.poi;
+    return (opensTrack || opensPoi) && !!next.search;
   }
 
   private _checkIfUgcIsOpened(queryParams: Params): void {

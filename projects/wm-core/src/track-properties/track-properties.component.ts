@@ -50,7 +50,7 @@ export class TrackPropertiesComponent {
   ) {}
 
   close(): void {
-    this._urlHandlerSvc.updateURL({track: undefined});
+    this._urlHandlerSvc.closeTrack();
   }
 
   onLocationHover(event: WmSlopeChartHoverElements): void {
