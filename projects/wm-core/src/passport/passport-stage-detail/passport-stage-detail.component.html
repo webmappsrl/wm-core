@@ -1,0 +1,31 @@
+<!-- Pagina della tappa nel passaporto, vista 3 del wireframe (oc:8676). «Condividi» è fuori scope. -->
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="host?.back()" [attr.aria-label]="'Indietro' | wmtrans">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ layerTitle }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="wm-passport-stage-detail">
+  <h2 class="wm-passport-stage-detail-title">{{ title }}</h2>
+
+  <div class="wm-passport-stage-detail-status">
+    <span
+      class="wm-passport-stage-detail-chip"
+      [class.wm-passport-stage-detail-chip--todo]="!done"
+      role="status"
+    >
+      <span aria-hidden="true">{{ done ? '✓' : '○' }}</span>
+      {{ chipLabel }}
+    </span>
+  </div>
+
+  <div *ngIf="showDistance" class="wm-passport-stage-detail-row">
+    <span class="wm-passport-stage-detail-row-label">{{ 'Distanza' | wmtrans }}</span>
+    <span class="wm-passport-stage-detail-row-value">{{ stage.distance }} Km</span>
+  </div>
+</ion-content>

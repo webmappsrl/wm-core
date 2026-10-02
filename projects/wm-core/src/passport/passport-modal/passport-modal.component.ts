@@ -12,6 +12,8 @@ import {Subscription} from 'rxjs';
 import {WmPassportDetailComponent} from '../passport-detail/passport-detail.component';
 import {PassportLeaveGuard} from '../passport-leave-guard';
 import {WmPassportFormComponent} from '../passport-form/passport-form.component';
+import {WmPassportStageDetailComponent} from '../passport-stage-detail/passport-stage-detail.component';
+import {PassportStage} from '@wm-types/passport';
 
 /**
  * Modale a tutto schermo del passaporto (oc:8166): `ion-nav` con il dettaglio come radice e il
@@ -39,6 +41,8 @@ export class WmPassportModalComponent implements AfterViewInit, OnDestroy {
   private _guard: PassportLeaveGuard | null = null;
   /** Vero mentre il form viene spinto: protegge dal doppio tap sulla CTA. */
   private _openingForm = false;
+  /** Vero mentre la pagina di una tappa viene spinta: protegge dal doppio tap sulla riga. */
+  private _openingStage = false;
 
   constructor(
     private _modalCtrl: ModalController,
@@ -89,6 +93,22 @@ export class WmPassportModalComponent implements AfterViewInit, OnDestroy {
       await this.nav.push(WmPassportFormComponent, {layerId: this.layerId, host: this});
     } finally {
       this._openingForm = false;
+    }
+  }
+
+  /**
+   * Apre sopra il dettaglio la pagina della tappa toccata (oc:8676, vista 3). Un doppio tap sulla
+   * riga non spinge una seconda pagina.
+   *
+   * @param stage Tappa da mostrare.
+   */
+  async openStage(stage: PassportStage): Promise<void> {
+    if (this._openingStage) return;
+    this._openingStage = true;
+    try {
+      await this.nav.push(WmPassportStageDetailComponent, {stage, layerTitle: this.layerTitle, host: this});
+    } finally {
+      this._openingStage = false;
     }
   }
 

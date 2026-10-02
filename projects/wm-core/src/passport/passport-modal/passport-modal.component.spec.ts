@@ -2,6 +2,7 @@ import {Subject} from 'rxjs';
 import {WmPassportModalComponent} from './passport-modal.component';
 import {WmPassportFormComponent} from '../passport-form/passport-form.component';
 import {WmPassportDetailComponent} from '../passport-detail/passport-detail.component';
+import {WmPassportStageDetailComponent} from '../passport-stage-detail/passport-stage-detail.component';
 
 describe('WmPassportModalComponent (oc:8166)', () => {
   let modalCtrl: jasmine.SpyObj<any>;
@@ -112,6 +113,32 @@ describe('WmPassportModalComponent (oc:8166)', () => {
     await cmp.openForm();
 
     expect(nav.push).toHaveBeenCalledWith(WmPassportFormComponent, {layerId: 7, host: cmp});
+  });
+
+  it('openStage spinge la pagina della tappa con tappa, titolo e host (oc:8676)', async () => {
+    const stage = {trackId: 203, name: {it: 'Tappa 06'}, status: 'completed', distance: 19.5} as any;
+    nav.push.and.resolveTo(true);
+
+    await cmp.openStage(stage);
+
+    expect(nav.push).toHaveBeenCalledWith(WmPassportStageDetailComponent, {
+      stage,
+      layerTitle: 'Cammino',
+      host: cmp,
+    });
+  });
+
+  it('un doppio tap su una tappa spinge una sola pagina (oc:8676)', async () => {
+    let resolve: (v: boolean) => void;
+    nav.push.and.returnValue(new Promise<boolean>(r => (resolve = r)));
+    const stage = {trackId: 1, name: {}, status: 'not_started', distance: 0} as any;
+
+    const first = cmp.openStage(stage);
+    await cmp.openStage(stage);
+    resolve(true);
+    await first;
+
+    expect(nav.push).toHaveBeenCalledTimes(1);
   });
 
   it('imposta la radice con i parametri in un solo passo, non via binding (race di ion-nav)', () => {

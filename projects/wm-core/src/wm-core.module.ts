@@ -82,6 +82,7 @@ import {WmPassportModalComponent} from './passport/passport-modal/passport-modal
 import {WmPassportDetailComponent} from './passport/passport-detail/passport-detail.component';
 import {WmPassportFormComponent} from './passport/passport-form/passport-form.component';
 import {WmPassportNoteComponent} from './passport/passport-note/passport-note.component';
+import {WmPassportStageDetailComponent} from './passport/passport-stage-detail/passport-stage-detail.component';
 import {WmPassportLogoRingDirective} from './passport/passport-logo-ring/passport-logo-ring.directive';
 import {ModalGetDirectionsComponent} from './modal-get-directions/modal-get-directions.component';
 import {ModalReleaseUpdateComponent} from './modal-release-update/modal-release-update.component';
@@ -161,6 +162,7 @@ export const declarations = [
   WmPassportModalComponent,
   WmPassportDetailComponent,
   WmPassportFormComponent,
+  WmPassportStageDetailComponent,
   WmPassportNoteComponent,
   WmPassportLogoRingDirective,
   ModalGetDirectionsComponent,
