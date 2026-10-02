@@ -21,7 +21,9 @@ export class SelectFilterComponent {
    */
   isPoiOptionVisible(
     identifier: string,
-    stats: {[id: string]: number},
+    // Stesso tipo di `FiltersComponent.poisStats$`: un tipo più stretto passa i test ma rompe il
+    // controllo dei template della build di produzione (oc:8684)
+    stats: {[id: string]: unknown},
     selected: (string | {identifier: string})[],
   ): boolean {
     if (stats?.[identifier] != null) return true;
