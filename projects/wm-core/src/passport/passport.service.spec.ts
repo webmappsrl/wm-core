@@ -3,14 +3,19 @@ import {BehaviorSubject, firstValueFrom, of, throwError} from 'rxjs';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {PassportService} from './passport.service';
 import {passportRingDegrees, toLayerId} from './passport.utils';
+import {
+  LAYER_30_PROGRESS,
+  LAYER_40_GPS_PARTIAL,
+  LAYER_40_PROGRESS,
+  LAYER_63_PROGRESS,
+} from './passport-progress.fixtures';
 
-describe('PassportService (oc:8166)', () => {
+describe('PassportService (oc:8166, oc:8676)', () => {
   const ORIGIN = 'http://127.0.0.1:8000';
-  const counts = {'3': {tracks: 12}, '4': {tracks: 30}, '5': {tracks: 6}, '9': {tracks: 0}};
   let http: {get: jasmine.Spy; post: jasmine.Spy};
 
   function create(logged = true, currentLang: string | undefined = 'it'): PassportService {
-    const store = {select: (sel: unknown) => (sel === isLogged ? of(logged) : of(counts))} as any;
+    const store = {select: (sel: unknown) => (sel === isLogged ? of(logged) : of(null))} as any;
     return new PassportService(store, http as any, {origin: ORIGIN} as any, {currentLang} as any);
   }
 
@@ -25,61 +30,162 @@ describe('PassportService (oc:8166)', () => {
     http = {get: jasmine.createSpy('get'), post: jasmine.createSpy('post')};
   });
 
-  describe('progresso (ancora mock: il backend non ha la rotta)', () => {
-    it('è deterministico e copre 0%, parziale e 100%', async () => {
-      const svc = create();
-      const p3 = await firstValueFrom(svc.getProgress(3));
-      const p4 = await firstValueFrom(svc.getProgress(4));
-      const p5 = await firstValueFrom(svc.getProgress(5));
-
-      expect(p3.percent).toBe(0);
-      expect(p4.percent).toBeGreaterThan(0);
-      expect(p4.percent).toBeLessThan(100);
-      expect(p5.percent).toBe(100);
-      expect(p4.stages.length).toBe(30);
-    });
-
-    it('nel parziale ci sono tappe percorse, una in corso e le altre non percorse', async () => {
-      const p = await firstValueFrom(create().getProgress(4));
-      const statuses = p.stages.map(s => s.status);
-
-      expect(statuses.filter(s => s === 'completed').length).toBe(p.completedStages);
-      expect(statuses.filter(s => s === 'in_progress').length).toBe(1);
-      expect(statuses[statuses.length - 1]).toBe('not_started');
-    });
-
-    it('un layer senza track ha totalStages 0 e nessuna tappa', async () => {
-      const p = await firstValueFrom(create().getProgress(9));
-
-      expect(p.totalStages).toBe(0);
-      expect(p.stages).toEqual([]);
-    });
-
-    it('se il conteggio delle track arriva dopo, il progresso si aggiorna', done => {
-      const counts$ = new BehaviorSubject<any>({'3': {tracks: 0}});
-      const late = new PassportService({select: () => counts$} as any, http as any, {origin: ORIGIN} as any, {} as any);
-      const totals: number[] = [];
-      const sub = late.getProgress(3).subscribe(p => {
-        totals.push(p.totalStages);
-        if (totals.length === 1) counts$.next({'3': {tracks: 12}});
-        if (totals.length === 2) {
-          expect(totals).toEqual([0, 12]);
-          sub.unsubscribe();
-          done();
-        }
+  describe('progresso: GET /api/layer/{id}/progress (oc:8676)', () => {
+    const answer = (byLayer: Record<number, unknown>) =>
+      http.get.and.callFake((url: string) => {
+        const id = Number(url.match(/layer\/(\d+)\/progress/)?.[1]);
+        return byLayer[id] instanceof Error ? throwError(() => byLayer[id]) : of(byLayer[id]);
       });
-    });
-  });
 
-  describe('visibleProgress', () => {
-    it('loggato e con tappe restituisce il progresso', async () => {
-      expect((await firstValueFrom(create(true).visibleProgress(4)))?.totalStages).toBe(30);
+    /** Service senza listener `resume` vero: `App` è un Proxy di Capacitor, non si lascia spiare. */
+    function createQuiet(logged = true): PassportService {
+      const svc = create(logged);
+      spyOn<any>(svc, '_addResumeListener').and.returnValue(new Promise(() => {}));
+      return svc;
+    }
+
+    it('chiama la rotta del layer e converte cammino e tappe', async () => {
+      answer({40: LAYER_40_PROGRESS});
+      const p = await firstValueFrom(createQuiet().getProgress(40));
+
+      expect(http.get).toHaveBeenCalledWith(`${ORIGIN}/api/layer/40/progress`);
+      expect(p.layerId).toBe(40);
+      expect(p.totalStages).toBe(13);
+      expect(p.completedStages).toBe(6);
+      expect(p.percent).toBe(46);
+      expect(p.completed).toBeFalse();
+      expect(p.stages.length).toBe(13);
+      const s203 = p.stages.find(s => s.trackId === 203);
+      expect(s203.status).toBe('completed');
+      expect(s203.completedAt).toBe('2026-09-30T14:45:55+00:00');
+      expect(s203.distance).toBe(19.5);
+      expect(s203.source).toBe('manual');
+      expect(s203.name.it.startsWith('Cammino Grande di Celestino - Tappa 06')).toBeTrue();
     });
 
-    it('non loggato, senza id o senza tappe restituisce null', async () => {
-      expect(await firstValueFrom(create(false).visibleProgress(4))).toBeNull();
-      expect(await firstValueFrom(create(true).visibleProgress(null))).toBeNull();
-      expect(await firstValueFrom(create(true).visibleProgress(9))).toBeNull();
+    it('le tappe non validate con progress 0 sono not_started, senza data né origine', async () => {
+      answer({40: LAYER_40_PROGRESS});
+      const s215 = (await firstValueFrom(createQuiet().getProgress(40))).stages.find(s => s.trackId === 215);
+
+      expect(s215.status).toBe('not_started');
+      expect(s215.completedAt).toBeUndefined();
+      expect(s215.source).toBeUndefined();
+      expect(s215.percent).toBeUndefined();
+    });
+
+    it('una tappa non validata con progress parziale è in_progress, e non cambia i conteggi', async () => {
+      answer({40: LAYER_40_GPS_PARTIAL});
+      const p = await firstValueFrom(createQuiet().getProgress(40));
+      const s216 = p.stages.find(s => s.trackId === 216);
+
+      expect(s216.status).toBe('in_progress');
+      expect(s216.percent).toBe(62);
+      expect(p.completedStages).toBe(6);
+    });
+
+    it('uno stato sconosciuto diventa not_started; name e distance assenti hanno un default', async () => {
+      answer({7: {...LAYER_30_PROGRESS, layer_id: 7, total: 1, tracks: [{id: 1, status: 'boh'}]}});
+      const [stage] = (await firstValueFrom(createQuiet().getProgress(7))).stages;
+
+      expect(stage.status).toBe('not_started');
+      expect(stage.name).toEqual({});
+      expect(stage.distance).toBe(0);
+    });
+
+    it('visibleProgress: null senza tappe, senza login o senza id', async () => {
+      answer({30: LAYER_30_PROGRESS, 63: LAYER_63_PROGRESS});
+
+      expect(await firstValueFrom(createQuiet().visibleProgress(30))).toBeNull();
+      expect(await firstValueFrom(createQuiet(false).visibleProgress(63))).toBeNull();
+      expect(await firstValueFrom(createQuiet().visibleProgress(null))).toBeNull();
+      expect((await firstValueFrom(createQuiet().visibleProgress(63)))?.totalStages).toBe(3);
+    });
+
+    it('due consumatori dello stesso layer fanno una sola richiesta', () => {
+      answer({40: LAYER_40_PROGRESS});
+      const svc = createQuiet();
+      const a = svc.progress$(40).subscribe();
+      const b = svc.visibleProgress(40).subscribe();
+
+      expect(http.get).toHaveBeenCalledTimes(1);
+      a.unsubscribe();
+      b.unsubscribe();
+    });
+
+    it("se una rilettura fallisce riemette l'ultimo valore letto", () => {
+      answer({40: LAYER_40_PROGRESS});
+      const svc = createQuiet();
+      const seen: Array<number | null> = [];
+      const sub = svc.progress$(40).subscribe(p => seen.push(p ? p.completedStages : null));
+      answer({40: new Error('offline')});
+      svc.refreshProgress(40);
+
+      expect(seen).toEqual([6, 6]);
+      sub.unsubscribe();
+    });
+
+    it("l'ultimo valore resta per la sessione anche dopo che nessuno guarda più il layer", () => {
+      answer({40: LAYER_40_PROGRESS});
+      const svc = createQuiet();
+      svc.progress$(40).subscribe().unsubscribe();
+      answer({40: new Error('offline')});
+      const seen: Array<number | null> = [];
+      svc.progress$(40).subscribe(p => seen.push(p ? p.completedStages : null)).unsubscribe();
+
+      expect(seen).toEqual([6]);
+    });
+
+    it("al logout dimentica l'ultimo valore: un altro utente non vede le tappe del precedente", () => {
+      const logged$ = new BehaviorSubject(true);
+      const store = {select: () => logged$} as any;
+      const svc = new PassportService(store, http as any, {origin: ORIGIN} as any, {currentLang: 'it'} as any);
+      spyOn<any>(svc, '_addResumeListener').and.returnValue(new Promise(() => {}));
+      answer({40: LAYER_40_PROGRESS});
+      svc.progress$(40).subscribe().unsubscribe();
+      logged$.next(false);
+      logged$.next(true);
+      answer({40: new Error('offline')});
+      const seen: unknown[] = [];
+      svc.progress$(40).subscribe(p => seen.push(p)).unsubscribe();
+
+      expect(seen).toEqual([null]);
+    });
+
+    it('senza nessuna lettura riuscita emette null', () => {
+      answer({40: new Error('offline')});
+      const seen: unknown[] = [];
+      createQuiet().progress$(40).subscribe(p => seen.push(p)).unsubscribe();
+
+      expect(seen).toEqual([null]);
+    });
+
+    it('refreshProgress rilegge solo il layer indicato', () => {
+      answer({40: LAYER_40_PROGRESS, 63: LAYER_63_PROGRESS});
+      const svc = createQuiet();
+      const a = svc.progress$(40).subscribe();
+      const b = svc.progress$(63).subscribe();
+      http.get.calls.reset();
+      svc.refreshProgress(40);
+
+      expect(http.get).toHaveBeenCalledTimes(1);
+      expect(http.get).toHaveBeenCalledWith(`${ORIGIN}/api/layer/40/progress`);
+      a.unsubscribe();
+      b.unsubscribe();
+    });
+
+    it('il ritorno in primo piano rilegge il progresso', () => {
+      answer({40: LAYER_40_PROGRESS});
+      const svc = create();
+      let resumeCb: () => void;
+      spyOn<any>(svc, '_addResumeListener').and.callFake((cb: () => void) => {
+        resumeCb = cb;
+        return new Promise(() => {});
+      });
+      const sub = svc.progress$(40).subscribe();
+      resumeCb();
+
+      expect(http.get).toHaveBeenCalledTimes(2);
+      sub.unsubscribe();
     });
   });
 

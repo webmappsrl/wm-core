@@ -2,19 +2,25 @@ import {firstValueFrom, of, Subject, throwError} from 'rxjs';
 import {WmPassportDetailComponent} from './passport-detail.component';
 
 describe('WmPassportDetailComponent (oc:8166)', () => {
-  const partial = {totalStages: 12, completedStages: 0, percent: 0, stages: []};
-  const done = {totalStages: 6, completedStages: 6, percent: 100, stages: []};
+  const partial = {totalStages: 12, completedStages: 0, percent: 0, completed: false, stages: []};
+  const done = {totalStages: 6, completedStages: 6, percent: 100, completed: true, stages: []};
+  const stage = (trackId: number, it: string) => ({trackId, name: {it}, status: 'not_started', distance: 0});
 
-  function create(progress: any, certification: any) {
+  function create(
+    progress: any,
+    certification: any,
+    lang: any = {currentLang: 'it', onLangChange: new Subject<any>(), instant: (k: string, p?: any) => k.replace('{{date}}', p?.date ?? '')},
+  ) {
     const resume$ = new Subject<void>();
     const svc = {
-      getProgress: jasmine.createSpy('getProgress').and.returnValue(of(progress)),
+      progress$: jasmine.createSpy('progress$').and.returnValue(of(progress)),
+      refreshProgress: jasmine.createSpy('refreshProgress'),
       getCertification: jasmine.createSpy('getCertification').and.returnValue(of(certification)),
       appResume$: () => resume$,
     } as any;
-    const cmp = new WmPassportDetailComponent(svc, {currentLang: 'it'} as any);
+    const cmp = new WmPassportDetailComponent(svc, lang as any);
     cmp.layerId = 3;
-    return {cmp, svc, resume$};
+    return {cmp, svc, resume$, lang};
   }
 
   it("all'apertura verifica lo stato della richiesta del layer", async () => {
@@ -23,7 +29,7 @@ describe('WmPassportDetailComponent (oc:8166)', () => {
     await firstValueFrom(cmp.vm$);
 
     expect(svc.getCertification).toHaveBeenCalledWith(3);
-    expect(svc.getProgress).toHaveBeenCalledWith(3);
+    expect(svc.progress$).toHaveBeenCalledWith(3);
   });
 
   it('nessuna richiesta e cammino non completato: mostra la CTA', async () => {
@@ -87,7 +93,7 @@ describe('WmPassportDetailComponent (oc:8166)', () => {
   });
 
   it('la lingua «pr» del repo si formatta come portoghese', () => {
-    const svc = {getProgress: () => of(partial), getCertification: () => of({status: 'none'})} as any;
+    const svc = {progress$: () => of(partial), getCertification: () => of({status: 'none'})} as any;
     const cmp = new WmPassportDetailComponent(svc, {currentLang: 'pr'} as any);
 
     expect(cmp.shortDate('2026-05-12')).toBe(new Intl.DateTimeFormat('pt', {day: 'numeric', month: 'short'}).format(new Date('2026-05-12')));
@@ -124,13 +130,13 @@ describe('WmPassportDetailComponent (oc:8166)', () => {
       expect(vm.showCta).toBeFalse();
     });
 
-    it("approvata: esito approvato e rimando all'email anche con la nota", async () => {
+    it("approvata: esito approvato, niente rimando all'email: le tappe sono a schermo (oc:8676)", async () => {
       const vm = await firstValueFrom(
         create(partial, {status: 'approved', decisionNote: 'Timbri 2 e 5 leggibili'}).cmp.vm$,
       );
 
       expect(vm.outcome).toBe('approved');
-      expect(vm.showEmailHint).toBeTrue();
+      expect(vm.showEmailHint).toBeFalse();
     });
 
     it("non accettata con nota: niente rimando all'email, la nota basta", async () => {
@@ -209,6 +215,124 @@ describe('WmPassportDetailComponent (oc:8166)', () => {
       cmp.ngOnDestroy();
 
       expect(resume$.observed).toBeFalse();
+    });
+  });
+
+  describe('tappe validate (oc:8676)', () => {
+    it('prima lettura del progresso fallita: progress null, certificazione comunque presente', async () => {
+      const vm = await firstValueFrom(create(null, {status: 'none'}).cmp.vm$);
+
+      expect(vm.progress).toBeNull();
+      expect(vm.stages).toEqual([]);
+      expect(vm.certification.status).toBe('none');
+      expect(vm.showCta).toBeFalse();
+      expect(vm.showRetry).toBeFalse();
+    });
+
+    it('le tappe del vm sono ordinate per nome', async () => {
+      const progress = {...partial, stages: [stage(1, 'Tappa 06'), stage(2, 'Tappa 01'), stage(3, 'Tappa 10')]};
+      const vm = await firstValueFrom(create(progress, {status: 'none'}).cmp.vm$);
+
+      expect(vm.stages.map(s => s.trackId)).toEqual([2, 1, 3]);
+    });
+
+    it('al cambio lingua le tappe si riordinano nella lingua nuova', () => {
+      const progress = {
+        ...partial,
+        stages: [
+          {...stage(1, 'B'), name: {it: 'B', en: 'A'}},
+          {...stage(2, 'A'), name: {it: 'A', en: 'B'}},
+        ],
+      };
+      const {cmp, lang} = create(progress, {status: 'none'});
+      const seen: number[][] = [];
+      const sub = cmp.vm$.subscribe(vm => seen.push(vm.stages.map(s => s.trackId)));
+      lang.currentLang = 'en';
+      lang.onLangChange.next({lang: 'en'});
+
+      expect(seen).toEqual([[2, 1], [1, 2]]);
+      sub.unsubscribe();
+    });
+
+    it('il completamento viene dal backend, non dalla percentuale', async () => {
+      const completedLow = {...partial, percent: 99, completed: true};
+      const notCompletedFull = {...partial, percent: 100, completed: false};
+
+      expect((await firstValueFrom(create(completedLow, {status: 'approved'}).cmp.vm$)).showRetry).toBeFalse();
+      expect((await firstValueFrom(create(notCompletedFull, {status: 'approved'}).cmp.vm$)).showRetry).toBeTrue();
+    });
+
+    it('refresh rilegge anche il progresso, per tutti quelli che lo mostrano', () => {
+      const {cmp, svc} = create(partial, {status: 'none'});
+      const sub = cmp.vm$.subscribe();
+
+      cmp.refresh();
+
+      expect(svc.refreshProgress).toHaveBeenCalledWith(3);
+      expect(svc.getCertification).toHaveBeenCalledTimes(2);
+      sub.unsubscribe();
+    });
+
+    it('stageLabel mostra il nome della tappa nella lingua corrente', () => {
+      const {cmp} = create(partial, {status: 'none'});
+
+      expect(cmp.stageLabel({...stage(1, 'Tappa 01'), name: {it: 'Tappa 01', en: 'Stage 01'}} as any)).toBe('Tappa 01');
+    });
+  });
+
+  describe('richieste e accessibilità (oc:8676, review)', () => {
+    it('refresh rilegge senza risottoscrivere lo stream condiviso del progresso', () => {
+      const {cmp, svc} = create(partial, {status: 'none'});
+      const sub = cmp.vm$.subscribe();
+
+      cmp.refresh();
+      cmp.refresh();
+
+      expect(svc.progress$).toHaveBeenCalledTimes(1);
+      expect(svc.refreshProgress).toHaveBeenCalledTimes(2);
+      sub.unsubscribe();
+    });
+
+    it('al resume rilegge solo la certificazione: il progresso si rilegge già da sé', () => {
+      const {cmp, svc, resume$} = create(partial, {status: 'pending'});
+      const sub = cmp.vm$.subscribe();
+      cmp.ngOnInit();
+
+      resume$.next();
+
+      expect(svc.getCertification).toHaveBeenCalledTimes(2);
+      expect(svc.refreshProgress).not.toHaveBeenCalled();
+      sub.unsubscribe();
+      cmp.ngOnDestroy();
+    });
+
+    it('tornando da una tappa non rilegge nulla; tornando dal form sì', async () => {
+      const {cmp, svc} = create(partial, {status: 'none'});
+      cmp.host = {openForm: () => Promise.resolve(), openStage: () => Promise.resolve(), close: () => Promise.resolve()};
+      const sub = cmp.vm$.subscribe();
+      cmp.ionViewWillEnter();
+
+      await cmp.openStage(stage(1, 'Tappa 01') as any);
+      cmp.ionViewWillEnter();
+      expect(svc.getCertification).toHaveBeenCalledTimes(1);
+
+      cmp.ionViewWillEnter();
+      expect(svc.getCertification).toHaveBeenCalledTimes(2);
+      sub.unsubscribe();
+    });
+
+    it("l'etichetta accessibile della riga dice nome e stato", () => {
+      const {cmp} = create(partial, {status: 'none'});
+      const done = {...stage(1, 'Tappa 01'), status: 'completed', completedAt: '2026-09-30T14:45:55+00:00'};
+
+      expect(cmp.rowAriaLabel(done as any)).toBe('Tappa 01, percorsa il 30 set');
+      expect(cmp.rowAriaLabel(stage(2, 'Tappa 02') as any)).toBe('Tappa 02, non ancora percorsa');
+    });
+
+    it('trackStage identifica la riga con l\'id della tappa', () => {
+      const {cmp} = create(partial, {status: 'none'});
+
+      expect(cmp.trackStage(0, stage(7, 'X') as any)).toBe(7);
     });
   });
 });

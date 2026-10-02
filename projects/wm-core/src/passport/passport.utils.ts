@@ -1,3 +1,6 @@
+import {Language} from '@wm-types/language';
+import {PassportStage} from '@wm-types/passport';
+
 /**
  * Gradi dell'arco verde di un anello di avanzamento del passaporto (oc:8166): unica regola per
  * anello del logo, dettaglio e icona della tappa in corso.
@@ -17,4 +20,70 @@ export function passportRingDegrees(percent: number | null | undefined): number 
  */
 export function toLayerId(layerId: string | number | null | undefined): number | null {
   return layerId != null && layerId !== '' ? Number(layerId) : null;
+}
+
+/**
+ * Nome di una tappa nella lingua corrente, poi in italiano, poi nella prima lingua disponibile
+ * (oc:8676).
+ *
+ * @param stage Tappa del passaporto.
+ * @param lang Lingua corrente dell'app.
+ * @returns Il nome, vuoto se la tappa non ne ha.
+ */
+export function stageName(stage: PassportStage, lang: string): string {
+  const name = stage?.name ?? {};
+  return name[lang as Language] || name.it || Object.values(name).find(v => !!v) || '';
+}
+
+/**
+ * Tappe ordinate per nome con confronto naturale («Tappa 02» prima di «Tappa 10»), quelle senza
+ * nome in fondo (oc:8676): il backend non ha un ordine di percorrenza.
+ *
+ * @param stages Tappe del cammino, non modificate.
+ * @param lang Lingua corrente dell'app, usata per il nome e per il confronto.
+ * @returns Una copia ordinata.
+ */
+export function sortStages(stages: PassportStage[], lang: string): PassportStage[] {
+  const locale = intlLocale(lang);
+  return [...(stages ?? [])].sort((a, b) => {
+    const nameA = sortKey(stageName(a, lang));
+    const nameB = sortKey(stageName(b, lang));
+    if (!nameA || !nameB) return nameA ? -1 : nameB ? 1 : 0;
+    return nameA.localeCompare(nameB, locale, {numeric: true});
+  });
+}
+
+/**
+ * Chiave di ordinamento: i due punti diventano spazi, così «Tappa 09: …» precede sempre
+ * «Tappa 09 Variante: …», qualunque sia la parola che segue (lo spazio viene prima delle lettere).
+ *
+ * @param name Nome della tappa.
+ * @returns La chiave da confrontare.
+ */
+function sortKey(name: string): string {
+  return name.replace(/:/g, ' ');
+}
+
+/**
+ * Data breve nella lingua dell'app («12 mag»), come nel wireframe, nel fuso del dispositivo.
+ *
+ * @param iso Data ISO 8601.
+ * @param lang Lingua corrente dell'app.
+ * @returns La data formattata, vuota se assente.
+ */
+export function passportShortDate(iso: string | undefined, lang: string): string {
+  if (!iso) return '';
+  return new Intl.DateTimeFormat(intlLocale(lang), {day: 'numeric', month: 'short'}).format(
+    new Date(iso),
+  );
+}
+
+/**
+ * Codice di lingua per `Intl`: nel repo il portoghese ha codice «pr», che `Intl` non riconosce.
+ *
+ * @param lang Lingua corrente dell'app.
+ * @returns Il codice per `Intl`, `it` se assente.
+ */
+function intlLocale(lang: string | undefined): string {
+  return lang === 'pr' ? 'pt' : lang || 'it';
 }
