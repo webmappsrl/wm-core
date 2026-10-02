@@ -6,6 +6,7 @@ import {
   filterFeatures,
   filterFeaturesByInputTyped,
   filterFeaturesByLayerId,
+  filterTrackPois,
   hasLayerIdData,
 } from './utils';
 import {Elastic} from '@wm-types/elastic';
@@ -167,10 +168,6 @@ export const poisFilteredFeaturesByInputTypeStats = createSelector(
   poisFilteredFeaturesByInputType,
   poisFilteredFeaturesByInputType => buildStats(poisFilteredFeaturesByInputType),
 );
-export const poisStats = createSelector(
-  poisFilteredFeaturesByInputTypeStats,
-  poisFilteredFeaturesByInputTypeStats => poisFilteredFeaturesByInputTypeStats,
-);
 export const hasActiveFilters = createSelector(
   filterTracks,
   poiFilters,
@@ -190,6 +187,25 @@ export const currentEcRelatedPois = createSelector(currentEcTrackProperties, pro
   const res = (properties?.related_pois as WmFeature<Point>[]) ?? null;
   return res;
 });
+/**
+ * I POI su cui lavora il pannello filtri quando è aperta una track: i suoi `related_pois` con le
+ * tipologie selezionate e il testo digitato. `null` se nessuna track è aperta. Da qui derivano sia
+ * `poisStats` sia `poisFiltersPanelCount`, così i due non possono divergere (oc:8684).
+ */
+export const trackPanelPois = createSelector(
+  currentEcTrack,
+  currentEcRelatedPois,
+  poiFilterIdentifiers,
+  inputTyped,
+  (track, relatedPois, filters, input): WmFeature<Point>[] | null =>
+    track != null ? filterTrackPois(relatedPois, filters, input) : null,
+);
+// Con una track aperta il pannello filtri lavora sui POI della track, non su quelli globali.
+export const poisStats = createSelector(
+  poisFilteredFeaturesByInputTypeStats,
+  trackPanelPois,
+  (globalStats, trackPois) => (trackPois != null ? buildStats(trackPois) : globalStats),
+);
 export const currentEcRelatedPoi = createSelector(
   currentEcRelatedPois,
   currentEcRelatedPoiId,

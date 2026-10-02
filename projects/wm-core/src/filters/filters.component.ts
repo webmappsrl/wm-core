@@ -21,7 +21,7 @@ import {
 import {confFILTERS} from '../store/conf/conf.selector';
 import {SelectFilterOption, SliderFilter, Filter} from '../types/config';
 import {FilterType} from '@wm-types/user-activity';
-import {countPois, countTracks} from '@wm-core/store/features/features.selector';
+import {poisFiltersPanelCount, countTracks} from '@wm-core/store/features/features.selector';
 import {filterTracks} from '@wm-core/store/user-activity/user-activity.selector';
 import {
   resetPoiFilters,
@@ -54,7 +54,7 @@ export class FiltersComponent {
   @Output() resetFiltersEvt: EventEmitter<void> = new EventEmitter<void>();
 
   confFILTERS$: Observable<{[key: string]: any} | undefined> = this._store.select(confFILTERS);
-  countPois$: Observable<number> = this._store.select(countPois);
+  countPois$: Observable<number> = this._store.select(poisFiltersPanelCount);
   countSelectedFilters$: Observable<number> = this._store.select(countSelectedFilters);
   countTracks$: Observable<number> = this._store.select(countTracks);
   poiFilters$: Observable<any> = this._store.select(poiFilters);

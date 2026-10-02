@@ -16,6 +16,7 @@ import {
   currentEcTrack,
   ecPois,
   ecTracks,
+  trackPanelPois,
 } from './ec/ec.selector';
 import {
   countUgcAll,
@@ -35,6 +36,18 @@ export const countPois = createSelector(
   countUgcPois,
   ugcOpened,
   (ec, ugc, ugcOpened) => (ugcOpened ? ugc : ec),
+);
+// Conteggio del pannello filtri: con una track aperta (e non UGC) conta i POI della track filtrati.
+export const poisFiltersPanelCount = createSelector(
+  trackPanelPois,
+  countEcPois,
+  countUgcPois,
+  ugcOpened,
+  (trackPois, ecCount, ugcCount, ugcOpened) => {
+    if (ugcOpened) return ugcCount;
+    if (trackPois != null) return trackPois.length;
+    return ecCount;
+  },
 );
 export const countTracks = createSelector(
   countEcTracks,
