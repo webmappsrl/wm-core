@@ -80,7 +80,7 @@ Il dettaglio di ogni lavoro sta nel proprio cantiere sotto `docs/features/<slug>
 | Cache delle API e log in produzione | Header condizionale in `handleApiCache`, triage dei `console.*` | oc:8374, oc:8369 | [docs/knowledge/cache-e-log.md](docs/knowledge/cache-e-log.md) |
 | Deep link | Perché il percorso nativo è stato scartato, ordine in `initialize()`, navigazione Home→Map | oc:8470, oc:7980 | [docs/knowledge/deep-link.md](docs/knowledge/deep-link.md) |
 | Dettaglio di un POI | Cosa rende `wm-poi-properties` e cosa resta ai contenitori, da dove vengono indirizzo, telefoni e località | oc:8406 | [docs/knowledge/dettaglio-poi.md](docs/knowledge/dettaglio-poi.md) |
-| Filtro dei POI | Due stage tassonomia + layer ID, retrocompatibilità legacy, binding multi-direttiva | oc:8147, oc:7646 | [docs/knowledge/filtri-poi.md](docs/knowledge/filtri-poi.md) |
+| Filtro dei POI | Due stage tassonomia + layer ID, pannello con una track aperta, `search` azzerato all'apertura e ripristinato dalla X, binding multi-direttiva | oc:8147, oc:7646, oc:8684 | [docs/knowledge/filtri-poi.md](docs/knowledge/filtri-poi.md) |
 | Home: tab, conteggi ed etichette | Scelta del tab risultati, badge non filtrato, chiavi i18n condivise badge/segment | oc:7643, oc:8221 | [docs/knowledge/home-ricerca-e-tab.md](docs/knowledge/home-ricerca-e-tab.md) |
 | Immagini: galleria e dettaglio | Un solo `wm-image-detail` in due contenitori, `isAppMobile` vs `isMobile`, `object-fit` nei box e nel dettaglio | oc:8406 | [docs/knowledge/immagini-e-galleria.md](docs/knowledge/immagini-e-galleria.md) |
 | Isolamento del TestBed | Reset fra spec file, campi `static`, config Karma del progetto | oc:7989 | [docs/knowledge/testbed-isolamento.md](docs/knowledge/testbed-isolamento.md) |
