@@ -54,6 +54,8 @@ export interface UserActivityState {
   mapDetailsStatus: mapDetailsStatus;
   downloadsOpened: boolean;
   inputTyped?: string;
+  /** Vero se la ricerca corrente è stata ripristinata dall'URL (X della track, indietro): non conta come ricerca su PostHog (oc:8684). */
+  inputTypedRestored: boolean;
   filterTracks: Filter[];
   filterTaxonomies: any[];
   currentLayer?: ILAYER;
@@ -97,6 +99,7 @@ const initialState: UserActivityState = {
   mapDetailsStatus: 'background',
   downloadsOpened: false,
   inputTyped: null,
+  inputTypedRestored: false,
   filterTracks: [],
   drawTrackOpened: false,
   drawPoiOpened: false,
@@ -147,10 +150,11 @@ export const userActivityReducer = createReducer(
       mapDetailsStatus: status,
     };
   }),
-  on(inputTyped, (state, {inputTyped}) => {
+  on(inputTyped, (state, {inputTyped, restored}) => {
     const newState: UserActivityState = {
       ...state,
       inputTyped,
+      inputTypedRestored: restored ?? false,
       homeResultTabSelected: null,
     };
     return newState;

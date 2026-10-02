@@ -12,7 +12,7 @@
           <ng-container *ngIf="parent.poiFilters$|async as poiFilters">
             <ng-container *ngFor="let option of filter.options| orderedBySelection:(poiFilters)">
               <ion-chip
-                *ngIf="poisStats[option.identifier]!= null"
+                *ngIf="isPoiOptionVisible(option.identifier, poisStats, poiFilters)"
                 outline="true"
                 (click)="addPoiFilter(option)"
                 color="{{option.identifier|isSelected:(poiFilters)}}"

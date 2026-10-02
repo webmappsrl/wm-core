@@ -1,4 +1,9 @@
-import {filterFeaturesByLayerId, hasLayerIdData, calculateLayerFeaturesCount} from './utils';
+import {
+  filterFeaturesByLayerId,
+  hasLayerIdData,
+  calculateLayerFeaturesCount,
+  withPoiTypeIdentifiers,
+} from './utils';
 import {WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
 
@@ -152,5 +157,39 @@ describe('calculateLayerFeaturesCount — legacy server (no properties.layers, f
     expect(result['1'].pois).toBe(2); // POI 1 (has 10 and 20) and POI 2 (has 20)
     expect(result['2'].pois).toBe(1); // POI 3 (has 30)
     expect(result['3'].pois).toBe(0); // no POI with taxonomy 99
+  });
+});
+
+describe('withPoiTypeIdentifiers', () => {
+  const poi = (props: any): WmFeature<Point> =>
+    ({type: 'Feature', geometry: {type: 'Point', coordinates: [0, 0]}, properties: props} as any);
+
+  it('ricava poi_type_<identifier> se taxonomyIdentifiers manca', () => {
+    const res = withPoiTypeIdentifiers([
+      poi({id: 1, taxonomy: {poi_type: {identifier: 'accomodation'}}}),
+    ]);
+    expect(res[0].properties.taxonomyIdentifiers).toEqual(['poi_type_accomodation']);
+  });
+
+  it('lascia taxonomyIdentifiers se è già valorizzato', () => {
+    const res = withPoiTypeIdentifiers([
+      poi({
+        id: 1,
+        taxonomy: {poi_type: {identifier: 'accomodation'}},
+        taxonomyIdentifiers: ['poi_type_camping', 'theme_x'],
+      }),
+    ]);
+    expect(res[0].properties.taxonomyIdentifiers).toEqual(['poi_type_camping', 'theme_x']);
+  });
+
+  it('non aggiunge nulla se manca anche poi_type', () => {
+    const res = withPoiTypeIdentifiers([poi({id: 1})]);
+    expect(res[0].properties.taxonomyIdentifiers ?? []).toEqual([]);
+  });
+
+  it('non modifica il POI in ingresso', () => {
+    const input = poi({id: 1, taxonomy: {poi_type: {identifier: 'accomodation'}}});
+    withPoiTypeIdentifiers([input]);
+    expect(input.properties.taxonomyIdentifiers).toBeUndefined();
   });
 });

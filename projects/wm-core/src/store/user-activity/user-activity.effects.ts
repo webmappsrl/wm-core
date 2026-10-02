@@ -45,6 +45,7 @@ import {
   ecLayer,
   filterTracks,
   inputTyped as inputTypedSelector,
+  inputTypedRestored,
   trackProgress as trackProgressSelector,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {
@@ -182,21 +183,32 @@ export class UserActivityEffects {
       }),
     ),
   );
-  triggerQueryOnInput$ = createEffect(() =>
-    combineLatest([
-      this._store.select(inputTypedSelector).pipe(debounceTime(300), startWith('')),
+  triggerQueryOnInput$ = createEffect(() => {
+    // Ogni testo che esce dal debounce diventa un oggetto nuovo, con accanto il suo `restored`:
+    // confrontandone l'identità si sa se la query nasce da lì o da filterTracks/layer (oc:8684).
+    const input$ = this._store.select(inputTypedSelector).pipe(
+      debounceTime(300),
+      withLatestFrom(this._store.select(inputTypedRestored)),
+      map(([inputTyped, restored]) => ({inputTyped, restored})),
+      startWith({inputTyped: '', restored: false}),
+    );
+    let lastInput: {inputTyped: string; restored: boolean} | null = null;
+    return combineLatest([
+      input$,
       this._store.select(filterTracks),
       this._store.select(ecLayer),
     ]).pipe(
-      map(([inputTyped, filterTracks, layer]) => ({
-        inputTyped: inputTyped?.trim(),
-        filterTracks,
-        layer,
-      })),
-      switchMap(({inputTyped, filterTracks, layer}) => {
-        let query = {init: false};
+      map(([input, filterTracks, layer]) => {
+        // Una ricerca ripristinata non si traccia solo nella query che la porta; se poi cambiano
+        // filterTracks o layer con lo stesso testo, la query si traccia come sempre.
+        const skipSearchTracking = input.restored && input !== lastInput;
+        lastInput = input;
+        return {inputTyped: input.inputTyped?.trim(), filterTracks, layer, skipSearchTracking};
+      }),
+      switchMap(({inputTyped, filterTracks, layer, skipSearchTracking}) => {
+        let query: {init: boolean; skipSearchTracking?: boolean} = {init: false};
         if (inputTyped != null && inputTyped !== '') {
-          query = {...query, ...{inputTyped}};
+          query = {...query, ...{inputTyped}, ...(skipSearchTracking ? {skipSearchTracking} : {})};
         }
         if (filterTracks != null && filterTracks.length > 0) {
           query = {...query, ...{filterTracks}};
@@ -204,8 +216,8 @@ export class UserActivityEffects {
         query = {...query, ...{layer}};
         return [ecTracks(query)];
       }),
-    ),
-  );
+    );
+  });
 
   loadHitmap$ = createEffect(() =>
     this._actions$.pipe(
