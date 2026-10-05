@@ -188,6 +188,7 @@ export const wmES = {
   'Mostra tutti': 'Mostrar todos',
   'Lunghezza': 'Longitud',
   'Orario previsto': 'Tiempo previsto',
+  'Modalità di percorrenza': 'Modo de desplazamiento',
   'Dimensione': 'Tamaño',
   'questo campo è obbligatorio': 'este campo es obligatorio',
   'Quota': 'Elevación',

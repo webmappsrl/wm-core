@@ -192,6 +192,7 @@ export const wmDE = {
   'Mostra tutti': 'Alle anzeigen',
   'Lunghezza': 'Länge',
   'Orario previsto': 'Voraussichtlicher Zeitpunkt',
+  'Modalità di percorrenza': 'Fortbewegungsart',
   'Dimensione': 'Größe',
   'questo campo è obbligatorio': 'Dieses Feld ist erforderlich',
   'Quota': 'Höhe',

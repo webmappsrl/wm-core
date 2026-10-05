@@ -197,6 +197,7 @@ export const wmIT = {
   'Mostra tutti': 'Mostra tutti',
   'Lunghezza': 'Lunghezza',
   'Orario previsto': 'Orario previsto',
+  'Modalità di percorrenza': 'Modalità di percorrenza',
   'Dimensione': 'Dimensione',
   'questo campo è obbligatorio': 'questo campo è obbligatorio',
   'Quota': 'Quota',

@@ -196,6 +196,7 @@ export const wmSQ = {
   'Mostra tutti': 'Shfaq të gjitha',
   'Lunghezza': 'Gjatësia',
   'Orario previsto': 'Koha e pritura',
+  'Modalità di percorrenza': 'Mënyra e udhëtimit',
   'Dimensione': 'Madhësia',
   'questo campo è obbligatorio': 'ky fushë është e detyrueshme',
   'Quota': 'Lartësia',
