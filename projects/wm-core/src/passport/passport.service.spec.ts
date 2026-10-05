@@ -375,6 +375,182 @@ describe('PassportService (oc:8166, oc:8676)', () => {
     });
   });
 
+  describe('passaporto: GET /api/passport (oc:8701)', () => {
+    const ROUTES = {
+      routes: [
+        {layer_id: 40, validated: 6, total: 13, percentage: 46, completed: false},
+        {layer_id: 63, validated: 6, total: 6, percentage: 100, completed: true},
+      ],
+    };
+
+    /** Service con `isLogged` pilotabile e senza listener `resume` vero. */
+    function createLogged(logged$: BehaviorSubject<boolean>): PassportService {
+      const store = {select: (sel: unknown) => (sel === isLogged ? logged$ : of(null))} as any;
+      const svc = new PassportService(store, http as any, {origin: ORIGIN} as any, {
+        currentLang: 'it',
+      } as any);
+      spyOn<any>(svc, '_addResumeListener').and.returnValue(new Promise(() => {}));
+      return svc;
+    }
+
+    const passportCalls = () =>
+      http.get.calls.allArgs().filter(([url]) => url === `${ORIGIN}/api/passport`).length;
+
+    it('chiama /api/passport e indicizza i cammini per layer_id', async () => {
+      http.get.and.returnValue(of(ROUTES));
+      const routes = await firstValueFrom(createLogged(new BehaviorSubject(true)).passportRoutes$());
+
+      expect(http.get).toHaveBeenCalledWith(`${ORIGIN}/api/passport`);
+      expect([...routes.keys()]).toEqual([40, 63]);
+      expect(routes.get(40)).toEqual({
+        layerId: 40,
+        validated: 6,
+        total: 13,
+        percent: 46,
+        completed: false,
+      });
+      expect(routes.get(63).completed).toBeTrue();
+    });
+
+    it('utente non loggato: null senza chiamare l\'API', async () => {
+      const routes = await firstValueFrom(createLogged(new BehaviorSubject(false)).passportRoutes$());
+
+      expect(routes).toBeNull();
+      expect(http.get).not.toHaveBeenCalled();
+    });
+
+    it('errore alla prima lettura: null', async () => {
+      http.get.and.returnValue(throwError(() => new Error('rete')));
+      const routes = await firstValueFrom(createLogged(new BehaviorSubject(true)).passportRoutes$());
+
+      expect(routes).toBeNull();
+    });
+
+    it('errore dopo una lettura riuscita: ultimo valore', () => {
+      const svc = createLogged(new BehaviorSubject(true));
+      const seen: Array<Map<number, unknown> | null> = [];
+      http.get.and.returnValue(of(ROUTES));
+      const sub = svc.passportRoutes$().subscribe(r => seen.push(r));
+      http.get.and.returnValue(throwError(() => new Error('rete')));
+      svc.refreshProgress(40);
+      sub.unsubscribe();
+
+      expect(seen.length).toBe(2);
+      expect([...seen[1].keys()]).toEqual([40, 63]);
+    });
+
+    it('due iscritti, una sola richiesta', () => {
+      http.get.and.returnValue(of(ROUTES));
+      const svc = createLogged(new BehaviorSubject(true));
+      const a = svc.passportRoutes$().subscribe();
+      const b = svc.passportRoutes$().subscribe();
+
+      expect(passportCalls()).toBe(1);
+      a.unsubscribe();
+      b.unsubscribe();
+    });
+
+    it('refreshProgress rilegge anche /api/passport', () => {
+      http.get.and.returnValue(of(ROUTES));
+      const svc = createLogged(new BehaviorSubject(true));
+      const sub = svc.passportRoutes$().subscribe();
+      svc.refreshProgress(40);
+
+      expect(passportCalls()).toBe(2);
+      sub.unsubscribe();
+    });
+
+    it('al logout l\'ultimo valore si dimentica', () => {
+      const logged$ = new BehaviorSubject(true);
+      const svc = createLogged(logged$);
+      const seen: Array<Map<number, unknown> | null> = [];
+      http.get.and.returnValue(of(ROUTES));
+      const sub = svc.passportRoutes$().subscribe(r => seen.push(r));
+      logged$.next(false);
+      http.get.and.returnValue(throwError(() => new Error('rete')));
+      logged$.next(true);
+      sub.unsubscribe();
+
+      expect(seen.map(r => (r ? [...r.keys()] : null))).toEqual([[40, 63], null, null]);
+    });
+  });
+
+  describe('indice delle tappe validate (oc:8701)', () => {
+    /** Service con risposte per URL e senza listener `resume` vero. */
+    function createIndexed(byUrl: Record<string, unknown>, logged = true): PassportService {
+      http.get.and.callFake((url: string) => {
+        const key = url.replace(ORIGIN, '');
+        return byUrl[key] instanceof Error ? throwError(() => byUrl[key]) : of(byUrl[key]);
+      });
+      const svc = create(logged);
+      spyOn<any>(svc, '_addResumeListener').and.returnValue(new Promise(() => {}));
+      return svc;
+    }
+
+    const routes = (...ids: number[]) => ({
+      routes: ids.map(id => ({layer_id: id, validated: 1, total: 3, percentage: 33, completed: false})),
+    });
+
+    it('chiede /progress solo dei cammini iniziati e indicizza le tappe validate', async () => {
+      const svc = createIndexed({
+        '/api/passport': routes(40, 63),
+        '/api/layer/40/progress': LAYER_40_PROGRESS,
+        '/api/layer/63/progress': LAYER_63_PROGRESS,
+      });
+      const index = await firstValueFrom(svc.stageIndex$());
+      const urls = http.get.calls.allArgs().map(([url]) => url.replace(ORIGIN, ''));
+
+      expect(urls.sort()).toEqual(['/api/layer/40/progress', '/api/layer/63/progress', '/api/passport']);
+      expect([...index.completedAt.keys()].sort((a, b) => a - b)).toEqual([203, 218, 309, 369, 704, 710]);
+      expect(index.completedAt.get(203)).toBe('2026-09-30T14:45:55+00:00');
+      expect(index.pendingLayers.size).toBe(0);
+    });
+
+    it('nessun cammino iniziato → indice vuoto, nessuna /progress', async () => {
+      const svc = createIndexed({'/api/passport': {routes: []}});
+      const index = await firstValueFrom(svc.stageIndex$());
+
+      expect(index.completedAt.size).toBe(0);
+      expect(index.pendingLayers.size).toBe(0);
+      expect(http.get).toHaveBeenCalledTimes(1);
+    });
+
+    it('/progress di un cammino fallisce alla prima lettura → cammino pendente, gli altri restano', async () => {
+      const svc = createIndexed({
+        '/api/passport': routes(40, 63),
+        '/api/layer/40/progress': LAYER_40_PROGRESS,
+        '/api/layer/63/progress': new Error('timeout'),
+      });
+      const index = await firstValueFrom(svc.stageIndex$());
+
+      expect([...index.pendingLayers]).toEqual([63]);
+      expect(index.completedAt.has(203)).toBeTrue();
+    });
+
+    it('una rilettura di /api/passport con gli stessi cammini non rilegge le /progress', () => {
+      const svc = createIndexed({
+        '/api/passport': routes(40, 63),
+        '/api/layer/40/progress': LAYER_40_PROGRESS,
+        '/api/layer/63/progress': LAYER_63_PROGRESS,
+      });
+      const progressCalls = (id: number) =>
+        http.get.calls.allArgs().filter(([url]) => url === `${ORIGIN}/api/layer/${id}/progress`).length;
+      const sub = svc.stageIndex$().subscribe();
+      svc.refreshProgress(40);
+
+      expect(progressCalls(40)).toBe(2);
+      expect(progressCalls(63)).toBe(1);
+      sub.unsubscribe();
+    });
+
+    it('utente non loggato → null', async () => {
+      const svc = createIndexed({}, false);
+
+      expect(await firstValueFrom(svc.stageIndex$())).toBeNull();
+      expect(http.get).not.toHaveBeenCalled();
+    });
+  });
+
   it('passportRingDegrees e toLayerId: unica regola per anello, badge e dettaglio', () => {
     expect(passportRingDegrees(62)).toBeCloseTo(223.2);
     expect(passportRingDegrees(150)).toBe(360);

@@ -16,6 +16,18 @@ completo). La UI segue il wireframe `webmapp-app/docs/features/passaporto-cammin
 (viste 1, V0b-V3; gli esiti, viste E1–E5, oc:8671; il dettaglio con le tappe e la pagina della
 tappa, viste 2 e 3, oc:8676).
 
+Fuori dalla home del layer lo stato compare sulle card (oc:8701, viste 0 e 1 del wireframe citato nel ticket,
+https://webmappsrl.github.io/webmapp-app/index.html; per ora solo nell'app, la webapp non monta ancora il branch
+`Passaporto`):
+
+- **card dei cammini** (`wm-layer-box`): anello attorno al logo, parziale se il cammino è in corso,
+  pieno se è completato; nessun anello se il cammino non è iniziato o non ha un logo;
+- **card delle tappe** (`wm-search-box`): un chip «✓ percorsa il 12 mag» o «○ non ancora percorsa»
+  nella lista delle tappe, nei risultati di ricerca, nel dettaglio della mappa e nelle tracce
+  scaricate. Non compare su «I miei percorsi» né nel carosello della mappa.
+
+Per chi non è loggato non compare nulla, come per badge e anello.
+
 Tutto il codice sta in `projects/wm-core/src/passport/`:
 
 - **`PassportService`** è l'unico punto che parla con il backend. Stato e invio della richiesta
@@ -49,11 +61,25 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
   mostra ancora.
 - **Nota del gestore:** `wm-passport-note`; aperta scorre al suo interno, perché il dettaglio non
   scorre e il bottone di nuovo invio deve restare visibile.
+- **`passportRoutes$()`** (oc:8701): `GET /api/passport`, i cammini con almeno una tappa validata
+  dall'utente, con gli stessi conteggi di `/progress`. Uno stream solo per tutte le card, riletto
+  al `resume`, al login e da `refreshProgress`; ultimo valore in memoria se una lettura fallisce,
+  svuotato al logout. Dà l'anello delle card dei cammini.
+- **`stageIndex$()`** (oc:8701): le tappe validate su tutti i cammini iniziati, costruite dalle
+  `/progress` dei soli cammini elencati da `/api/passport` (la cache per layer di `progress$`). Un
+  cammino la cui `/progress` non ha mai risposto finisce in `pendingLayers`. Gli stream si
+  riaprono solo se cambia l'elenco dei cammini. `passportStageChip(index, trackId, layers)` dà lo
+  stato del chip: l'id della tappa nell'hit Elastic è l'`ec_tracks.id` del backend.
+- **Card con lo stato:** varianti camminiditalia di `wm-layer-box` e `wm-search-box`, con classe
+  base comune (vedi [varianti-per-shard.md](varianti-per-shard.md)).
 - **`visibleProgress(layerId)`** è l'unica regola di visibilità: `null` se l'utente non è loggato,
   se il layer non ha tappe o se non c'è mai stata una lettura riuscita. La usano badge e anello.
 - **Anello del logo:** direttiva `[wmPassportLogoRing]` sul logo esistente, non un componente che
-  lo avvolge; i gradi passano in `--wm-passport-ring-deg`, lo stile sta nello SCSS della variante.
-- **Colori, riquadri e mixin dei riquadri di stato** stanno in `passport/_passport-theme.scss`.
+  lo avvolge; i gradi passano in `--wm-passport-ring-deg`. Le card dei cammini usano la stessa
+  regola (`passportRingDegrees`) ma leggono da `passportRoutes$`. Lo stile di entrambi è il mixin
+  `passport-logo-ring`.
+- **Colori, riquadri, mixin dei riquadri di stato e dell'anello** stanno in
+  `passport/_passport-theme.scss`.
 - **Modale:** `ion-nav` con il dettaglio come radice e il form sopra. Il back hardware (priorità
   101) chiude prima un eventuale alert aperto, poi dal form torna al dettaglio, poi chiude. Il form
   si registra come guard sulla modale: con foto non inviate ogni uscita chiede conferma.
@@ -100,6 +126,25 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
   `wm-home-layer` presuppongono il logo figlio diretto di `wm-img`.
 - **`ion-nav` con `setRoot()` in `ngAfterViewInit`** (oc:8166): con i binding `[root]`/`[rootParams]`
   il dettaglio a volte nasceva vuoto (vedi la rule `modali-e-ion-nav`).
+- **`/api/passport` per le card dei cammini, una chiamata sola** (oc:8701): esisteva già nel
+  backend e ha i conteggi che servono; elenca solo i cammini iniziati, che è proprio quando
+  l'anello compare. Una `/progress` per card sarebbero decine di chiamate a ogni apertura della
+  home.
+- **Lo stato del chip è per tappa, non per cammino** (oc:8701): per il backend una tappa validata
+  vale in ogni cammino che la contiene, quindi un solo indice serve anche ai risultati di ricerca,
+  dove non c'è un cammino selezionato.
+- **Mai «non ancora percorsa» per difetto** (oc:8701): senza dati, o se uno dei cammini della tappa
+  non ha mai risposto, il chip non c'è. Un «non ancora percorsa» che poi diventa «percorsa»
+  sarebbe un'informazione falsa.
+- **Niente chip su «I miei percorsi»** (oc:8701): gli id delle tracce dell'utente si sovrappongono a
+  quelli delle tappe ufficiali. L'esclusione si basa sul flag `ugcOpened` dello store, che oggi
+  copre tutti gli usi di `wm-search-box`.
+- **Niente chip nel carosello della mappa** (oc:8701): la card è alta 102px fissi. La card lo
+  riconosce da `closest('wm-features-in-viewport')` e non si iscrive al passaporto.
+- **Anello solo sulle card con logo** (oc:8701, come nel wireframe): nel DB locale, al 05/10/2026,
+  31 cammini su 118 avevano un logo; senza, il progresso resta visibile nel badge della home del cammino.
+- **Nessun flag sul layer per accendere il passaporto** (oc:8701): in camminiditalia è sempre
+  attivo; un flag accendi/spegni sarà valutato in seguito.
 - **Invio solo online, niente coda** (oc:8166): la richiesta si fa a cammino finito; le foto
   restano nel form se l'invio fallisce.
 

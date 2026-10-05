@@ -1,5 +1,5 @@
-<!-- Esiste una copia di questo template per camminiditalia (layer-box.component.camminiditalia.html, oc:8701):
-     una correzione qui va riportata a mano anche lì. -->
+<!-- Variante camminiditalia (oc:8701): copia di layer-box.component.html più lo stato del passaporto.
+     Ogni correzione a layer-box.component.html va riportata a mano anche qui. -->
 <div class="wm-box" (click)="onClick()" *ngIf="data && data.layer">
   <div
     class="color"
@@ -17,11 +17,20 @@
     [src]="data.layer.feature_image"
     size="225x100"
   >
-    <wm-img
-      *ngIf="data.layer.logo_image | hasLogo"
-      class="wm-layer-box-logo-overlay"
-      [src]="data.layer.logo_image"
-    ></wm-img>
+    <!-- Anello del passaporto attorno al logo (oc:8701): solo se il layer ha un logo. -->
+    <ng-container *ngIf="{ring: ring$ | async} as vm">
+      <wm-img
+        *ngIf="data.layer.logo_image | hasLogo"
+        class="wm-layer-box-logo-overlay"
+        [class.wm-passport-logo-ring]="!!vm.ring"
+        [style.--wm-passport-ring-deg]="vm.ring ? vm.ring.deg + 'deg' : null"
+        [attr.role]="vm.ring ? 'img' : null"
+        [attr.aria-label]="vm.ring
+          ? (vm.ring.completed ? ('Cammino completato' | wmtrans) : ('{{percent}}% completato' | wmtrans: {percent: vm.ring.percent}))
+          : null"
+        [src]="data.layer.logo_image"
+      ></wm-img>
+    </ng-container>
   </wm-img>
   <div class="wm-box-title">{{data.layer.title??data.title | wmtrans}}</div>
   <div

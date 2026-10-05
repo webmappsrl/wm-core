@@ -49,6 +49,33 @@ $passport-outcome-text: #444;
 $passport-link: #2874a6;
 $passport-on-green: #fff;
 
+// Chip dello stato della tappa sulle card (oc:8701): «non ancora percorsa», e ombra dell'anello
+// sulla foto di copertina delle card dei cammini.
+$passport-todo-text: #555;
+$passport-todo-bg: #f0efeb;
+$passport-logo-bg: #fff;
+$passport-ring-shadow: rgba(0, 0, 0, 0.4);
+
+// Anello di avanzamento attorno al logo del cammino (oc:8166, oc:8701): i gradi arrivano in
+// `--wm-passport-ring-deg`. `$inner` è l'immagine del logo dentro `wm-img`, che diventa rotonda su
+// fondo bianco; il padding lascia vedere l'anello.
+@mixin passport-logo-ring($padding, $inner) {
+  padding: $padding;
+  box-sizing: border-box;
+  background: conic-gradient(
+    $passport-green 0deg var(--wm-passport-ring-deg, 0deg),
+    $passport-ring-bg var(--wm-passport-ring-deg, 0deg) 360deg
+  );
+
+  #{$inner} {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: contain;
+    background: $passport-logo-bg;
+  }
+}
+
 // Riquadro di stato della richiesta fuori dallo scroll (in revisione, esito): cambiano solo i colori.
 @mixin passport-status-box($border, $bg) {
   flex-shrink: 0;

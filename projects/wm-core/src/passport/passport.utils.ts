@@ -1,5 +1,5 @@
 import {Language} from '@wm-types/language';
-import {PassportStage} from '@wm-types/passport';
+import {PassportStage, PassportStageChip, PassportStageIndex} from '@wm-types/passport';
 
 /**
  * Gradi dell'arco verde di un anello di avanzamento del passaporto (oc:8166): unica regola per
@@ -86,4 +86,27 @@ export function passportShortDate(iso: string | undefined, lang: string): string
  */
 function intlLocale(lang: string | undefined): string {
   return lang === 'pr' ? 'pt' : lang || 'it';
+}
+
+/**
+ * Stato del chip di una card di tappa (oc:8701). Nessun chip se il dato non è noto: utente non
+ * loggato, id non numerico, o tappa non validata in un cammino la cui lettura non ha mai risposto.
+ *
+ * @param index Tappe validate dell'utente, `null` se non disponibili.
+ * @param trackId Id della tappa (nell'hit Elastic può essere una stringa).
+ * @param layers Cammini che contengono la tappa.
+ * @returns Lo stato del chip, `null` se il chip non va mostrato.
+ */
+export function passportStageChip(
+  index: PassportStageIndex | null,
+  trackId: number | string | null | undefined,
+  layers: number[] | null | undefined,
+): PassportStageChip | null {
+  if (!index || trackId == null || trackId === '') return null;
+  const id = Number(trackId);
+  if (Number.isNaN(id)) return null;
+  const completedAt = index.completedAt.get(id);
+  if (completedAt) return {status: 'completed', completedAt};
+  if ((layers ?? []).some(layerId => index.pendingLayers.has(Number(layerId)))) return null;
+  return {status: 'not_started'};
 }

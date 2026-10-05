@@ -1,6 +1,7 @@
-<!-- Esiste una copia di questo template per camminiditalia (search-box.component.camminiditalia.html, oc:8701):
-     una correzione qui va riportata a mano anche lì. -->
-<ion-card (click)="clickEVT.emit()">
+<!-- Variante camminiditalia (oc:8701): copia di search-box.component.html più lo stato del passaporto.
+     Ogni correzione a search-box.component.html va riportata a mano anche qui. -->
+<ng-container *ngIf="{chip: chip$ | async} as vm">
+<ion-card (click)="clickEVT.emit()" [class.wm-search-box-card--with-chip]="!!vm.chip">
   <div *ngIf="data?.feature_image as img; else taxonomiesDiv" class="wm-box-header">
     <wm-img [src]="img" size="225x100"></wm-img>
     <ng-container *ngTemplateOutlet="taxonomies"></ng-container>
@@ -36,10 +37,23 @@
       <ion-skeleton-text class="wm-card-big-title-skeleton" animated></ion-skeleton-text>
     </ng-template>
   </ion-card-header>
+  <!-- Stato della tappa nel passaporto (oc:8701): riga propria sotto il testo, come nel wireframe. -->
+  <div *ngIf="vm.chip as chip" class="wm-passport-stage-chip-row">
+    <span
+      class="wm-passport-stage-chip"
+      [class.wm-passport-stage-chip--done]="chip.status === 'completed'"
+    >
+      <ng-container *ngIf="chip.status === 'completed'; else todo">
+        ✓ {{ 'percorsa il {{date}}' | wmtrans: {date: chipDate(chip.completedAt)} }}
+      </ng-container>
+      <ng-template #todo>○ {{ 'non ancora percorsa' | wmtrans }}</ng-template>
+    </span>
+  </div>
   <div class="top-right-content">
     <ng-content select="[top-right]"></ng-content>
   </div>
 </ion-card>
+</ng-container>
 
 <ng-template #taxonomies>
   <div

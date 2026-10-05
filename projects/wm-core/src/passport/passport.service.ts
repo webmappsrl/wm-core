@@ -3,8 +3,16 @@ import {Injectable} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {App} from '@capacitor/app';
 import {PluginListenerHandle} from '@capacitor/core';
-import {merge, Observable, of, Subject, throwError} from 'rxjs';
-import {catchError, filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {combineLatest, merge, Observable, of, Subject, throwError} from 'rxjs';
+import {
+  catchError,
+  distinctUntilChanged,
+  filter,
+  map,
+  shareReplay,
+  switchMap,
+  tap,
+} from 'rxjs/operators';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 import {LangService} from '@wm-core/localization/lang.service';
@@ -13,7 +21,9 @@ import {
   PassportCertificationRequest,
   PassportCertificationStatus,
   PassportProgress,
+  PassportRoute,
   PassportStage,
+  PassportStageIndex,
   PassportStageSource,
   PassportStageStatus,
 } from '@wm-types/passport';
@@ -33,6 +43,17 @@ interface ProgressResponse {
     progress?: number | null;
     validated_at?: string | null;
     source?: string | null;
+  }>;
+}
+
+/** Risposta del backend camminiditalia a `GET /api/passport` (oc:8676, letta da oc:8701). */
+interface PassportResponse {
+  routes: Array<{
+    layer_id: number;
+    validated: number;
+    total: number;
+    percentage: number;
+    completed: boolean;
   }>;
 }
 
@@ -71,6 +92,9 @@ const EXTENSION_BY_TYPE: Record<string, string> = {
  * - `GET /api/layer/{layer}/progress` → le tappe del cammino riconosciute all'utente, con i
  *   conteggi calcolati dal backend (oc:8676). Badge, anello e dettaglio leggono lo stesso stream
  *   per layer (`progress$`).
+ * - `GET /api/passport` → i cammini con almeno una tappa validata dall'utente, con i conteggi
+ *   (oc:8701). Le card dei cammini e l'indice delle tappe validate leggono lo stesso stream
+ *   (`passportRoutes$`).
  */
 @Injectable({providedIn: 'root'})
 export class PassportService {
@@ -80,6 +104,14 @@ export class PassportService {
   private readonly _lastProgress = new Map<number, PassportProgress>();
   /** Richieste di rilettura, con l'id del layer. */
   private readonly _progressRefresh$ = new Subject<number>();
+  /** Richieste di rilettura di `/api/passport`. */
+  private readonly _passportRefresh$ = new Subject<void>();
+  /** Ultimo elenco dei cammini letto, mostrato se una lettura fallisce. Vive solo in memoria. */
+  private _lastRoutes: Map<number, PassportRoute> | null = null;
+  /** Stream condiviso di `/api/passport`, creato alla prima richiesta. */
+  private _routes$: Observable<Map<number, PassportRoute> | null> | null = null;
+  /** Stream condiviso dell'indice delle tappe validate, creato alla prima richiesta. */
+  private _stageIndex$: Observable<PassportStageIndex | null> | null = null;
 
   constructor(
     private _store: Store,
@@ -92,7 +124,10 @@ export class PassportService {
     this._store
       .select(isLogged)
       .pipe(filter(logged => !logged))
-      .subscribe(() => this._lastProgress.clear());
+      .subscribe(() => {
+        this._lastProgress.clear();
+        this._lastRoutes = null;
+      });
   }
 
   /**
@@ -162,6 +197,38 @@ export class PassportService {
    */
   refreshProgress(layerId: number): void {
     this._progressRefresh$.next(layerId);
+    // la prima tappa di un cammino nuovo lo fa entrare in `/api/passport` (oc:8701)
+    this._passportRefresh$.next();
+  }
+
+  /**
+   * Cammini con almeno una tappa validata dall'utente, per `layerId` (oc:8701): una sola richiesta
+   * per tutte le card. Si rilegge al ritorno dell'app in primo piano, con `refreshProgress` e al
+   * login. Se una lettura fallisce emette l'ultimo valore letto nella sessione.
+   *
+   * @returns Observable con i cammini, `null` se l'utente non è loggato o non c'è mai stata una
+   *   lettura riuscita.
+   */
+  passportRoutes$(): Observable<Map<number, PassportRoute> | null> {
+    if (!this._routes$) {
+      this._routes$ = this._store.select(isLogged).pipe(
+        switchMap(logged =>
+          logged
+            ? merge(of(undefined), this.appResume$(), this._passportRefresh$).pipe(
+                switchMap(() =>
+                  this._http.get<PassportResponse>(`${this._environmentSvc.origin}/api/passport`).pipe(
+                    map(res => this._toRoutes(res)),
+                    tap(routes => (this._lastRoutes = routes)),
+                    catchError(() => of(this._lastRoutes)),
+                  ),
+                ),
+              )
+            : of(null),
+        ),
+        shareReplay({bufferSize: 1, refCount: true}),
+      );
+    }
+    return this._routes$;
   }
 
   /**
@@ -176,6 +243,44 @@ export class PassportService {
       switchMap(logged => (logged && layerId != null ? this.progress$(layerId) : of(null))),
       map(p => (p && p.totalStages > 0 ? p : null)),
     );
+  }
+
+  /**
+   * Tappe validate dall'utente su tutti i cammini iniziati (oc:8701): da `passportRoutes$` si
+   * leggono le `/progress` dei soli cammini con almeno una tappa validata, con la cache per layer
+   * di `progress$`. Un cammino la cui `/progress` non ha mai risposto finisce in `pendingLayers`.
+   * Gli stream si riaprono solo se cambia l'elenco dei cammini iniziati: una nuova risposta di
+   * `/api/passport` con gli stessi cammini non rilegge le loro `/progress`.
+   *
+   * @returns Observable con l'indice, `null` se l'utente non è loggato o i cammini non sono noti.
+   */
+  stageIndex$(): Observable<PassportStageIndex | null> {
+    if (!this._stageIndex$) {
+      this._stageIndex$ = this.passportRoutes$().pipe(
+        map(routes =>
+          routes
+            ? [...routes.values()]
+                .filter(r => r.validated > 0)
+                .map(r => r.layerId)
+                .sort((a, b) => a - b)
+            : null,
+        ),
+        distinctUntilChanged(
+          (a, b) => a === b || (a != null && b != null && a.join(',') === b.join(',')),
+        ),
+        switchMap(started => {
+          if (!started) return of(null);
+          if (started.length === 0) {
+            return of({completedAt: new Map<number, string>(), pendingLayers: new Set<number>()});
+          }
+          return combineLatest(started.map(id => this.progress$(id))).pipe(
+            map(progresses => this._toStageIndex(started, progresses)),
+          );
+        }),
+        shareReplay({bufferSize: 1, refCount: true}),
+      );
+    }
+    return this._stageIndex$;
   }
 
   /**
@@ -321,6 +426,52 @@ export class PassportService {
       completed: res?.completed === true,
       stages,
     };
+  }
+
+  /**
+   * Unisce le tappe validate dei cammini iniziati in un solo indice (oc:8701).
+   *
+   * @param layerIds Cammini iniziati, nello stesso ordine di `progresses`.
+   * @param progresses Progresso di ciascun cammino, `null` se non è mai stato letto.
+   * @returns L'indice delle tappe validate.
+   */
+  private _toStageIndex(
+    layerIds: number[],
+    progresses: Array<PassportProgress | null>,
+  ): PassportStageIndex {
+    const completedAt = new Map<number, string>();
+    const pendingLayers = new Set<number>();
+    progresses.forEach((progress, i) => {
+      if (!progress) {
+        pendingLayers.add(layerIds[i]);
+        return;
+      }
+      progress.stages
+        .filter(stage => stage.status === 'completed' && stage.completedAt)
+        .forEach(stage => completedAt.set(stage.trackId, stage.completedAt));
+    });
+    return {completedAt, pendingLayers};
+  }
+
+  /**
+   * Converte la risposta di `/api/passport` in una mappa per `layerId` (oc:8701).
+   *
+   * @param res Risposta del backend.
+   * @returns I cammini con almeno una tappa validata.
+   */
+  private _toRoutes(res: PassportResponse): Map<number, PassportRoute> {
+    return new Map(
+      (res?.routes ?? []).map(route => [
+        Number(route.layer_id),
+        {
+          layerId: Number(route.layer_id),
+          validated: route.validated ?? 0,
+          total: route.total ?? 0,
+          percent: route.percentage ?? 0,
+          completed: route.completed === true,
+        },
+      ]),
+    );
   }
 
   /**

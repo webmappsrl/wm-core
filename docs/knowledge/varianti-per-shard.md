@@ -4,14 +4,17 @@
 
 Una variante di shard è un file `.ts` **gemello** del componente di default, instradato dai `fileReplacements` dichiarati nell'`angular.json` del consumer che fa il build. Il vincolo di schema Angular riguarda solo il `.ts`: la variante può puntare allo stesso `templateUrl` del default quando la struttura DOM non cambia, e avere `styleUrls` propri. Gli `styleUrls` di componenti diversi possono condividere liberamente partial SCSS — `home-layer-shared.scss` esiste per questo.
 
-Due varianti `.camminiditalia` oggi: `wm-home-layer` (oc:8391) e `wm-searchbar` (oc:8414), entrambe con una classe base condivisa (`WmHomeLayerBaseComponent`, `SearchBarBaseComponent`) e un template proprio. Quello di `wm-home-layer` (oc:8166) è una copia del template di default più il badge e l'anello del passaporto: le correzioni al template di default vanno riportate anche lì, e nessuno strumento lo segnala.
+Quattro varianti `.camminiditalia` oggi, tutte con una classe base condivisa e un template proprio: `wm-home-layer` (oc:8391, `WmHomeLayerBaseComponent`), `wm-searchbar` (oc:8414, `SearchBarBaseComponent`), `wm-layer-box` e `wm-search-box` (oc:8701, `LayerBoxBaseComponent`, `SearchBoxBaseComponent`). I template di `wm-home-layer`, `wm-layer-box` e `wm-search-box` sono copie di quelli di default più lo stato del passaporto (oc:8166, oc:8701): le correzioni al template di default vanno riportate anche lì, e nessuno strumento lo segnala. Per `wm-layer-box` e `wm-search-box` copia e template di default hanno in testa un commento che rimanda all'altro file.
+
+Le basi di `wm-layer-box` e `wm-search-box` sono `@Directive()` astratte, non `@Injectable()`: estendono `BaseBoxComponent`, che è già una `@Directive`, e `wm-layer-box` dichiara degli `@Input`.
 
 ## Quando estrarre una base, e quando no
 
-La policy generale del repo principale è **non** estrarre una classe base: è stata scartata due volte, su `home.component.ts` e `profile.page.ts`. Le due estrazioni esistenti sono deviazioni motivate, non un'abrogazione della regola:
+La policy generale del repo principale è **non** estrarre una classe base: è stata scartata due volte, su `home.component.ts` e `profile.page.ts`. Le estrazioni esistenti sono deviazioni motivate, non un'abrogazione della regola:
 
 - **`WmHomeLayerBaseComponent`** (oc:8391): la logica TS delle due varianti è identica al 100%, cambiano solo template e stile. Trattata come validazione del pattern per quel ciclo, non promossa a policy.
 - **`SearchBarBaseComponent`** (oc:8414): non è l'intero componente identico con stile diverso, è un sottoinsieme di logica genuinamente condiviso al 100% (form di ricerca, debounce, dispatch `inputTyped`), e la sottoclasse camminiditalia **aggiunge** funzionalità invece di duplicarla con modifiche.
+- **`LayerBoxBaseComponent`, `SearchBoxBaseComponent`** (oc:8701): stesso criterio. La logica del componente di default (preferiti, click, evento PostHog; le icone) è passata intera nella base, e la variante aggiunge solo lo stato del passaporto (`ring$`, `chip$`).
 
 Il criterio che distingue i casi accettati da quelli scartati è questo, non la comodità.
 
@@ -20,10 +23,17 @@ Il criterio che distingue i casi accettati da quelli scartati è questo, non la 
 ## Trappole
 
 Vivono in [.claude/rules/varianti-e-classi-base.md](../../.claude/rules/varianti-e-classi-base.md),
-dove si caricano toccando un file gemello o una classe base: `@Injectable()` obbligatorio e
-l'errore `NG0202` che compare solo a runtime, il template da non duplicare, e lo split di uno SCSS
+dove si caricano toccando un file gemello o una classe base: il decorator obbligatorio sulla base
+(`@Injectable()` o `@Directive()`) e l'errore `NG0202` che compare solo a runtime, il template da non duplicare, e lo split di uno SCSS
 che può lasciare senza stile tutti gli shard tranne quello della variante. Qui resta il perché.
 
+
+## Come ci siamo arrivati
+
+- **Varianti complete senza base per `wm-layer-box` e `wm-search-box`** (oc:8701, superata nello
+  stesso ciclo): il piano copiava per intero il `.ts` di default nella variante, applicando la
+  regola dell'app. In review il dev ha preferito allinearsi a `wm-home-layer` e `wm-searchbar`:
+  con la copia una correzione ai preferiti andava fatta due volte.
 
 ## Dettagli di interazione
 
