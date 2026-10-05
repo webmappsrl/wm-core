@@ -197,6 +197,7 @@ export const wmEN = {
   'Mostra tutti': 'Show all',
   'Lunghezza': 'Length',
   'Orario previsto': 'Expected time',
+  'Modalità di percorrenza': 'Travel mode',
   'Dimensione': 'Size',
   'questo campo è obbligatorio': 'this field is required',
   'Quota': 'Elevation',

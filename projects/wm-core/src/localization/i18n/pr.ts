@@ -189,6 +189,7 @@ export const wmPR = {
   'Mostra tutti': 'Mostrar todos',
   'Lunghezza': 'Comprimento',
   'Orario previsto': 'Tempo previsto',
+  'Modalità di percorrenza': 'Modo de deslocação',
   'Dimensione': 'Tamanho',
   'questo campo è obbligatorio': 'este campo é obrigatório',
   'Quota': 'Elevação',

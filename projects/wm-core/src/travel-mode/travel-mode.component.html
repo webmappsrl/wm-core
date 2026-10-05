@@ -1,7 +1,7 @@
 <ng-container *ngIf="confOPTIONS$|async as confOPTIONS">
   <ng-container *ngIf="confOPTIONS.showTravelMode">
     <ng-container *ngIf="ecTrackProperties$|async as ecTrackProperties">
-      <ion-label>Modalità di percorrenza</ion-label>
+      <ion-label>{{'Modalità di percorrenza'|wmtrans}}</ion-label>
       <ion-segment value="walk" mode="ios" (ionChange)="onTravelModeChange($event)">
         <ion-segment-button value="walk">
           <ion-icon name="walk-outline"></ion-icon>
