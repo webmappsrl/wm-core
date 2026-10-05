@@ -1,0 +1,38 @@
+// Variante camminiditalia (oc:8701): si aggiunge allo SCSS di search-box, non lo sostituisce.
+@import '../../passport/passport-theme';
+
+// Riga del chip sotto il testo della card, allineata al padding laterale di `ion-card-header`
+// (15px). Il chip è largo quanto il suo testo, come nel wireframe (vista 1).
+wm-search-box .wm-passport-stage-chip-row {
+  display: flex;
+  justify-content: flex-start;
+  padding: 8px 15px 4px;
+}
+
+// Contrasto del testo sul fondo: 5,95:1 per «percorsa» ($passport-green-dark su
+// $passport-green-bg), 6,48:1 per «non ancora percorsa» ($passport-todo-text su $passport-todo-bg).
+wm-search-box .wm-passport-stage-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: var(--wm-font-xsm);
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+  color: $passport-todo-text;
+  background-color: $passport-todo-bg;
+
+  &.wm-passport-stage-chip--done {
+    color: $passport-green-dark;
+    background-color: $passport-green-bg;
+  }
+}
+
+// La card ha `max-height: 250px` con `overflow: hidden`: con il chip un titolo su tre righe lo
+// taglierebbe. Solo le card con il chip hanno un'altezza massima più alta (classe dal template,
+// non `:has()`, che le WebView Android precedenti a Chrome 105 non supportano).
+wm-search-box ion-card.wm-search-box-card--with-chip {
+  max-height: 290px;
+}
+

@@ -92,19 +92,6 @@ wm-home-layer > wm-img:has(> wm-img.wm-home-layer-logo-overlay) > .wm-box-title:
 // da `[wmPassportLogoRing]` in `--wm-passport-ring-deg`; la classe c'è solo per l'utente loggato
 // su un layer con tappe. Il padding lascia vedere l'anello, il logo resta su fondo bianco.
 wm-home-layer > wm-img > wm-img.wm-home-layer-logo-overlay.wm-passport-logo-ring {
-  padding: 5px;
-  box-sizing: border-box;
-  background: conic-gradient(
-    $passport-green 0deg var(--wm-passport-ring-deg, 0deg),
-    $passport-ring-bg var(--wm-passport-ring-deg, 0deg) 360deg
-  );
-}
-
-wm-home-layer > wm-img > wm-img.wm-home-layer-logo-overlay.wm-passport-logo-ring > .wm-img-image {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: contain;
-  background: #fff;
+  @include passport-logo-ring(5px, '> .wm-img-image');
 }
 

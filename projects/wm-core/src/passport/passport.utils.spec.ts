@@ -1,5 +1,5 @@
-import {PassportStage} from '@wm-types/passport';
-import {passportShortDate, sortStages, stageName} from './passport.utils';
+import {PassportStage, PassportStageIndex} from '@wm-types/passport';
+import {passportShortDate, passportStageChip, sortStages, stageName} from './passport.utils';
 
 describe('passport.utils (oc:8676)', () => {
   const stage = (trackId: number, name: PassportStage['name']): PassportStage => ({
@@ -70,6 +70,45 @@ describe('passport.utils (oc:8676)', () => {
 
     it('accetta il codice «pr» del portoghese', () => {
       expect(() => passportShortDate('2026-09-30T14:45:55+00:00', 'pr')).not.toThrow();
+    });
+  });
+
+  describe('passportStageChip (oc:8701)', () => {
+    const index = (pending: number[] = []): PassportStageIndex => ({
+      completedAt: new Map([[203, '2026-05-12T10:00:00+00:00']]),
+      pendingLayers: new Set(pending),
+    });
+
+    it('index null → null', () => {
+      expect(passportStageChip(null, 203, [40])).toBeNull();
+    });
+
+    it('trackId NaN o assente → null', () => {
+      expect(passportStageChip(index(), 'abc', [40])).toBeNull();
+      expect(passportStageChip(index(), undefined, [40])).toBeNull();
+      expect(passportStageChip(index(), null, [40])).toBeNull();
+    });
+
+    it('tappa validata → completed con la data, anche con id stringa', () => {
+      const done = {status: 'completed', completedAt: '2026-05-12T10:00:00+00:00'};
+      expect(passportStageChip(index(), 203, [40])).toEqual(done as any);
+      expect(passportStageChip(index(), '203', [40])).toEqual(done as any);
+    });
+
+    it('tappa non validata, cammini noti → not_started', () => {
+      expect(passportStageChip(index(), 215, [40])).toEqual({status: 'not_started'});
+    });
+
+    it('tappa non validata, uno dei suoi layer è pendente → null', () => {
+      expect(passportStageChip(index([63]), 611, [40, 63])).toBeNull();
+    });
+
+    it('tappa validata, anche se un altro suo layer è pendente → completed', () => {
+      expect(passportStageChip(index([63]), 203, [40, 63])?.status).toBe('completed');
+    });
+
+    it('layers assente → trattato come []', () => {
+      expect(passportStageChip(index([63]), 215, undefined)).toEqual({status: 'not_started'});
     });
   });
 });
