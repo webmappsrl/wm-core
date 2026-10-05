@@ -76,5 +76,7 @@ export class WmPassportProgressBadgeComponent implements OnChanges {
       backdropDismiss: false,
     });
     await modal.present();
+    // nel dettaglio il progresso può essere cambiato (approvazione, resume): la home si riallinea (oc:8676)
+    modal.onDidDismiss().then(() => this._passportSvc.refreshProgress(this.numericLayerId));
   }
 }
