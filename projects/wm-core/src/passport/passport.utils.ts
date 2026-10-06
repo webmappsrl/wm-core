@@ -36,6 +36,43 @@ export function stageName(stage: PassportStage, lang: string): string {
 }
 
 /**
+ * Slug per un nome di file: minuscolo, senza accenti, ogni sequenza di caratteri non
+ * alfanumerici diventa un solo «-», senza «-» in testa o in coda (oc:8702).
+ *
+ * @param text Testo da convertire.
+ * @returns Lo slug, vuoto se il testo non contiene caratteri alfanumerici.
+ */
+export function slugify(text: string | null | undefined): string {
+  return (text ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/**
+ * Nome del file dell'immagine di condivisione di una tappa: `<cammino>-<tappa>.png` (oc:8702).
+ * La tappa è `tappa-<ref>` (senza un «Tappa» già presente nel `ref`) oppure, senza `ref`, il nome
+ * nella lingua corrente. Se tutto è vuoto ripiega su `tappa-<trackId>.png`.
+ *
+ * @param layerTitle Titolo del cammino.
+ * @param stage Tappa condivisa.
+ * @param lang Lingua corrente dell'app.
+ * @returns Il nome del file.
+ */
+export function stageShareFileName(
+  layerTitle: string | null | undefined,
+  stage: PassportStage,
+  lang: string,
+): string {
+  const ref = slugify((stage?.ref ?? '').replace(/^\s*tappa\b\s*/i, ''));
+  const stageSlug = ref ? `tappa-${ref}` : slugify(stageName(stage, lang));
+  const slug = [slugify(layerTitle), stageSlug].filter(part => !!part).join('-');
+  return `${slug || `tappa-${stage?.trackId}`}.png`;
+}
+
+/**
  * Tappe ordinate per nome con confronto naturale («Tappa 02» prima di «Tappa 10»), quelle senza
  * nome in fondo (oc:8676): il backend non ha un ordine di percorrenza.
  *

@@ -344,4 +344,13 @@ export const wmES = {
   'Invio non riuscito, riprova': 'Error en el envío, inténtalo de nuevo',
   'Hai foto non inviate. Vuoi uscire e perderle?': 'Tienes fotos sin enviar. ¿Salir y perderlas?',
   'Indietro': 'Atrás',
+  'Hai visto questo percorso?': '¿Has visto esta ruta?',
+  'Condividi con i tuoi amici': 'Compartir con tus amigos',
+  'Condividi la tappa': 'Compartir la etapa',
+  "Sto preparando l'immagine…": 'Preparando la imagen…',
+  'Scarica': 'Descargar',
+  'Apri immagine': 'Abrir imagen',
+  "Non è stato possibile creare l'immagine della tappa": 'No se ha podido crear la imagen de la etapa',
+  'Questa tappa non risulta più percorsa': 'Esta etapa ya no figura como recorrida',
+  'Ho percorso una tappa di {{cammino}}': 'He recorrido una etapa de {{cammino}}',
 };

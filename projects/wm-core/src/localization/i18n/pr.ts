@@ -344,4 +344,13 @@ export const wmPR = {
   'Invio non riuscito, riprova': 'Falha no envio, tente novamente',
   'Hai foto non inviate. Vuoi uscire e perderle?': 'Tem fotos não enviadas. Sair e perdê-las?',
   'Indietro': 'Voltar',
+  'Hai visto questo percorso?': 'Você viu esta rota?',
+  'Condividi con i tuoi amici': 'Compartilhar com seus amigos',
+  'Condividi la tappa': 'Compartilhar a etapa',
+  "Sto preparando l'immagine…": 'Preparando a imagem…',
+  'Scarica': 'Baixar',
+  'Apri immagine': 'Abrir imagem',
+  "Non è stato possibile creare l'immagine della tappa": 'Não foi possível criar a imagem da etapa',
+  'Questa tappa non risulta più percorsa': 'Esta etapa já não consta como percorrida',
+  'Ho percorso una tappa di {{cammino}}': 'Percorri uma etapa de {{cammino}}',
 };

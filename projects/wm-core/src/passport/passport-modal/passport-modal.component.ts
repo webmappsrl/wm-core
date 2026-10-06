@@ -13,6 +13,7 @@ import {WmPassportDetailComponent} from '../passport-detail/passport-detail.comp
 import {PassportLeaveGuard} from '../passport-leave-guard';
 import {WmPassportFormComponent} from '../passport-form/passport-form.component';
 import {WmPassportStageDetailComponent} from '../passport-stage-detail/passport-stage-detail.component';
+import {WmPassportSharePreviewComponent} from '../passport-share-preview/passport-share-preview.component';
 import {PassportStage} from '@wm-types/passport';
 
 /**
@@ -43,6 +44,8 @@ export class WmPassportModalComponent implements AfterViewInit, OnDestroy {
   private _openingForm = false;
   /** Vero mentre la pagina di una tappa viene spinta: protegge dal doppio tap sulla riga. */
   private _openingStage = false;
+  /** Vero mentre l'anteprima della condivisione viene spinta: protegge dal doppio tap (oc:8702). */
+  private _openingSharePreview = false;
 
   constructor(
     private _modalCtrl: ModalController,
@@ -109,6 +112,28 @@ export class WmPassportModalComponent implements AfterViewInit, OnDestroy {
       await this.nav.push(WmPassportStageDetailComponent, {stage, layerTitle: this.layerTitle, host: this});
     } finally {
       this._openingStage = false;
+    }
+  }
+
+  /**
+   * Apre sopra la pagina della tappa l'anteprima della condivisione (oc:8702), con il layer che
+   * serve all'endpoint dell'immagine e al testo condiviso. Un doppio tap su «Condividi» non spinge
+   * una seconda anteprima.
+   *
+   * @param stage Tappa da condividere.
+   */
+  async openSharePreview(stage: PassportStage): Promise<void> {
+    if (this._openingSharePreview) return;
+    this._openingSharePreview = true;
+    try {
+      await this.nav.push(WmPassportSharePreviewComponent, {
+        stage,
+        layerId: this.layerId,
+        layerTitle: this.layerTitle,
+        host: this,
+      });
+    } finally {
+      this._openingSharePreview = false;
     }
   }
 

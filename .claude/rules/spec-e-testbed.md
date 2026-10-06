@@ -31,3 +31,6 @@ Contesto e perché: [docs/knowledge/testbed-isolamento.md](../../docs/knowledge/
 - **Non spiare i plugin Capacitor (`App`, `Camera`…) con `spyOn`**: sono Proxy e lo spy non si
   aggancia, la chiamata vera parte comunque. Avvolgi la chiamata in un metodo del service e spia
   quello (`spyOn<any>(svc, '_addResumeListener')`) (oc:8671).
+- **Non fare `spyOn` su `Share` o `Filesystem` di Capacitor**: sono proxy che ricreano il wrapper a
+  ogni accesso, e la spia non viene mai chiamata. Stubba l'implementazione web
+  (`ShareWeb.prototype`, `FilesystemWeb.prototype` da `@capacitor/*/dist/esm/web`) (oc:8702).

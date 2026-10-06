@@ -352,4 +352,13 @@ export const wmSQ = {
   'Invio non riuscito, riprova': 'Dërgimi dështoi, provo përsëri',
   'Hai foto non inviate. Vuoi uscire e perderle?': "Ke foto të padërguara. Të dalësh dhe t'i humbasësh?",
   'Indietro': 'Mbrapa',
+  'Hai visto questo percorso?': 'E ke parë këtë rrugë?',
+  'Condividi con i tuoi amici': 'Ndaj me miqtë e tu',
+  'Condividi la tappa': 'Ndaj etapën',
+  "Sto preparando l'immagine…": 'Po përgatis imazhin…',
+  'Scarica': 'Shkarko',
+  'Apri immagine': 'Hap imazhin',
+  "Non è stato possibile creare l'immagine della tappa": 'Imazhi i etapës nuk u krijua dot',
+  'Questa tappa non risulta più percorsa': 'Kjo etapë nuk rezulton më e përshkuar',
+  'Ho percorso una tappa di {{cammino}}': 'Përshkova një etapë të {{cammino}}',
 };

@@ -16,6 +16,7 @@ import {
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 import {LangService} from '@wm-core/localization/lang.service';
+import {WmShareImageResponse} from '@wm-core/services/share-image.service';
 import {
   PassportCertification,
   PassportCertificationRequest,
@@ -43,6 +44,13 @@ interface ProgressResponse {
     progress?: number | null;
     validated_at?: string | null;
     source?: string | null;
+    ref?: string | null;
+    from?: string | null;
+    to?: string | null;
+    ascent?: number | null;
+    descent?: number | null;
+    image?: string | null;
+    shareable?: boolean | null;
   }>;
 }
 
@@ -296,6 +304,21 @@ export class PassportService {
   }
 
   /**
+   * Chiede al backend l'immagine di condivisione di una tappa percorsa (oc:8702).
+   *
+   * @param layerId Id del layer (cammino).
+   * @param trackId Id della tappa.
+   * @returns Observable con l'URL dell'immagine e il link da condividere.
+   */
+  requestStageShareImage(layerId: number, trackId: number): Observable<WmShareImageResponse> {
+    return this._http.post<WmShareImageResponse>(
+      `${this._environmentSvc.origin}/api/layer/${layerId}/stage/${trackId}/share-image`,
+      {},
+      this._languageOptions(),
+    );
+  }
+
+  /**
    * Invia la richiesta di certificazione. Un 409 vuol dire che una richiesta è già in attesa: si
    * rilegge lo stato e lo si restituisce, così l'utente vede «In revisione» e non un errore.
    *
@@ -416,6 +439,14 @@ export class PassportService {
         if (track.source) stage.source = track.source as PassportStageSource;
       }
       if (stage.status === 'in_progress') stage.percent = track.progress;
+      // Dati tecnici e condivisione (oc:8702): un backend vecchio non li manda, restano assenti.
+      if (track.ref) stage.ref = track.ref;
+      if (track.from) stage.from = track.from;
+      if (track.to) stage.to = track.to;
+      if (track.ascent != null) stage.ascent = track.ascent;
+      if (track.descent != null) stage.descent = track.descent;
+      if (track.image) stage.image = track.image;
+      if (track.shareable === true) stage.shareable = true;
       return stage;
     });
     return {

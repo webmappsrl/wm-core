@@ -1,0 +1,115 @@
+@import '../passport-theme';
+
+// Anteprima della condivisione di una tappa percorsa (oc:8702).
+
+// Il corpo riempie l'area di `ion-content`, che sia lo schermo del telefono o la modale a dialogo
+// della webapp su desktop e iPad: l'immagine prende lo spazio che resta dopo i pulsanti, così
+// questi restano visibili senza scorrere.
+.wm-passport-share-preview-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 16px;
+}
+
+.wm-passport-share-preview-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 50vh;
+  color: $passport-text;
+  font-size: 15px;
+  text-align: center;
+
+  ion-spinner {
+    width: 36px;
+    height: 36px;
+    color: $passport-link;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+// 9:16 come la storia generata dal backend: l'altezza è quella lasciata libera nel corpo, la
+// larghezza segue dal rapporto; `object-fit` tiene il rapporto anche quando la larghezza limita.
+.wm-passport-share-preview-image {
+  display: block;
+  flex: 1 1 0;
+  align-self: center;
+  min-height: 0;
+  max-height: 100%;
+  width: auto;
+  max-width: 100%;
+  aspect-ratio: 9 / 16;
+  border-radius: 12px;
+  background: $passport-todo-bg;
+  object-fit: contain;
+}
+
+.wm-passport-share-preview-actions,
+.wm-passport-share-preview-failure {
+  display: flex;
+  flex: none;
+  gap: 12px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.wm-passport-share-preview-failure {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.wm-passport-share-preview-button {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 2px solid $passport-link;
+  border-radius: 10px;
+  background: $passport-link;
+  color: $passport-on-green;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+
+  ion-icon {
+    font-size: 20px;
+  }
+
+  ion-spinner {
+    width: 20px;
+    height: 20px;
+    color: currentColor;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+}
+
+.wm-passport-share-preview-button--secondary {
+  background: transparent;
+  color: $passport-link;
+}
+
+.wm-passport-share-preview-error {
+  margin: 0;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: $passport-red-bg;
+  color: $passport-red-text;
+  font-size: 14px;
+}

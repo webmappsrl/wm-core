@@ -1,5 +1,12 @@
 import {PassportStage, PassportStageIndex} from '@wm-types/passport';
-import {passportShortDate, passportStageChip, sortStages, stageName} from './passport.utils';
+import {
+  passportShortDate,
+  passportStageChip,
+  slugify,
+  sortStages,
+  stageName,
+  stageShareFileName,
+} from './passport.utils';
 
 describe('passport.utils (oc:8676)', () => {
   const stage = (trackId: number, name: PassportStage['name']): PassportStage => ({
@@ -109,6 +116,49 @@ describe('passport.utils (oc:8676)', () => {
 
     it('layers assente → trattato come []', () => {
       expect(passportStageChip(index([63]), 215, undefined)).toEqual({status: 'not_started'});
+    });
+  });
+
+  describe('slugify (oc:8702)', () => {
+    it('minuscolo, senza accenti, separatori compressi', () => {
+      expect(slugify('  Cammino d\'Italia: Perù, è così! ')).toBe('cammino-d-italia-peru-e-cosi');
+    });
+
+    it('vuoto o senza alfanumerici → stringa vuota', () => {
+      expect(slugify(undefined)).toBe('');
+      expect(slugify('—/ ')).toBe('');
+    });
+  });
+
+  describe('stageShareFileName (oc:8702)', () => {
+    const withRef = (ref: string | undefined, name: PassportStage['name'] = {it: 'Da A a B'}) =>
+      ({...stage(704, name), ref}) as PassportStage;
+
+    it('ref numerico → cammino-tappa-ref', () => {
+      expect(stageShareFileName('Cammino Grande di Celestino', withRef('04'), 'it')).toBe(
+        'cammino-grande-di-celestino-tappa-04.png',
+      );
+    });
+
+    it('ref con «Tappa» già dentro → non lo ripete', () => {
+      expect(stageShareFileName('Cammino di Dante', withRef('Tappa 7b'), 'it')).toBe(
+        'cammino-di-dante-tappa-7b.png',
+      );
+      expect(stageShareFileName('Dante', withRef('tappa 9'), 'it')).toBe('dante-tappa-9.png');
+    });
+
+    it('senza ref → nome della tappa nella lingua corrente', () => {
+      const s = withRef('', {it: 'Tappa 06: Città', en: 'Stage 06: Town'});
+      expect(stageShareFileName('Dante', s, 'en')).toBe('dante-stage-06-town.png');
+      expect(stageShareFileName('Dante', s, 'it')).toBe('dante-tappa-06-citta.png');
+    });
+
+    it('senza titolo del cammino → solo la tappa', () => {
+      expect(stageShareFileName(undefined, withRef('04'), 'it')).toBe('tappa-04.png');
+    });
+
+    it('tutto vuoto → tappa-<trackId>', () => {
+      expect(stageShareFileName('', withRef(undefined, {}), 'it')).toBe('tappa-704.png');
     });
   });
 });
