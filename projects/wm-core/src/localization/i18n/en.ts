@@ -353,4 +353,13 @@ export const wmEN = {
   'Invio non riuscito, riprova': 'Sending failed, please try again',
   'Hai foto non inviate. Vuoi uscire e perderle?': 'You have unsent photos. Leave and lose them?',
   'Indietro': 'Back',
+  'Hai visto questo percorso?': 'Have you seen this path?',
+  'Condividi con i tuoi amici': 'Share with your friends',
+  'Condividi la tappa': 'Share the stage',
+  "Sto preparando l'immagine…": 'Preparing the image…',
+  'Scarica': 'Download',
+  'Apri immagine': 'Open image',
+  "Non è stato possibile creare l'immagine della tappa": "Couldn't create the stage image",
+  'Questa tappa non risulta più percorsa': 'This stage is no longer marked as walked',
+  'Ho percorso una tappa di {{cammino}}': 'I walked a stage of {{cammino}}',
 };

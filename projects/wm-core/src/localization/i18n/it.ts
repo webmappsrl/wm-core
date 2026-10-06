@@ -352,4 +352,13 @@ export const wmIT = {
   'Invio non riuscito, riprova': 'Invio non riuscito, riprova',
   'Hai foto non inviate. Vuoi uscire e perderle?': 'Hai foto non inviate. Vuoi uscire e perderle?',
   'Indietro': 'Indietro',
+  'Hai visto questo percorso?': 'Hai visto questo percorso?',
+  'Condividi con i tuoi amici': 'Condividi con i tuoi amici',
+  'Condividi la tappa': 'Condividi la tappa',
+  "Sto preparando l'immagine…": "Sto preparando l'immagine…",
+  'Scarica': 'Scarica',
+  'Apri immagine': 'Apri immagine',
+  "Non è stato possibile creare l'immagine della tappa": "Non è stato possibile creare l'immagine della tappa",
+  'Questa tappa non risulta più percorsa': 'Questa tappa non risulta più percorsa',
+  'Ho percorso una tappa di {{cammino}}': 'Ho percorso una tappa di {{cammino}}',
 };

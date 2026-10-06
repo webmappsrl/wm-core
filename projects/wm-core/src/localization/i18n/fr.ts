@@ -347,4 +347,13 @@ export const wmFR = {
   'Invio non riuscito, riprova': "Échec de l'envoi, réessaie",
   'Hai foto non inviate. Vuoi uscire e perderle?': 'Tu as des photos non envoyées. Quitter et les perdre ?',
   'Indietro': 'Retour',
+  'Hai visto questo percorso?': 'Avez-vous vu ce parcours ?',
+  'Condividi con i tuoi amici': 'Partage avec tes amis',
+  'Condividi la tappa': "Partager l'étape",
+  "Sto preparando l'immagine…": "Préparation de l'image…",
+  'Scarica': 'Télécharger',
+  'Apri immagine': "Ouvrir l'image",
+  "Non è stato possibile creare l'immagine della tappa": "Impossible de créer l'image de l'étape",
+  'Questa tappa non risulta più percorsa': "Cette étape n'apparaît plus comme parcourue",
+  'Ho percorso una tappa di {{cammino}}': "J'ai parcouru une étape de {{cammino}}",
 };

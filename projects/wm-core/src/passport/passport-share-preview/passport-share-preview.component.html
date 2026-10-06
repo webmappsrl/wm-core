@@ -1,0 +1,92 @@
+<!-- Anteprima della condivisione di una tappa percorsa (oc:8702). -->
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button
+        class="wm-passport-share-preview-back"
+        (click)="host?.back()"
+        [attr.aria-label]="'Indietro' | wmtrans"
+      >
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'Condividi la tappa' | wmtrans }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="wm-passport-share-preview">
+  <div class="wm-passport-share-preview-body">
+    <div *ngIf="state === 'loading'" class="wm-passport-share-preview-loading" role="status">
+      <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+      <p>{{ "Sto preparando l'immagine…" | wmtrans }}</p>
+    </div>
+
+    <ng-container *ngIf="state === 'ready'">
+      <img class="wm-passport-share-preview-image" [src]="imageSrc" [alt]="imageAlt" />
+
+      <div *ngIf="cacheErrorMessage" class="wm-passport-share-preview-failure">
+        <p class="wm-passport-share-preview-error" role="alert">{{ cacheErrorMessage | wmtrans }}</p>
+        <button
+          type="button"
+          class="wm-passport-share-preview-button wm-passport-share-preview-retry-cache"
+          (click)="retryCache()"
+        >
+          <span>{{ 'Riprova' | wmtrans }}</span>
+        </button>
+      </div>
+
+      <div *ngIf="!cacheErrorMessage" class="wm-passport-share-preview-actions">
+        <button
+          *ngIf="showShare"
+          type="button"
+          class="wm-passport-share-preview-button wm-passport-share-preview-share"
+          [disabled]="shareDisabled"
+          [attr.aria-busy]="sharePreparing"
+          (click)="share()"
+        >
+          <ion-spinner
+            *ngIf="sharePreparing; else shareIcon"
+            class="wm-passport-share-preview-share-spinner"
+            name="crescent"
+            aria-hidden="true"
+          ></ion-spinner>
+          <ng-template #shareIcon>
+            <ion-icon name="share-social-outline" aria-hidden="true"></ion-icon>
+          </ng-template>
+          <span>{{ 'Condividi' | wmtrans }}</span>
+        </button>
+
+        <button
+          *ngIf="mode === 'web'"
+          type="button"
+          class="wm-passport-share-preview-button wm-passport-share-preview-button--secondary wm-passport-share-preview-download"
+          (click)="download()"
+        >
+          <ion-icon name="download-outline" aria-hidden="true"></ion-icon>
+          <span>{{ 'Scarica' | wmtrans }}</span>
+        </button>
+
+        <button
+          *ngIf="mode === 'link'"
+          type="button"
+          class="wm-passport-share-preview-button wm-passport-share-preview-open"
+          (click)="openImage()"
+        >
+          <ion-icon name="open-outline" aria-hidden="true"></ion-icon>
+          <span>{{ 'Apri immagine' | wmtrans }}</span>
+        </button>
+      </div>
+    </ng-container>
+
+    <div *ngIf="state === 'error'" class="wm-passport-share-preview-failure">
+      <p class="wm-passport-share-preview-error" role="alert">{{ errorMessage | wmtrans }}</p>
+      <button
+        type="button"
+        class="wm-passport-share-preview-button wm-passport-share-preview-retry"
+        (click)="retry()"
+      >
+        <span>{{ 'Riprova' | wmtrans }}</span>
+      </button>
+    </div>
+  </div>
+</ion-content>

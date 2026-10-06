@@ -3,6 +3,7 @@ import {WmPassportModalComponent} from './passport-modal.component';
 import {WmPassportFormComponent} from '../passport-form/passport-form.component';
 import {WmPassportDetailComponent} from '../passport-detail/passport-detail.component';
 import {WmPassportStageDetailComponent} from '../passport-stage-detail/passport-stage-detail.component';
+import {WmPassportSharePreviewComponent} from '../passport-share-preview/passport-share-preview.component';
 
 describe('WmPassportModalComponent (oc:8166)', () => {
   let modalCtrl: jasmine.SpyObj<any>;
@@ -126,6 +127,34 @@ describe('WmPassportModalComponent (oc:8166)', () => {
       layerTitle: 'Cammino',
       host: cmp,
     });
+  });
+
+  it('openSharePreview spinge l\'anteprima con tappa, layer, titolo e host (oc:8702)', async () => {
+    const stage = {trackId: 203, name: {it: 'Tappa 06'}, status: 'completed', shareable: true} as any;
+    cmp.layerId = 40;
+    nav.push.and.resolveTo(true);
+
+    await cmp.openSharePreview(stage);
+
+    expect(nav.push).toHaveBeenCalledWith(WmPassportSharePreviewComponent, {
+      stage,
+      layerId: 40,
+      layerTitle: 'Cammino',
+      host: cmp,
+    });
+  });
+
+  it('un doppio tap su «Condividi» spinge una sola anteprima (oc:8702)', async () => {
+    let resolve: (v: boolean) => void;
+    nav.push.and.returnValue(new Promise<boolean>(r => (resolve = r)));
+    const stage = {trackId: 1, name: {}, status: 'completed', shareable: true} as any;
+
+    const first = cmp.openSharePreview(stage);
+    await cmp.openSharePreview(stage);
+    resolve(true);
+    await first;
+
+    expect(nav.push).toHaveBeenCalledTimes(1);
   });
 
   it('un doppio tap su una tappa spinge una sola pagina (oc:8676)', async () => {

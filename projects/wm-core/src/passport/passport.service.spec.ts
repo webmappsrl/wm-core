@@ -189,6 +189,86 @@ describe('PassportService (oc:8166, oc:8676)', () => {
     });
   });
 
+  describe('dati tecnici della tappa e immagine di condivisione (oc:8702)', () => {
+    const progressOf = (tracks: unknown[]) => ({
+      layer_id: 3,
+      validated: 1,
+      total: tracks.length,
+      percentage: 50,
+      completed: false,
+      tracks,
+    });
+
+    function createQuiet(): PassportService {
+      const svc = create();
+      spyOn<any>(svc, '_addResumeListener').and.returnValue(new Promise(() => {}));
+      return svc;
+    }
+
+    it('copia ref, from, to, ascent, descent, image e shareable quando presenti', async () => {
+      http.get.and.returnValue(
+        of(
+          progressOf([
+            {
+              id: 1,
+              status: 'validated',
+              ref: '01',
+              from: 'A',
+              to: 'B',
+              ascent: 358,
+              descent: 120,
+              image: 'http://x/i.jpg',
+              shareable: true,
+            },
+          ]),
+        ),
+      );
+      const [stage] = (await firstValueFrom(createQuiet().getProgress(3))).stages;
+      expect(stage.ref).toBe('01');
+      expect(stage.from).toBe('A');
+      expect(stage.to).toBe('B');
+      expect(stage.ascent).toBe(358);
+      expect(stage.descent).toBe(120);
+      expect(stage.image).toBe('http://x/i.jpg');
+      expect(stage.shareable).toBeTrue();
+    });
+
+    it('valori null o vuoti non producono le chiavi', async () => {
+      http.get.and.returnValue(
+        of(progressOf([{id: 1, status: 'validated', ref: null, from: '', to: null, shareable: false}])),
+      );
+      const [stage] = (await firstValueFrom(createQuiet().getProgress(3))).stages;
+      expect('ref' in stage).toBeFalse();
+      expect('from' in stage).toBeFalse();
+      expect('to' in stage).toBeFalse();
+      expect('shareable' in stage).toBeFalse();
+    });
+
+    it('un backend vecchio senza i campi nuovi lascia shareable assente', async () => {
+      http.get.and.returnValue(of(progressOf([{id: 1, status: 'validated'}])));
+      const [stage] = (await firstValueFrom(createQuiet().getProgress(3))).stages;
+      expect('shareable' in stage).toBeFalse();
+      expect('image' in stage).toBeFalse();
+    });
+
+    it('requestStageShareImage fa la POST con Accept-Language', async () => {
+      const res = {image_url: 'http://x/i.png', share_url: 'http://x/s'};
+      http.post.and.returnValue(of(res));
+      const out = await firstValueFrom(create(true, 'en').requestStageShareImage(3, 42));
+      const [url, , options] = http.post.calls.mostRecent().args;
+      expect(url).toBe(`${ORIGIN}/api/layer/3/stage/42/share-image`);
+      expect(options.headers.get('Accept-Language')).toBe('en');
+      expect(out).toEqual(res);
+    });
+
+    it('requestStageShareImage senza lingua non manda Accept-Language', async () => {
+      http.post.and.returnValue(of({image_url: 'a', share_url: 'b'}));
+      await firstValueFrom(create(true, '').requestStageShareImage(3, 42));
+      const options = http.post.calls.mostRecent().args[2];
+      expect(options?.headers?.has('Accept-Language') ?? false).toBeFalse();
+    });
+  });
+
   describe('stato della richiesta: GET /api/layer/{id}/certification', () => {
     it('chiama la rotta del layer e mappa none', async () => {
       http.get.and.returnValue(of({status: 'none'}));

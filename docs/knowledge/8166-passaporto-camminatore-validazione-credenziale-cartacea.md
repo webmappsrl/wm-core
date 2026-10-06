@@ -85,6 +85,8 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
   si registra come guard sulla modale: con foto non inviate ogni uscita chiede conferma.
 - **Foto:** `WmImagePickerComponent` con `captureOptions` (1600px, qualità 80, senza accendere il
   GPS); salvataggio in galleria attivo per scelta del developer.
+- **Condivisione della tappa** (oc:8702): vedi
+  [condivisione-tappa-passaporto.md](condivisione-tappa-passaporto.md).
 
 ## Perché così
 

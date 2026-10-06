@@ -348,4 +348,13 @@ export const wmDE = {
   'Invio non riuscito, riprova': 'Senden fehlgeschlagen, bitte erneut versuchen',
   'Hai foto non inviate. Vuoi uscire e perderle?': 'Du hast nicht gesendete Fotos. Verlassen und verwerfen?',
   'Indietro': 'Zurück',
+  'Hai visto questo percorso?': 'Haben Sie diese Strecke gesehen?',
+  'Condividi con i tuoi amici': 'Mit Ihren Freunden teilen',
+  'Condividi la tappa': 'Etappe teilen',
+  "Sto preparando l'immagine…": 'Bild wird vorbereitet…',
+  'Scarica': 'Herunterladen',
+  'Apri immagine': 'Bild öffnen',
+  "Non è stato possibile creare l'immagine della tappa": 'Das Bild der Etappe konnte nicht erstellt werden',
+  'Questa tappa non risulta più percorsa': 'Diese Etappe gilt nicht mehr als zurückgelegt',
+  'Ho percorso una tappa di {{cammino}}': 'Ich bin eine Etappe von {{cammino}} gegangen',
 };
