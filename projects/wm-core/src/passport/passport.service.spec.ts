@@ -1,5 +1,5 @@
 import {HttpErrorResponse} from '@angular/common/http';
-import {BehaviorSubject, firstValueFrom, of, throwError} from 'rxjs';
+import {BehaviorSubject, firstValueFrom, of, Subject, throwError} from 'rxjs';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {PassportService} from './passport.service';
 import {passportRingDegrees, toLayerId} from './passport.utils';
@@ -552,6 +552,133 @@ describe('PassportService (oc:8166, oc:8676)', () => {
       sub.unsubscribe();
 
       expect(seen.map(r => (r ? [...r.keys()] : null))).toEqual([[40, 63], null, null]);
+    });
+  });
+
+  describe('stato della lettura di /api/passport e immagine del cammino (oc:8703)', () => {
+    const ROUTES = {routes: [{layer_id: 40, validated: 6, total: 13, percentage: 46, completed: false}]};
+
+    function createLogged(logged$: BehaviorSubject<boolean>): PassportService {
+      const store = {select: (sel: unknown) => (sel === isLogged ? logged$ : of(null))} as any;
+      const svc = new PassportService(store, http as any, {origin: ORIGIN} as any, {currentLang: 'it'} as any);
+      spyOn<any>(svc, '_addResumeListener').and.returnValue(new Promise(() => {}));
+      return svc;
+    }
+
+    const passportCalls = () =>
+      http.get.calls.allArgs().filter(([url]) => url === `${ORIGIN}/api/passport`).length;
+
+    it('prima loading, poi ready con i cammini', () => {
+      const response$ = new Subject<unknown>();
+      http.get.and.returnValue(response$);
+      const svc = createLogged(new BehaviorSubject(true));
+      const seen: string[] = [];
+      const sub = svc.passportRoutesState$().subscribe(s => seen.push(s.status));
+
+      expect(seen).toEqual(['loading']);
+      response$.next(ROUTES);
+      response$.complete();
+      expect(seen).toEqual(['loading', 'ready']);
+      sub.unsubscribe();
+    });
+
+    it('errore senza dati precedenti: error', async () => {
+      http.get.and.returnValue(throwError(() => new Error('rete')));
+      const svc = createLogged(new BehaviorSubject(true));
+      const seen: string[] = [];
+      const sub = svc.passportRoutesState$().subscribe(s => seen.push(s.status));
+
+      expect(seen[seen.length - 1]).toBe('error');
+      sub.unsubscribe();
+    });
+
+    it('errore dopo una lettura riuscita: ready con i dati precedenti', () => {
+      http.get.and.returnValue(of(ROUTES));
+      const svc = createLogged(new BehaviorSubject(true));
+      const seen: any[] = [];
+      const sub = svc.passportRoutesState$().subscribe(s => seen.push(s));
+      http.get.and.returnValue(throwError(() => new Error('rete')));
+      svc.refreshPassport();
+
+      const last = seen[seen.length - 1];
+      expect(last.status).toBe('ready');
+      expect([...last.routes.keys()]).toEqual([40]);
+      sub.unsubscribe();
+    });
+
+    it('utente non loggato: logged-out senza chiamare l\'API', () => {
+      const svc = createLogged(new BehaviorSubject(false));
+      const seen: string[] = [];
+      const sub = svc.passportRoutesState$().subscribe(s => seen.push(s.status));
+
+      expect(seen).toEqual(['logged-out']);
+      expect(http.get).not.toHaveBeenCalled();
+      sub.unsubscribe();
+    });
+
+    it('refreshPassport rilegge /api/passport, e dopo un errore passa da loading', () => {
+      http.get.and.returnValue(throwError(() => new Error('rete')));
+      const svc = createLogged(new BehaviorSubject(true));
+      const seen: string[] = [];
+      const sub = svc.passportRoutesState$().subscribe(s => seen.push(s.status));
+      http.get.and.returnValue(of(ROUTES));
+      svc.refreshPassport();
+
+      expect(passportCalls()).toBe(2);
+      expect(seen).toEqual(['loading', 'error', 'loading', 'ready']);
+      sub.unsubscribe();
+    });
+
+    it('stato e passportRoutes$ condividono una sola richiesta', () => {
+      http.get.and.returnValue(of(ROUTES));
+      const svc = createLogged(new BehaviorSubject(true));
+      const a = svc.passportRoutesState$().subscribe();
+      const b = svc.passportRoutes$().subscribe();
+
+      expect(passportCalls()).toBe(1);
+      a.unsubscribe();
+      b.unsubscribe();
+    });
+
+    it('rientro con dati già letti e rete lenta: subito ready con i dati precedenti, mai vuoto', () => {
+      http.get.and.returnValue(of(ROUTES));
+      const svc = createLogged(new BehaviorSubject(true));
+      svc.passportRoutesState$().subscribe().unsubscribe();
+      const response$ = new Subject<unknown>();
+      http.get.and.returnValue(response$);
+      const seen: string[] = [];
+      const sub = svc.passportRoutesState$().subscribe(s => seen.push(s.status));
+
+      expect(seen).toEqual(['ready']);
+      sub.unsubscribe();
+    });
+
+    it('reloadProgress rilegge solo il progresso del layer, non /api/passport', () => {
+      http.get.and.returnValue(of(ROUTES));
+      const svc = createLogged(new BehaviorSubject(true));
+      const routesSub = svc.passportRoutesState$().subscribe();
+      http.get.and.returnValue(of(LAYER_40_PROGRESS));
+      const progressSub = svc.progress$(40).subscribe();
+      const before = passportCalls();
+
+      svc.reloadProgress(40);
+
+      expect(passportCalls()).toBe(before);
+      expect(http.get.calls.allArgs().filter(([url]) => url === `${ORIGIN}/api/layer/40/progress`).length).toBe(2);
+      routesSub.unsubscribe();
+      progressSub.unsubscribe();
+    });
+
+    it('requestLayerShareImage fa la POST del cammino con Accept-Language', async () => {
+      const res = {image_url: 'http://x/i.png', share_url: 'http://x/s'};
+      http.post.and.returnValue(of(res));
+      const out = await firstValueFrom(create(true, 'de').requestLayerShareImage(4));
+      const [url, body, options] = http.post.calls.mostRecent().args;
+
+      expect(url).toBe(`${ORIGIN}/api/layer/4/share-image`);
+      expect(body).toEqual({});
+      expect(options.headers.get('Accept-Language')).toBe('de');
+      expect(out).toEqual(res);
     });
   });
 

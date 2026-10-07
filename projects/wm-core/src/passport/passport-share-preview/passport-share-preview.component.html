@@ -1,4 +1,4 @@
-<!-- Anteprima della condivisione di una tappa percorsa (oc:8702). -->
+<!-- Anteprima della condivisione di una tappa percorsa (oc:8702) o del cammino completato (oc:8703). -->
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
@@ -10,7 +10,7 @@
         <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>{{ 'Condividi la tappa' | wmtrans }}</ion-title>
+    <ion-title>{{ (kind === 'route' ? 'Condividi il traguardo' : 'Condividi la tappa') | wmtrans }}</ion-title>
   </ion-toolbar>
 </ion-header>
 

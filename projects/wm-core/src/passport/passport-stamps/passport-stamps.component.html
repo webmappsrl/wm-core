@@ -1,0 +1,54 @@
+<!-- Passaporto a timbri, viste 5b e 5c del wireframe (oc:8703) -->
+<ng-container *ngIf="vm$ | async as vm">
+  <div *ngIf="vm.status === 'loading'" class="wm-passport-stamps-loading" role="status">
+    <ion-spinner></ion-spinner>
+  </div>
+
+  <div *ngIf="vm.status === 'error'" class="wm-passport-stamps-error" role="alert">
+    <span>{{ 'Impossibile caricare il passaporto' | wmtrans }}</span>
+    <button type="button" class="wm-passport-stamps-retry" (click)="retry()">
+      {{ 'Riprova' | wmtrans }}
+    </button>
+  </div>
+
+  <ng-container *ngIf="vm.status === 'ready'">
+    <p *ngIf="!vm.anyStarted" class="wm-passport-stamps-hint">
+      {{ 'Ogni tappa che ti viene riconosciuta colora il timbro del suo cammino.' | wmtrans }}
+    </p>
+    <div class="wm-passport-stamps-grid">
+      <button
+        *ngFor="let stamp of vm.stamps; trackBy: trackStamp"
+        type="button"
+        class="wm-passport-stamp"
+        [class.wm-passport-stamp--off]="stamp.status === 'not_started'"
+        [attr.aria-label]="ariaLabel(stamp)"
+        (click)="open(stamp)"
+      >
+        <span
+          class="wm-passport-stamp-ring"
+          [style.--wm-passport-ring-deg]="ringDegrees(stamp) + 'deg'"
+          aria-hidden="true"
+        >
+          <span class="wm-passport-stamp-logo">
+            <wm-img *ngIf="stamp.logo | hasLogo" [src]="stamp.logo"></wm-img>
+          </span>
+        </span>
+        <span class="wm-passport-stamp-name" aria-hidden="true">{{ title(stamp) }}</span>
+        <ng-container [ngSwitch]="stamp.status">
+          <span *ngSwitchCase="'completed'" class="wm-passport-stamp-chip" aria-hidden="true"
+            >✓ {{ 'Completato' | wmtrans }}</span
+          >
+          <span *ngSwitchCase="'in_progress'" class="wm-passport-stamp-meta" aria-hidden="true">
+            {{ '{{validated}}/{{total}} tappe' | wmtrans: {validated: stamp.validated, total:
+            stamp.total} }}
+          </span>
+          <ng-container *ngSwitchDefault>
+            <span *ngIf="stamp.total != null" class="wm-passport-stamp-meta" aria-hidden="true">
+              {{ '{{n}} tappe' | wmtrans: {n: stamp.total} }}
+            </span>
+          </ng-container>
+        </ng-container>
+      </button>
+    </div>
+  </ng-container>
+</ng-container>

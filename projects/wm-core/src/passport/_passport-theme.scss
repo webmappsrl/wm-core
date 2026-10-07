@@ -95,3 +95,10 @@ $passport-ring-shadow: rgba(0, 0, 0, 0.4);
   font-size: 13px;
   font-weight: 700;
 }
+
+// Colore primario dell'app (oc:8703) per pulsanti e badge del traguardo e dei timbri: segue il tema
+// dello shard. Il verde resta agli anelli di avanzamento. `--wm-color-primary-rgb` non è affidabile
+// (nel tema di default non corrisponde al colore), quindi lo sfondo chiaro si ricava con color-mix.
+$passport-primary: var(--wm-color-primary, #{$passport-green});
+$passport-primary-bg: color-mix(in srgb, var(--wm-color-primary, #{$passport-green}) 12%, #fff);
+$passport-on-primary: #fff;

@@ -138,6 +138,25 @@ export class WmPassportModalComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
+   * Apre sopra il dettaglio l'anteprima della condivisione del cammino completato (oc:8703). Lo
+   * stesso blocco del doppio tap della tappa: c'è una sola anteprima alla volta.
+   */
+  async openRouteSharePreview(): Promise<void> {
+    if (this._openingSharePreview) return;
+    this._openingSharePreview = true;
+    try {
+      await this.nav.push(WmPassportSharePreviewComponent, {
+        kind: 'route',
+        layerId: this.layerId,
+        layerTitle: this.layerTitle,
+        host: this,
+      });
+    } finally {
+      this._openingSharePreview = false;
+    }
+  }
+
+  /**
    * Indietro: se è aperto un alert chiude solo quello, altrimenti dal form torna al dettaglio e
    * dal dettaglio chiude la modale. L'alert va gestito qui perché questo handler ha priorità 101
    * e Ionic esegue solo quello con priorità più alta: quello dell'alert (100) non partirebbe.

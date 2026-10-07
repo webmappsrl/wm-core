@@ -157,6 +157,32 @@ describe('WmPassportModalComponent (oc:8166)', () => {
     expect(nav.push).toHaveBeenCalledTimes(1);
   });
 
+  it('openRouteSharePreview spinge l\'anteprima del cammino con layer, titolo e host (oc:8703)', async () => {
+    cmp.layerId = 40;
+    nav.push.and.resolveTo(true);
+
+    await cmp.openRouteSharePreview();
+
+    expect(nav.push).toHaveBeenCalledWith(WmPassportSharePreviewComponent, {
+      kind: 'route',
+      layerId: 40,
+      layerTitle: 'Cammino',
+      host: cmp,
+    });
+  });
+
+  it('un doppio tap su «Condividi il traguardo» spinge una sola anteprima (oc:8703)', async () => {
+    let resolve: (v: boolean) => void;
+    nav.push.and.returnValue(new Promise<boolean>(r => (resolve = r)));
+
+    const first = cmp.openRouteSharePreview();
+    await cmp.openRouteSharePreview();
+    resolve(true);
+    await first;
+
+    expect(nav.push).toHaveBeenCalledTimes(1);
+  });
+
   it('un doppio tap su una tappa spinge una sola pagina (oc:8676)', async () => {
     let resolve: (v: boolean) => void;
     nav.push.and.returnValue(new Promise<boolean>(r => (resolve = r)));

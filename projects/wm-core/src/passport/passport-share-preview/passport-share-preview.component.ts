@@ -25,7 +25,7 @@ import {
   WmWebDownloadOutcome,
 } from '@wm-core/services/share-image.service';
 import {PassportService} from '../passport.service';
-import {stageShareFileName} from '../passport.utils';
+import {routeShareFileName, stageShareFileName} from '../passport.utils';
 
 /** Operazioni della modale host usate dall'anteprima. */
 export interface PassportSharePreviewHost {
@@ -45,15 +45,23 @@ export type PassportSharePreviewState = 'loading' | 'ready' | 'error';
  */
 export type PassportSharePreviewMode = 'native' | 'web' | 'link';
 
+/** Cosa si condivide: una tappa percorsa (oc:8702) o un cammino completato (oc:8703). */
+export type PassportShareKind = 'stage' | 'route';
+
 /** Messaggio per una tappa che il backend non riconosce più come percorsa (403/404). */
 const STAGE_NOT_DONE_MESSAGE = 'Questa tappa non risulta più percorsa';
 /** Messaggio per ogni altro fallimento della generazione dell'immagine. */
 const SHARE_FAILED_MESSAGE = "Non è stato possibile creare l'immagine della tappa";
+/** Messaggio per un cammino che il backend non riconosce più come completato (oc:8703). */
+const ROUTE_NOT_DONE_MESSAGE = 'Questo cammino non risulta più completato';
+/** Messaggio per ogni altro fallimento dell'immagine del cammino (oc:8703). */
+const ROUTE_SHARE_FAILED_MESSAGE = "Non è stato possibile creare l'immagine del cammino";
 
 /**
- * Anteprima della condivisione di una tappa percorsa (oc:8702): spinta nell'`ion-nav` della modale
- * del passaporto dal pulsante «Condividi» della pagina della tappa. All'apertura chiede al backend
- * l'immagine, la mostra e offre i pulsanti per condividerla.
+ * Anteprima della condivisione di una tappa percorsa (oc:8702) o di un cammino completato (oc:8703):
+ * spinta nell'`ion-nav` della modale del passaporto dal pulsante «Condividi» della pagina della
+ * tappa o da «Condividi il traguardo» del dettaglio. All'apertura chiede al backend l'immagine, la
+ * mostra e offre i pulsanti per condividerla.
  *
  * L'immagine si prepara prima del tocco perché sul web `navigator.share()` vale solo dentro il
  * gestore di un gesto dell'utente, e la generazione può durare più a lungo: al tocco il file è già
@@ -67,7 +75,12 @@ const SHARE_FAILED_MESSAGE = "Non è stato possibile creare l'immagine della tap
  * - Web senza Blob (CORS): l'immagine si mostra da `image_url` e resta solo «Apri immagine».
  *
  * Ogni condivisione completata invia a PostHog `contentShared` con `content_type`
- * `passport-stage` e `share_method`; l'annullamento e l'apertura dell'anteprima non inviano nulla.
+ * `passport-stage` (o `passport-route` per il cammino) e `share_method`; l'annullamento e
+ * l'apertura dell'anteprima non inviano nulla.
+ *
+ * Con `kind: 'route'` (oc:8703) condivide il cammino completato: stessa anteprima e stessi
+ * pulsanti, con l'immagine di `POST /api/layer/{layer}/share-image`, i testi del traguardo e
+ * nessuna tappa.
  */
 @Component({
   standalone: false,
@@ -78,12 +91,14 @@ const SHARE_FAILED_MESSAGE = "Non è stato possibile creare l'immagine della tap
   encapsulation: ViewEncapsulation.None,
 })
 export class WmPassportSharePreviewComponent implements OnInit, OnDestroy {
+  /** Tappa o cammino (oc:8703); con `'route'` `stage` non serve. */
+  @Input() kind: PassportShareKind = 'stage';
   @Input() stage: PassportStage;
-  /** Layer (cammino) della tappa, per l'endpoint dell'immagine. */
+  /** Layer (cammino) condiviso, o della tappa condivisa, per l'endpoint dell'immagine. */
   @Input() layerId: number;
   /** Nome del cammino, per il titolo della condivisione. */
   @Input() layerTitle: string;
-  /** Modale host, per tornare alla pagina della tappa. */
+  /** Modale host, per tornare indietro: alla pagina della tappa o al dettaglio del cammino. */
   @Input() host: PassportSharePreviewHost;
 
   state: PassportSharePreviewState = 'loading';
@@ -216,7 +231,9 @@ export class WmPassportSharePreviewComponent implements OnInit, OnDestroy {
     let response: WmShareImageResponse;
     try {
       response = await firstValueFrom(
-        this._passportSvc.requestStageShareImage(this.layerId, this.stage.trackId),
+        this.kind === 'route'
+          ? this._passportSvc.requestLayerShareImage(this.layerId)
+          : this._passportSvc.requestStageShareImage(this.layerId, this.stage.trackId),
       );
     } catch (error) {
       if (attempt === this._attempt) this._fail(error);
@@ -258,7 +275,7 @@ export class WmPassportSharePreviewComponent implements OnInit, OnDestroy {
       this._native = prepared;
     } catch {
       if (attempt !== this._attempt) return;
-      this.cacheErrorMessage = SHARE_FAILED_MESSAGE;
+      this.cacheErrorMessage = this._failedMessage();
     }
     this._cdr.markForCheck();
   }
@@ -361,9 +378,10 @@ export class WmPassportSharePreviewComponent implements OnInit, OnDestroy {
    */
   private _trackShared(method: WmShareMethod): void {
     try {
+      const route = this.kind === 'route';
       const result = this._posthogClient?.capture('contentShared', {
-        content_type: 'passport-stage',
-        content_id: String(this.stage.trackId),
+        content_type: route ? 'passport-route' : 'passport-stage',
+        content_id: String(route ? this.layerId : this.stage.trackId),
         layer_id: String(this.layerId),
         share_method: method,
       });
@@ -387,28 +405,39 @@ export class WmPassportSharePreviewComponent implements OnInit, OnDestroy {
   /** Testi della condivisione, già tradotti. */
   private _texts(): WmShareTexts {
     return {
-      title: this._langSvc.instant('Ho percorso una tappa di {{cammino}}', {
-        cammino: this.layerTitle ?? '',
-      }),
+      title: this._langSvc.instant(
+        this.kind === 'route'
+          ? 'Ho completato {{cammino}}'
+          : 'Ho percorso una tappa di {{cammino}}',
+        {cammino: this.layerTitle ?? ''},
+      ),
       dialogTitle: this._langSvc.instant('Condividi con i tuoi amici'),
     };
   }
 
-  /** Nome del file dell'immagine condivisa: `<cammino>-<tappa>.png`. */
+  /** Nome del file dell'immagine condivisa: `<cammino>-<tappa>.png`, o `<cammino>.png` per il cammino. */
   private _fileName(): string {
-    return stageShareFileName(this.layerTitle, this.stage, this._langSvc.currentLang);
+    return this.kind === 'route'
+      ? routeShareFileName(this.layerTitle, this.layerId)
+      : stageShareFileName(this.layerTitle, this.stage, this._langSvc.currentLang);
+  }
+
+  /** Chiave del messaggio generico di errore, per la tappa o per il cammino. */
+  private _failedMessage(): string {
+    return this.kind === 'route' ? ROUTE_SHARE_FAILED_MESSAGE : SHARE_FAILED_MESSAGE;
   }
 
   /**
    * Mostra il messaggio d'errore adatto: 403 e 404 vogliono dire che la tappa non risulta più
-   * percorsa, ogni altro errore è un fallimento generico della generazione.
+   * percorsa (o il cammino completato), ogni altro errore è un fallimento generico della
+   * generazione.
    *
    * @param error L'errore ricevuto.
    */
   private _fail(error: unknown): void {
     const status = (error as {status?: number} | null)?.status;
-    this.errorMessage =
-      status === 403 || status === 404 ? STAGE_NOT_DONE_MESSAGE : SHARE_FAILED_MESSAGE;
+    const notDone = this.kind === 'route' ? ROUTE_NOT_DONE_MESSAGE : STAGE_NOT_DONE_MESSAGE;
+    this.errorMessage = status === 403 || status === 404 ? notDone : this._failedMessage();
     this._setState('error');
   }
 

@@ -28,6 +28,17 @@ https://webmappsrl.github.io/webmapp-app/index.html; per ora solo nell'app, la w
 
 Per chi non è loggato non compare nulla, come per badge e anello.
 
+Nell'app camminiditalia c'è anche il **tab Passaporto** nella tab bar (oc:8703, viste 5b e 5c): il
+**passaporto a timbri** `wm-passport-stamps`, con tutti i cammini della config, ciascuno col logo
+nell'anello. In cima gli in corso dal più avanzato, poi i completati, poi i non iniziati in grigio
+col numero di tappe (`attributes.stage_count`); senza cammini iniziati una riga spiega come
+colorarli. Il tocco su un timbro, anche grigio, apre il dettaglio. A cammino **completato** il
+dettaglio mostra il traguardo (vista 6): «Cammino completato! 🎉», «Completato il» con la data più
+recente, caselle km (nascoste se una tappa non ha distanza), tappe e uscite (solo con tutte le
+tappe validate col GPS), «Condividi il traguardo» e la lista delle tappe chiusa ma apribile; il
+blocco di esito della certificazione non c'è. La voce, la rotta e la pagina del tab sono
+dell'app.
+
 Tutto il codice sta in `projects/wm-core/src/passport/`:
 
 - **`PassportService`** è l'unico punto che parla con il backend. Stato e invio della richiesta
@@ -61,10 +72,14 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
   mostra ancora.
 - **Nota del gestore:** `wm-passport-note`; aperta scorre al suo interno, perché il dettaglio non
   scorre e il bottone di nuovo invio deve restare visibile.
-- **`passportRoutes$()`** (oc:8701): `GET /api/passport`, i cammini con almeno una tappa validata
-  dall'utente, con gli stessi conteggi di `/progress`. Uno stream solo per tutte le card, riletto
-  al `resume`, al login e da `refreshProgress`; ultimo valore in memoria se una lettura fallisce,
-  svuotato al logout. Dà l'anello delle card dei cammini.
+- **`passportRoutesState$()`** (oc:8703): `GET /api/passport`, i cammini con almeno una tappa
+  validata dall'utente, con gli stessi conteggi di `/progress`, come **stato** della lettura:
+  `logged-out`, `loading` (solo finché non c'è nessuna lettura riuscita), `error` (fallita senza
+  dati), `ready`. Un errore con dati precedenti resta `ready` con quelli, e una nuova
+  sottoscrizione li riceve subito; l'ultimo valore si svuota al logout. Riletto al `resume`, al login, da `refreshProgress` e da
+  `refreshPassport()` (rientro nel tab, «Riprova»). **`passportRoutes$()`** (oc:8701) ne deriva
+  con la stessa richiesta: `null` per `logged-out` ed `error`, niente durante il caricamento. Dà
+  l'anello delle card dei cammini e i timbri.
 - **`stageIndex$()`** (oc:8701): le tappe validate su tutti i cammini iniziati, costruite dalle
   `/progress` dei soli cammini elencati da `/api/passport` (la cache per layer di `progress$`). Un
   cammino la cui `/progress` non ha mai risposto finisce in `pendingLayers`. Gli stream si
@@ -79,13 +94,18 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
   regola (`passportRingDegrees`) ma leggono da `passportRoutes$`. Lo stile di entrambi è il mixin
   `passport-logo-ring`.
 - **Colori, riquadri, mixin dei riquadri di stato e dell'anello** stanno in
-  `passport/_passport-theme.scss`.
+  `passport/_passport-theme.scss`. Pulsanti e badge del traguardo e dei timbri usano il colore
+  primario dell'app (`$passport-primary`, da `--wm-color-primary`); anelli e «Completato» il verde.
+- **Apertura del dettaglio:** `PassportModalService.open()` (oc:8703), unico punto per badge e
+  timbri: `backdropDismiss: false`, un doppio tocco non apre due modali, alla chiusura rilegge il
+  progresso; dai timbri rilegge prima solo il progresso (`reloadProgress`), che un altro
+  componente potrebbe avere in memoria vecchio.
 - **Modale:** `ion-nav` con il dettaglio come radice e il form sopra. Il back hardware (priorità
   101) chiude prima un eventuale alert aperto, poi dal form torna al dettaglio, poi chiude. Il form
   si registra come guard sulla modale: con foto non inviate ogni uscita chiede conferma.
 - **Foto:** `WmImagePickerComponent` con `captureOptions` (1600px, qualità 80, senza accendere il
   GPS); salvataggio in galleria attivo per scelta del developer.
-- **Condivisione della tappa** (oc:8702): vedi
+- **Condivisione della tappa e del cammino completato** (oc:8702, oc:8703): vedi
   [condivisione-tappa-passaporto.md](condivisione-tappa-passaporto.md).
 
 ## Perché così
@@ -150,7 +170,16 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
 - **Invio solo online, niente coda** (oc:8166): la richiesta si fa a cammino finito; le foto
   restano nel form se l'invio fallisce.
 
+- **Timbri invece delle sezioni Completati / In corso** (oc:8703): proposta del dev al cliente; un
+  passaporto da riempire, senza pagina vuota, con i cammini non iniziati come invito a partire.
+- **Stato della lettura invece del solo `null`** (oc:8703): il tab deve distinguere caricamento ed
+  errore da «nessun cammino», altrimenti chi ha cammini iniziati li vedrebbe tutti grigi per un
+  problema di rete.
+- **Traguardo nello stesso dettaglio** (oc:8703): vista 2 e vista 6 sono la stessa schermata in due
+  stati, uguale da ogni ingresso (timbro o badge della home del layer).
+
 ## Come ci siamo arrivati
+
 
 - **Il ciclo si chiudeva all'invio** (oc:8166, superata da oc:8671): approvata e rifiutata valevano
   come «nessuna richiesta», e dopo la decisione l'utente rivedeva la CTA iniziale senza sapere che

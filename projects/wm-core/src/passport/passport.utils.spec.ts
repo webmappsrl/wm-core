@@ -1,5 +1,13 @@
-import {PassportStage, PassportStageIndex} from '@wm-types/passport';
+import {PassportRoute, PassportStage, PassportStageIndex} from '@wm-types/passport';
+import {ILAYER} from '@wm-core/types/config';
 import {
+  gpsOutings,
+  latestCompletedAt,
+  passportKm,
+  passportLongDate,
+  passportStamps,
+  routeShareFileName,
+  totalDistanceKm,
   passportShortDate,
   passportStageChip,
   slugify,
@@ -160,5 +168,143 @@ describe('passport.utils (oc:8676)', () => {
     it('tutto vuoto → tappa-<trackId>', () => {
       expect(stageShareFileName('', withRef(undefined, {}), 'it')).toBe('tappa-704.png');
     });
+  });
+});
+
+describe('passport.utils, passaporto a timbri (oc:8703)', () => {
+  const layer = (id: number, stageCount?: number): ILAYER =>
+    ({
+      id: String(id),
+      title: `Cammino ${id}`,
+      logo_image: `logo-${id}.png`,
+      feature_image: `img-${id}.jpg`,
+      ...(stageCount != null ? {attributes: {stage_count: stageCount}} : {}),
+    }) as unknown as ILAYER;
+  const route = (layerId: number, percent: number, completed = false): PassportRoute => ({
+    layerId,
+    validated: completed ? 10 : Math.round(percent / 10),
+    total: 10,
+    percent,
+    completed,
+  });
+
+  describe('passportStamps', () => {
+    it('in corso per percentuale, poi completati, poi non iniziati, nell\'ordine della config', () => {
+      const layers = [layer(1), layer(2), layer(3), layer(4), layer(5)];
+      const routes = new Map([
+        [2, route(2, 30)],
+        [3, route(3, 100, true)],
+        [4, route(4, 60)],
+        [5, route(5, 30)],
+      ]);
+
+      expect(passportStamps(layers, routes).map(s => s.layerId)).toEqual([4, 2, 5, 3, 1]);
+    });
+
+    it('un cammino di /api/passport senza layer in config non compare', () => {
+      const stamps = passportStamps([layer(1)], new Map([[9, route(9, 50)]]));
+
+      expect(stamps.map(s => s.layerId)).toEqual([1]);
+    });
+
+    it('non iniziato: zero tappe, totale da attributes.stage_count o null', () => {
+      const [withCount, withoutCount] = passportStamps([layer(1, 6), layer(2)], new Map());
+
+      expect(withCount).toEqual({
+        layerId: 1,
+        title: 'Cammino 1',
+        logo: 'logo-1.png',
+        image: 'img-1.jpg',
+        status: 'not_started',
+        validated: 0,
+        total: 6,
+        percent: 0,
+      });
+      expect(withoutCount.total).toBeNull();
+    });
+
+    it('in corso e completato: tappe e percentuale da /api/passport', () => {
+      const stamps = passportStamps([layer(1), layer(2)], new Map([[1, route(1, 40)], [2, route(2, 100, true)]]));
+
+      expect(stamps.map(s => [s.status, s.validated, s.total, s.percent])).toEqual([
+        ['in_progress', 4, 10, 40],
+        ['completed', 10, 10, 100],
+      ]);
+    });
+
+    it('senza config non ci sono timbri', () => {
+      expect(passportStamps(undefined, new Map())).toEqual([]);
+    });
+  });
+
+  describe('routeShareFileName', () => {
+    it('nome del cammino come slug', () => {
+      expect(routeShareFileName('Via degli Dei', 4)).toBe('via-degli-dei.png');
+    });
+
+    it('senza nome ripiega sull\'id', () => {
+      expect(routeShareFileName('', 4)).toBe('cammino-4.png');
+    });
+  });
+});
+
+describe('passport.utils, cammino completato (oc:8703)', () => {
+  const done = (trackId: number, completedAt: string, distance = 10, source: 'manual' | 'gps' = 'gps'): PassportStage => ({
+    trackId,
+    name: {},
+    status: 'completed',
+    distance,
+    completedAt,
+    source,
+  });
+
+  it('latestCompletedAt: la data più recente', () => {
+    const stages = [done(1, '2026-04-10T10:00:00Z'), done(2, '2026-04-12T08:00:00Z'), done(3, '2026-04-11T10:00:00Z')];
+
+    expect(latestCompletedAt(stages)).toBe('2026-04-12T08:00:00Z');
+  });
+
+  it('latestCompletedAt: null senza date', () => {
+    expect(latestCompletedAt([{...done(1, ''), completedAt: undefined}])).toBeNull();
+  });
+
+  it('totalDistanceKm: somma arrotondata a 0,1', () => {
+    expect(totalDistanceKm([done(1, 'x', 20.4), done(2, 'x', 15.1)])).toBe(35.5);
+  });
+
+  it('totalDistanceKm: null se una tappa vale 0 o senza tappe', () => {
+    expect(totalDistanceKm([done(1, 'x', 20.4), done(2, 'x', 0)])).toBeNull();
+    expect(totalDistanceKm([])).toBeNull();
+  });
+
+  it('gpsOutings: giorni distinti con tutte le tappe gps', () => {
+    const stages = [
+      done(1, '2026-04-10T08:00:00'),
+      done(2, '2026-04-10T17:00:00'),
+      done(3, '2026-04-11T09:00:00'),
+    ];
+
+    expect(gpsOutings(stages)).toBe(2);
+  });
+
+  it('gpsOutings: null con una tappa manuale o non completata', () => {
+    expect(gpsOutings([done(1, '2026-04-10T08:00:00'), done(2, '2026-04-11T08:00:00', 10, 'manual')])).toBeNull();
+    expect(gpsOutings([done(1, '2026-04-10T08:00:00'), {trackId: 2, name: {}, status: 'not_started', distance: 1}])).toBeNull();
+    expect(gpsOutings([])).toBeNull();
+  });
+
+  it('passportLongDate: giorno, mese esteso e anno', () => {
+    const it = passportLongDate('2026-04-12T10:00:00Z', 'it');
+
+    expect(it).toContain('aprile');
+    expect(it).toContain('2026');
+    expect(passportLongDate('2026-04-12T10:00:00Z', 'pr')).toContain('abril');
+    expect(passportLongDate(undefined, 'it')).toBe('');
+  });
+
+  it('passportKm: una cifra decimale nella lingua dell\'app', () => {
+    expect(passportKm(35.5, 'it')).toBe('35,5');
+    expect(passportKm(35.5, 'en')).toBe('35.5');
+    expect(passportKm(130, 'it')).toBe('130');
   });
 });

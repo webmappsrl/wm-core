@@ -123,11 +123,19 @@ describe('WmPassportDetailComponent (oc:8166)', () => {
       expect(vm.showRetry).toBeFalse();
     });
 
-    it('non accettata: bottone di nuovo invio anche a cammino completo', async () => {
-      const vm = await firstValueFrom(create(done, {status: 'rejected'}).cmp.vm$);
+    it('non accettata a cammino non completo: bottone di nuovo invio', async () => {
+      const vm = await firstValueFrom(create(partial, {status: 'rejected'}).cmp.vm$);
 
       expect(vm.showRetry).toBeTrue();
       expect(vm.showCta).toBeFalse();
+    });
+
+    it('a cammino completo il blocco di esito non c\'è, nemmeno dopo un rifiuto (oc:8703)', async () => {
+      const vm = await firstValueFrom(create(done, {status: 'rejected'}).cmp.vm$);
+
+      expect(vm.outcome).toBeNull();
+      expect(vm.showRetry).toBeFalse();
+      expect(vm.showEmailHint).toBeFalse();
     });
 
     it("approvata: esito approvato, niente rimando all'email: le tappe sono a schermo (oc:8676)", async () => {
@@ -308,7 +316,12 @@ describe('WmPassportDetailComponent (oc:8166)', () => {
 
     it('tornando da una tappa non rilegge nulla; tornando dal form sì', async () => {
       const {cmp, svc} = create(partial, {status: 'none'});
-      cmp.host = {openForm: () => Promise.resolve(), openStage: () => Promise.resolve(), close: () => Promise.resolve()};
+      cmp.host = {
+        openForm: () => Promise.resolve(),
+        openStage: () => Promise.resolve(),
+        close: () => Promise.resolve(),
+        openRouteSharePreview: () => Promise.resolve(),
+      };
       const sub = cmp.vm$.subscribe();
       cmp.ionViewWillEnter();
 
@@ -333,6 +346,111 @@ describe('WmPassportDetailComponent (oc:8166)', () => {
       const {cmp} = create(partial, {status: 'none'});
 
       expect(cmp.trackStage(0, stage(7, 'X') as any)).toBe(7);
+    });
+  });
+
+  describe('cammino completato (oc:8703)', () => {
+    const doneStage = (trackId: number, completedAt: string | undefined, distance: number, source = 'manual') => ({
+      trackId,
+      name: {it: `Tappa ${trackId}`},
+      status: 'completed',
+      distance,
+      completedAt,
+      source,
+    });
+    const completed = (stages: any[]) => ({totalStages: stages.length, completedStages: stages.length, percent: 100, completed: true, stages});
+
+    it('data più recente, km come somma, niente uscite con tappe manuali', async () => {
+      const vm = await firstValueFrom(
+        create(completed([doneStage(1, '2026-04-10T10:00:00Z', 20.4), doneStage(2, '2026-04-12T10:00:00Z', 15.1)]), {status: 'approved'}).cmp.vm$,
+      );
+
+      expect(vm.completed).toBeTrue();
+      expect(vm.completedAt).toBe('2026-04-12T10:00:00Z');
+      expect(vm.totalKm).toBe(35.5);
+      expect(vm.outings).toBeNull();
+      expect(vm.outcome).toBeNull();
+    });
+
+    it('km nascosti se una tappa vale 0', async () => {
+      const vm = await firstValueFrom(
+        create(completed([doneStage(1, '2026-04-10T10:00:00Z', 20.4), doneStage(2, '2026-04-12T10:00:00Z', 0)]), {status: 'none'}).cmp.vm$,
+      );
+
+      expect(vm.totalKm).toBeNull();
+    });
+
+    it('uscite con tutte le tappe gps', async () => {
+      const vm = await firstValueFrom(
+        create(
+          completed([doneStage(1, '2026-04-10T08:00:00', 10, 'gps'), doneStage(2, '2026-04-10T18:00:00', 10, 'gps'), doneStage(3, '2026-04-11T08:00:00', 10, 'gps')]),
+          {status: 'none'},
+        ).cmp.vm$,
+      );
+
+      expect(vm.outings).toBe(2);
+    });
+
+    it('senza date: completedAt null', async () => {
+      const vm = await firstValueFrom(create(completed([doneStage(1, undefined, 10)]), {status: 'none'}).cmp.vm$);
+
+      expect(vm.completedAt).toBeNull();
+    });
+
+    it('cammino non completato: completed falso e nessun dato del traguardo', async () => {
+      const vm = await firstValueFrom(create(partial, {status: 'none'}).cmp.vm$);
+
+      expect(vm.completed).toBeFalse();
+      expect(vm.totalKm).toBeNull();
+      expect(vm.outings).toBeNull();
+      expect(vm.completedAt).toBeNull();
+    });
+
+    it('«Condividi il traguardo» chiede alla modale l\'anteprima del cammino', () => {
+      const {cmp} = create(done, {status: 'none'});
+      cmp.host = jasmine.createSpyObj('host', ['openForm', 'openStage', 'close', 'openRouteSharePreview']);
+      (cmp.host.openRouteSharePreview as jasmine.Spy).and.resolveTo();
+
+      cmp.shareRoute();
+
+      expect(cmp.host.openRouteSharePreview).toHaveBeenCalled();
+    });
+
+    it('tornando dall\'anteprima del traguardo non rilegge nulla', async () => {
+      const {cmp, svc} = create(done, {status: 'none'});
+      cmp.host = jasmine.createSpyObj('host', ['openForm', 'openStage', 'close', 'openRouteSharePreview']);
+      (cmp.host.openRouteSharePreview as jasmine.Spy).and.resolveTo();
+      const sub = cmp.vm$.subscribe();
+      cmp.ionViewWillEnter();
+
+      cmp.shareRoute();
+      cmp.ionViewWillEnter();
+
+      expect(svc.getCertification).toHaveBeenCalledTimes(1);
+      expect(svc.refreshProgress).not.toHaveBeenCalled();
+      sub.unsubscribe();
+    });
+
+    it('la lista delle tappe parte chiusa e si apre e chiude', () => {
+      const {cmp} = create(done, {status: 'none'});
+
+      expect(cmp.stagesOpen).toBeFalse();
+      cmp.toggleStages();
+      expect(cmp.stagesOpen).toBeTrue();
+      cmp.toggleStages();
+      expect(cmp.stagesOpen).toBeFalse();
+    });
+
+    it('i km nella lingua corrente: virgola in italiano', () => {
+      const {cmp} = create(done, {status: 'none'});
+
+      expect(cmp.km(35.5)).toBe('35,5');
+    });
+
+    it('data lunga con l\'anno', () => {
+      const {cmp} = create(done, {status: 'none'});
+
+      expect(cmp.longDate('2026-04-12T10:00:00Z')).toContain('2026');
     });
   });
 });

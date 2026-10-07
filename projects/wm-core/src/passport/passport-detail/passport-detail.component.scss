@@ -247,3 +247,63 @@
   justify-content: center;
   padding: 32px;
 }
+
+// Traguardo del cammino completato, vista 6 (oc:8703).
+.wm-passport-detail-stats {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-shrink: 0;
+  padding: 16px;
+}
+
+.wm-passport-detail-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: $passport-primary-bg;
+}
+
+.wm-passport-detail-stat-num {
+  font-size: 20px;
+  font-weight: 800;
+  color: $passport-primary;
+  font-variant-numeric: tabular-nums;
+}
+
+.wm-passport-detail-stat-label {
+  font-size: 13px;
+  color: $passport-text;
+}
+
+.wm-passport-detail-share {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  min-height: 44px;
+  margin: 0 16px 8px;
+  border: 0;
+  border-radius: 10px;
+  background: $passport-primary;
+  color: $passport-on-primary;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.wm-passport-detail-toggle {
+  flex-shrink: 0;
+  min-height: 44px;
+  margin: 0 16px 8px;
+  border: 0;
+  background: none;
+  color: $passport-primary;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}

@@ -11,7 +11,17 @@ import {catchError, map, startWith, switchMap, tap} from 'rxjs/operators';
 import {PassportCertification, PassportProgress, PassportStage} from '@wm-types/passport';
 import {LangService} from '@wm-core/localization/lang.service';
 import {PassportService} from '../passport.service';
-import {passportRingDegrees, passportShortDate, sortStages, stageName} from '../passport.utils';
+import {
+  gpsOutings,
+  latestCompletedAt,
+  passportKm,
+  passportLongDate,
+  passportRingDegrees,
+  passportShortDate,
+  sortStages,
+  stageName,
+  totalDistanceKm,
+} from '../passport.utils';
 
 /** Dati del dettaglio del cammino. */
 export interface PassportDetailVm {
@@ -35,6 +45,14 @@ export interface PassportDetailVm {
    * nella nota. Dopo un'approvazione no, perché le tappe riconosciute sono a schermo (oc:8676).
    */
   showEmailHint: boolean;
+  /** Cammino completato secondo il backend: il dettaglio mostra il traguardo (oc:8703). */
+  completed: boolean;
+  /** Data di completamento più recente fra le tappe, `null` se non completato o senza date. */
+  completedAt: string | null;
+  /** Km del cammino, `null` se non completato o se una tappa non ha la distanza. */
+  totalKm: number | null;
+  /** Uscite, solo con tutte le tappe validate col GPS; altrimenti `null`. */
+  outings: number | null;
 }
 
 /** Operazioni della modale host usate dal dettaglio. */
@@ -42,6 +60,8 @@ export interface PassportDetailHost {
   openForm(): Promise<void>;
   openStage(stage: PassportStage): Promise<void>;
   close(): Promise<void>;
+  /** Anteprima della condivisione del cammino completato (oc:8703). */
+  openRouteSharePreview(): Promise<void>;
 }
 
 /**
@@ -73,6 +93,12 @@ export class WmPassportDetailComponent implements OnInit, OnDestroy {
    * gli hook di Ionic arrivano da un listener DOM che non marca la view come dirty (oc:8166).
    */
   readonly vm$: Observable<PassportDetailVm>;
+
+  /**
+   * Lista delle tappe aperta, nello stato completato (oc:8703). Uno stream e non un campo: con
+   * `OnPush` il template si aggiorna da sé al tocco.
+   */
+  readonly stagesOpen$ = new BehaviorSubject<boolean>(false);
 
   private readonly _refresh$ = new BehaviorSubject<void>(undefined);
   /** La prima entrata non ricarica: i dati arrivano già con la sottoscrizione del template. */
@@ -108,15 +134,23 @@ export class WmPassportDetailComponent implements OnInit, OnDestroy {
         const status = certification?.status;
         // senza progresso non si propone nessuna azione: non si sa a che punto è il cammino
         const notDone = progress != null && !progress.completed;
-        const outcome = status === 'approved' || status === 'rejected' ? status : null;
+        const completed = progress?.completed === true;
+        const stages = progress?.stages ?? [];
+        // a cammino completato il traguardo dice già com'è andata: niente esito della richiesta,
+        // la nota del gestore resta nella mail (oc:8703)
+        const outcome = !completed && (status === 'approved' || status === 'rejected') ? status : null;
         return {
           progress,
-          stages: sortStages(progress?.stages ?? [], this._langSvc.currentLang),
+          stages: sortStages(stages, this._langSvc.currentLang),
           certification,
           showCta: notDone && status === 'none',
           showRetry: outcome === 'rejected' || (outcome === 'approved' && notDone),
           outcome,
           showEmailHint: outcome === 'rejected' && !certification.decisionNote,
+          completed,
+          completedAt: completed ? latestCompletedAt(stages) : null,
+          totalKm: completed ? totalDistanceKm(stages) : null,
+          outings: completed ? gpsOutings(stages) : null,
         };
       }),
     );
@@ -202,6 +236,45 @@ export class WmPassportDetailComponent implements OnInit, OnDestroy {
    */
   shortDate(iso: string | undefined): string {
     return passportShortDate(iso, this._langSvc?.currentLang);
+  }
+
+  /**
+   * Data lunga con l'anno nella lingua corrente («12 aprile 2026»), per «Completato il» (oc:8703).
+   *
+   * @param iso Data ISO 8601.
+   * @returns La data formattata, vuota se assente.
+   */
+  longDate(iso: string | null | undefined): string {
+    return passportLongDate(iso ?? undefined, this._langSvc?.currentLang);
+  }
+
+  /**
+   * Km del cammino nella lingua corrente («35,5»), come nell'immagine condivisa (oc:8703).
+   *
+   * @param value Chilometri.
+   * @returns I km formattati.
+   */
+  km(value: number): string {
+    return passportKm(value, this._langSvc?.currentLang);
+  }
+
+  /** Lista delle tappe aperta, nello stato completato (oc:8703). */
+  get stagesOpen(): boolean {
+    return this.stagesOpen$.value;
+  }
+
+  /** Apre o chiude la lista delle tappe del cammino completato (oc:8703). */
+  toggleStages(): void {
+    this.stagesOpen$.next(!this.stagesOpen$.value);
+  }
+
+  /**
+   * «Condividi il traguardo»: la modale spinge l'anteprima del cammino (oc:8703). Il ritorno da lì
+   * non rilegge nulla, come dalla pagina di una tappa: l'anteprima non cambia dati.
+   */
+  shareRoute(): void {
+    this._skipNextEnter = true;
+    void this.host?.openRouteSharePreview()?.catch(() => {});
   }
 
   /**
