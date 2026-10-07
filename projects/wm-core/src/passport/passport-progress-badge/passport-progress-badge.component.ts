@@ -1,10 +1,9 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ViewEncapsulation} from '@angular/core';
-import {ModalController} from '@ionic/angular';
 import {Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {PassportService} from '../passport.service';
 import {toLayerId} from '../passport.utils';
-import {WmPassportModalComponent} from '../passport-modal/passport-modal.component';
+import {PassportModalService} from '../passport-modal/passport-modal.service';
 
 /** Dati mostrati dal badge. */
 export interface PassportBadgeVm {
@@ -38,7 +37,7 @@ export class WmPassportProgressBadgeComponent implements OnChanges {
 
   constructor(
     private _passportSvc: PassportService,
-    private _modalCtrl: ModalController,
+    private _passportModalSvc: PassportModalService,
   ) {}
 
   /** Id del layer come numero, `null` se assente. */
@@ -60,23 +59,15 @@ export class WmPassportProgressBadgeComponent implements OnChanges {
   }
 
   /**
-   * Apre la modale a tutto schermo con il dettaglio del cammino. Senza `breakpoints` non c'è
-   * lo swipe verso il basso: le uscite passano tutte dalla modale, che rispetta il form.
+   * Apre la modale a tutto schermo con il dettaglio del cammino, con il service comune al
+   * passaporto a timbri (oc:8703), che alla chiusura rilegge il progresso del layer.
    */
   async openDetail(): Promise<void> {
-    const modal = await this._modalCtrl.create({
-      component: WmPassportModalComponent,
-      componentProps: {
-        layerId: this.numericLayerId,
-        layerTitle: this.layerTitle,
-        layerLogo: this.layerLogo,
-        layerImage: this.layerImage,
-      },
-      // nella webapp la modale diventa un dialog: backdrop ed Escape salterebbero il guard del form
-      backdropDismiss: false,
+    await this._passportModalSvc.open({
+      layerId: this.numericLayerId,
+      layerTitle: this.layerTitle,
+      layerLogo: this.layerLogo,
+      layerImage: this.layerImage,
     });
-    await modal.present();
-    // nel dettaglio il progresso può essere cambiato (approvazione, resume): la home si riallinea (oc:8676)
-    modal.onDidDismiss().then(() => this._passportSvc.refreshProgress(this.numericLayerId));
   }
 }

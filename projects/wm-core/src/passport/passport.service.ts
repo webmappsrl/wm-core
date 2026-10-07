@@ -3,13 +3,14 @@ import {Injectable} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {App} from '@capacitor/app';
 import {PluginListenerHandle} from '@capacitor/core';
-import {combineLatest, merge, Observable, of, Subject, throwError} from 'rxjs';
+import {combineLatest, concat, defer, merge, Observable, of, Subject, throwError} from 'rxjs';
 import {
   catchError,
   distinctUntilChanged,
   filter,
   map,
   shareReplay,
+  startWith,
   switchMap,
   tap,
 } from 'rxjs/operators';
@@ -65,6 +66,17 @@ interface PassportResponse {
   }>;
 }
 
+/**
+ * Stato della lettura di `GET /api/passport` (oc:8703): `loading` finché non c'è nessuna lettura
+ * riuscita nella sessione, `error` se la lettura è fallita senza dati precedenti, `ready` con i
+ * cammini (eventualmente dell'ultima lettura riuscita), `logged-out` per l'utente non loggato.
+ */
+export type PassportRoutesState =
+  | {status: 'logged-out'}
+  | {status: 'loading'}
+  | {status: 'error'}
+  | {status: 'ready'; routes: Map<number, PassportRoute>};
+
 /** Risposta del backend camminiditalia per stato e invio della richiesta di certificazione. */
 interface CertificationResponse {
   status: string;
@@ -116,6 +128,8 @@ export class PassportService {
   private readonly _passportRefresh$ = new Subject<void>();
   /** Ultimo elenco dei cammini letto, mostrato se una lettura fallisce. Vive solo in memoria. */
   private _lastRoutes: Map<number, PassportRoute> | null = null;
+  /** Stream condiviso dello stato di `/api/passport`, creato alla prima richiesta (oc:8703). */
+  private _routesState$: Observable<PassportRoutesState> | null = null;
   /** Stream condiviso di `/api/passport`, creato alla prima richiesta. */
   private _routes$: Observable<Map<number, PassportRoute> | null> | null = null;
   /** Stream condiviso dell'indice delle tappe validate, creato alla prima richiesta. */
@@ -198,6 +212,16 @@ export class PassportService {
   }
 
   /**
+   * Rilegge solo il progresso del layer, per chi lo sta già mostrando (oc:8703): all'apertura del
+   * dettaglio dal passaporto a timbri, dove `/api/passport` è appena stato letto.
+   *
+   * @param layerId Id del layer (cammino).
+   */
+  reloadProgress(layerId: number): void {
+    this._progressRefresh$.next(layerId);
+  }
+
+  /**
    * Rilegge il progresso del layer per tutti quelli che lo stanno mostrando, per esempio alla
    * chiusura della modale o dopo una rilettura del dettaglio.
    *
@@ -219,24 +243,73 @@ export class PassportService {
    */
   passportRoutes$(): Observable<Map<number, PassportRoute> | null> {
     if (!this._routes$) {
-      this._routes$ = this._store.select(isLogged).pipe(
-        switchMap(logged =>
-          logged
-            ? merge(of(undefined), this.appResume$(), this._passportRefresh$).pipe(
-                switchMap(() =>
-                  this._http.get<PassportResponse>(`${this._environmentSvc.origin}/api/passport`).pipe(
-                    map(res => this._toRoutes(res)),
-                    tap(routes => (this._lastRoutes = routes)),
-                    catchError(() => of(this._lastRoutes)),
-                  ),
-                ),
-              )
-            : of(null),
-        ),
+      // derivato dallo stato (oc:8703): una sola richiesta per entrambi; durante il caricamento
+      // non emette, come prima
+      this._routes$ = this.passportRoutesState$().pipe(
+        filter(state => state.status !== 'loading'),
+        map(state => (state.status === 'ready' ? state.routes : null)),
         shareReplay({bufferSize: 1, refCount: true}),
       );
     }
     return this._routes$;
+  }
+
+  /**
+   * Stato della lettura di `/api/passport` (oc:8703), per chi deve distinguere il caricamento e
+   * l'errore dall'utente senza cammini (il tab Passaporto). Stessa richiesta e stesse riletture di
+   * `passportRoutes$()`: al ritorno in primo piano, con `refreshProgress`, con `refreshPassport` e
+   * al login.
+   *
+   * @returns Observable con lo stato della lettura.
+   */
+  passportRoutesState$(): Observable<PassportRoutesState> {
+    if (!this._routesState$) {
+      this._routesState$ = this._store.select(isLogged).pipe(
+        switchMap(logged =>
+          logged
+            ? defer(() => {
+                const reads$ = merge(of(undefined), this.appResume$(), this._passportRefresh$).pipe(
+                  switchMap(() => {
+                    const read$ = this._http
+                      .get<PassportResponse>(`${this._environmentSvc.origin}/api/passport`)
+                      .pipe(
+                        map(res => this._toRoutes(res)),
+                        tap(routes => (this._lastRoutes = routes)),
+                        map((routes): PassportRoutesState => ({status: 'ready', routes})),
+                        catchError(() =>
+                          of<PassportRoutesState>(
+                            this._lastRoutes
+                              ? {status: 'ready', routes: this._lastRoutes}
+                              : {status: 'error'},
+                          ),
+                        ),
+                      );
+                    // il caricamento si mostra solo finché non c'è nessun dato da far vedere
+                    return this._lastRoutes
+                      ? read$
+                      : concat(of<PassportRoutesState>({status: 'loading'}), read$);
+                  }),
+                );
+                // a una nuova sottoscrizione con dati già letti si mostrano subito quelli, mentre
+                // arriva la risposta: con la rete lenta la pagina non resta vuota
+                const last = this._lastRoutes;
+                return last
+                  ? reads$.pipe(startWith<PassportRoutesState>({status: 'ready', routes: last}))
+                  : reads$;
+              })
+            : of<PassportRoutesState>({status: 'logged-out'}),
+        ),
+        shareReplay({bufferSize: 1, refCount: true}),
+      );
+    }
+    return this._routesState$;
+  }
+
+  /**
+   * Rilegge solo `/api/passport` (oc:8703), per «Riprova» e per il rientro nel tab Passaporto.
+   */
+  refreshPassport(): void {
+    this._passportRefresh$.next();
   }
 
   /**
@@ -313,6 +386,20 @@ export class PassportService {
   requestStageShareImage(layerId: number, trackId: number): Observable<WmShareImageResponse> {
     return this._http.post<WmShareImageResponse>(
       `${this._environmentSvc.origin}/api/layer/${layerId}/stage/${trackId}/share-image`,
+      {},
+      this._languageOptions(),
+    );
+  }
+
+  /**
+   * Chiede al backend l'immagine di condivisione di un cammino completato (oc:8703).
+   *
+   * @param layerId Id del layer (cammino).
+   * @returns Observable con l'URL dell'immagine e il link da condividere.
+   */
+  requestLayerShareImage(layerId: number): Observable<WmShareImageResponse> {
+    return this._http.post<WmShareImageResponse>(
+      `${this._environmentSvc.origin}/api/layer/${layerId}/share-image`,
       {},
       this._languageOptions(),
     );

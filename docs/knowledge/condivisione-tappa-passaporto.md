@@ -1,10 +1,13 @@
-# Condivisione della tappa del passaporto
+# Condivisione della tappa e del cammino del passaporto
 
 ## Come funziona oggi
 
 L'immagine e la pagina pubblica le produce il backend camminiditalia (sua pagina
 `docs/knowledge/8702-passaporto-condivisione-della-tappa-percorsa.md`); qui c'è il percorso
-nell'app.
+nell'app. Lo stesso percorso vale per il **cammino completato** (oc:8703): «Condividi il
+traguardo» nel dettaglio spinge `wm-passport-share-preview` con `kind: 'route'`, che chiede
+l'immagine a `requestLayerShareImage`, cambia testi, nome del file e messaggi d'errore («Questo
+cammino non risulta più completato» per 403/404) e manda `content_type: 'passport-route'`.
 
 - Sulle tappe con `shareable: true`, che il backend manda solo per quelle validate, la pagina della
   tappa mostra «Condividi». Il tocco spinge nell'`ion-nav` della modale del passaporto la pagina
@@ -31,6 +34,9 @@ nell'app.
   `content_type`, così i report esistenti includono già la tappa.
 - **La parte comune in `wm-core`** (oc:8702): la modale del passaporto è aperta da `wm-core`, dove un
   `@Output` non raggiunge l'app.
+- **Un'anteprima sola con `kind`** (oc:8703): tappa e cammino hanno gli stessi pulsanti e lo stesso
+  comportamento; rendere `stage` opzionale ovunque avrebbe sparso controlli su titolo, nome del
+  file e messaggi, mentre gli spec della tappa sono rimasti invariati come controllo.
 
 ## Come ci siamo arrivati
 

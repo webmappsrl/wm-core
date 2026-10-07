@@ -3,6 +3,7 @@ import {firstValueFrom, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {WmPassportProgressBadgeComponent} from './passport-progress-badge.component';
 import {WmPassportModalComponent} from '../passport-modal/passport-modal.component';
+import {PassportModalService} from '../passport-modal/passport-modal.service';
 
 describe('WmPassportProgressBadgeComponent (oc:8166)', () => {
   let getProgress: jasmine.Spy;
@@ -22,7 +23,9 @@ describe('WmPassportProgressBadgeComponent (oc:8166)', () => {
     // come il vero PassportService.visibleProgress: null se non loggato, senza id o senza tappe
     const visibleProgress = (id: number | null) =>
       id == null ? of(null) : getProgress(id).pipe(map((p: any) => (logged && p?.totalStages > 0 ? p : null)));
-    const cmp = new WmPassportProgressBadgeComponent({visibleProgress, refreshProgress} as any, modalCtrl);
+    const passportSvc = {visibleProgress, refreshProgress} as any;
+    // apertura della modale nel service comune (oc:8703): stesse aspettative di prima
+    const cmp = new WmPassportProgressBadgeComponent(passportSvc, new PassportModalService(modalCtrl, passportSvc));
     cmp.layerId = layerId;
     cmp.ngOnChanges({layerId: new SimpleChange(undefined, layerId, true)});
     return cmp;

@@ -527,4 +527,78 @@ describe('WmPassportSharePreviewComponent (oc:8702)', () => {
       expect(image()!.getAttribute('src')).toBe(RESPONSE.image_url);
     });
   });
+
+  describe('cammino completato (oc:8703)', () => {
+    /**
+     * Crea l'anteprima del cammino (senza tappa) e la renderizza.
+     *
+     * @returns Il componente.
+     */
+    function renderRoute(): WmPassportSharePreviewComponent {
+      fixture = TestBed.createComponent(WmPassportSharePreviewComponent);
+      cmp = fixture.componentInstance;
+      cmp.kind = 'route';
+      cmp.layerId = 40;
+      cmp.layerTitle = 'Cammino Grande di Celestino';
+      cmp.host = host;
+      fixture.detectChanges();
+      return cmp;
+    }
+
+    beforeEach(() => {
+      (passportSvc as any).requestLayerShareImage = jasmine.createSpy('requestLayerShareImage').and.returnValue(of(RESPONSE));
+    });
+
+    it('chiede l\'immagine del cammino, non quella di una tappa, con il titolo del traguardo', async () => {
+      renderRoute();
+      await settle();
+
+      expect((passportSvc as any).requestLayerShareImage).toHaveBeenCalledOnceWith(40);
+      expect(passportSvc.requestStageShareImage).not.toHaveBeenCalled();
+      expect(el().querySelector('ion-title')!.textContent).toContain('Condividi il traguardo');
+    });
+
+    it('nome del file dal cammino', async () => {
+      shareSvc.isNative.and.returnValue(true);
+      renderRoute();
+      await settle();
+
+      expect(shareSvc.prepareNative).toHaveBeenCalledOnceWith(RESPONSE, 'cammino-grande-di-celestino.png');
+    });
+
+    it('403: il cammino non risulta più completato', async () => {
+      (passportSvc as any).requestLayerShareImage.and.returnValue(throwError(() => new HttpErrorResponse({status: 403})));
+      renderRoute();
+      await settle();
+
+      expect(errorText()).toBe('Questo cammino non risulta più completato');
+    });
+
+    it('altri errori: messaggio generico del cammino', async () => {
+      (passportSvc as any).requestLayerShareImage.and.returnValue(throwError(() => new HttpErrorResponse({status: 500})));
+      renderRoute();
+      await settle();
+
+      expect(errorText()).toBe("Non è stato possibile creare l'immagine del cammino");
+    });
+
+    it('la condivisione invia contentShared con content_type passport-route e i testi del traguardo', async () => {
+      shareSvc.isNative.and.returnValue(true);
+      renderRoute();
+      await settle();
+      shareBtn()!.click();
+      await settle();
+
+      expect(shareSvc.shareNativePrepared).toHaveBeenCalledOnceWith(NATIVE, {
+        title: 'Ho completato Cammino Grande di Celestino',
+        dialogTitle: 'Condividi con i tuoi amici',
+      });
+      expect(posthog.capture).toHaveBeenCalledOnceWith('contentShared', {
+        content_type: 'passport-route',
+        content_id: '40',
+        layer_id: '40',
+        share_method: 'native-share',
+      });
+    });
+  });
 });

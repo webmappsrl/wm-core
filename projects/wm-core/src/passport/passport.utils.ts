@@ -1,5 +1,31 @@
 import {Language} from '@wm-types/language';
-import {PassportStage, PassportStageChip, PassportStageIndex} from '@wm-types/passport';
+import {
+  PassportRoute,
+  PassportStage,
+  PassportStageChip,
+  PassportStageIndex,
+} from '@wm-types/passport';
+import {ILAYER} from '@wm-core/types/config';
+
+/** Stato di un timbro del passaporto (oc:8703). */
+export type PassportStampStatus = 'in_progress' | 'completed' | 'not_started';
+
+/**
+ * Un timbro del passaporto: un cammino della config con l'avanzamento dell'utente (oc:8703).
+ * `title` è il valore della config: un testo o, a runtime, un oggetto per lingua, da tradurre con
+ * `wmTranslate`.
+ */
+export interface PassportStamp {
+  layerId: number;
+  title: string;
+  logo: string | null;
+  image: string | null;
+  status: PassportStampStatus;
+  validated: number;
+  /** Tappe del cammino; per un cammino non iniziato da `attributes.stage_count`, `null` se manca. */
+  total: number | null;
+  percent: number;
+}
 
 /**
  * Gradi dell'arco verde di un anello di avanzamento del passaporto (oc:8166): unica regola per
@@ -146,4 +172,150 @@ export function passportStageChip(
   if (completedAt) return {status: 'completed', completedAt};
   if ((layers ?? []).some(layerId => index.pendingLayers.has(Number(layerId)))) return null;
   return {status: 'not_started'};
+}
+
+/**
+ * Timbri del passaporto (oc:8703): tutti i cammini della config, uniti all'avanzamento di
+ * `/api/passport`. Prima gli in corso dal più avanzato, poi i completati, poi i non iniziati;
+ * a parità, l'ordine della config. Un cammino di `/api/passport` assente dalla config non compare.
+ *
+ * @param layers Layer della config (`confMAPLAYERS`).
+ * @param routes Cammini con almeno una tappa validata, per `layerId`.
+ * @returns I timbri ordinati.
+ */
+export function passportStamps(
+  layers: ILAYER[] | null | undefined,
+  routes: Map<number, PassportRoute>,
+): PassportStamp[] {
+  const rank: Record<PassportStampStatus, number> = {in_progress: 0, completed: 1, not_started: 2};
+  return (layers ?? [])
+    .map((layer, index) => ({stamp: toStamp(layer, routes), index}))
+    .sort(
+      (a, b) =>
+        rank[a.stamp.status] - rank[b.stamp.status] ||
+        (a.stamp.status === 'in_progress' ? b.stamp.percent - a.stamp.percent : 0) ||
+        a.index - b.index,
+    )
+    .map(({stamp}) => stamp);
+}
+
+/**
+ * Timbro di un layer della config.
+ *
+ * @param layer Layer della config.
+ * @param routes Cammini con almeno una tappa validata, per `layerId`.
+ * @returns Il timbro.
+ */
+function toStamp(layer: ILAYER, routes: Map<number, PassportRoute>): PassportStamp {
+  const layerId = Number(layer.id);
+  const route = routes.get(layerId);
+  const base = {
+    layerId,
+    title: layer.title,
+    logo: layer.logo_image ?? null,
+    image: layer.feature_image ?? null,
+  };
+  if (!route) {
+    return {
+      ...base,
+      status: 'not_started',
+      validated: 0,
+      total: layer.attributes?.stage_count ?? null,
+      percent: 0,
+    };
+  }
+  return {
+    ...base,
+    status: route.completed ? 'completed' : 'in_progress',
+    validated: route.validated,
+    total: route.total,
+    percent: route.percent,
+  };
+}
+
+/**
+ * Nome del file dell'immagine di condivisione di un cammino completato (oc:8703).
+ *
+ * @param layerTitle Titolo del cammino.
+ * @param layerId Id del cammino, per il ripiego.
+ * @returns `<cammino>.png`, oppure `cammino-<layerId>.png` se il titolo è vuoto.
+ */
+export function routeShareFileName(layerTitle: string | null | undefined, layerId: number): string {
+  return `${slugify(layerTitle) || `cammino-${layerId}`}.png`;
+}
+
+/**
+ * Data di completamento più recente fra le tappe (oc:8703).
+ *
+ * @param stages Tappe del cammino.
+ * @returns La data ISO più recente, `null` se nessuna tappa ha una data.
+ */
+export function latestCompletedAt(stages: PassportStage[]): string | null {
+  return (stages ?? [])
+    .map(stage => stage.completedAt)
+    .filter((iso): iso is string => !!iso)
+    .reduce<string | null>(
+      (latest, iso) => (latest == null || new Date(iso) > new Date(latest) ? iso : latest),
+      null,
+    );
+}
+
+/**
+ * Lunghezza del cammino come somma delle tappe (oc:8703). Il backend manda 0 quando la distanza
+ * manca: in quel caso il totale non è affidabile e non si mostra.
+ *
+ * @param stages Tappe del cammino.
+ * @returns I km arrotondati a 0,1, `null` senza tappe o con una tappa a 0.
+ */
+export function totalDistanceKm(stages: PassportStage[]): number | null {
+  if (!stages?.length || stages.some(stage => !(stage.distance > 0))) return null;
+  return Math.round(stages.reduce((sum, stage) => sum + stage.distance, 0) * 10) / 10;
+}
+
+/**
+ * Uscite del cammino: giorni distinti (nel fuso del dispositivo) delle validazioni, solo se tutte
+ * le tappe sono validate col GPS (oc:8703). Con una validazione manuale la data è quella
+ * dell'approvazione del gestore, e il numero di uscite non si sa.
+ *
+ * @param stages Tappe del cammino.
+ * @returns Il numero di giorni, `null` se non si può sapere.
+ */
+export function gpsOutings(stages: PassportStage[]): number | null {
+  if (!stages?.length) return null;
+  if (
+    stages.some(
+      stage => stage.status !== 'completed' || stage.source !== 'gps' || !stage.completedAt,
+    )
+  ) {
+    return null;
+  }
+  return new Set(stages.map(stage => new Date(stage.completedAt).toDateString())).size;
+}
+
+/**
+ * Data lunga nella lingua dell'app («12 aprile 2026»), nel fuso del dispositivo (oc:8703).
+ *
+ * @param iso Data ISO 8601.
+ * @param lang Lingua corrente dell'app.
+ * @returns La data formattata, vuota se assente.
+ */
+export function passportLongDate(iso: string | undefined, lang: string): string {
+  if (!iso) return '';
+  return new Intl.DateTimeFormat(intlLocale(lang), {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(iso));
+}
+
+/**
+ * Km nella lingua dell'app, con al più una cifra decimale («35,5»), come nell'immagine di
+ * condivisione (oc:8703).
+ *
+ * @param km Chilometri.
+ * @param lang Lingua corrente dell'app.
+ * @returns I km formattati, senza unità.
+ */
+export function passportKm(km: number, lang: string): string {
+  return new Intl.NumberFormat(intlLocale(lang), {maximumFractionDigits: 1}).format(km);
 }
