@@ -28,13 +28,16 @@ import {
   updateUgcTrack,
   updateUgcTrackFailure,
   updateUgcTrackSuccess,
+  removedSynchronizedUgc,
 } from './ugc.actions';
 import {
   activableUgc,
   syncUgcIntervalEnabled,
   currentUgcPoiDrawnGeometry,
   currentUgcPoi,
+  currentUgcTrack,
 } from './ugc.selector';
+import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {WmFeature} from '@wm-types/feature';
 import {Point, LineString} from 'geojson';
 
@@ -82,6 +85,7 @@ describe('UgcEffects', () => {
   let ugcServiceSpy: jasmine.SpyObj<UgcService>;
   let alertCtrlSpy: jasmine.SpyObj<AlertController>;
   let langSvcSpy: jasmine.SpyObj<LangService>;
+  let urlHandlerSvcSpy: jasmine.SpyObj<UrlHandlerService>;
 
   beforeEach(() => {
     TestBed.resetTestingModule();
@@ -97,6 +101,7 @@ describe('UgcEffects', () => {
     ]);
     alertCtrlSpy = jasmine.createSpyObj('AlertController', ['create']);
     langSvcSpy = jasmine.createSpyObj('LangService', ['instant']);
+    urlHandlerSvcSpy = jasmine.createSpyObj('UrlHandlerService', ['updateURL']);
     langSvcSpy.instant.and.callFake((key: string) => key);
     alertCtrlSpy.create.and.returnValue(Promise.resolve(makeAlertMock() as any));
 
@@ -110,11 +115,13 @@ describe('UgcEffects', () => {
             {selector: syncUgcIntervalEnabled, value: true},
             {selector: currentUgcPoiDrawnGeometry, value: null},
             {selector: currentUgcPoi, value: null},
+            {selector: currentUgcTrack, value: null},
           ],
         }),
         {provide: UgcService, useValue: ugcServiceSpy},
         {provide: AlertController, useValue: alertCtrlSpy},
         {provide: LangService, useValue: langSvcSpy},
+        {provide: UrlHandlerService, useValue: urlHandlerSvcSpy},
       ],
     });
 
@@ -483,6 +490,54 @@ describe('UgcEffects', () => {
           expect((action as any).error).toBe('Media ID not found');
           done();
         }
+      });
+    });
+  });
+
+  // ─── closeRemovedCurrentUgc$ (oc:8741) ────────────────────────────────────
+
+  describe('closeRemovedCurrentUgc$', () => {
+    it('chiude il pannello se la traccia aperta è fra quelle tolte', done => {
+      store.overrideSelector(currentUgcTrack, makeTrack({id: 134}));
+      store.refreshState();
+      actions$ = of(removedSynchronizedUgc({ugcType: 'track', ids: ['134', '135']}));
+
+      effects.closeRemovedCurrentUgc$.subscribe(() => {
+        expect(urlHandlerSvcSpy.updateURL).toHaveBeenCalledOnceWith({ugc_track: undefined});
+        done();
+      });
+    });
+
+    it('non chiude il pannello se la traccia aperta non è fra quelle tolte', done => {
+      store.overrideSelector(currentUgcTrack, makeTrack({id: 133}));
+      store.refreshState();
+      actions$ = of(removedSynchronizedUgc({ugcType: 'track', ids: ['134']}));
+
+      effects.closeRemovedCurrentUgc$.subscribe(() => {
+        expect(urlHandlerSvcSpy.updateURL).not.toHaveBeenCalled();
+        done();
+      });
+    });
+
+    it('chiude il pannello se il POI aperto è fra quelli tolti', done => {
+      store.overrideSelector(currentUgcPoi, makePoi({id: 2}));
+      store.refreshState();
+      actions$ = of(removedSynchronizedUgc({ugcType: 'poi', ids: ['2']}));
+
+      effects.closeRemovedCurrentUgc$.subscribe(() => {
+        expect(urlHandlerSvcSpy.updateURL).toHaveBeenCalledOnceWith({ugc_poi: undefined});
+        done();
+      });
+    });
+
+    it('non confonde un POI con una traccia che ha lo stesso id', done => {
+      store.overrideSelector(currentUgcTrack, makeTrack({id: 2}));
+      store.refreshState();
+      actions$ = of(removedSynchronizedUgc({ugcType: 'poi', ids: ['2']}));
+
+      effects.closeRemovedCurrentUgc$.subscribe(() => {
+        expect(urlHandlerSvcSpy.updateURL).not.toHaveBeenCalled();
+        done();
       });
     });
   });

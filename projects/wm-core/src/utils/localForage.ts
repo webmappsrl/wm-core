@@ -1,5 +1,5 @@
 import {WmFeature} from '@wm-types/feature';
-import {GeoJsonProperties, LineString, Point} from 'geojson';
+import {Geometry, GeoJsonProperties, LineString, Point} from 'geojson';
 import * as localforage from 'localforage';
 import {Location} from '@capacitor-community/background-geolocation';
 import {downloadTiles, getTilesByGeometry, removeTiles} from '../../../../../map-core/src/utils';
@@ -191,8 +191,17 @@ export async function getSynchronizedUgcPoi(id: string): Promise<WmFeature<Point
 }
 
 export async function getSynchronizedUgcPois(): Promise<WmFeature<Point>[]> {
+  return (await getSynchronizedUgcPoisOrNull()) ?? [];
+}
+
+/**
+ * Come `getSynchronizedUgcPois`, ma restituisce `null` se la lettura fallisce invece di un
+ * elenco vuoto: serve a chi deve distinguere «nessun POI» da «non sono riuscito a leggerli».
+ * @returns i POI sincronizzati, oppure `null` se la lettura delle chiavi fallisce
+ */
+export async function getSynchronizedUgcPoisOrNull(): Promise<WmFeature<Point>[] | null> {
   const keys = await handleAsync(synchronizedUgcPoi.keys(), 'getSynchronizedUgcPois: Failed');
-  return keys ? await Promise.all(keys.map(key => getSynchronizedUgcPoi(key))) : [];
+  return keys ? await Promise.all(keys.map(key => getSynchronizedUgcPoi(key))) : null;
 }
 
 export async function getSynchronizedUgcTrack(id: string): Promise<WmFeature<LineString> | null> {
@@ -203,8 +212,17 @@ export async function getSynchronizedUgcTrack(id: string): Promise<WmFeature<Lin
 }
 
 export async function getSynchronizedUgcTracks(): Promise<WmFeature<LineString>[]> {
+  return (await getSynchronizedUgcTracksOrNull()) ?? [];
+}
+
+/**
+ * Come `getSynchronizedUgcTracks`, ma restituisce `null` se la lettura fallisce invece di un
+ * elenco vuoto: serve a chi deve distinguere «nessuna traccia» da «non sono riuscito a leggerle».
+ * @returns le tracce sincronizzate, oppure `null` se la lettura delle chiavi fallisce
+ */
+export async function getSynchronizedUgcTracksOrNull(): Promise<WmFeature<LineString>[] | null> {
   const keys = await handleAsync(synchronizedUgcTrack.keys(), 'getSynchronizedUgcTracks: Failed');
-  return keys ? await Promise.all(keys.map(key => getSynchronizedUgcTrack(key))) : [];
+  return keys ? await Promise.all(keys.map(key => getSynchronizedUgcTrack(key))) : null;
 }
 
 export async function getUgcPoi(poiId: string | number | null): Promise<WmFeature<Point> | null> {
@@ -386,12 +404,39 @@ export async function removeSynchronizedImgsInsideProperties(
   await Promise.all(urls.map(url => removeImg(url)));
 }
 
-export async function removeSynchronizedUgcPoi(id: number): Promise<void> {
-  await handleAsync(synchronizedUgcPoi.removeItem(`${id}`), 'removeSynchronizedUgcPoi: Failed');
+/**
+ * Toglie un POI dalla memoria `synchronized`.
+ * @param id id del POI sul server
+ * @returns true se la rimozione è riuscita, false se è fallita (l'errore viene loggato)
+ */
+export async function removeSynchronizedUgcPoi(id: number): Promise<boolean> {
+  return _removeItem(synchronizedUgcPoi, `${id}`, 'removeSynchronizedUgcPoi: Failed');
 }
 
-export async function removeSynchronizedUgcTrack(id: number): Promise<void> {
-  await handleAsync(synchronizedUgcTrack.removeItem(`${id}`), 'removeSynchronizedUgcTrack: Failed');
+/**
+ * Toglie una traccia dalla memoria `synchronized`.
+ * @param id id della traccia sul server
+ * @returns true se la rimozione è riuscita, false se è fallita (l'errore viene loggato)
+ */
+export async function removeSynchronizedUgcTrack(id: number): Promise<boolean> {
+  return _removeItem(synchronizedUgcTrack, `${id}`, 'removeSynchronizedUgcTrack: Failed');
+}
+
+/**
+ * Rimuove una chiave da un'istanza localForage dicendo se ci è riuscito.
+ * @param instance l'istanza localForage
+ * @param key la chiave da rimuovere
+ * @param errorMsg messaggio da loggare in caso di errore
+ * @returns true se la rimozione è riuscita
+ */
+async function _removeItem(instance: LocalForage, key: string, errorMsg: string): Promise<boolean> {
+  try {
+    await instance.removeItem(key);
+    return true;
+  } catch (error) {
+    console.error(errorMsg, error);
+    return false;
+  }
 }
 
 export async function removeUgcPoi(poi: WmFeature<Point>): Promise<void> {
@@ -469,15 +514,26 @@ export async function saveImg(url: string, value: ArrayBuffer | null = null): Pr
   synchronizedImg.setItem(url, value);
 }
 
+/**
+ * Restituisce gli URL delle immagini di una UGC, letti da `properties.media[].webPath`: è il
+ * criterio con cui `saveUgcImagesByStorage` le salva, e con cui la riconciliazione delle UGC
+ * decide quali cancellare (oc:8741). Va cambiato in un punto solo.
+ * @param feature la UGC
+ * @returns gli URL, `[]` se la UGC non ha media
+ */
+export function getUgcMediaUrls(feature: WmFeature<Geometry> | null | undefined): string[] {
+  const media = feature?.properties?.media;
+  if (!Array.isArray(media)) {
+    return [];
+  }
+  return media.map(m => m?.webPath).filter((url): url is string => typeof url === 'string');
+}
+
 async function saveUgcImagesByStorage(
   feature: WmFeature<LineString | Point>,
   isSynchronized: boolean,
 ): Promise<void> {
-  const media = feature?.properties?.media;
-  if (!Array.isArray(media) || media.length === 0) {
-    return;
-  }
-  const urls = media.map(m => m?.webPath).filter((url): url is string => typeof url === 'string');
+  const urls = getUgcMediaUrls(feature);
   if (urls.length === 0) {
     return;
   }
