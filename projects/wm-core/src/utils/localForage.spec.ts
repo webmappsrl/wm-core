@@ -12,6 +12,11 @@ import {
   saveUgcTrack,
   isBlobUrl,
   isValidUrl,
+  getUgcMediaUrls,
+  getSynchronizedUgcPoisOrNull,
+  getSynchronizedUgcTracksOrNull,
+  removeSynchronizedUgcPoi,
+  removeSynchronizedUgcTrack,
 } from './localForage';
 import {WmFeature} from '@wm-types/feature';
 import {LineString, Point} from 'geojson';
@@ -227,5 +232,46 @@ describe('localForage utilities', () => {
       expect(deviceImg.setItem).not.toHaveBeenCalled();
       expect(synchronizedImg.setItem).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('localForage: supporto alla riconciliazione delle UGC (oc:8741)', () => {
+  it('getUgcMediaUrls restituisce i webPath dei media', () => {
+    const track = makeTrack({media: [{webPath: 'a.jpg'}, {webPath: 'b.jpg'}, {id: 3}]});
+    expect(getUgcMediaUrls(track)).toEqual(['a.jpg', 'b.jpg']);
+  });
+
+  it('getUgcMediaUrls restituisce [] senza media', () => {
+    expect(getUgcMediaUrls(makeTrack())).toEqual([]);
+    expect(getUgcMediaUrls(makeTrack({media: 'x'}))).toEqual([]);
+    expect(getUgcMediaUrls(null)).toEqual([]);
+  });
+
+  it('removeSynchronizedUgcTrack restituisce true se la rimozione riesce', async () => {
+    spyOn(synchronizedUgcTrack, 'removeItem').and.returnValue(Promise.resolve());
+    expect(await removeSynchronizedUgcTrack(134)).toBeTrue();
+    expect(synchronizedUgcTrack.removeItem).toHaveBeenCalledWith('134');
+  });
+
+  it('removeSynchronizedUgcTrack restituisce false se la rimozione fallisce', async () => {
+    spyOn(synchronizedUgcTrack, 'removeItem').and.returnValue(Promise.reject(new Error('quota')));
+    expect(await removeSynchronizedUgcTrack(134)).toBeFalse();
+  });
+
+  it('removeSynchronizedUgcPoi restituisce false se la rimozione fallisce', async () => {
+    spyOn(synchronizedUgcPoi, 'removeItem').and.returnValue(Promise.reject(new Error('quota')));
+    expect(await removeSynchronizedUgcPoi(2)).toBeFalse();
+  });
+
+  it('getSynchronizedUgcTracksOrNull restituisce null se la lettura delle chiavi fallisce', async () => {
+    spyOn(synchronizedUgcTrack, 'keys').and.returnValue(Promise.reject(new Error('idb')));
+    expect(await getSynchronizedUgcTracksOrNull()).toBeNull();
+  });
+
+  it('getSynchronizedUgcPoisOrNull restituisce le UGC lette', async () => {
+    const poi = makePoi({id: 1});
+    spyOn(synchronizedUgcPoi, 'keys').and.returnValue(Promise.resolve(['1']));
+    spyOn(synchronizedUgcPoi, 'getItem').and.returnValue(Promise.resolve(poi as any));
+    expect(await getSynchronizedUgcPoisOrNull()).toEqual([poi]);
   });
 });

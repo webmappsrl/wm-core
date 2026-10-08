@@ -75,6 +75,7 @@ Il dettaglio di ogni lavoro sta nel proprio cantiere sotto `docs/features/<slug>
 | Profilo altimetrico e distanza | Badge live distance, proiezione GPS→traccia, etichetta dislivello sugli anelli | oc:8177, oc:8493, oc:8284 | [docs/knowledge/profilo-altimetrico-e-distanza.md](docs/knowledge/profilo-altimetrico-e-distanza.md) |
 | Profilo utente | Modale di editing, avatar e fallback a iniziali, compressione parametrizzata | oc:8163 | [docs/knowledge/profilo-utente.md](docs/knowledge/profilo-utente.md) |
 | UGC | Pre-selezione del layer da GPS, foto condivise fra POI e track, condivisione social | oc:7639, oc:5125, oc:8183, oc:8166 | [docs/knowledge/ugc.md](docs/knowledge/ugc.md) |
+| UGC sincronizzate | Il telefono rispecchia l'index del server: riconciliazione per id, immagini non più usate, chiusura del pannello della UGC tolta | oc:8741 | [docs/knowledge/8741-app-le-ugc-cancellate-sul-server-restano-visibili-sul-telefono-fino-al-logout.md](docs/knowledge/8741-app-le-ugc-cancellate-sul-server-restano-visibili-sul-telefono-fino-al-logout.md) |
 | Varianti per shard | `fileReplacements`, quando estrarre una classe base, filtri della searchbar camminiditalia | oc:8391, oc:8414, oc:8166, oc:8701 | [docs/knowledge/varianti-per-shard.md](docs/knowledge/varianti-per-shard.md) |
 
 ## Trappole
