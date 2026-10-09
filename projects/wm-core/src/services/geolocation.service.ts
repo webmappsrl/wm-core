@@ -8,7 +8,7 @@ import {
 import {registerPlugin} from '@capacitor/core';
 import {App} from '@capacitor/app';
 import {LineString, Position} from 'geojson';
-import {WmFeature} from '@wm-types/feature';
+import {Location as WmLocation, WmFeature} from '@wm-types/feature';
 import {DeviceService} from './device.service';
 import {CStopwatch} from '@wm-core/utils/cstopwatch';
 import {getDistance} from 'ol/sphere';
@@ -23,6 +23,13 @@ import {
   getCurrentUgcTrackLocations,
   saveCurrentUgcTrackLocations,
 } from '@wm-core/utils/localForage';
+import {UgcTrackStatsParams} from '@wm-core/types/config';
+import {
+  UGC_TRACK_STATS_DEFAULT_PARAMS,
+  UgcTrackCleaner,
+  recordedGeometryCoordinates,
+} from '@wm-core/utils/ugc-track-stats';
+import {UgcTrackStatsService} from './ugc-track-stats.service';
 
 const THROTTLE_TIME_DISTANCE = 10000; //10 seconds
 const DIFFERENCE_THRESHOLD_DISTANCE = 20; //20 meters
@@ -40,9 +47,13 @@ export class GeolocationService {
 
   private _mode: GeolocationMode = 'stopped';
   private _isPaused = false;
+  // Pulizia GPS della registrazione in corso, la stessa del server (oc:8743)
+  private _cleaner: UgcTrackCleaner | null = null;
+  private _statsParams: UgcTrackStatsParams = UGC_TRACK_STATS_DEFAULT_PARAMS;
 
   onLocationChange$: ReplaySubject<Location> = new ReplaySubject<Location>(1);
-  onResumeRecording$: ReplaySubject<Location[]> = new ReplaySubject<Location[]>(1);
+  /** Punti tenuti dalla pulizia GPS nella registrazione in corso: è ciò che disegna la linea live. */
+  recordedKeptLocations$: BehaviorSubject<WmLocation[]> = new BehaviorSubject<WmLocation[]>([]);
   onModeChange: BehaviorSubject<GeolocationMode> = new BehaviorSubject(
     this._mode,
   );
@@ -51,8 +62,17 @@ export class GeolocationService {
   constructor(
     private _deviceService: DeviceService,
     private _store: Store,
+    private _ugcTrackStatsSvc: UgcTrackStatsService,
     @Optional() @Inject(POSTHOG_CLIENT) private _posthogClient: WmPosthogClient | null,
   ) {
+    this._ugcTrackStatsSvc.params$.subscribe(params => {
+      this._statsParams = params;
+      // Se la config arriva (o cambia) a registrazione in corso, per esempio dopo una ripresa
+      // all'avvio, la pulizia si rifà con i parametri giusti sui punti già registrati
+      if (this._cleaner && this._recordedFeature) {
+        this._startCleaner(this._recordedFeature.properties?.locations ?? []);
+      }
+    });
     if (!this._deviceService.isBrowser) {
       App.addListener('appStateChange', async ({isActive}) => {
         if (isActive) {
@@ -82,8 +102,27 @@ export class GeolocationService {
     return this._currentLocation;
   }
 
+  /**
+   * La traccia registrata: `properties.locations` grezzi, `geometry` con i soli punti tenuti dalla
+   * pulizia GPS come se la registrazione finisse ora (con meno di 2 punti tenuti, i punti grezzi
+   * validi: una geometria vuota non si salverebbe). È ciò che si salva; leggerla non cambia lo
+   * stato della pulizia, quindi se il salvataggio si annulla la registrazione prosegue uguale.
+   */
   get recordedFeature(): WmFeature<LineString> | null {
-    return this._recordedFeature;
+    if (!this._recordedFeature) {
+      return null;
+    }
+    const kept = this._cleaner?.keptIfStoppedNow() ?? [];
+    return {
+      ...this._recordedFeature,
+      geometry: {
+        type: 'LineString',
+        coordinates: recordedGeometryCoordinates(
+          kept,
+          this._recordedFeature.properties?.locations ?? [],
+        ),
+      },
+    };
   }
 
   get paused(): boolean {
@@ -122,6 +161,7 @@ export class GeolocationService {
 
     this._recordStopwatch = new CStopwatch();
     this._recordedFeature = this._getEmptyWmFeature();
+    this._startCleaner(this._recordedFeature.properties?.locations ?? []);
     this._isPaused = false;
 
     this._startLocationWatcher('high');
@@ -129,10 +169,6 @@ export class GeolocationService {
 
   async resumeRecordingFromSaved(): Promise<void> {
     const savedLocations = await getCurrentUgcTrackLocations();
-    // Emette le locations salvate per aggiornare la direttiva che mostra la traccia
-    if (savedLocations && savedLocations.length > 0) {
-      this.onResumeRecording$.next(savedLocations);
-    }
 
     this._mode = 'recording';
     this.onModeChange.next(this._mode);
@@ -150,6 +186,8 @@ export class GeolocationService {
     );
 
     this._recordedFeature = this._createRecordedFeatureFromLocations(savedLocations);
+    // La pulizia riparte dai punti grezzi salvati: la linea torna con i soli punti tenuti
+    this._startCleaner(this._recordedFeature.properties?.locations ?? []);
     this._isPaused = false;
 
     this._startLocationWatcher('high');
@@ -158,16 +196,17 @@ export class GeolocationService {
   async stopRecording(): Promise<WmFeature<LineString> | null> {
     if (this._mode !== 'recording') return null;
 
-    const recordedFeature = this._recordedFeature;
+    const recordedFeature = this.recordedFeature;
 
     this._recordStopwatch?.stop();
     this._recordStopwatch = null;
     this._recordedFeature = null;
+    this._cleaner = null;
+    this.recordedKeptLocations$.next([]);
     this._isPaused = false;
     this._store.dispatch(setOnRecord({onRecord: false}));
     this._mode = 'stopped';
     this.onModeChange.next(this._mode);
-    this.onResumeRecording$.next(null);
 
     this.startNavigation();
 
@@ -306,17 +345,16 @@ export class GeolocationService {
   }
 
   private _isLocationAlreadyRecorded(location: Location): boolean {
-    const coords = this._recordedFeature?.geometry?.coordinates;
-    if (!coords?.length) {
+    const locations = this._recordedFeature?.properties?.locations;
+    if (!locations?.length) {
       return false;
     }
 
-    const lastCoord = coords[coords.length - 1];
-    const altitude = location.altitude ?? 0;
+    const last = locations[locations.length - 1];
     return (
-      lastCoord[0] === location.longitude &&
-      lastCoord[1] === location.latitude &&
-      lastCoord[2] === altitude
+      last.longitude === location.longitude &&
+      last.latitude === location.latitude &&
+      (last.altitude ?? 0) === (location.altitude ?? 0)
     );
   }
 
@@ -332,18 +370,24 @@ export class GeolocationService {
       return;
     }
 
-    // Aggiunge le coordinate alla geometry
-    this._recordedFeature.geometry.coordinates.push([
-      location.longitude,
-      location.latitude,
-      location.altitude ?? 0,
-    ]);
-
-    // Aggiunge la location alle properties
+    // Le properties tengono il punto grezzo, come lo riceve il server; la geometry si ricava dai
+    // punti tenuti (vedi il getter recordedFeature)
     this._recordedFeature.properties?.locations?.push(location);
+    if (this._cleaner?.push(location).length) {
+      this.recordedKeptLocations$.next(this._cleaner.kept);
+    }
 
     // Salva su localForage ad ogni aggiornamento
     saveCurrentUgcTrackLocations(this._recordedFeature.properties?.locations);
+  }
+
+  /**
+   * Fa ripartire la pulizia GPS sui punti già registrati e aggiorna la linea live.
+   */
+  private _startCleaner(locations: WmLocation[]): void {
+    this._cleaner = new UgcTrackCleaner(this._statsParams);
+    locations.forEach(location => this._cleaner.push(location));
+    this.recordedKeptLocations$.next(this._cleaner.kept);
   }
 
   private _getWatcherOptions(accuracy: 'high' | 'low'): WatcherOptions {

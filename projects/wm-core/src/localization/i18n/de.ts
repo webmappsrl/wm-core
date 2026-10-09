@@ -165,6 +165,8 @@ export const wmDE = {
   'Tempo': 'Zeit',
   'Velocità media': 'Durchschnittsgeschwindigkeit',
   'Velocità massima': 'Maximale Geschwindigkeit',
+  'Durata': 'Dauer',
+  'Tempo in movimento': 'Bewegungszeit',
   'Tipologia di form': 'Formularart',
   'Seleziona il tipo di form': 'Formularart auswählen',
   'File selezionato': 'Ausgewählte Datei',

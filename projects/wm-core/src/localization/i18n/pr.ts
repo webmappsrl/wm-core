@@ -162,6 +162,8 @@ export const wmPR = {
   'Tempo': ' Tempo',
   'Velocità media': 'Velocidade média',
   'Velocità massima': 'Velocidade máxima',
+  'Durata': 'Duração',
+  'Tempo in movimento': 'Tempo em movimento',
   'Tipologia di form': 'Tipo de formulário',
   'Seleziona il tipo di form': 'Selecione o tipo de formulário',
   'File selezionato': 'File selezionato',

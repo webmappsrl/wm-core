@@ -164,6 +164,8 @@ export const wmFR = {
   'Tempo': 'Temps',
   'Velocità media': 'Analyse de la vitesse',
   'Velocità massima': 'Vitesse maximale',
+  'Durata': 'Durée',
+  'Tempo in movimento': 'Temps en mouvement',
   'Tipologia di form': 'Type de formulaire',
   'Seleziona il tipo di form': 'Sélectionnez le type de formulaire',
   'File selezionato': 'Fichier sélectionné',

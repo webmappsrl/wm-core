@@ -161,6 +161,8 @@ export const wmES = {
   'Tempo': 'Tiempo',
   'Velocità media': 'Velocidad media',
   'Velocità massima': 'Velocidad máxima',
+  'Durata': 'Duración',
+  'Tempo in movimento': 'Tiempo en movimiento',
   'Tipologia di form': 'Tipo de formulario',
   'Seleziona il tipo di form': 'Selecciona el tipo de formulario',
   'File selezionato': 'Archivo seleccionado',

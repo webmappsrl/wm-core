@@ -170,6 +170,8 @@ export const wmIT = {
   'Tempo': 'Tempo',
   'Velocità media': 'Velocità media',
   'Velocità massima': 'Velocità massima',
+  'Durata': 'Durata',
+  'Tempo in movimento': 'Tempo in movimento',
   'Tipologia di form': 'Tipologia di form',
   'Seleziona il tipo di form': 'Seleziona il tipo di form',
   'File selezionato': 'File selezionato',
