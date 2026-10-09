@@ -25,6 +25,7 @@ import {ConfEffects} from './store/conf/conf.effects';
 import {confReducer} from './store/conf/conf.reducer';
 import {WmTabDescriptionComponent} from './tab-description/tab-description.component';
 import {WmTabDetailComponent} from './tab-detail/tab-detail.component';
+import {WmDetailRowComponent} from './detail-row/detail-row.component';
 import {WmTabHowtoComponent} from './tab-howto/tab-howto.component';
 import {WmTabNearestPoiComponent} from './tab-nearest-poi/tab-nearest-poi.component';
 import {WmTaxonomyWhereComponent} from './taxonomy-where/taxonomy-where.component';
@@ -114,6 +115,7 @@ register();
 
 export const declarations = [
   WmTabDetailComponent,
+  WmDetailRowComponent,
   WmTabDescriptionComponent,
   WmTabHowtoComponent,
   WmTabNearestPoiComponent,

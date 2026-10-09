@@ -169,6 +169,8 @@ export const wmSQ = {
   'Tempo': 'Koha',
   'Velocità media': 'Shpejtësia mesatare',
   'Velocità massima': 'Shpejtësia maksimale',
+  'Durata': 'Kohëzgjatja',
+  'Tempo in movimento': 'Koha në lëvizje',
   'Tipologia di form': 'Lloji i formularit',
   'Seleziona il tipo di form': 'Zgjidh llojin e formularit',
   'File selezionato': 'Skedari i zgjedhur',

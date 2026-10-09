@@ -29,6 +29,10 @@ nel repo di quel prodotto.
   `it.ts` (`'Richiedi certificazione': 'Demander la certification'`), mai una chiave strutturata
   come `passport.cta.title`. Prima di aggiungerne una, cerca se lo stesso testo esiste già: due
   chiavi uguali nello stesso file non compilano.
+- **Distanza, tempi, velocità e dislivello di una traccia UGC si calcolano solo in
+  `utils/ugc-track-stats.ts`**, letti tramite `UgcTrackStatsService`: è la traduzione della
+  specifica di wm-package e i suoi casi di test sono condivisi. Una regola che cambia si cambia in
+  entrambi i repo, insieme alle fixture.
 
 ## Comandi
 
@@ -64,6 +68,7 @@ Il dettaglio di ogni lavoro sta nel proprio cantiere sotto `docs/features/<slug>
 | Ambiente e hostname | Riconoscimento dello shard dall'hostname, domini di anteprima a N parti | oc:8031 | [docs/knowledge/ambiente-e-hostname.md](docs/knowledge/ambiente-e-hostname.md) |
 | Box informativi configurabili | Accordion custom `wm-config-detail`, apertura multipla, meccanismo di assestamento rimosso | oc:8181, oc:8458, oc:8427 | [docs/knowledge/config-detail.md](docs/knowledge/config-detail.md) |
 | Cache delle API e log in produzione | Header condizionale in `handleApiCache`, triage dei `console.*` | oc:8374, oc:8369 | [docs/knowledge/cache-e-log.md](docs/knowledge/cache-e-log.md) |
+| Dati tecnici e pulizia GPS delle tracce UGC | `stats` del server o calcolo locale con la regola del backend, pulizia incrementale in registrazione, casi di test condivisi con wm-package | oc:8743 | [docs/knowledge/8743-app-dettagli-tecnici-e-mappa-delle-tracce-ugc-dai-dati-del-server-calcolo-al-volo-con-la-stessa-pulizia-gps-se-non-sincronizzate.md](docs/knowledge/8743-app-dettagli-tecnici-e-mappa-delle-tracce-ugc-dai-dati-del-server-calcolo-al-volo-con-la-stessa-pulizia-gps-se-non-sincronizzate.md) |
 | Deep link | Perché il percorso nativo è stato scartato, ordine in `initialize()`, navigazione Home→Map | oc:8470, oc:7980 | [docs/knowledge/deep-link.md](docs/knowledge/deep-link.md) |
 | Filtro dei POI | Due stage tassonomia + layer ID, retrocompatibilità legacy, binding multi-direttiva | oc:8147, oc:7646 | [docs/knowledge/filtri-poi.md](docs/knowledge/filtri-poi.md) |
 | Home: tab, conteggi ed etichette | Scelta del tab risultati, badge non filtrato, chiavi i18n condivise badge/segment | oc:7643, oc:8221 | [docs/knowledge/home-ricerca-e-tab.md](docs/knowledge/home-ricerca-e-tab.md) |

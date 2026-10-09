@@ -1,0 +1,5 @@
+<ion-item>
+  <i *ngIf="icon" [class]="'webmapp-pageroute-tabdetail-icon ' + icon"></i>
+  <ion-label start class="webmapp-pageroute-tabdetail-label">{{ label | wmtrans }}</ion-label>
+  <ion-note slot="end" class="webmapp-pageroute-tabdetail-value"><ng-content></ng-content></ion-note>
+</ion-item>

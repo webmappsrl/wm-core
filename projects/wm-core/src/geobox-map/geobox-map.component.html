@@ -17,8 +17,7 @@
     (wmMapFeatureCollectionPopup)="openPopup($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
     (wmMapEmptyClickEVT$)="openPopup(null)"
     [WmMapTrackRecord]="enableTrackRecorderPanel$|async"
-    [WmMapTrackRecordLocation]="currentPosition$|async"
-    [WmMapTrackRecordInitLocations]="recordInitLocations$|async"
+    [WmMapTrackRecordLocations]="recordKeptLocations$|async"
     wmMapPosition
     [wmMapPositioncurrentLocation]="currentPosition$|async"
     [wmMapPositionCenter]="centerPositionEvt$|async"

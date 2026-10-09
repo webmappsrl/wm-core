@@ -226,7 +226,7 @@ export class WmGeoboxMapComponent implements AfterViewInit, OnDestroy {
     }),
     share(), // Condividi la subscription
   );
-  recordInitLocations$: Observable<Location[]> = this._geolocationSvc.onResumeRecording$;
+  recordKeptLocations$: Observable<Location[]> = this._geolocationSvc.recordedKeptLocations$;
   currentRelatedPoi$ = this._store.select(currentEcRelatedPoi);
   currentRelatedPoiID$ = this._store.select(currentEcRelatedPoiId);
   currentUgcPoiIDToMap$: Observable<number | string | null>;

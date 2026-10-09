@@ -1,9 +1,15 @@
 import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
-import {GeoutilsService} from '@wm-core/services/geoutils.service';
+import {UgcTrackStatsService} from '@wm-core/services/ugc-track-stats.service';
+import {UgcTrackDetails} from '@wm-core/utils/ugc-track-stats';
 import {WmFeature} from '@wm-types/feature';
 import {LineString} from 'geojson';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Observable, of} from 'rxjs';
+import {switchMap} from 'rxjs/operators';
 
+/**
+ * Dettagli tecnici di una traccia UGC: `properties.stats` del server quando c'è, altrimenti
+ * calcolati al volo con la stessa pulizia GPS del server (oc:8743).
+ */
 @Component({
   standalone: false,
   selector: 'wm-ugc-track-data',
@@ -13,19 +19,20 @@ import {BehaviorSubject} from 'rxjs';
   encapsulation: ViewEncapsulation.None,
 })
 export class UgcTrackDataComponent {
+  /**
+   * La traccia di cui mostrare i dettagli.
+   *
+   * @param value la traccia UGC
+   */
   @Input('track') set track(value: WmFeature<LineString>) {
-    this.time$.next(this._geoutilsSvc.getTime(value));
-    this.trackLength$.next(this._geoutilsSvc.getLength(value));
-    this.slope$.next(this._geoutilsSvc.getSlope(value));
-    this.avgSpeed$.next(this._geoutilsSvc.getAverageSpeed(value));
-    this.topSpeed$.next(this._geoutilsSvc.getTopSpeed(value));
+    this._track$.next(value);
   }
 
-  avgSpeed$: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(null);
-  slope$: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(null);
-  time$: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(null);
-  topSpeed$: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(null);
-  trackLength$: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(null);
+  private readonly _track$ = new BehaviorSubject<WmFeature<LineString> | null>(null);
 
-  constructor(private _geoutilsSvc: GeoutilsService) {}
+  readonly details$: Observable<UgcTrackDetails | null> = this._track$.pipe(
+    switchMap(track => (track ? this._ugcTrackStatsSvc.details$(track) : of(null))),
+  );
+
+  constructor(private _ugcTrackStatsSvc: UgcTrackStatsService) {}
 }
