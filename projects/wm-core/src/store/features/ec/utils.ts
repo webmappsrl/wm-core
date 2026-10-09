@@ -45,6 +45,38 @@ export const buildStats = (
   });
   return stats;
 };
+/**
+ * Aggiunge `poi_type_<identifier>` a `taxonomyIdentifiers` dei POI che ne sono privi, ricavandolo
+ * da `taxonomy.poi_type.identifier`. I `related_pois` di una track non portano
+ * `taxonomyIdentifiers`, che i POI globali ricevono altrove. È la stessa regola che esiste in
+ * `map-core` (che non può importare da qui). Non modifica i POI in ingresso: copia solo dove serve.
+ */
+export const withPoiTypeIdentifiers = (pois: WmFeature<Point>[]): WmFeature<Point>[] => {
+  if (pois == null) return pois;
+  return pois.map(poi => {
+    const existing = poi?.properties?.taxonomyIdentifiers;
+    if (existing != null && existing.length > 0) return poi;
+    const identifier = (poi?.properties as any)?.taxonomy?.poi_type?.identifier;
+    if (identifier == null) return poi;
+    return {
+      ...poi,
+      properties: {...poi.properties, taxonomyIdentifiers: [`poi_type_${identifier}`]},
+    } as WmFeature<Point>;
+  });
+};
+/**
+ * Applica ai POI di una track le tipologie selezionate e il testo digitato.
+ * Lo stage "where" (filterTaxonomies) non si applica ai POI della track.
+ */
+export const filterTrackPois = (
+  pois: WmFeature<Point>[],
+  filters: string[],
+  inputTyped: string,
+): WmFeature<Point>[] =>
+  filterFeaturesByInputTyped(
+    filterFeatures(withPoiTypeIdentifiers(pois ?? []), filters),
+    inputTyped,
+  ) as WmFeature<Point>[];
 export const filterFeaturesByInputTyped = (
   features: WmFeature<Point | LineString>[],
   inputTyped: string,

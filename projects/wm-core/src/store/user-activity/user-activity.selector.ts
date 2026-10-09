@@ -35,6 +35,10 @@ export const inputTyped = createSelector(
   userActivity,
   (state: UserActivityState) => state.inputTyped,
 );
+export const inputTypedRestored = createSelector(
+  userActivity,
+  (state: UserActivityState) => state.inputTypedRestored,
+);
 export const EmptyInputTyped = createSelector(
   userActivity,
   (state: UserActivityState) => state.inputTyped === '' || state.inputTyped === null,

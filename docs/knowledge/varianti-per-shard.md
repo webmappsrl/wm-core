@@ -1,4 +1,4 @@
-# Varianti per shard: `fileReplacements` e classi base
+# Varianti per shard: `fileReplacements`, classi base e CSS per app
 
 ## Come funziona oggi
 
@@ -7,6 +7,133 @@ Una variante di shard è un file `.ts` **gemello** del componente di default, in
 Quattro varianti `.camminiditalia` oggi, tutte con una classe base condivisa e un template proprio: `wm-home-layer` (oc:8391, `WmHomeLayerBaseComponent`), `wm-searchbar` (oc:8414, `SearchBarBaseComponent`), `wm-layer-box` e `wm-search-box` (oc:8701, `LayerBoxBaseComponent`, `SearchBoxBaseComponent`). I template di `wm-home-layer`, `wm-layer-box` e `wm-search-box` sono copie di quelli di default più lo stato del passaporto (oc:8166, oc:8701): le correzioni al template di default vanno riportate anche lì, e nessuno strumento lo segnala. Per `wm-layer-box` e `wm-search-box` copia e template di default hanno in testa un commento che rimanda all'altro file.
 
 Le basi di `wm-layer-box` e `wm-search-box` sono `@Directive()` astratte, non `@Injectable()`: estendono `BaseBoxComponent`, che è già una `@Directive`, e `wm-layer-box` dichiara degli `@Input`.
+
+## Il CSS per app, caricato a runtime
+
+Accanto alle varianti compilate esiste un secondo meccanismo, indipendente e molto più usato:
+un **foglio di stile per app**, iniettato a runtime dal `MetaComponent`
+(`meta/meta.component.ts:44-54`).
+
+Nel costruttore, se `EnvironmentService` espone sia `shardName` sia `appId`, viene creato un
+`<link rel="stylesheet" id="client-theme">` con `href` costruito così:
+
+```
+theme/<shardName>/<appId>.css
+```
+
+e aggiunto in coda al `<head>`. Non c'è nessuna verifica che il file esista: se manca, il
+browser riceve un 404 e semplicemente non applica nulla — senza errori in console e senza che
+niente lo segnali.
+
+**Il file sta qui**, in [`projects/wm-core/src/assets/theme/`](../../projects/wm-core/src/assets/theme/README.md),
+un file per app: `<shardName>/<appId>.css`. Entrambi i prodotti lo pubblicano con una voce di
+`assets` in `angular.json` che punta a quella cartella con `output: "theme"`, così l'URL costruito
+qui sopra risolve su tutti e due.
+
+Fino a oc:8613 non era così: ogni prodotto teneva i propri in `core/src/theme/` (webmapp-app) e
+`src/theme/` (wm-webapp), due insiemi **disgiunti**. Una stessa app poteva avere il suo CSS da una
+parte e non dall'altra — è esattamente così che i due prodotti sono arrivati a rendere lo stesso
+dettaglio in modo diverso (oc:8406): il tema dell'app 75 esisteva solo sulla mobile, e sulla webapp
+quell'URL rispondeva 404. Le cartelle `core/src/theme/` e `src/theme/` esistono ancora, ma oggi
+contengono **solo** gli SCSS di shard usati a compile-time da `stylePreprocessorOptions`: sono
+un'altra cosa, non confonderle con i fogli per app.
+
+### Perché a runtime e non compilati dentro
+
+Il bundle della webapp è **uno solo e multi-tenant**: `app.geohub.webmapp.it` serve tutti gli shard
+e tutte le app, con lo shard deciso a runtime dall'hostname. Una personalizzazione per app non può
+quindi essere compilata nel bundle. L'unica alternativa sarebbe un bundle per cliente, che è ciò che
+si fa solo per `camminiditalia`, e solo perché lì servono i `fileReplacements`.
+
+### Quali sono, oggi
+
+Nove file per **sei** app: i tre shard di Forestas e i due di Cammini d'Italia portano lo
+stesso `appId` su domini diversi. Le regole `order` sono la parte che fa più danno quando si
+scollega un selettore, quindi il conteggio sta in tabella:
+
+| App | Shard | File | `order` | Cosa tocca |
+|---|---|---|---|---|
+| Federazione Italiana Escursionismo (29) | `geohub` | `geohub/29.css` | 11 | dettaglio traccia |
+| Sentieri CAI Parma (33) | `geohub` | `geohub/33.css` | 9 | dettaglio traccia |
+| Sardegna Sentieri (32) | `geohub` | `geohub/32.css` | — | filtri, ricerca, box della home |
+| Forestas (1) | `forestas`, `forestasdev`, `forestasuat` | `forestas/1.css` e i due gemelli | — | come sopra |
+| Ville e Giardini Medicei (75) | `geohub` | `geohub/75.css` | 25 | dettaglio POI e traccia, home, filtri |
+| Cammini d'Italia (1) | `camminiditalia`, `camminiditaliadev` | `camminiditalia/1.css` e il gemello | — | home, e il filtro di stato nel pannello |
+
+Attenzione a contarle: `grep -c "order:"` conta anche `border:`, serve `grep -cE '(^|[^-a-z])order *:'`.
+
+**Sei file, due contenuti**: i quattro di Forestas e Sardegna hanno lo stesso md5, e così i due di
+Cammini d'Italia. Finché stavano in due repo separati la duplicazione era invisibile; ora è a vista,
+e una modifica va scritta quattro volte.
+
+
+**Perchè riguarda chi lavora qui.** Quei fogli prendono di mira i componenti di wm-core **per
+nome** — selettore di elemento o classe — e in più di un caso li riordinano con `order:` dentro
+i contenitori flex del dettaglio. Rinominare un componente, una classe o una variabile CSS
+**scollega quelle regole in silenzio**: un selettore che non corrisponde a nulla non è un errore
+per build, test o lint, e in flexbox un figlio senza `order` vale 0, quindi risale sopra tutti
+gli altri invece di restare dov'era. È successo con oc:8406 e corretto sotto oc:8613.
+
+La stessa cautela vale per le **variabili**: un tema può azzerarne una (`--wm-feature-details-margin:
+0px !important` nel tema dell'app 75) perchè la spaziatura la governa per conto proprio. Spostare
+uno spazio dal `padding` di un componente a quel margine è neutro ovunque, tranne dove il margine
+è azzerato: lì lo spazio sparisce e basta.
+
+**Regola pratica**: dopo un refactor che rinomina o rispazia elementi resi da questa libreria, i
+temi dei due consumer vanno controllati a mano. I selettori orfani si elencano confrontando i
+`selector:` dichiarati nel codice con i tag usati nei fogli di tema.
+
+### Una regola che deve valere su entrambi i prodotti si scrive additiva
+
+Un tema nato per un prodotto è spesso scopato al suo contenitore, che nell'altro non esiste. Per
+estenderlo si **affianca** un selettore, non si sostituisce:
+
+```css
+wm-map-details wm-home-layer wm-img,      /* contenitore dell'app */
+.details-container wm-home-layer wm-img { /* contenitore della webapp */ }
+```
+
+Così il ramo che già funzionava resta identico e la sua resa non cambia **per costruzione**, senza
+doverlo dimostrare; l'altro prodotto entra dal ramo nuovo, e ciascuno resta inerte dove il proprio
+contenitore non c'è. Sostituire il selettore invece di affiancarlo significa doversi chiedere ogni
+volta se la resa del primo prodotto è ancora quella, ed è un dubbio che non vale la pena comprare.
+
+**I due rami non sono equivalenti fra loro**, ed è la parte che si dimentica. «Additiva» garantisce
+che il prodotto che già funzionava non cambi — quel ramo è identico al byte — ma non che i due si
+comportino allo stesso modo, perché i contenitori hanno **specificità diverse**: `wm-map-details` è
+un elemento, `.details-container` è una classe. Ogni ramo webapp ha quindi una classe in più del
+corrispondente ramo mobile, e vince confronti che l'altro perde.
+
+Il caso che l'ha mostrato è la copertina della scheda del layer nel tema dell'app 75:
+
+```
+.details-container wm-home-layer wm-img img   (0,1,3)  vince   → sulla webapp è display:none
+wm-map-details wm-home-layer wm-img img       (0,0,4)  perde
+wm-img .wm-img-image                          (0,1,1)           img.component.scss:17
+```
+
+Sull'app la copertina resta `display: block` e non si vede solo perché il contenitore è alto zero;
+sulla webapp è davvero nascosta dal tema. Stessa dichiarazione, due esiti. Non è un difetto — sulla
+webapp il tema ottiene ciò che dichiarava — ma chi aggiunge un ramo deve **misurare l'esito sui due
+prodotti**, non dedurlo dal fatto che la dichiarazione è la stessa.
+
+**Il prefisso del contenitore non è sempre decorativo.** Sull'app `wm-home-layer` e
+`wm-status-filter` si montano in due punti — nel pannello dei dettagli e dentro `wm-home` nella
+pagina home — quindi toglierlo allargherebbe la regola a una vista che non la voleva. Verificato che
+i due punti di montaggio sono vivi nello stesso momento quando un layer è aperto.
+
+### Non tutto si traduce, e va bene così
+
+Il criterio è **cosa dichiara la regola**, non come si chiama il selettore. Sei regole del tema
+dell'app 75 restano solo sull'app perché dipendono da com'è fatto il suo contenitore: un
+`padding-bottom` che fa spazio alla tab bar, un `::after` che disegna la linguetta sopra il foglio
+scorrevole, e quattro `:has(...)` che compensano l'altezza di `ion-card-content`. Sulla webapp non
+ci sono né la card né la tab bar, il pannello parte da `top: 0` e l'altezza gliela dà un'altra
+variabile: tradurle produrrebbe una striscia fuori dal viewport e dell'overflow.
+
+Una regola inerte su un prodotto **non è un difetto da correggere**: prima di riagganciarne una,
+misurare se agganciava. Riscrivere un selettore inerte non ripristina niente, lo attiva per la prima
+volta.
 
 ## Quando estrarre una base, e quando no
 

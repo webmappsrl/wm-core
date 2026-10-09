@@ -4,8 +4,8 @@
   <ion-list *ngIf="properties">
     <ng-container *ngIf="trackLiveDistanceVm$ | async as liveDistanceVm">
       <ion-item
-        [class.webmapp-pageroute-tabdetail-item-live]="liveDistanceVm.distanceCovered != null"
-        *ngIf="properties?.from || liveDistanceVm.distanceCovered != null"
+        [class.webmapp-pageroute-tabdetail-item-live]="showLiveDistance && liveDistanceVm.distanceCovered != null"
+        *ngIf="properties?.from || (showLiveDistance && liveDistanceVm.distanceCovered != null)"
       >
         <i class="icon-outline-pin webmapp-pageroute-tabdetail-icon"> </i>
         <ion-label start class="webmapp-pageroute-tabdetail-label">{{ "from" | wmtrans }}</ion-label>
@@ -14,14 +14,14 @@
             from
           }}</ion-note>
           <wm-track-live-distance-badge
-            [distanceMeters]="liveDistanceVm.distanceCovered"
+            [distanceMeters]="showLiveDistance ? liveDistanceVm.distanceCovered : null"
             [stale]="liveDistanceVm.stale"
           ></wm-track-live-distance-badge>
         </div>
       </ion-item>
       <ion-item
-        [class.webmapp-pageroute-tabdetail-item-live]="liveDistanceVm.remainingDistance != null"
-        *ngIf="properties?.to || liveDistanceVm.remainingDistance != null"
+        [class.webmapp-pageroute-tabdetail-item-live]="showLiveDistance && liveDistanceVm.remainingDistance != null"
+        *ngIf="properties?.to || (showLiveDistance && liveDistanceVm.remainingDistance != null)"
       >
         <i class="icon-outline-flag webmapp-pageroute-tabdetail-icon"> </i>
         <ion-label start class="webmapp-pageroute-tabdetail-label">{{ "to" | wmtrans }} </ion-label>
@@ -30,7 +30,7 @@
             to
           }}</ion-note>
           <wm-track-live-distance-badge
-            [distanceMeters]="liveDistanceVm.remainingDistance"
+            [distanceMeters]="showLiveDistance ? liveDistanceVm.remainingDistance : null"
             [stale]="liveDistanceVm.stale"
           ></wm-track-live-distance-badge>
         </div>

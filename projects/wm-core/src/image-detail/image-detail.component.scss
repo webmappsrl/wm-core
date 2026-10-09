@@ -10,11 +10,25 @@ wm-image-detail {
       flex-direction: column;
       align-items: flex-start;
       padding: 16px;
+      // L'immagine del dettaglio va mostrata per intero, mai ritagliata: `wm-img` applica
+      // `object-fit: cover` (img.component.scss), che è giusto per card e box — lì l'immagine
+      // deve riempire un riquadro di proporzioni fisse — ma qui taglia le foto verticali.
+      // Il sintomo si vedeva solo sul web e non nell'app, non per una differenza di codice ma
+      // di contenitore: nell'app il modale è fullscreen verticale, quindi le proporzioni
+      // coincidono con quelle della foto e il ritaglio è invisibile, mentre su desktop il
+      // modale è quadrato (modal-image.component.scss: 700x700 sopra i 768px di viewport).
+      // `flex: 1 1 auto` + `min-height: 0` lasciano all'immagine l'altezza residua della slide
+      // senza farle sfondare il contenitore (senza `min-height: 0` un figlio flex non scende
+      // sotto la propria dimensione intrinseca).
       wm-img {
         width: -webkit-fill-available;
         transition: all 1s;
+        flex: 1 1 auto;
+        min-height: 0;
         img {
           border-radius: 16px;
+          object-fit: contain;
+          height: 100%;
         }
       }
       .image-name {

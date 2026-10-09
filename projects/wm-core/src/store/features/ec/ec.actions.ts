@@ -10,6 +10,7 @@ export const ecTracks = createAction(
     init?: boolean;
     layer?: number;
     inputTyped?: string;
+    skipSearchTracking?: boolean;
     filterTracks?: Filter[];
     currentEcTrackId?: string;
   }>(),

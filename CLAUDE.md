@@ -33,6 +33,16 @@ nel repo di quel prodotto.
   `utils/ugc-track-stats.ts`**, letti tramite `UgcTrackStatsService`: è la traduzione della
   specifica di wm-package e i suoi casi di test sono condivisi. Una regola che cambia si cambia in
   entrambi i repo, insieme alle fixture.
+- **La CI di questo repo controlla i temi, non i test.** `.github/workflows/test.yml` confronta
+  l'elenco dei nove temi per istanza con quello atteso, per nome. **I test unitari qui non girano**:
+  questo repo da solo non compila, perché `tsconfig.json` risolve `@wm-types/*` e `@map-core/*` in
+  cartelle che esistono solo dentro un prodotto. Restano coperti dalla CI dei due consumer, dove
+  l'ambiente c'è già.
+- **L'elenco dei clienti vive in quattro posti**: la cartella `assets/theme/`, l'elenco nel
+  workflow, e il `theme-manifest.json` di ciascuno dei due prodotti. Aggiungere o dismettere un
+  cliente li tocca tutti e quattro. **Il workflow ne controlla due**: cartella ed elenco che
+  divergono fanno diventare rossa la PR qui. **I due manifest vivono in altri repo e nessuno li
+  segnala**: te ne accorgi quando la build di quel prodotto si ferma (oc:8613).
 
 ## Comandi
 
@@ -55,6 +65,14 @@ nel repo di quel prodotto.
   lavoro (com'è andato, immutabile), `knowledge/` la conoscenza per argomento (perché funziona
   così, per chi deve cambiarlo), `howto/` le procedure (come si fa). Le trappole non stanno in
   nessuna delle tre: stanno in `.claude/rules/`.
+- **Gli identificatori sono in inglese**, anche quando il testo che mostrano è in italiano:
+  `hasContacts$`, non `hasInformazioni$`. Vale per classi CSS, variabili CSS, membri e variabili
+  TypeScript; la prosa — commenti, documentazione, descrizioni dei test — resta in italiano.
+- **I nuovi selettori e le nuove classi CSS usano il prefisso `wm-`**, non `webmapp-`:
+  `wm-poi-properties`, `.wm-poi-properties-title`. Sui selettori la transizione è quasi finita —
+  restano `webmapp-title` e `webmapp-meta` — mentre un quarto delle classi nei template è ancora
+  `webmapp-`, concentrato in famiglie vecchie come `webmapp-pageroute-tabdetail-*`. Non vanno
+  reintrodotte, nemmeno toccando un file che le usa ancora.
 - **Documentazione, commenti e messaggi di commit sono in italiano.** I termini tecnici restano in
   inglese: commit, branch, merge, build, deploy, review.
 
@@ -70,8 +88,10 @@ Il dettaglio di ogni lavoro sta nel proprio cantiere sotto `docs/features/<slug>
 | Cache delle API e log in produzione | Header condizionale in `handleApiCache`, triage dei `console.*` | oc:8374, oc:8369 | [docs/knowledge/cache-e-log.md](docs/knowledge/cache-e-log.md) |
 | Dati tecnici e pulizia GPS delle tracce UGC | `stats` del server o calcolo locale con la regola del backend, pulizia incrementale in registrazione, casi di test condivisi con wm-package | oc:8743 | [docs/knowledge/8743-app-dettagli-tecnici-e-mappa-delle-tracce-ugc-dai-dati-del-server-calcolo-al-volo-con-la-stessa-pulizia-gps-se-non-sincronizzate.md](docs/knowledge/8743-app-dettagli-tecnici-e-mappa-delle-tracce-ugc-dai-dati-del-server-calcolo-al-volo-con-la-stessa-pulizia-gps-se-non-sincronizzate.md) |
 | Deep link | Perché il percorso nativo è stato scartato, ordine in `initialize()`, navigazione Home→Map | oc:8470, oc:7980 | [docs/knowledge/deep-link.md](docs/knowledge/deep-link.md) |
-| Filtro dei POI | Due stage tassonomia + layer ID, retrocompatibilità legacy, binding multi-direttiva | oc:8147, oc:7646 | [docs/knowledge/filtri-poi.md](docs/knowledge/filtri-poi.md) |
+| Dettaglio di un POI | Cosa rende `wm-poi-properties` e cosa resta ai contenitori, da dove vengono indirizzo, telefoni e località | oc:8406 | [docs/knowledge/dettaglio-poi.md](docs/knowledge/dettaglio-poi.md) |
+| Filtro dei POI | Due stage tassonomia + layer ID, pannello con una track aperta, `search` azzerato all'apertura e ripristinato dalla X, binding multi-direttiva | oc:8147, oc:7646, oc:8684 | [docs/knowledge/filtri-poi.md](docs/knowledge/filtri-poi.md) |
 | Home: tab, conteggi ed etichette | Scelta del tab risultati, badge non filtrato, chiavi i18n condivise badge/segment | oc:7643, oc:8221 | [docs/knowledge/home-ricerca-e-tab.md](docs/knowledge/home-ricerca-e-tab.md) |
+| Immagini: galleria e dettaglio | Un solo `wm-image-detail` in due contenitori, `isAppMobile` vs `isMobile`, `object-fit` nei box e nel dettaglio | oc:8406 | [docs/knowledge/immagini-e-galleria.md](docs/knowledge/immagini-e-galleria.md) |
 | Isolamento del TestBed | Reset fra spec file, campi `static`, config Karma del progetto | oc:7989 | [docs/knowledge/testbed-isolamento.md](docs/knowledge/testbed-isolamento.md) |
 | `layer-box` e `home-layer` | Overlay su CSS Grid, logo dentro `wm-img`, cuoricino preferiti | oc:8305, oc:8176, oc:8164 | [docs/knowledge/layer-box-e-home-layer.md](docs/knowledge/layer-box-e-home-layer.md) |
 | Passaporto del camminatore | Badge, anello e dettaglio in camminiditalia, passaporto a timbri e traguardo, tappe validate dal backend con stream condiviso, modale con `ion-nav` | oc:8166, oc:8671, oc:8676, oc:8701, oc:8703 | [docs/knowledge/8166-passaporto-camminatore-validazione-credenziale-cartacea.md](docs/knowledge/8166-passaporto-camminatore-validazione-credenziale-cartacea.md) |
@@ -81,15 +101,15 @@ Il dettaglio di ogni lavoro sta nel proprio cantiere sotto `docs/features/<slug>
 | Profilo utente | Modale di editing, avatar e fallback a iniziali, compressione parametrizzata | oc:8163 | [docs/knowledge/profilo-utente.md](docs/knowledge/profilo-utente.md) |
 | UGC | Pre-selezione del layer da GPS, foto condivise fra POI e track, condivisione social | oc:7639, oc:5125, oc:8183, oc:8166 | [docs/knowledge/ugc.md](docs/knowledge/ugc.md) |
 | UGC sincronizzate | Il telefono rispecchia l'index del server: riconciliazione per id, immagini non più usate, chiusura del pannello della UGC tolta | oc:8741 | [docs/knowledge/8741-app-le-ugc-cancellate-sul-server-restano-visibili-sul-telefono-fino-al-logout.md](docs/knowledge/8741-app-le-ugc-cancellate-sul-server-restano-visibili-sul-telefono-fino-al-logout.md) |
-| Varianti per shard | `fileReplacements`, quando estrarre una classe base, filtri della searchbar camminiditalia | oc:8391, oc:8414, oc:8166, oc:8701 | [docs/knowledge/varianti-per-shard.md](docs/knowledge/varianti-per-shard.md) |
+| Varianti per shard | `fileReplacements`, quando estrarre una classe base, filtri della searchbar camminiditalia, il CSS per app caricato a runtime | oc:8391, oc:8414, oc:8166, oc:8701, oc:8406, oc:8613 | [docs/knowledge/varianti-per-shard.md](docs/knowledge/varianti-per-shard.md) |
 
 ## Trappole
 
 Le trappole — ciò che non si deduce leggendo il codice e che si scopre solo sbagliando — stanno
 in `.claude/rules/`, un file per soggetto, con il frontmatter `paths:` che le carica quando si
 toccano i file corrispondenti: `box-e-immagini`, `spec-e-testbed`, `form-e-cva`,
-`varianti-e-classi-base`, `posthog-e-log`, `template-wm-map`, `modali-e-ion-nav`, `condivisione`. Ogni rule rimanda alla pagina di
-conoscenza per il perché.
+`varianti-e-classi-base`, `posthog-e-log`, `template-wm-map`, `modali-e-ion-nav`, `condivisione`,
+`css-per-istanza`. Ogni rule rimanda alla pagina di conoscenza per il perché.
 
 ## Lavori senza una pagina dedicata
 
@@ -100,3 +120,4 @@ Temi toccati una volta sola, il cui dettaglio vive solo nel cantiere.
 | Padding della mappa nel modale UGC | oc:4783 | Binding `[wmMapPadding]` su `<wm-map>`; il fix che lo rende visibile è nel submodule `map-core`. `docs/features/4783-controllare-il-padding-della-mappa/overview.md` |
 | Immagine di un layer: formati e zona sicura | oc:8502 | Guida illustrata per il cliente su come preparare l'immagine perché loghi e testo non vengano tagliati, basata sui thumbnail realmente generati su S3. In wm-core `size="225x100"` non cambia l'URL (arriva il 400×200), il secondo ritaglio è solo CSS `cover`. `docs/features/8502-come-impostare-correttamente-limmagine-di-un-layer/` |
 | Immagine "i miei percorsi" su native e web | oc:7480 | Su native usa sempre il path locale ignorando l'URL S3: gulp ha già scaricato l'immagine durante il build. `docs/features/7480-inserire-foto/notes.md` |
+| Etichetta del travel mode tradotta | oc:8689 | L'etichetta di `wm-travel-mode` era hardcoded, ora passa da `wmtrans`; la chiave è la frase italiana, con l'accento, nei 7 file di `i18n/`. `docs/features/8689-tradurre-letichetta-modalita-di-percorrenza-nella-scheda-percorso-travel-mode/` |

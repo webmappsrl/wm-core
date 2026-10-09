@@ -20,7 +20,7 @@ styles: [`
     }
     ion-label {
       font-weight: 600;
-      color: var(wm-feature-details-description-color), var(--wm-color-dark);
+      color: var(--wm-feature-details-description-color, var(--wm-color-dark));
     }
   }
 `],

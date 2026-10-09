@@ -83,7 +83,7 @@ export class EcEffects {
         return from(this._ecSvc.getQuery(newAction)).pipe(
           tap((response: Response) => {
             // Traccia solo le ricerche utente dalla search bar
-            if (action.inputTyped && this._posthogClient) {
+            if (action.inputTyped && !action.skipSearchTracking && this._posthogClient) {
               this._posthogClient.capture('searchPerformed', {
                 query: action.inputTyped,
                 results_count: response?.hits?.length ?? 0,
