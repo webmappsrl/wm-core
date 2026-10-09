@@ -99,6 +99,18 @@
   }
 }
 
+// Cammino senza logo: le iniziali al suo posto, come nel wireframe (oc:8703).
+.wm-passport-stamp-logo--initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $passport-initials-bg;
+  color: $passport-link;
+  font-size: calc(var(--wm-passport-stamp-ring) * 0.3);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
 .wm-passport-stamp-name {
   font-size: 12px;
   font-weight: 700;

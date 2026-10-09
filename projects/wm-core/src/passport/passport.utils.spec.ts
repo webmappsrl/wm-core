@@ -14,6 +14,7 @@ import {
   sortStages,
   stageName,
   stageShareFileName,
+  stampInitials,
 } from './passport.utils';
 
 describe('passport.utils (oc:8676)', () => {
@@ -186,6 +187,25 @@ describe('passport.utils, passaporto a timbri (oc:8703)', () => {
     total: 10,
     percent,
     completed,
+  });
+
+  describe('stampInitials', () => {
+    it('salta «Cammino», articoli e preposizioni e tiene due iniziali', () => {
+      expect(stampInitials('Cammino dei Tre Villaggi')).toBe('TV');
+      expect(stampInitials('Cammino dei Mille')).toBe('M');
+      expect(stampInitials('Via Francigena del Sud')).toBe('VF');
+      expect(stampInitials("Cammino d'Abruzzo")).toBe('A');
+      expect(stampInitials('Vie e Cammini di San Francesco')).toBe('VS');
+    });
+
+    it('con un nome fatto solo di parole saltate usa la prima lettera', () => {
+      expect(stampInitials('Cammino')).toBe('C');
+    });
+
+    it('vuoto senza nome', () => {
+      expect(stampInitials(null)).toBe('');
+      expect(stampInitials('')).toBe('');
+    });
   });
 
   describe('passportStamps', () => {

@@ -77,6 +77,49 @@ export function slugify(text: string | null | undefined): string {
     .replace(/^-+|-+$/g, '');
 }
 
+/** Parole che non danno iniziale al timbro: «Cammino» è in quasi ogni nome, poi articoli e preposizioni. */
+const STAMP_INITIALS_SKIP = new Set([
+  'cammino',
+  'cammini',
+  'di',
+  'd',
+  'del',
+  'dei',
+  'degli',
+  'dello',
+  'della',
+  'delle',
+  'da',
+  'e',
+  'ed',
+  'il',
+  'lo',
+  'la',
+  'i',
+  'gli',
+  'le',
+  'l',
+]);
+
+/**
+ * Iniziali del cammino per il timbro senza logo, come nelle viste 5b e 5c del wireframe
+ * (oc:8703): le prime due parole del nome, saltando «Cammino», articoli e preposizioni.
+ * «Cammino dei Tre Villaggi» → «TV», «Cammino dei Mille» → «M». Se il nome è fatto solo di
+ * parole saltate, vale la sua prima lettera.
+ *
+ * @param title Nome del cammino, già tradotto.
+ * @returns Le iniziali in maiuscolo, vuoto se il nome non ha lettere.
+ */
+export function stampInitials(title: string | null | undefined): string {
+  const words = (title ?? '').split(/[^\p{L}\p{N}]+/u).filter(w => !!w);
+  const kept = words.filter(w => !STAMP_INITIALS_SKIP.has(w.toLowerCase()));
+  return (kept.length ? kept : words.slice(0, 1))
+    .slice(0, 2)
+    .map(w => w[0])
+    .join('')
+    .toUpperCase();
+}
+
 /**
  * Nome del file dell'immagine di condivisione di una tappa: `<cammino>-<tappa>.png` (oc:8702).
  * La tappa è `tappa-<ref>` (senza un «Tappa» già presente nel `ref`) oppure, senza `ref`, il nome

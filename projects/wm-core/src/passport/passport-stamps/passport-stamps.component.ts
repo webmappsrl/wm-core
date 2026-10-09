@@ -8,7 +8,12 @@ import {LangService} from '@wm-core/localization/lang.service';
 import {wmTranslate} from '@wm-core/pipes/wmtrans.utils';
 import {PassportRoutesState, PassportService} from '../passport.service';
 import {PassportModalService} from '../passport-modal/passport-modal.service';
-import {PassportStamp, passportRingDegrees, passportStamps} from '../passport.utils';
+import {
+  PassportStamp,
+  passportRingDegrees,
+  passportStamps,
+  stampInitials,
+} from '../passport.utils';
 
 /** Dati del passaporto a timbri. */
 export type PassportStampsVm =
@@ -82,6 +87,16 @@ export class WmPassportStampsComponent {
    */
   title(stamp: PassportStamp): string {
     return wmTranslate(stamp.title, this._langSvc);
+  }
+
+  /**
+   * Iniziali del cammino, al posto del logo quando la config non ne ha uno.
+   *
+   * @param stamp Timbro.
+   * @returns Le iniziali del nome nella lingua corrente.
+   */
+  initialsOf(stamp: PassportStamp): string {
+    return stampInitials(this.title(stamp));
   }
 
   /**

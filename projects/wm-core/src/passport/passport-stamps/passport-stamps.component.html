@@ -29,8 +29,12 @@
           [style.--wm-passport-ring-deg]="ringDegrees(stamp) + 'deg'"
           aria-hidden="true"
         >
-          <span class="wm-passport-stamp-logo">
-            <wm-img *ngIf="stamp.logo | hasLogo" [src]="stamp.logo"></wm-img>
+          <span
+            class="wm-passport-stamp-logo"
+            [class.wm-passport-stamp-logo--initials]="!(stamp.logo | hasLogo)"
+          >
+            <wm-img *ngIf="stamp.logo | hasLogo; else initials" [src]="stamp.logo"></wm-img>
+            <ng-template #initials>{{ initialsOf(stamp) }}</ng-template>
           </span>
         </span>
         <span class="wm-passport-stamp-name" aria-hidden="true">{{ title(stamp) }}</span>
