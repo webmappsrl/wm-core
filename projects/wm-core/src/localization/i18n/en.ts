@@ -353,7 +353,7 @@ export const wmEN = {
   'Numero seriale': 'Serial number',
   'Inserisci il numero seriale se richiesto dal cammino': 'Enter the serial number if the trail requires it',
   'es. CG-2026-00341': 'e.g. CG-2026-00341',
-  '[TESTO SEGNAPOSTO — da sostituire con il disclaimer legale] Accetto che nome, cognome e foto della credenziale siano trattati per validare il cammino.': '[PLACEHOLDER — to be replaced with the legal disclaimer] I accept that my name, surname and credential photos are processed to validate the trail.',
+  'Acconsento al trattamento di nome, cognome e foto della credenziale al solo fine di verificare il cammino percorso, nel rispetto del Regolamento UE 2016/679 (GDPR).': 'I consent to the processing of my name, surname and credential photos for the sole purpose of verifying the route I have walked, in accordance with EU Regulation 2016/679 (GDPR).',
   'Invia richiesta': 'Send request',
   'Aggiungi almeno una foto della credenziale': 'Add at least one photo of the credential',
   'Accetta il disclaimer per inviare la richiesta': 'Accept the disclaimer to send the request',

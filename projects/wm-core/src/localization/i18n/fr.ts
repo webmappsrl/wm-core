@@ -347,7 +347,7 @@ export const wmFR = {
   'Numero seriale': 'Numéro de série',
   'Inserisci il numero seriale se richiesto dal cammino': 'Saisis le numéro de série si le chemin le demande',
   'es. CG-2026-00341': 'ex. CG-2026-00341',
-  '[TESTO SEGNAPOSTO — da sostituire con il disclaimer legale] Accetto che nome, cognome e foto della credenziale siano trattati per validare il cammino.': "[TEXTE PROVISOIRE — à remplacer par la mention légale] J'accepte que mes nom, prénom et photos de la crédentiale soient traités pour valider le chemin.",
+  'Acconsento al trattamento di nome, cognome e foto della credenziale al solo fine di verificare il cammino percorso, nel rispetto del Regolamento UE 2016/679 (GDPR).': "J'accepte le traitement de mes nom, prénom et photos de la crédentiale dans le seul but de vérifier le chemin parcouru, conformément au Règlement (UE) 2016/679 (RGPD).",
   'Invia richiesta': 'Envoyer la demande',
   'Aggiungi almeno una foto della credenziale': 'Ajoute au moins une photo de la crédentiale',
   'Accetta il disclaimer per inviare la richiesta': 'Accepte la mention pour envoyer la demande',

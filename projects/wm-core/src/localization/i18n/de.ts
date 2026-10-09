@@ -348,7 +348,7 @@ export const wmDE = {
   'Numero seriale': 'Seriennummer',
   'Inserisci il numero seriale se richiesto dal cammino': 'Gib die Seriennummer ein, wenn der Weg sie verlangt',
   'es. CG-2026-00341': 'z. B. CG-2026-00341',
-  '[TESTO SEGNAPOSTO — da sostituire con il disclaimer legale] Accetto che nome, cognome e foto della credenziale siano trattati per validare il cammino.': '[PLATZHALTER — durch den rechtlichen Hinweis zu ersetzen] Ich akzeptiere, dass Name, Nachname und Fotos des Pilgerpasses zur Bestätigung des Weges verarbeitet werden.',
+  'Acconsento al trattamento di nome, cognome e foto della credenziale al solo fine di verificare il cammino percorso, nel rispetto del Regolamento UE 2016/679 (GDPR).': 'Ich willige in die Verarbeitung von Name, Nachname und Fotos des Pilgerpasses ausschließlich zur Überprüfung des zurückgelegten Weges gemäß Verordnung (EU) 2016/679 (DSGVO) ein.',
   'Invia richiesta': 'Anfrage senden',
   'Aggiungi almeno una foto della credenziale': 'Füge mindestens ein Foto des Pilgerpasses hinzu',
   'Accetta il disclaimer per inviare la richiesta': 'Akzeptiere den Hinweis, um die Anfrage zu senden',

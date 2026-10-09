@@ -344,7 +344,7 @@ export const wmES = {
   'Numero seriale': 'Número de serie',
   'Inserisci il numero seriale se richiesto dal cammino': 'Introduce el número de serie si el camino lo requiere',
   'es. CG-2026-00341': 'p. ej. CG-2026-00341',
-  '[TESTO SEGNAPOSTO — da sostituire con il disclaimer legale] Accetto che nome, cognome e foto della credenziale siano trattati per validare il cammino.': '[TEXTO PROVISIONAL — a sustituir por el aviso legal] Acepto que nombre, apellido y fotos de la credencial se traten para validar el camino.',
+  'Acconsento al trattamento di nome, cognome e foto della credenziale al solo fine di verificare il cammino percorso, nel rispetto del Regolamento UE 2016/679 (GDPR).': 'Doy mi consentimiento al tratamiento de nombre, apellido y fotos de la credencial con el único fin de verificar el camino recorrido, de acuerdo con el Reglamento (UE) 2016/679 (RGPD).',
   'Invia richiesta': 'Enviar solicitud',
   'Aggiungi almeno una foto della credenziale': 'Añade al menos una foto de la credencial',
   'Accetta il disclaimer per inviare la richiesta': 'Acepta el aviso para enviar la solicitud',

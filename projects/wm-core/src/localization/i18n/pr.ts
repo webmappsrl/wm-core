@@ -344,7 +344,7 @@ export const wmPR = {
   'Numero seriale': 'Número de série',
   'Inserisci il numero seriale se richiesto dal cammino': 'Introduza o número de série se o caminho o exigir',
   'es. CG-2026-00341': 'ex. CG-2026-00341',
-  '[TESTO SEGNAPOSTO — da sostituire con il disclaimer legale] Accetto che nome, cognome e foto della credenziale siano trattati per validare il cammino.': '[TEXTO PROVISÓRIO — a substituir pelo aviso legal] Aceito que nome, apelido e fotos da credencial sejam tratados para validar o caminho.',
+  'Acconsento al trattamento di nome, cognome e foto della credenziale al solo fine di verificare il cammino percorso, nel rispetto del Regolamento UE 2016/679 (GDPR).': 'Autorizo o tratamento de nome, apelido e fotos da credencial com a única finalidade de verificar o caminho percorrido, nos termos do Regulamento (UE) 2016/679 (RGPD).',
   'Invia richiesta': 'Enviar pedido',
   'Aggiungi almeno una foto della credenziale': 'Adicione pelo menos uma foto da credencial',
   'Accetta il disclaimer per inviare la richiesta': 'Aceite o aviso para enviar o pedido',

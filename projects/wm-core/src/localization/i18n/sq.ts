@@ -352,7 +352,7 @@ export const wmSQ = {
   'Numero seriale': 'Numri serial',
   'Inserisci il numero seriale se richiesto dal cammino': 'Vendos numrin serial nëse e kërkon rruga',
   'es. CG-2026-00341': 'p.sh. CG-2026-00341',
-  '[TESTO SEGNAPOSTO — da sostituire con il disclaimer legale] Accetto che nome, cognome e foto della credenziale siano trattati per validare il cammino.': '[TEKST I PËRKOHSHËM — do të zëvendësohet me njoftimin ligjor] Pranoj që emri, mbiemri dhe fotot e kredencialit të përpunohen për të vërtetuar rrugën.',
+  'Acconsento al trattamento di nome, cognome e foto della credenziale al solo fine di verificare il cammino percorso, nel rispetto del Regolamento UE 2016/679 (GDPR).': 'Pranoj përpunimin e emrit, mbiemrit dhe fotove të kredencialit vetëm për qëllimin e verifikimit të rrugës së përshkuar, në përputhje me Rregulloren (BE) 2016/679 (GDPR).',
   'Invia richiesta': 'Dërgo kërkesën',
   'Aggiungi almeno una foto della credenziale': 'Shto të paktën një foto të kredencialit',
   'Accetta il disclaimer per inviare la richiesta': 'Prano njoftimin për të dërguar kërkesën',

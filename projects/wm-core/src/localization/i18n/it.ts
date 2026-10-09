@@ -352,7 +352,7 @@ export const wmIT = {
   'Numero seriale': 'Numero seriale',
   'Inserisci il numero seriale se richiesto dal cammino': 'Inserisci il numero seriale se richiesto dal cammino',
   'es. CG-2026-00341': 'es. CG-2026-00341',
-  '[TESTO SEGNAPOSTO — da sostituire con il disclaimer legale] Accetto che nome, cognome e foto della credenziale siano trattati per validare il cammino.': '[TESTO SEGNAPOSTO — da sostituire con il disclaimer legale] Accetto che nome, cognome e foto della credenziale siano trattati per validare il cammino.',
+  'Acconsento al trattamento di nome, cognome e foto della credenziale al solo fine di verificare il cammino percorso, nel rispetto del Regolamento UE 2016/679 (GDPR).': 'Acconsento al trattamento di nome, cognome e foto della credenziale al solo fine di verificare il cammino percorso, nel rispetto del Regolamento UE 2016/679 (GDPR).',
   'Invia richiesta': 'Invia richiesta',
   'Aggiungi almeno una foto della credenziale': 'Aggiungi almeno una foto della credenziale',
   'Accetta il disclaimer per inviare la richiesta': 'Accetta il disclaimer per inviare la richiesta',

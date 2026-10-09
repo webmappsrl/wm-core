@@ -39,7 +39,7 @@
 
     <ion-item lines="none" class="wm-passport-form-disclaimer">
       <ion-checkbox formControlName="disclaimer" labelPlacement="end" justify="start">
-        <span class="ion-text-wrap">{{ '[TESTO SEGNAPOSTO — da sostituire con il disclaimer legale] Accetto che nome, cognome e foto della credenziale siano trattati per validare il cammino.' | wmtrans }}</span>
+        <span class="ion-text-wrap">{{ 'Acconsento al trattamento di nome, cognome e foto della credenziale al solo fine di verificare il cammino percorso, nel rispetto del Regolamento UE 2016/679 (GDPR).' | wmtrans }}</span>
       </ion-checkbox>
     </ion-item>
     <ion-note *ngIf="triedSubmit && !form.controls.disclaimer.value" color="danger" role="alert">
