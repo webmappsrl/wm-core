@@ -39,8 +39,8 @@ wm-tab-detail {
     color: var(--wm-feature-details-title-color);
     font-family: var(--wm-feature-details-title-font-family);
   }
-  // Le righe normali usano wm-detail-row, che ha questi stili; qui restano per partenza/arrivo e
-  // indirizzo, che hanno un layout proprio
+  // Classi vecchie, solo per partenza/arrivo e indirizzo, che hanno un layout proprio: le altre
+  // righe usano wm-detail-row e le sue classi wm-detail-row-*
   .webmapp-pageroute-tabdetail-label {
     color: var(--wm-color-dark);
     font-weight: 400;

@@ -69,7 +69,10 @@
 - Dimensioni e pesi della riga sono quelli delle sezioni «Form» e «Dove» del dettaglio UGC
   (`--wm-font-mf`, 400/600), anche nel pannello dell'ecTrack, dove prima il valore era a
   `0.6875rem` (richiesta del dev). Le icone in sola lettura della «Form» passano a primary.
-- Il pannello UGC prende le icone delle righe dell'ecTrack. Icone
+- Il pannello UGC prende le icone delle righe dell'ecTrack.
+- `wm-detail-row` usava in origine le classi `webmapp-pageroute-tabdetail-*`; dopo il merge di
+  develop, la regola di wm-core sul prefisso `wm-` le ha fatte rinominare in `wm-detail-row-icon`,
+  `-label`, `-value`. Nessun tema (app, webapp, fogli per app) le sovrascriveva. Icone
   scelte per le righe che l'ecTrack non ha: `icon-outline-walking` per il tempo in movimento,
   `icon-outline-running` per le velocità.
 

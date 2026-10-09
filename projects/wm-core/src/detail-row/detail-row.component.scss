@@ -6,18 +6,18 @@ wm-detail-row {
     font-size: var(--wm-font-mf);
   }
 
-  .webmapp-pageroute-tabdetail-label {
+  .wm-detail-row-label {
     color: var(--wm-color-dark);
     font-weight: 400;
     font-family: var(--wm-font-family-content);
   }
 
-  .webmapp-pageroute-tabdetail-icon {
+  .wm-detail-row-icon {
     color: var(--wm-color-primary);
     padding: 0 5px;
   }
 
-  .webmapp-pageroute-tabdetail-value {
+  .wm-detail-row-value {
     color: var(--wm-color-dark);
     font-weight: 600;
     font-family: var(--wm-font-family-content);
