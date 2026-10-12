@@ -383,4 +383,8 @@ export const wmDE = {
   'Ho completato {{cammino}}': 'Ich habe {{cammino}} abgeschlossen',
   'Questo cammino non risulta più completato': 'Dieser Weg gilt nicht mehr als abgeschlossen',
   "Non è stato possibile creare l'immagine del cammino": 'Das Bild des Weges konnte nicht erstellt werden',
+  'Il passaporto non è ancora attivo': 'Der Pass ist noch nicht aktiv',
+  'Il servizio passaporto non è ancora attivo su nessun cammino. Appena verrà attivato, qui troverai i timbri da completare di tutti i cammini in cui è disponibile.':
+    'Der Passdienst ist noch auf keinem Weg aktiv. Sobald er aktiviert wird, findest du hier die zu vervollständigenden Stempel aller Wege, auf denen er verfügbar ist.',
+  'PRESTO': 'BALD',
 };

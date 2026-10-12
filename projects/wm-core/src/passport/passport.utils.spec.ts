@@ -89,10 +89,11 @@ describe('passport.utils (oc:8676)', () => {
     });
   });
 
-  describe('passportStageChip (oc:8701)', () => {
-    const index = (pending: number[] = []): PassportStageIndex => ({
+  describe('passportStageChip (oc:8701, oc:8763)', () => {
+    /** Cammino 40 acceso con la tappa 203 validata; 63 acceso; 70 spento (assente da `enabledLayers`). */
+    const index = (): PassportStageIndex => ({
       completedAt: new Map([[203, '2026-05-12T10:00:00+00:00']]),
-      pendingLayers: new Set(pending),
+      enabledLayers: new Set([40, 63]),
     });
 
     it('index null → null', () => {
@@ -105,26 +106,27 @@ describe('passport.utils (oc:8676)', () => {
       expect(passportStageChip(index(), null, [40])).toBeNull();
     });
 
-    it('tappa validata → completed con la data, anche con id stringa', () => {
+    it('tappa validata di un cammino acceso → completed con la data, anche con id stringa', () => {
       const done = {status: 'completed', completedAt: '2026-05-12T10:00:00+00:00'};
       expect(passportStageChip(index(), 203, [40])).toEqual(done as any);
       expect(passportStageChip(index(), '203', [40])).toEqual(done as any);
     });
 
-    it('tappa non validata, cammini noti → not_started', () => {
+    it('tappa non validata di un cammino acceso → not_started', () => {
       expect(passportStageChip(index(), 215, [40])).toEqual({status: 'not_started'});
     });
 
-    it('tappa non validata, uno dei suoi layer è pendente → null', () => {
-      expect(passportStageChip(index([63]), 611, [40, 63])).toBeNull();
+    it('tappa di un cammino spento → null', () => {
+      expect(passportStageChip(index(), 611, [70])).toBeNull();
     });
 
-    it('tappa validata, anche se un altro suo layer è pendente → completed', () => {
-      expect(passportStageChip(index([63]), 203, [40, 63])?.status).toBe('completed');
+    it('tappa con layers [spento, acceso] → chip presente', () => {
+      expect(passportStageChip(index(), 611, [70, 63])).toEqual({status: 'not_started'});
     });
 
-    it('layers assente → trattato come []', () => {
-      expect(passportStageChip(index([63]), 215, undefined)).toEqual({status: 'not_started'});
+    it('layers assente o vuoto → null', () => {
+      expect(passportStageChip(index(), 215, undefined)).toBeNull();
+      expect(passportStageChip(index(), 215, [])).toBeNull();
     });
   });
 
@@ -187,6 +189,7 @@ describe('passport.utils, passaporto a timbri (oc:8703)', () => {
     total: 10,
     percent,
     completed,
+    validatedTracks: {},
   });
 
   describe('stampInitials', () => {
@@ -212,6 +215,7 @@ describe('passport.utils, passaporto a timbri (oc:8703)', () => {
     it('in corso per percentuale, poi completati, poi non iniziati, nell\'ordine della config', () => {
       const layers = [layer(1), layer(2), layer(3), layer(4), layer(5)];
       const routes = new Map([
+        [1, route(1, 0)],
         [2, route(2, 30)],
         [3, route(3, 100, true)],
         [4, route(4, 60)],
@@ -221,26 +225,31 @@ describe('passport.utils, passaporto a timbri (oc:8703)', () => {
       expect(passportStamps(layers, routes).map(s => s.layerId)).toEqual([4, 2, 5, 3, 1]);
     });
 
+    it('un layer della config assente da routes non ha timbro', () => {
+      const stamps = passportStamps([layer(1), layer(2)], new Map([[2, route(2, 50)]]));
+
+      expect(stamps.map(s => s.layerId)).toEqual([2]);
+    });
+
     it('un cammino di /api/passport senza layer in config non compare', () => {
       const stamps = passportStamps([layer(1)], new Map([[9, route(9, 50)]]));
 
-      expect(stamps.map(s => s.layerId)).toEqual([1]);
+      expect(stamps).toEqual([]);
     });
 
-    it('non iniziato: zero tappe, totale da attributes.stage_count o null', () => {
-      const [withCount, withoutCount] = passportStamps([layer(1, 6), layer(2)], new Map());
+    it('route a zero convalidate: non iniziato col totale della route', () => {
+      const [stamp] = passportStamps([layer(1, 6)], new Map([[1, route(1, 0)]]));
 
-      expect(withCount).toEqual({
+      expect(stamp).toEqual({
         layerId: 1,
         title: 'Cammino 1',
         logo: 'logo-1.png',
         image: 'img-1.jpg',
         status: 'not_started',
         validated: 0,
-        total: 6,
+        total: 10,
         percent: 0,
       });
-      expect(withoutCount.total).toBeNull();
     });
 
     it('in corso e completato: tappe e percentuale da /api/passport', () => {

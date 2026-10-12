@@ -37,7 +37,7 @@ describe('SearchBoxComponent (camminiditalia) — chip del passaporto (oc:8701)'
     ugc$ = new BehaviorSubject(false);
     index$ = new BehaviorSubject<PassportStageIndex | null>({
       completedAt: new Map([[203, DATE]]),
-      pendingLayers: new Set(),
+      enabledLayers: new Set([40]),
     });
   });
 
@@ -102,7 +102,7 @@ describe('SearchBoxComponent (camminiditalia) — template del chip (oc:8701)', 
     TestBed.resetTestingModule();
     index$ = new BehaviorSubject<PassportStageIndex | null>({
       completedAt: new Map([[203, '2026-05-12T10:00:00+00:00']]),
-      pendingLayers: new Set(),
+      enabledLayers: new Set([40]),
     });
     TestBed.configureTestingModule({
       declarations: [SearchBoxComponent, ...FAKE_BOX_PIPES],

@@ -387,4 +387,8 @@ export const wmSQ = {
   'Ho completato {{cammino}}': 'E përfundova {{cammino}}',
   'Questo cammino non risulta più completato': 'Kjo rrugë nuk rezulton më e përfunduar',
   "Non è stato possibile creare l'immagine del cammino": 'Imazhi i rrugës nuk mund të krijohej',
+  'Il passaporto non è ancora attivo': 'Pasaporta nuk është ende aktive',
+  'Il servizio passaporto non è ancora attivo su nessun cammino. Appena verrà attivato, qui troverai i timbri da completare di tutti i cammini in cui è disponibile.':
+    "Shërbimi i pasaportës nuk është ende aktiv në asnjë rrugë. Sapo të aktivizohet, këtu do të gjesh vulat për t'u plotësuar të të gjitha rrugëve ku është i disponueshëm.",
+  'PRESTO': 'SË SHPEJTI',
 };

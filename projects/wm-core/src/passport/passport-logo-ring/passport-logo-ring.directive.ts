@@ -1,6 +1,6 @@
 import {Directive, ElementRef, Input, OnChanges, OnDestroy} from '@angular/core';
 import {Subscription} from 'rxjs';
-import {PassportProgress} from '@wm-types/passport';
+import {PassportRoute} from '@wm-types/passport';
 import {PassportService} from '../passport.service';
 import {passportRingDegrees, toLayerId} from '../passport.utils';
 
@@ -14,7 +14,8 @@ const RING_DEG_VAR = '--wm-passport-ring-deg';
  *
  * È una direttiva sul logo esistente, non un componente che lo avvolge: i selettori della
  * variante camminiditalia di `wm-home-layer` presuppongono il logo figlio diretto di `wm-img`.
- * L'anello compare solo per l'utente loggato su un layer con tappe, come il badge.
+ * L'anello compare solo per l'utente loggato su un cammino col passaporto acceso e con tappe,
+ * come il badge.
  */
 @Directive({
   standalone: false,
@@ -35,8 +36,8 @@ export class WmPassportLogoRingDirective implements OnChanges, OnDestroy {
   ngOnChanges(): void {
     this._sub?.unsubscribe();
     this._sub = this._passportSvc
-      .visibleProgress(toLayerId(this.layerId))
-      .subscribe(progress => this._apply(progress));
+      .visibleRoute(toLayerId(this.layerId))
+      .subscribe(route => this._apply(route));
   }
 
   /** Chiude la sottoscrizione. */
@@ -47,12 +48,12 @@ export class WmPassportLogoRingDirective implements OnChanges, OnDestroy {
   /**
    * Applica o toglie l'anello sull'elemento.
    *
-   * @param progress Avanzamento del cammino, `null` se l'anello non va mostrato.
+   * @param route Cammino, `null` se l'anello non va mostrato.
    */
-  private _apply(progress: PassportProgress | null): void {
+  private _apply(route: PassportRoute | null): void {
     const el = this._el.nativeElement;
-    if (progress) {
-      const deg = passportRingDegrees(progress.percent);
+    if (route) {
+      const deg = passportRingDegrees(route.percent);
       el.classList.add(RING_CLASS);
       el.style.setProperty(RING_DEG_VAR, `${Math.round(deg * 10) / 10}deg`);
     } else {

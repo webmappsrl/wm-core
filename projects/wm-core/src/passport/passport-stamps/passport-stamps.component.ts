@@ -19,13 +19,13 @@ import {
 export type PassportStampsVm =
   | {status: 'loading'}
   | {status: 'error'}
-  | {status: 'ready'; stamps: PassportStamp[]; anyStarted: boolean};
+  | {status: 'ready'; stamps: PassportStamp[]; anyStarted: boolean; empty: boolean};
 
 /**
- * Passaporto a timbri (oc:8703, viste 5b e 5c del wireframe): tutti i cammini della config, col
- * logo nell'anello di avanzamento. In cima gli in corso, poi i completati, poi i non iniziati in
- * grigio. Toccando un timbro, di qualunque stato, si apre il dettaglio del cammino. Lo monta la
- * pagina del tab Passaporto dell'app camminiditalia.
+ * Passaporto a timbri (oc:8703, viste 5b e 5c del wireframe): i cammini della config col
+ * passaporto acceso (oc:8763), col logo nell'anello di avanzamento. In cima gli in corso, poi i
+ * completati, poi i non iniziati in grigio. Toccando un timbro, di qualunque stato, si apre il
+ * dettaglio del cammino. Lo monta la pagina del tab Passaporto dell'app camminiditalia.
  *
  * Finché `/api/passport` e la config dei layer non hanno risposto mostra il caricamento, mai la
  * griglia grigia: chi ha cammini iniziati non deve vederli spenti per un problema di rete.
@@ -152,6 +152,12 @@ export class WmPassportStampsComponent {
     // `logged-out` resta in caricamento: la pagina del tab porta alla Home
     if (state.status !== 'ready' || layers == null) return {status: 'loading'};
     const stamps = passportStamps(layers, state.routes);
-    return {status: 'ready', stamps, anyStarted: stamps.some(s => s.status !== 'not_started')};
+    return {
+      status: 'ready',
+      stamps,
+      anyStarted: stamps.some(s => s.status !== 'not_started'),
+      // nessun timbro da mostrare (nessun cammino acceso o in config): stato vuoto (oc:8763)
+      empty: stamps.length === 0,
+    };
   }
 }

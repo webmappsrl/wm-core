@@ -379,4 +379,8 @@ export const wmPR = {
   'Ho completato {{cammino}}': 'Concluí {{cammino}}',
   'Questo cammino non risulta più completato': 'Este caminho já não consta como concluído',
   "Non è stato possibile creare l'immagine del cammino": 'Não foi possível criar a imagem do caminho',
+  'Il passaporto non è ancora attivo': 'O passaporte ainda não está ativo',
+  'Il servizio passaporto non è ancora attivo su nessun cammino. Appena verrà attivato, qui troverai i timbri da completare di tutti i cammini in cui è disponibile.':
+    'O serviço de passaporte ainda não está ativo em nenhum caminho. Assim que for ativado, aqui encontrarás os carimbos por completar de todos os caminhos em que estiver disponível.',
+  'PRESTO': 'EM BREVE',
 };

@@ -27,6 +27,7 @@ describe('WmPassportStampsComponent (oc:8703)', () => {
     total,
     percent: Math.floor((validated * 100) / total),
     completed,
+    validatedTracks: {},
   });
 
   let state$: BehaviorSubject<PassportRoutesState>;
@@ -83,20 +84,48 @@ describe('WmPassportStampsComponent (oc:8703)', () => {
     expect(refreshPassport).toHaveBeenCalled();
   });
 
-  it('nessun cammino iniziato: tutti non iniziati e anyStarted falso', async () => {
+  it('nessun cammino acceso: stato vuoto, nessun timbro', async () => {
     state$.next({status: 'ready', routes: new Map()});
     const vm: any = await firstValueFrom(create().vm$);
 
     expect(vm.status).toBe('ready');
+    expect(vm.empty).toBeTrue();
+    expect(vm.stamps).toEqual([]);
+  });
+
+  it('cammini accesi ma nessuno iniziato: non vuoto, anyStarted falso', async () => {
+    state$.next({status: 'ready', routes: new Map([[1, route(1, 0, 6)], [2, route(2, 0, 4)]])});
+    const vm: any = await firstValueFrom(create().vm$);
+
+    expect(vm.empty).toBeFalse();
     expect(vm.anyStarted).toBeFalse();
-    expect(vm.stamps.map((s: PassportStamp) => s.status)).toEqual(['not_started', 'not_started']);
+    expect(vm.stamps.map((s: PassportStamp) => [s.status, s.total])).toEqual([
+      ['not_started', 6],
+      ['not_started', 4],
+    ]);
+  });
+
+  it('routes con un cammino assente dalla config: stato vuoto', async () => {
+    state$.next({status: 'ready', routes: new Map([[9, route(9, 2, 4)]])});
+    const vm: any = await firstValueFrom(create().vm$);
+
+    expect(vm.stamps).toEqual([]);
+    expect(vm.empty).toBeTrue();
+  });
+
+  it('un layer non presente in routes non ha timbro', async () => {
+    state$.next({status: 'ready', routes: new Map([[2, route(2, 0, 4)]])});
+    const vm: any = await firstValueFrom(create().vm$);
+
+    expect(vm.stamps.map((s: PassportStamp) => s.layerId)).toEqual([2]);
   });
 
   it('con un cammino in corso: prima lui, anyStarted vero', async () => {
-    state$.next({status: 'ready', routes: new Map([[2, route(2, 3, 5)]])});
+    state$.next({status: 'ready', routes: new Map([[1, route(1, 0, 6)], [2, route(2, 3, 5)]])});
     const vm: any = await firstValueFrom(create().vm$);
 
     expect(vm.anyStarted).toBeTrue();
+    expect(vm.empty).toBeFalse();
     expect(vm.stamps.map((s: PassportStamp) => s.layerId)).toEqual([2, 1]);
   });
 
