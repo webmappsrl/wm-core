@@ -144,3 +144,134 @@
     color: $passport-todo-text;
   }
 }
+
+// Stato vuoto (oc:8763): nessun cammino ha il passaporto acceso. Tre timbri tratteggiati a
+// ventaglio, il centrale col nostro anello verde che ruota piano e il gruppo che fluttua.
+$empty-art-width: 260px;
+$empty-art-height: 150px;
+$empty-stamp-size: 92px;
+$empty-stamp-top: 28px;
+$empty-main-size: 124px;
+$empty-main-top: 13px;
+$empty-float-duration: 5s;
+$empty-spin-duration: 28s;
+
+.wm-passport-stamps-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 340px;
+  margin: 0 auto;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.wm-passport-stamps-empty-art {
+  position: relative;
+  width: $empty-art-width;
+  height: $empty-art-height;
+  margin-bottom: 24px;
+  animation: wm-passport-empty-float $empty-float-duration ease-in-out infinite;
+}
+
+.wm-passport-stamps-empty-stamp {
+  position: absolute;
+  top: $empty-stamp-top;
+  width: $empty-stamp-size;
+  height: $empty-stamp-size;
+  box-sizing: border-box;
+  border: 2px dashed $passport-empty-dashed;
+  border-radius: 50%;
+  background: $passport-todo-bg;
+
+  &--left {
+    left: 0;
+    transform: rotate(-12deg);
+  }
+
+  &--right {
+    right: 0;
+    transform: rotate(10deg);
+  }
+}
+
+.wm-passport-stamps-empty-main {
+  position: absolute;
+  top: $empty-main-top;
+  left: 50%;
+  width: $empty-main-size;
+  height: $empty-main-size;
+  margin-left: $empty-main-size * -0.5;
+}
+
+.wm-passport-stamps-empty-ring {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  border: 3px dashed $passport-green;
+  border-radius: 50%;
+  animation: wm-passport-empty-spin $empty-spin-duration linear infinite;
+}
+
+.wm-passport-stamps-empty-core {
+  position: absolute;
+  inset: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: $passport-green-bg;
+  color: $passport-green;
+}
+
+.wm-passport-stamps-empty-tag {
+  position: absolute;
+  right: 40px;
+  bottom: 6px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: $passport-amber-bg;
+  color: $passport-amber-text;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  transform: rotate(-6deg);
+}
+
+.wm-passport-stamps-empty-title {
+  margin: 0 0 8px;
+  color: var(--ion-color-primary);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.wm-passport-stamps-empty-text {
+  margin: 0;
+  color: $passport-todo-text;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@keyframes wm-passport-empty-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes wm-passport-empty-float {
+  0%,
+  100% {
+    transform: translateY(-6px);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wm-passport-stamps-empty-art,
+  .wm-passport-stamps-empty-ring {
+    animation: none;
+  }
+}

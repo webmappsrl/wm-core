@@ -19,6 +19,20 @@ describe('PassportService (oc:8166, oc:8676)', () => {
     return new PassportService(store, http as any, {origin: ORIGIN} as any, {currentLang} as any);
   }
 
+  /** Service con risposte per URL e senza listener `resume` vero. */
+  function createIndexed(byUrl: Record<string, unknown>, logged = true): PassportService {
+    http.get.and.callFake((url: string) => {
+      const key = url.replace(ORIGIN, '');
+      return byUrl[key] instanceof Error ? throwError(() => byUrl[key]) : of(byUrl[key]);
+    });
+    const svc = create(logged);
+    spyOn<any>(svc, '_addResumeListener').and.returnValue(new Promise(() => {}));
+    return svc;
+  }
+
+  const layerCalls = () =>
+    http.get.calls.allArgs().filter(([url]) => String(url).includes('/api/layer/')).length;
+
   const request = (serialNumber?: string) => ({
     layerId: 3,
     photos: [new Blob(['a'], {type: 'image/jpeg'}), new Blob(['b'], {type: 'image/png'})],
@@ -92,20 +106,11 @@ describe('PassportService (oc:8166, oc:8676)', () => {
       expect(stage.distance).toBe(0);
     });
 
-    it('visibleProgress: null senza tappe, senza login o senza id', async () => {
-      answer({30: LAYER_30_PROGRESS, 63: LAYER_63_PROGRESS});
-
-      expect(await firstValueFrom(createQuiet().visibleProgress(30))).toBeNull();
-      expect(await firstValueFrom(createQuiet(false).visibleProgress(63))).toBeNull();
-      expect(await firstValueFrom(createQuiet().visibleProgress(null))).toBeNull();
-      expect((await firstValueFrom(createQuiet().visibleProgress(63)))?.totalStages).toBe(3);
-    });
-
     it('due consumatori dello stesso layer fanno una sola richiesta', () => {
       answer({40: LAYER_40_PROGRESS});
       const svc = createQuiet();
       const a = svc.progress$(40).subscribe();
-      const b = svc.visibleProgress(40).subscribe();
+      const b = svc.progress$(40).subscribe();
 
       expect(http.get).toHaveBeenCalledTimes(1);
       a.unsubscribe();
@@ -458,7 +463,14 @@ describe('PassportService (oc:8166, oc:8676)', () => {
   describe('passaporto: GET /api/passport (oc:8701)', () => {
     const ROUTES = {
       routes: [
-        {layer_id: 40, validated: 6, total: 13, percentage: 46, completed: false},
+        {
+          layer_id: 40,
+          validated: 6,
+          total: 13,
+          percentage: 46,
+          completed: false,
+          validated_tracks: {'203': '2026-09-30T14:45:55+00:00'},
+        },
         {layer_id: 63, validated: 6, total: 6, percentage: 100, completed: true},
       ],
     };
@@ -488,8 +500,26 @@ describe('PassportService (oc:8166, oc:8676)', () => {
         total: 13,
         percent: 46,
         completed: false,
+        validatedTracks: {203: '2026-09-30T14:45:55+00:00'},
       });
       expect(routes.get(63).completed).toBeTrue();
+    });
+
+    it('validated_tracks assente → validatedTracks vuoto; le chiavi diventano numeri', async () => {
+      http.get.and.returnValue(of(ROUTES));
+      const routes = await firstValueFrom(createLogged(new BehaviorSubject(true)).passportRoutes$());
+
+      expect(routes.get(63).validatedTracks).toEqual({});
+      expect(Object.keys(routes.get(40).validatedTracks).map(Number)).toEqual([203]);
+    });
+
+    it('un cammino acceso con 0 tappe validate è in routes', async () => {
+      http.get.and.returnValue(
+        of({routes: [{layer_id: 7, validated: 0, total: 5, percentage: 0, completed: false, validated_tracks: {}}]}),
+      );
+      const routes = await firstValueFrom(createLogged(new BehaviorSubject(true)).passportRoutes$());
+
+      expect(routes.get(7)).toEqual({layerId: 7, validated: 0, total: 5, percent: 0, completed: false, validatedTracks: {}});
     });
 
     it('utente non loggato: null senza chiamare l\'API', async () => {
@@ -682,72 +712,89 @@ describe('PassportService (oc:8166, oc:8676)', () => {
     });
   });
 
-  describe('indice delle tappe validate (oc:8701)', () => {
-    /** Service con risposte per URL e senza listener `resume` vero. */
-    function createIndexed(byUrl: Record<string, unknown>, logged = true): PassportService {
-      http.get.and.callFake((url: string) => {
-        const key = url.replace(ORIGIN, '');
-        return byUrl[key] instanceof Error ? throwError(() => byUrl[key]) : of(byUrl[key]);
-      });
-      const svc = create(logged);
-      spyOn<any>(svc, '_addResumeListener').and.returnValue(new Promise(() => {}));
-      return svc;
-    }
+  describe('badge e anello da /api/passport (oc:8763)', () => {
+    const BODY = {
+      routes: [
+        {layer_id: 40, validated: 6, total: 13, percentage: 46, completed: false, validated_tracks: {'203': '2026-09-30T14:45:55+00:00'}},
+        {layer_id: 7, validated: 0, total: 5, percentage: 0, completed: false, validated_tracks: {}},
+        {layer_id: 9, validated: 0, total: 0, percentage: 0, completed: false, validated_tracks: {}},
+      ],
+    };
 
-    const routes = (...ids: number[]) => ({
-      routes: ids.map(id => ({layer_id: id, validated: 1, total: 3, percentage: 33, completed: false})),
+
+    it('visibleRoute emette la route di un cammino acceso, anche a 0 tappe validate', async () => {
+      const svc = createIndexed({'/api/passport': BODY});
+
+      expect((await firstValueFrom(svc.visibleRoute(40)))?.validated).toBe(6);
+      expect(await firstValueFrom(svc.visibleRoute(7))).toEqual(
+        jasmine.objectContaining({layerId: 7, validated: 0, total: 5, percent: 0}),
+      );
+      expect(layerCalls()).toBe(0);
     });
 
-    it('chiede /progress solo dei cammini iniziati e indicizza le tappe validate', async () => {
+    it('visibleRoute: null per cammino assente, senza tappe, non loggato o senza id', async () => {
+      const svc = createIndexed({'/api/passport': BODY});
+
+      expect(await firstValueFrom(svc.visibleRoute(99))).toBeNull();
+      expect(await firstValueFrom(svc.visibleRoute(9))).toBeNull();
+      expect(await firstValueFrom(svc.visibleRoute(null))).toBeNull();
+      expect(await firstValueFrom(createIndexed({'/api/passport': BODY}, false).visibleRoute(40))).toBeNull();
+    });
+  });
+
+  describe('indice delle tappe validate (oc:8701, oc:8763)', () => {
+    const route = (id: number, tracks: Record<string, string> = {}) => ({
+      layer_id: id,
+      validated: Object.keys(tracks).length,
+      total: 3,
+      percentage: 33,
+      completed: false,
+      validated_tracks: tracks,
+    });
+
+    it('unisce i validatedTracks dei cammini accesi, con id numerici, senza /api/layer/', async () => {
       const svc = createIndexed({
-        '/api/passport': routes(40, 63),
-        '/api/layer/40/progress': LAYER_40_PROGRESS,
-        '/api/layer/63/progress': LAYER_63_PROGRESS,
+        '/api/passport': {
+          routes: [
+            route(40, {'203': '2026-09-30T14:45:55+00:00', '218': '2026-09-30T14:45:55+00:00'}),
+            route(63, {'309': '2026-10-01T10:00:00+00:00'}),
+            route(7),
+          ],
+        },
       });
       const index = await firstValueFrom(svc.stageIndex$());
-      const urls = http.get.calls.allArgs().map(([url]) => url.replace(ORIGIN, ''));
 
-      expect(urls.sort()).toEqual(['/api/layer/40/progress', '/api/layer/63/progress', '/api/passport']);
-      expect([...index.completedAt.keys()].sort((a, b) => a - b)).toEqual([203, 218, 309, 369, 704, 710]);
-      expect(index.completedAt.get(203)).toBe('2026-09-30T14:45:55+00:00');
-      expect(index.pendingLayers.size).toBe(0);
+      expect([...index.completedAt.keys()].sort((a, b) => a - b)).toEqual([203, 218, 309]);
+      expect(index.completedAt.get(309)).toBe('2026-10-01T10:00:00+00:00');
+      expect([...index.enabledLayers].sort((a, b) => a - b)).toEqual([7, 40, 63]);
+      expect(layerCalls()).toBe(0);
     });
 
-    it('nessun cammino iniziato → indice vuoto, nessuna /progress', async () => {
-      const svc = createIndexed({'/api/passport': {routes: []}});
-      const index = await firstValueFrom(svc.stageIndex$());
+    it('nessun cammino acceso → indice vuoto', async () => {
+      const index = await firstValueFrom(createIndexed({'/api/passport': {routes: []}}).stageIndex$());
 
       expect(index.completedAt.size).toBe(0);
-      expect(index.pendingLayers.size).toBe(0);
-      expect(http.get).toHaveBeenCalledTimes(1);
+      expect(index.enabledLayers.size).toBe(0);
     });
 
-    it('/progress di un cammino fallisce alla prima lettura → cammino pendente, gli altri restano', async () => {
-      const svc = createIndexed({
-        '/api/passport': routes(40, 63),
-        '/api/layer/40/progress': LAYER_40_PROGRESS,
-        '/api/layer/63/progress': new Error('timeout'),
-      });
-      const index = await firstValueFrom(svc.stageIndex$());
-
-      expect([...index.pendingLayers]).toEqual([63]);
-      expect(index.completedAt.has(203)).toBeTrue();
-    });
-
-    it('una rilettura di /api/passport con gli stessi cammini non rilegge le /progress', () => {
-      const svc = createIndexed({
-        '/api/passport': routes(40, 63),
-        '/api/layer/40/progress': LAYER_40_PROGRESS,
-        '/api/layer/63/progress': LAYER_63_PROGRESS,
-      });
-      const progressCalls = (id: number) =>
-        http.get.calls.allArgs().filter(([url]) => url === `${ORIGIN}/api/layer/${id}/progress`).length;
-      const sub = svc.stageIndex$().subscribe();
+    it('una seconda risposta con una tappa in più aggiorna completedAt', () => {
+      const svc = createIndexed({'/api/passport': {routes: [route(40, {'203': '2026-09-30T14:45:55+00:00'})]}});
+      const seen: number[] = [];
+      const sub = svc.stageIndex$().subscribe(i => seen.push(i.completedAt.size));
+      http.get.and.returnValue(
+        of({routes: [route(40, {'203': '2026-09-30T14:45:55+00:00', '218': '2026-10-02T08:00:00+00:00'})]}),
+      );
       svc.refreshProgress(40);
 
-      expect(progressCalls(40)).toBe(2);
-      expect(progressCalls(63)).toBe(1);
+      expect(seen).toEqual([1, 2]);
+      expect(layerCalls()).toBe(0);
       sub.unsubscribe();
+    });
+
+    it('/api/passport in errore senza dati precedenti → null', async () => {
+      const svc = createIndexed({'/api/passport': new Error('rete')});
+
+      expect(await firstValueFrom(svc.stageIndex$())).toBeNull();
     });
 
     it('utente non loggato → null', async () => {

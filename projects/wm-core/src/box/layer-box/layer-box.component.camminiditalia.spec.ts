@@ -27,6 +27,7 @@ describe('LayerBoxComponent (camminiditalia) — anello del passaporto (oc:8701)
     total: 1,
     percent,
     completed,
+    validatedTracks: {},
   });
 
   function create(layerId: string): LayerBoxComponent {
@@ -82,8 +83,8 @@ describe('LayerBoxComponent (camminiditalia) — template dell\'anello (oc:8701)
     TestBed.resetTestingModule();
     routes$ = new BehaviorSubject<Map<number, PassportRoute> | null>(
       new Map([
-        [40, {layerId: 40, validated: 6, total: 13, percent: 46, completed: false}],
-        [63, {layerId: 63, validated: 6, total: 6, percent: 100, completed: true}],
+        [40, {layerId: 40, validated: 6, total: 13, percent: 46, completed: false, validatedTracks: {}}],
+        [63, {layerId: 63, validated: 6, total: 6, percent: 100, completed: true, validatedTracks: {}}],
       ]),
     );
     TestBed.configureTestingModule({

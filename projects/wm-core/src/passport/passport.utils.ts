@@ -22,7 +22,7 @@ export interface PassportStamp {
   image: string | null;
   status: PassportStampStatus;
   validated: number;
-  /** Tappe del cammino; per un cammino non iniziato da `attributes.stage_count`, `null` se manca. */
+  /** Tappe del cammino, dal `total` della route di `/api/passport`; `null` se manca. */
   total: number | null;
   percent: number;
 }
@@ -195,12 +195,13 @@ function intlLocale(lang: string | undefined): string {
 }
 
 /**
- * Stato del chip di una card di tappa (oc:8701). Nessun chip se il dato non è noto: utente non
- * loggato, id non numerico, o tappa non validata in un cammino la cui lettura non ha mai risposto.
+ * Stato del chip di una card di tappa (oc:8701, oc:8763). Nessun chip se il dato non è noto o non
+ * pertinente: utente non loggato, id non numerico, o nessuno dei cammini della tappa ha il
+ * passaporto acceso.
  *
  * @param index Tappe validate dell'utente, `null` se non disponibili.
  * @param trackId Id della tappa (nell'hit Elastic può essere una stringa).
- * @param layers Cammini che contengono la tappa.
+ * @param layers Cammini che contengono la tappa; il chip c'è se almeno uno ha il passaporto acceso.
  * @returns Lo stato del chip, `null` se il chip non va mostrato.
  */
 export function passportStageChip(
@@ -211,19 +212,20 @@ export function passportStageChip(
   if (!index || trackId == null || trackId === '') return null;
   const id = Number(trackId);
   if (Number.isNaN(id)) return null;
+  if (!(layers ?? []).some(layerId => index.enabledLayers.has(Number(layerId)))) return null;
   const completedAt = index.completedAt.get(id);
   if (completedAt) return {status: 'completed', completedAt};
-  if ((layers ?? []).some(layerId => index.pendingLayers.has(Number(layerId)))) return null;
   return {status: 'not_started'};
 }
 
 /**
- * Timbri del passaporto (oc:8703): tutti i cammini della config, uniti all'avanzamento di
- * `/api/passport`. Prima gli in corso dal più avanzato, poi i completati, poi i non iniziati;
- * a parità, l'ordine della config. Un cammino di `/api/passport` assente dalla config non compare.
+ * Timbri del passaporto (oc:8703, oc:8763): un timbro per ogni layer della config presente in
+ * `routes`, cioè con il passaporto acceso. Prima gli in corso dal più avanzato, poi i completati,
+ * poi i non iniziati; a parità, l'ordine della config. Un layer senza passaporto acceso, o un
+ * cammino di `/api/passport` assente dalla config, non compare.
  *
  * @param layers Layer della config (`confMAPLAYERS`).
- * @param routes Cammini con almeno una tappa validata, per `layerId`.
+ * @param routes Cammini col passaporto acceso (anche a zero tappe validate), per `layerId`.
  * @returns I timbri ordinati.
  */
 export function passportStamps(
@@ -232,7 +234,9 @@ export function passportStamps(
 ): PassportStamp[] {
   const rank: Record<PassportStampStatus, number> = {in_progress: 0, completed: 1, not_started: 2};
   return (layers ?? [])
-    .map((layer, index) => ({stamp: toStamp(layer, routes), index}))
+    .map((layer, index) => ({layer, index, route: routes.get(Number(layer.id))}))
+    .filter((entry): entry is {layer: ILAYER; index: number; route: PassportRoute} => !!entry.route)
+    .map(({layer, index, route}) => ({stamp: toStamp(layer, route), index}))
     .sort(
       (a, b) =>
         rank[a.stamp.status] - rank[b.stamp.status] ||
@@ -243,33 +247,19 @@ export function passportStamps(
 }
 
 /**
- * Timbro di un layer della config.
+ * Timbro di un layer della config col passaporto acceso.
  *
  * @param layer Layer della config.
- * @param routes Cammini con almeno una tappa validata, per `layerId`.
- * @returns Il timbro.
+ * @param route Cammino di `/api/passport` corrispondente.
+ * @returns Il timbro: completato, in corso o non iniziato (nessuna tappa validata).
  */
-function toStamp(layer: ILAYER, routes: Map<number, PassportRoute>): PassportStamp {
-  const layerId = Number(layer.id);
-  const route = routes.get(layerId);
-  const base = {
-    layerId,
+function toStamp(layer: ILAYER, route: PassportRoute): PassportStamp {
+  return {
+    layerId: Number(layer.id),
     title: layer.title,
     logo: layer.logo_image ?? null,
     image: layer.feature_image ?? null,
-  };
-  if (!route) {
-    return {
-      ...base,
-      status: 'not_started',
-      validated: 0,
-      total: layer.attributes?.stage_count ?? null,
-      percent: 0,
-    };
-  }
-  return {
-    ...base,
-    status: route.completed ? 'completed' : 'in_progress',
+    status: route.completed ? 'completed' : route.validated > 0 ? 'in_progress' : 'not_started',
     validated: route.validated,
     total: route.total,
     percent: route.percent,

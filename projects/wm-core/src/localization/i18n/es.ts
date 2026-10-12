@@ -379,4 +379,8 @@ export const wmES = {
   'Ho completato {{cammino}}': 'He completado {{cammino}}',
   'Questo cammino non risulta più completato': 'Este camino ya no figura como completado',
   "Non è stato possibile creare l'immagine del cammino": 'No se ha podido crear la imagen del camino',
+  'Il passaporto non è ancora attivo': 'El pasaporte aún no está activo',
+  'Il servizio passaporto non è ancora attivo su nessun cammino. Appena verrà attivato, qui troverai i timbri da completare di tutti i cammini in cui è disponibile.':
+    'El servicio de pasaporte aún no está activo en ningún camino. En cuanto se active, aquí encontrarás los sellos por completar de todos los caminos en los que esté disponible.',
+  'PRESTO': 'PRONTO',
 };

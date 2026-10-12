@@ -3,10 +3,9 @@ import {Injectable} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {App} from '@capacitor/app';
 import {PluginListenerHandle} from '@capacitor/core';
-import {combineLatest, concat, defer, merge, Observable, of, Subject, throwError} from 'rxjs';
+import {concat, defer, merge, Observable, of, Subject, throwError} from 'rxjs';
 import {
   catchError,
-  distinctUntilChanged,
   filter,
   map,
   shareReplay,
@@ -55,7 +54,10 @@ interface ProgressResponse {
   }>;
 }
 
-/** Risposta del backend camminiditalia a `GET /api/passport` (oc:8676, letta da oc:8701). */
+/**
+ * Risposta del backend camminiditalia a `GET /api/passport` (oc:8676, letta da oc:8701): solo i
+ * cammini con il passaporto acceso, anche a 0 tappe validate (oc:8763).
+ */
 interface PassportResponse {
   routes: Array<{
     layer_id: number;
@@ -63,6 +65,8 @@ interface PassportResponse {
     total: number;
     percentage: number;
     completed: boolean;
+    /** Tappe validate: id della track EC → data ISO (oc:8763). Le chiavi JSON arrivano stringa. */
+    validated_tracks?: Record<string, string> | null;
   }>;
 }
 
@@ -112,9 +116,10 @@ const EXTENSION_BY_TYPE: Record<string, string> = {
  * - `GET /api/layer/{layer}/progress` → le tappe del cammino riconosciute all'utente, con i
  *   conteggi calcolati dal backend (oc:8676). Badge, anello e dettaglio leggono lo stesso stream
  *   per layer (`progress$`).
- * - `GET /api/passport` → i cammini con almeno una tappa validata dall'utente, con i conteggi
- *   (oc:8701). Le card dei cammini e l'indice delle tappe validate leggono lo stesso stream
- *   (`passportRoutes$`).
+ * - `GET /api/passport` → i cammini con il passaporto acceso, anche a 0 tappe validate, con i
+ *   conteggi e le tappe validate (`validated_tracks`) (oc:8701, oc:8763). Le card dei cammini, il
+ *   badge, l'anello e l'indice delle tappe validate leggono lo stesso stream (`passportRoutes$`);
+ *   `/progress` serve solo al dettaglio del cammino.
  */
 @Injectable({providedIn: 'root'})
 export class PassportService {
@@ -229,14 +234,15 @@ export class PassportService {
    */
   refreshProgress(layerId: number): void {
     this._progressRefresh$.next(layerId);
-    // la prima tappa di un cammino nuovo lo fa entrare in `/api/passport` (oc:8701)
+    // rilegge `/api/passport`: badge, anello, timbri e chip seguono il dettaglio (oc:8701)
     this._passportRefresh$.next();
   }
 
   /**
-   * Cammini con almeno una tappa validata dall'utente, per `layerId` (oc:8701): una sola richiesta
-   * per tutte le card. Si rilegge al ritorno dell'app in primo piano, con `refreshProgress` e al
-   * login. Se una lettura fallisce emette l'ultimo valore letto nella sessione.
+   * Cammini con il passaporto acceso, anche a 0 tappe validate, per `layerId` (oc:8701, oc:8763):
+   * una sola richiesta per tutte le card. Si rilegge al ritorno dell'app in primo piano, con
+   * `refreshProgress` e al login. Se una lettura fallisce emette l'ultimo valore letto nella
+   * sessione.
    *
    * @returns Observable con i cammini, `null` se l'utente non è loggato o non c'è mai stata una
    *   lettura riuscita.
@@ -313,51 +319,34 @@ export class PassportService {
   }
 
   /**
-   * Progresso da mostrare nel passaporto: `null` se l'utente non è loggato o il layer non ha
-   * tappe. È l'unica regola di visibilità per badge e anello del logo.
+   * Cammino da mostrare nel passaporto (oc:8763): la sua route di `passportRoutes$`, quindi senza
+   * alcuna `/progress`. `null` se l'utente non è loggato, il cammino non ha il passaporto acceso
+   * (assente da `/api/passport`) o non ha tappe. È l'unica regola di visibilità per badge e
+   * anello del logo.
    *
    * @param layerId Id del layer, `null` se assente.
-   * @returns Observable con il progresso, o `null` se non va mostrato nulla.
+   * @returns Observable con la route, o `null` se non va mostrato nulla.
    */
-  visibleProgress(layerId: number | null): Observable<PassportProgress | null> {
-    return this._store.select(isLogged).pipe(
-      switchMap(logged => (logged && layerId != null ? this.progress$(layerId) : of(null))),
-      map(p => (p && p.totalStages > 0 ? p : null)),
+  visibleRoute(layerId: number | null): Observable<PassportRoute | null> {
+    return this.passportRoutes$().pipe(
+      map(routes => {
+        const route = layerId != null ? routes?.get(layerId) : null;
+        return route && route.total > 0 ? route : null;
+      }),
     );
   }
 
   /**
-   * Tappe validate dall'utente su tutti i cammini iniziati (oc:8701): da `passportRoutes$` si
-   * leggono le `/progress` dei soli cammini con almeno una tappa validata, con la cache per layer
-   * di `progress$`. Un cammino la cui `/progress` non ha mai risposto finisce in `pendingLayers`.
-   * Gli stream si riaprono solo se cambia l'elenco dei cammini iniziati: una nuova risposta di
-   * `/api/passport` con gli stessi cammini non rilegge le loro `/progress`.
+   * Tappe validate dall'utente sui cammini col passaporto acceso (oc:8701, oc:8763): si deriva da
+   * `passportRoutes$` (`validatedTracks` uniti, id dei cammini in `enabledLayers`) senza leggere
+   * alcuna `/progress`.
    *
    * @returns Observable con l'indice, `null` se l'utente non è loggato o i cammini non sono noti.
    */
   stageIndex$(): Observable<PassportStageIndex | null> {
     if (!this._stageIndex$) {
       this._stageIndex$ = this.passportRoutes$().pipe(
-        map(routes =>
-          routes
-            ? [...routes.values()]
-                .filter(r => r.validated > 0)
-                .map(r => r.layerId)
-                .sort((a, b) => a - b)
-            : null,
-        ),
-        distinctUntilChanged(
-          (a, b) => a === b || (a != null && b != null && a.join(',') === b.join(',')),
-        ),
-        switchMap(started => {
-          if (!started) return of(null);
-          if (started.length === 0) {
-            return of({completedAt: new Map<number, string>(), pendingLayers: new Set<number>()});
-          }
-          return combineLatest(started.map(id => this.progress$(id))).pipe(
-            map(progresses => this._toStageIndex(started, progresses)),
-          );
-        }),
+        map(routes => (routes ? this._toStageIndex(routes) : null)),
         shareReplay({bufferSize: 1, refCount: true}),
       );
     }
@@ -547,35 +536,26 @@ export class PassportService {
   }
 
   /**
-   * Unisce le tappe validate dei cammini iniziati in un solo indice (oc:8701).
+   * Unisce le tappe validate dei cammini accesi in un solo indice (oc:8763).
    *
-   * @param layerIds Cammini iniziati, nello stesso ordine di `progresses`.
-   * @param progresses Progresso di ciascun cammino, `null` se non è mai stato letto.
-   * @returns L'indice delle tappe validate.
+   * @param routes Cammini col passaporto acceso, per `layerId`.
+   * @returns L'indice delle tappe validate e dei cammini accesi.
    */
-  private _toStageIndex(
-    layerIds: number[],
-    progresses: Array<PassportProgress | null>,
-  ): PassportStageIndex {
+  private _toStageIndex(routes: Map<number, PassportRoute>): PassportStageIndex {
     const completedAt = new Map<number, string>();
-    const pendingLayers = new Set<number>();
-    progresses.forEach((progress, i) => {
-      if (!progress) {
-        pendingLayers.add(layerIds[i]);
-        return;
-      }
-      progress.stages
-        .filter(stage => stage.status === 'completed' && stage.completedAt)
-        .forEach(stage => completedAt.set(stage.trackId, stage.completedAt));
-    });
-    return {completedAt, pendingLayers};
+    routes.forEach(route =>
+      Object.entries(route.validatedTracks).forEach(([trackId, date]) =>
+        completedAt.set(Number(trackId), date),
+      ),
+    );
+    return {completedAt, enabledLayers: new Set(routes.keys())};
   }
 
   /**
    * Converte la risposta di `/api/passport` in una mappa per `layerId` (oc:8701).
    *
    * @param res Risposta del backend.
-   * @returns I cammini con almeno una tappa validata.
+   * @returns I cammini col passaporto acceso, anche a 0 tappe validate.
    */
   private _toRoutes(res: PassportResponse): Map<number, PassportRoute> {
     return new Map(
@@ -587,9 +567,28 @@ export class PassportService {
           total: route.total ?? 0,
           percent: route.percentage ?? 0,
           completed: route.completed === true,
+          validatedTracks: this._toValidatedTracks(route.validated_tracks),
         },
       ]),
     );
+  }
+
+  /**
+   * Converte le tappe validate di una route (chiavi JSON stringa) in un oggetto con id numerici,
+   * scartando le chiavi che non sono numeri finiti (oc:8763).
+   *
+   * @param tracks Tappe validate del backend: id della track → data ISO.
+   * @returns Le tappe validate per id numerico.
+   */
+  private _toValidatedTracks(
+    tracks: Record<string, string> | null | undefined,
+  ): Record<number, string> {
+    const validatedTracks: Record<number, string> = {};
+    for (const [id, date] of Object.entries(tracks ?? {})) {
+      const trackId = Number(id);
+      if (Number.isFinite(trackId)) validatedTracks[trackId] = date;
+    }
+    return validatedTracks;
   }
 
   /**

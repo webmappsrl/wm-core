@@ -387,4 +387,8 @@ export const wmIT = {
   'Ho completato {{cammino}}': 'Ho completato {{cammino}}',
   'Questo cammino non risulta più completato': 'Questo cammino non risulta più completato',
   "Non è stato possibile creare l'immagine del cammino": "Non è stato possibile creare l'immagine del cammino",
+  'Il passaporto non è ancora attivo': 'Il passaporto non è ancora attivo',
+  'Il servizio passaporto non è ancora attivo su nessun cammino. Appena verrà attivato, qui troverai i timbri da completare di tutti i cammini in cui è disponibile.':
+    'Il servizio passaporto non è ancora attivo su nessun cammino. Appena verrà attivato, qui troverai i timbri da completare di tutti i cammini in cui è disponibile.',
+  'PRESTO': 'PRESTO',
 };

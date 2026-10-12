@@ -54,8 +54,8 @@ export class WmPassportProgressBadgeComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes['layerId']) return;
     this.vm$ = this._passportSvc
-      .visibleProgress(this.numericLayerId)
-      .pipe(map(p => (p ? {percent: p.percent, completed: p.completedStages, total: p.totalStages} : null)));
+      .visibleRoute(this.numericLayerId)
+      .pipe(map(p => (p ? {percent: p.percent, completed: p.validated, total: p.total} : null)));
   }
 
   /**

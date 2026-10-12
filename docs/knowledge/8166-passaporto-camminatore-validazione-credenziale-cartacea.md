@@ -16,12 +16,18 @@ completo). La UI segue il wireframe `webmapp-app/docs/features/passaporto-cammin
 (viste 1, V0b-V3; gli esiti, viste E1–E5, oc:8671; il dettaglio con le tappe e la pagina della
 tappa, viste 2 e 3, oc:8676).
 
+Il passaporto vale **solo sui cammini con il passaporto acceso** (oc:8763): il flag sta sul layer nel
+backend, e l'app lo conosce solo da `GET /api/passport`, che elenca tutti e soli i cammini accesi,
+anche senza tappe percorse. Su un cammino spento non compare nulla del passaporto; su uno acceso badge,
+anello, timbro e chip delle tappe ci sono sempre, anche a 0 tappe percorse.
+
 Fuori dalla home del layer lo stato compare sulle card (oc:8701, viste 0 e 1 del wireframe citato nel ticket,
 https://webmappsrl.github.io/webmapp-app/index.html; per ora solo nell'app, la webapp non monta ancora il branch
 `Passaporto`):
 
-- **card dei cammini** (`wm-layer-box`): anello attorno al logo, parziale se il cammino è in corso,
-  pieno se è completato; nessun anello se il cammino non è iniziato o non ha un logo;
+- **card dei cammini** (`wm-layer-box`): anello attorno al logo, vuoto se il cammino non è
+  iniziato, parziale se è in corso, pieno se è completato; nessun anello se il cammino è spento o
+  non ha un logo;
 - **card delle tappe** (`wm-search-box`): un chip «✓ percorsa il 12 mag» o «○ non ancora percorsa»
   nella lista delle tappe, nei risultati di ricerca, nel dettaglio della mappa e nelle tracce
   scaricate. Non compare su «I miei percorsi» né nel carosello della mappa.
@@ -29,10 +35,11 @@ https://webmappsrl.github.io/webmapp-app/index.html; per ora solo nell'app, la w
 Per chi non è loggato non compare nulla, come per badge e anello.
 
 Nell'app camminiditalia c'è anche il **tab Passaporto** nella tab bar (oc:8703, viste 5b e 5c): il
-**passaporto a timbri** `wm-passport-stamps`, con tutti i cammini della config, ciascuno col logo
-nell'anello. In cima gli in corso dal più avanzato, poi i completati, poi i non iniziati in grigio
-col numero di tappe (`attributes.stage_count`); senza cammini iniziati una riga spiega come
-colorarli. Il tocco su un timbro, anche grigio, apre il dettaglio. A cammino **completato** il
+**passaporto a timbri** `wm-passport-stamps`, con i cammini accesi presenti nella config, ciascuno
+col logo nell'anello. In cima gli in corso dal più avanzato, poi i completati, poi i non iniziati in
+grigio col numero di tappe; senza cammini iniziati una riga spiega come colorarli. Senza nessun
+timbro da mostrare il tab ha uno stato vuoto illustrato, che spiega che il servizio non è ancora
+attivo (oc:8763). Il tocco su un timbro, anche grigio, apre il dettaglio. A cammino **completato** il
 dettaglio mostra il traguardo (vista 6): «Cammino completato! 🎉», «Completato il» con la data più
 recente, caselle km (nascoste se una tappa non ha distanza), tappe e uscite (solo con tutte le
 tappe validate col GPS), «Condividi il traguardo» e la lista delle tappe chiusa ma apribile; il
@@ -53,8 +60,8 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
   `validated_at` e `source`. I conteggi (`validated`, `total`, `percentage`, `completed`) li calcola
   il backend e l'app non li ricalcola. `not_validated` con `progress` > 0 diventa «in corso»: è la
   predisposizione per il GPS di oc:8165.
-- **`progress$(layerId)`** è uno stream condiviso per layer (`shareReplay` con `refCount`):
-  badge, anello e dettaglio fanno una sola richiesta. Si rilegge al `resume`, con
+- **`progress$(layerId)`** è uno stream condiviso per layer (`shareReplay` con `refCount`), letto
+  solo dal dettaglio. Si rilegge al `resume`, con
   `refreshProgress(layerId)` (chiusura della modale, rilettura del dettaglio) e quando qualcuno
   torna a guardarlo. Se una lettura fallisce riemette l'ultimo valore letto nella sessione, che si
   svuota al logout. Niente cache persistente.
@@ -72,23 +79,22 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
   mostra ancora.
 - **Nota del gestore:** `wm-passport-note`; aperta scorre al suo interno, perché il dettaglio non
   scorre e il bottone di nuovo invio deve restare visibile.
-- **`passportRoutesState$()`** (oc:8703): `GET /api/passport`, i cammini con almeno una tappa
-  validata dall'utente, con gli stessi conteggi di `/progress`, come **stato** della lettura:
+- **`passportRoutesState$()`** (oc:8703): `GET /api/passport`, i cammini col passaporto acceso
+  (oc:8763), con gli stessi conteggi di `/progress` e le tappe convalidate con la loro data, come **stato** della lettura:
   `logged-out`, `loading` (solo finché non c'è nessuna lettura riuscita), `error` (fallita senza
   dati), `ready`. Un errore con dati precedenti resta `ready` con quelli, e una nuova
   sottoscrizione li riceve subito; l'ultimo valore si svuota al logout. Riletto al `resume`, al login, da `refreshProgress` e da
   `refreshPassport()` (rientro nel tab, «Riprova»). **`passportRoutes$()`** (oc:8701) ne deriva
-  con la stessa richiesta: `null` per `logged-out` ed `error`, niente durante il caricamento. Dà
-  l'anello delle card dei cammini e i timbri.
-- **`stageIndex$()`** (oc:8701): le tappe validate su tutti i cammini iniziati, costruite dalle
-  `/progress` dei soli cammini elencati da `/api/passport` (la cache per layer di `progress$`). Un
-  cammino la cui `/progress` non ha mai risposto finisce in `pendingLayers`. Gli stream si
-  riaprono solo se cambia l'elenco dei cammini. `passportStageChip(index, trackId, layers)` dà lo
-  stato del chip: l'id della tappa nell'hit Elastic è l'`ec_tracks.id` del backend.
+  con la stessa richiesta: `null` per `logged-out` ed `error`, niente durante il caricamento. Ne
+  derivano badge, anelli, timbri e chip: fuori dal dettaglio nessuna chiamata a `/progress`.
+- **`stageIndex$()`** (oc:8701, oc:8763): tappe convalidate e cammini accesi, ricavati da
+  `passportRoutes$()` e aggiornati a ogni risposta. Il chip compare solo se la tappa sta in almeno
+  un cammino acceso: l'id della tappa nell'hit Elastic è l'`ec_tracks.id` del backend.
 - **Card con lo stato:** varianti camminiditalia di `wm-layer-box` e `wm-search-box`, con classe
   base comune (vedi [varianti-per-shard.md](varianti-per-shard.md)).
-- **`visibleProgress(layerId)`** è l'unica regola di visibilità: `null` se l'utente non è loggato,
-  se il layer non ha tappe o se non c'è mai stata una lettura riuscita. La usano badge e anello.
+- **`visibleRoute(layerId)`** (oc:8763) è l'unica regola di visibilità di badge e anello: il
+  cammino da `passportRoutes$()`, `null` se l'utente non è loggato, se il cammino è spento o senza
+  tappe, o se non c'è mai stata una lettura riuscita.
 - **Anello del logo:** direttiva `[wmPassportLogoRing]` sul logo esistente, non un componente che
   lo avvolge; i gradi passano in `--wm-passport-ring-deg`. Le card dei cammini usano la stessa
   regola (`passportRingDegrees`) ma leggono da `passportRoutes$`. Lo stile di entrambi è il mixin
@@ -112,8 +118,9 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
 
 - **Un service unico davanti al backend** (oc:8166, call del 28/09/2026): il frontend è nato con il
   backend mockato; il passaggio alle API vere di stato e invio (29/09) ha toccato solo il service.
-- **Nessun flag di attivazione** (oc:8166): la protezione contro l'uscita del mock è il branch
-  dedicato `Passaporto`, unito al resto solo a lavoro completo, backend compreso.
+- **Nessun flag per proteggere il mock** (oc:8166): la protezione contro l'uscita del mock è il
+  branch dedicato `Passaporto`, unito al resto solo a lavoro completo, backend compreso. Il flag per
+  cammino di oc:8763 è un'altra cosa: decide dove il passaporto vale.
 - **Dopo un nuovo invio l'app mostra solo l'ultima richiesta** (oc:8671): dell'approvazione
   precedente resta traccia nelle tappe riconosciute, non nello stato della richiesta.
 - **Nome e distanza delle tappe nella risposta del progresso** (oc:8676): l'app non ha l'elenco
@@ -127,9 +134,8 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
 - **«Percorsa il …» con la data di validazione** (oc:8676, come nel wireframe): `validated_at` è il
   momento in cui il gestore approva, non quello della percorrenza. Con il GPS le due date
   coincideranno.
-- **Stream condiviso senza cache persistente** (oc:8676): badge e anello restano autonomi, senza
-  toccare la variante `home-layer.camminiditalia`. L'ultimo valore in memoria evita che offline il
-  badge sparisca; si svuota al logout, altrimenti un secondo utente sullo stesso dispositivo
+- **Stream senza cache persistente** (oc:8676, oc:8763): l'ultimo valore letto resta in memoria,
+  così offline badge e dettaglio non spariscono; si svuota al logout, altrimenti un secondo utente sullo stesso dispositivo
   vedrebbe le tappe del precedente.
 - **Chiave di ordinamento con i due punti come spazi, non `ignorePunctuation`** (oc:8676):
   `ignorePunctuation` ignora anche gli spazi, e l'ordine fra tappa e variante dipendeva dalla
@@ -148,15 +154,11 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
   `wm-home-layer` presuppongono il logo figlio diretto di `wm-img`.
 - **`ion-nav` con `setRoot()` in `ngAfterViewInit`** (oc:8166): con i binding `[root]`/`[rootParams]`
   il dettaglio a volte nasceva vuoto (vedi la rule `modali-e-ion-nav`).
-- **`/api/passport` per le card dei cammini, una chiamata sola** (oc:8701): esisteva già nel
-  backend e ha i conteggi che servono; elenca solo i cammini iniziati, che è proprio quando
-  l'anello compare. Una `/progress` per card sarebbero decine di chiamate a ogni apertura della
-  home.
 - **Lo stato del chip è per tappa, non per cammino** (oc:8701): per il backend una tappa validata
   vale in ogni cammino che la contiene, quindi un solo indice serve anche ai risultati di ricerca,
   dove non c'è un cammino selezionato.
-- **Mai «non ancora percorsa» per difetto** (oc:8701): senza dati, o se uno dei cammini della tappa
-  non ha mai risposto, il chip non c'è. Un «non ancora percorsa» che poi diventa «percorsa»
+- **Mai «non ancora percorsa» per difetto** (oc:8701, oc:8763): senza una risposta di
+  `/api/passport`, o se la tappa non sta in nessun cammino acceso, il chip non c'è. Un «non ancora percorsa» che poi diventa «percorsa»
   sarebbe un'informazione falsa.
 - **Niente chip su «I miei percorsi»** (oc:8701): gli id delle tracce dell'utente si sovrappongono a
   quelli delle tappe ufficiali. L'esclusione si basa sul flag `ugcOpened` dello store, che oggi
@@ -165,8 +167,6 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
   riconosce da `closest('wm-features-in-viewport')` e non si iscrive al passaporto.
 - **Anello solo sulle card con logo** (oc:8701, come nel wireframe): nel DB locale, al 05/10/2026,
   31 cammini su 118 avevano un logo; senza, il progresso resta visibile nel badge della home del cammino.
-- **Nessun flag sul layer per accendere il passaporto** (oc:8701): in camminiditalia è sempre
-  attivo; un flag accendi/spegni sarà valutato in seguito.
 - **Invio solo online, niente coda** (oc:8166): la richiesta si fa a cammino finito; le foto
   restano nel form se l'invio fallisce.
 
@@ -175,6 +175,13 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
 - **Stato della lettura invece del solo `null`** (oc:8703): il tab deve distinguere caricamento ed
   errore da «nessun cammino», altrimenti chi ha cammini iniziati li vedrebbe tutti grigi per un
   problema di rete.
+- **`/api/passport` come elenco dei cammini accesi** (oc:8763): il flag per cammino doveva
+  comunque arrivare all'app; facendone l'elenco dei cammini da mostrare, badge e chip non chiamano
+  più `/progress` per ogni cammino.
+- **Tappe convalidate con la data** (oc:8763): il chip mostra «percorsa il …» senza altre chiamate.
+- **Stato vuoto quando non c'è nessun timbro** (oc:8763): al rilascio tutti i cammini sono spenti, e
+  una griglia vuota sembrerebbe un errore. Conta i timbri, non i cammini della risposta: un cammino
+  acceso assente dalla config non deve lasciare il tab bianco.
 - **Traguardo nello stesso dettaglio** (oc:8703): vista 2 e vista 6 sono la stessa schermata in due
   stati, uguale da ogni ingresso (timbro o badge della home del layer).
 
@@ -197,3 +204,9 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
   riconosciute non erano esposte. Resta solo per il rifiuto senza nota.
 - **«Nessuna tappa registrata via GPS»** (oc:8166, superato da oc:8676): con i dati veri le tappe
   arrivano solo dalla credenziale cartacea. Ora è «Nessuna tappa ancora riconosciuta».
+- **`/api/passport` per le card dei cammini, una chiamata sola** (oc:8701, superata da oc:8763): esisteva già nel
+  backend e ha i conteggi che servono; elenca solo i cammini iniziati, che è proprio quando
+  l'anello compare. Badge e chip leggevano invece `/progress` per ogni cammino, con `pendingLayers` per i cammini che non avevano ancora risposto. Una `/progress` per card sarebbero decine di chiamate a ogni apertura della
+  home.
+- **Nessun flag sul layer per accendere il passaporto** (oc:8701, superata da oc:8763): in camminiditalia è sempre
+  attivo; un flag accendi/spegni sarà valutato in seguito. Il cliente ha chiesto di accenderlo per pochi partner prima di estenderlo a tutti.

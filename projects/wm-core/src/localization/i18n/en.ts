@@ -388,4 +388,8 @@ export const wmEN = {
   'Ho completato {{cammino}}': 'I completed {{cammino}}',
   'Questo cammino non risulta più completato': 'This route is no longer marked as completed',
   "Non è stato possibile creare l'immagine del cammino": 'The route image could not be created',
+  'Il passaporto non è ancora attivo': 'The passport is not active yet',
+  'Il servizio passaporto non è ancora attivo su nessun cammino. Appena verrà attivato, qui troverai i timbri da completare di tutti i cammini in cui è disponibile.':
+    'The passport service is not yet active on any route. As soon as it is, you will find here the stamps to complete for all the routes where it is available.',
+  'PRESTO': 'SOON',
 };

@@ -382,4 +382,8 @@ export const wmFR = {
   'Ho completato {{cammino}}': "J'ai terminé {{cammino}}",
   'Questo cammino non risulta più completato': "Ce chemin n'est plus marqué comme terminé",
   "Non è stato possibile creare l'immagine del cammino": "Impossible de créer l'image du chemin",
+  'Il passaporto non è ancora attivo': "Le passeport n'est pas encore actif",
+  'Il servizio passaporto non è ancora attivo su nessun cammino. Appena verrà attivato, qui troverai i timbri da completare di tutti i cammini in cui è disponibile.':
+    "Le service passeport n'est encore actif sur aucun chemin. Dès son activation, tu trouveras ici les tampons à compléter de tous les chemins où il est disponible.",
+  'PRESTO': 'BIENTÔT',
 };
