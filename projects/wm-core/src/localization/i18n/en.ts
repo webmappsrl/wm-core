@@ -392,4 +392,5 @@ export const wmEN = {
   'Il servizio passaporto non è ancora attivo su nessun cammino. Appena verrà attivato, qui troverai i timbri da completare di tutti i cammini in cui è disponibile.':
     'The passport service is not yet active on any route. As soon as it is, you will find here the stamps to complete for all the routes where it is available.',
   'PRESTO': 'SOON',
+  'Inizia il tuo cammino': 'Start your walk',
 };

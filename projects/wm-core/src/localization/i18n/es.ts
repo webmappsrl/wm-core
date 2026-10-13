@@ -383,4 +383,5 @@ export const wmES = {
   'Il servizio passaporto non è ancora attivo su nessun cammino. Appena verrà attivato, qui troverai i timbri da completare di tutti i cammini in cui è disponibile.':
     'El servicio de pasaporte aún no está activo en ningún camino. En cuanto se active, aquí encontrarás los sellos por completar de todos los caminos en los que esté disponible.',
   'PRESTO': 'PRONTO',
+  'Inizia il tuo cammino': 'Empieza tu camino',
 };

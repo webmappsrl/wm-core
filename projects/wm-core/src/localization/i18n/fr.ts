@@ -386,4 +386,5 @@ export const wmFR = {
   'Il servizio passaporto non è ancora attivo su nessun cammino. Appena verrà attivato, qui troverai i timbri da completare di tutti i cammini in cui è disponibile.':
     "Le service passeport n'est encore actif sur aucun chemin. Dès son activation, tu trouveras ici les tampons à compléter de tous les chemins où il est disponible.",
   'PRESTO': 'BIENTÔT',
+  'Inizia il tuo cammino': 'Commence ton chemin',
 };

@@ -391,4 +391,5 @@ export const wmSQ = {
   'Il servizio passaporto non è ancora attivo su nessun cammino. Appena verrà attivato, qui troverai i timbri da completare di tutti i cammini in cui è disponibile.':
     "Shërbimi i pasaportës nuk është ende aktiv në asnjë rrugë. Sapo të aktivizohet, këtu do të gjesh vulat për t'u plotësuar të të gjitha rrugëve ku është i disponueshëm.",
   'PRESTO': 'SË SHPEJTI',
+  'Inizia il tuo cammino': 'Fillo rrugën tënde',
 };

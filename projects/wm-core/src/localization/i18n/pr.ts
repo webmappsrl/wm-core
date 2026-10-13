@@ -383,4 +383,5 @@ export const wmPR = {
   'Il servizio passaporto non è ancora attivo su nessun cammino. Appena verrà attivato, qui troverai i timbri da completare di tutti i cammini in cui è disponibile.':
     'O serviço de passaporte ainda não está ativo em nenhum caminho. Assim que for ativado, aqui encontrarás os carimbos por completar de todos os caminhos em que estiver disponível.',
   'PRESTO': 'EM BREVE',
+  'Inizia il tuo cammino': 'Começa o teu caminho',
 };

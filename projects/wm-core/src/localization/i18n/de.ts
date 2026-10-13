@@ -387,4 +387,5 @@ export const wmDE = {
   'Il servizio passaporto non è ancora attivo su nessun cammino. Appena verrà attivato, qui troverai i timbri da completare di tutti i cammini in cui è disponibile.':
     'Der Passdienst ist noch auf keinem Weg aktiv. Sobald er aktiviert wird, findest du hier die zu vervollständigenden Stempel aller Wege, auf denen er verfügbar ist.',
   'PRESTO': 'BALD',
+  'Inizia il tuo cammino': 'Beginne deinen Weg',
 };

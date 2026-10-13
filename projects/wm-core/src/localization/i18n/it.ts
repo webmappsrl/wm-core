@@ -391,4 +391,5 @@ export const wmIT = {
   'Il servizio passaporto non è ancora attivo su nessun cammino. Appena verrà attivato, qui troverai i timbri da completare di tutti i cammini in cui è disponibile.':
     'Il servizio passaporto non è ancora attivo su nessun cammino. Appena verrà attivato, qui troverai i timbri da completare di tutti i cammini in cui è disponibile.',
   'PRESTO': 'PRESTO',
+  'Inizia il tuo cammino': 'Inizia il tuo cammino',
 };
