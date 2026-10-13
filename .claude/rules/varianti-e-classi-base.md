@@ -7,6 +7,7 @@ paths:
   - "projects/wm-core/src/search-bar/**"
   - "projects/wm-core/src/box/layer-box/**"
   - "projects/wm-core/src/box/search-box/**"
+  - "projects/wm-core/src/box/ugc-box/**"
 ---
 
 # Trappole: varianti per shard e classi base

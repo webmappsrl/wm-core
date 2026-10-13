@@ -14,6 +14,8 @@
 
 **La condivisione social è un contratto Output/Input**, non un dispatch NgRx: `@Output('share-track')` emette la traccia al tap e al retry, `@Input('shareResult')` riceve `{success, errorMessage?}` — `null` è un no-op. Il pulsante resta disabilitato finché `isTrackSynced$` non conferma che la traccia ha un `id` dal backend.
 
+**Una UGC importata da file porta `properties.import`** (oc:8764). `ModalUgcUploaderComponent` lo calcola con `buildUgcImportInfo` (`utils/ugc-import-info.ts`) appena il file è convertito, e lo scrive al salvataggio sopra un eventuale `import` già presente nel file. Campi: `format`, `file_name`, `file_size`, `file_last_modified` (assente se il dispositivo non la dà valida), `creator` (solo GPX che lo dichiarano), `points` (della UGC salvata: l'uploader tiene solo la prima linea, o il primo punto, del file), `file_features` (geometrie del file), `has_time`, `has_elevation` (solo tracce: i POI sono sempre 2D). Le UGC registrate o create nell'app non lo hanno, e nemmeno quelle importate prima di oc:8764. Se il calcolo fallisce la UGC si salva comunque, senza `import`, con un `console.warn`. Il backend non lo legge: `UgcTrack::origin()`, nel wm-package usato da camminiditalia (oc:8747), stima l'origine da `_gpxType`, `locations` e `distanceFilter`.
+
 ## Perché così
 
 - **Non `source.getFeaturesInExtent()`** (oc:7639): legge solo le tile già renderizzate in viewport, quindi a zoom alto o con il modale aperto prima del render le feature non ci sono. `loadVectorTileFeaturesForLocation` fetcha a zoom fisso basso, a prescindere dal viewport.
@@ -24,6 +26,7 @@
 - **Nessun default client-side per `ugcTrackShareEnabled`** in `conf.reducer.ts` (oc:8183): il flag resta `undefined` finché un backend non lo abilita via `config.json`. Deliberato per una feature nuova e non ancora pronta ovunque — al contrario di `showTrackRemainingDistance`, che ne aveva uno temporaneo per i test.
 - **Nessun banner di successo** (oc:8183): l'errore apre un `AlertController` nativo, come `deleteTrack()`; la chiusura del native share sheet è già segnale sufficiente. Gli stati `SUCCESS`/`ERROR` restano nella state machine `shareState$`, semplicemente non renderizzati.
 - **Guardia doppio tap a due livelli** (oc:8183): `triggerShare()` non fa nulla se lo stato è già `GENERATING`, oltre al `[disabled]` sul bottone.
+- **Un oggetto solo, senza `origin`, `imported_at` né `version`** (oc:8764): la sua presenza basta a dire «importata», la data di import coincide con `createdAt`, e i dati servono da consultare. Il rischio di forme diverse nel tempo è accettato.
 
 ## Trappole verificate
 
