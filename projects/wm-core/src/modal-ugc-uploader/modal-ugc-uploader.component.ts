@@ -26,6 +26,7 @@ import {syncUgc} from '@wm-core/store/features/ugc/ugc.actions';
 import {Photo} from '@capacitor/camera';
 import {addFormError, removeFormError} from '@wm-core/utils/form';
 import {isValidWmFeature} from '@wm-core/utils/features';
+import {buildUgcImportInfo, UgcImportInfo} from '@wm-core/utils/ugc-import-info';
 
 @Component({
   standalone: false,
@@ -51,6 +52,9 @@ export class ModalUgcUploaderComponent {
   isIvalidForm$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   _photos: Photo[] = [];
+
+  /** Informazioni sul file valido scelto, scritte in `properties.import` al salvataggio (oc:8764). */
+  private _importInfo: UgcImportInfo | null = null;
 
   constructor(
     private _store: Store,
@@ -102,6 +106,7 @@ export class ModalUgcUploaderComponent {
   }
 
   removeFile(): void {
+    this._importInfo = null;
     this.selectedFile$.next(null);
     this.ugcFeature$.next(null);
   }
@@ -143,6 +148,9 @@ export class ModalUgcUploaderComponent {
                   updatedAt: dateNow,
                   media: this._photos,
                   device,
+                  // Sempre scritto, anche vuoto: un `import` già presente nel file non deve arrivare
+                  // sul server (undefined sparisce nella serializzazione JSON).
+                  import: this._importInfo ?? undefined,
                 };
                 this.ugcFeature$.next({
                   ...this.ugcFeature$.value,
@@ -228,8 +236,31 @@ export class ModalUgcUploaderComponent {
     geometry.coordinates = [geometry.coordinates[0], geometry.coordinates[1]];
   }
 
+  /**
+   * Calcola l'oggetto `import` senza mai bloccare l'import: se il calcolo fallisce, la UGC si
+   * salva comunque, senza `import`, e l'errore resta nel log (oc:8764).
+   *
+   * @param file Il file scelto.
+   * @param content Il testo del file.
+   * @param feature La feature convertita.
+   * @returns Le informazioni sul file, o `null` se non calcolabili.
+   */
+  private _buildImportInfo(
+    file: File,
+    content: string,
+    feature: WmFeature<LineString | Point>,
+  ): UgcImportInfo | null {
+    try {
+      return buildUgcImportInfo(file, content, feature);
+    } catch (error) {
+      console.warn('[ModalUgcUploader] calcolo di properties.import non riuscito', error);
+      return null;
+    }
+  }
+
   private _handleFile(file: File): void {
     if (!this._isFileTypeAccepted(file)) {
+      this._importInfo = null;
       this.selectedFile$.next(null);
       this._showErrorAlert(this._langSvc.instant('Tipo di file non supportato'));
       return;
@@ -241,9 +272,11 @@ export class ModalUgcUploaderComponent {
         map(fileContent => {
           const result = this._validateAndConvertToWmFeature(fileContent, file.name);
           if (result) {
+            this._importInfo = this._buildImportInfo(file, fileContent, result);
             this.ugcFeature$.next(result);
             this.selectedFile$.next(file);
           } else {
+            this._importInfo = null;
             this.selectedFile$.next(null);
             this._showErrorAlert(
               this._langSvc.instant('Il file non contiene una geometria valida'),
@@ -251,6 +284,7 @@ export class ModalUgcUploaderComponent {
           }
         }),
         catchError(error => {
+          this._importInfo = null;
           this.selectedFile$.next(null);
           this._showErrorAlert(
             this._langSvc.instant('Errore durante la lettura del file, riprova'),

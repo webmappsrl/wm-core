@@ -4,7 +4,7 @@
 
 Una variante di shard è un file `.ts` **gemello** del componente di default, instradato dai `fileReplacements` dichiarati nell'`angular.json` del consumer che fa il build. Il vincolo di schema Angular riguarda solo il `.ts`: la variante può puntare allo stesso `templateUrl` del default quando la struttura DOM non cambia, e avere `styleUrls` propri. Gli `styleUrls` di componenti diversi possono condividere liberamente partial SCSS — `home-layer-shared.scss` esiste per questo.
 
-Quattro varianti `.camminiditalia` oggi, tutte con una classe base condivisa e un template proprio: `wm-home-layer` (oc:8391, `WmHomeLayerBaseComponent`), `wm-searchbar` (oc:8414, `SearchBarBaseComponent`), `wm-layer-box` e `wm-search-box` (oc:8701, `LayerBoxBaseComponent`, `SearchBoxBaseComponent`). I template di `wm-home-layer`, `wm-layer-box` e `wm-search-box` sono copie di quelli di default più lo stato del passaporto (oc:8166, oc:8701): le correzioni al template di default vanno riportate anche lì, e nessuno strumento lo segnala. Per `wm-layer-box` e `wm-search-box` copia e template di default hanno in testa un commento che rimanda all'altro file.
+Cinque varianti `.camminiditalia` oggi, tutte con una classe base condivisa: `wm-home-layer` (oc:8391, `WmHomeLayerBaseComponent`), `wm-searchbar` (oc:8414, `SearchBarBaseComponent`), `wm-layer-box` e `wm-search-box` (oc:8701, `LayerBoxBaseComponent`, `SearchBoxBaseComponent`), `wm-ugc-box` (oc:8764, `UgcBoxBaseComponent`). Le prime quattro hanno un template proprio; i template di `wm-home-layer`, `wm-layer-box` e `wm-search-box` sono copie di quelli di default più lo stato del passaporto (oc:8166, oc:8701): le correzioni al template di default vanno riportate anche lì, e nessuno strumento lo segnala. Per `wm-layer-box` e `wm-search-box` copia e template di default hanno in testa un commento che rimanda all'altro file. `wm-ugc-box` invece usa il template di default: la variante sovrascrive solo `showUgcUploaderButton$ = of(false)` e toglie così il bottone di import da file.
 
 Le basi di `wm-layer-box` e `wm-search-box` sono `@Directive()` astratte, non `@Injectable()`: estendono `BaseBoxComponent`, che è già una `@Directive`, e `wm-layer-box` dichiara degli `@Input`.
 
@@ -142,6 +142,7 @@ La policy generale del repo principale è **non** estrarre una classe base: è s
 - **`WmHomeLayerBaseComponent`** (oc:8391): la logica TS delle due varianti è identica al 100%, cambiano solo template e stile. Trattata come validazione del pattern per quel ciclo, non promossa a policy.
 - **`SearchBarBaseComponent`** (oc:8414): non è l'intero componente identico con stile diverso, è un sottoinsieme di logica genuinamente condiviso al 100% (form di ricerca, debounce, dispatch `inputTyped`), e la sottoclasse camminiditalia **aggiunge** funzionalità invece di duplicarla con modifiche.
 - **`LayerBoxBaseComponent`, `SearchBoxBaseComponent`** (oc:8701): stesso criterio. La logica del componente di default (preferiti, click, evento PostHog; le icone) è passata intera nella base, e la variante aggiunge solo lo stato del passaporto (`ring$`, `chip$`).
+- **`UgcBoxBaseComponent`** (oc:8764): tutta la logica del box sta nella base, e la variante spegne un solo observable. Il template resta unico perché la struttura DOM non cambia.
 
 Il criterio che distingue i casi accettati da quelli scartati è questo, non la comodità.
 
@@ -161,6 +162,9 @@ che può lasciare senza stile tutti gli shard tranne quello della variante. Qui 
   stesso ciclo): il piano copiava per intero il `.ts` di default nella variante, applicando la
   regola dell'app. In review il dev ha preferito allinearsi a `wm-home-layer` e `wm-searchbar`:
   con la copia una correzione ai preferiti andava fatta due volte.
+- **Variante completa senza base per `wm-ugc-box`** (oc:8764, superata nello stesso ciclo): il piano
+  copiava classe e template. In review il dev ha scelto la base, per coerenza con le altre varianti,
+  poi anche il template unico.
 
 ## Dettagli di interazione
 
