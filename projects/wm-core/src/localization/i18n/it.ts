@@ -70,6 +70,8 @@ export const wmIT = {
   'Caricamento in corso.': 'Caricamento in corso.',
   'Spiacenti non ci sono risultati con questi criteri di ricerca.':
     'Spiacenti non ci sono risultati con questi criteri di ricerca.',
+  'Spiacenti, non ci sono cammini inerenti alla ricerca':
+    'Spiacenti, non ci sono cammini inerenti alla ricerca',
   'duration': 'Durata',
   'Bentornato!': 'Bentornato!',
   'Accedi con le tue credenziali per continuare.': 'Accedi con le tue credenziali per continuare.',

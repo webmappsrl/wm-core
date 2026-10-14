@@ -63,6 +63,8 @@ export const wmES = {
   'Caricamento in corso.': 'Cargando.',
   'Spiacenti non ci sono risultati con questi criteri di ricerca.':
     'Lo sentimos, no hay resultados con estos criterios de búsqueda',
+  'Spiacenti, non ci sono cammini inerenti alla ricerca':
+    'Lo sentimos, no hay caminos que coincidan con tu búsqueda',
   'Bentornato!': 'Bienvenido de nuevo!',
   'Accedi con le tue credenziali per continuare.':
     'Inicie sesión con sus credenciales para continuar.',

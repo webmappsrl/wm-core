@@ -64,6 +64,8 @@ export const wmDE = {
   'Caricamento in corso.': 'Wird geladen.',
   'Spiacenti non ci sono risultati con questi criteri di ricerca.':
     'Leider gibt es keine Ergebnisse mit diesen Suchkriterien',
+  'Spiacenti, non ci sono cammini inerenti alla ricerca':
+    'Leider gibt es keine Wege, die zu deiner Suche passen',
   'Bentornato!': 'Willkommen zurück!',
   'Accedi con le tue credenziali per continuare.':
     'Melden Sie sich mit Ihren Zugangsdaten an, um fortzufahren.',

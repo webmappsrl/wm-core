@@ -66,6 +66,8 @@ export const wmEN = {
   'Caricamento in corso.': 'Loading.',
   'Spiacenti non ci sono risultati con questi criteri di ricerca.':
     'Sorry, there are no results with these search criteria',
+  'Spiacenti, non ci sono cammini inerenti alla ricerca':
+    'Sorry, there are no routes matching your search',
   'Lista percorsi personali': 'list of paths',
   'nome del percorso': 'name of path',
   'modifica': 'edit',

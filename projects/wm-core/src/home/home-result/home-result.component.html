@@ -22,7 +22,7 @@
   </div>
 </ng-container>
 <ng-template #noDownload>
-  <ng-container *ngIf="(countAll$|async)>0 || (countLayers$|async)>0">
+  <ng-container *ngIf="((countAll$|async)>0 || (countLayers$|async)>0) && (emptyState$|async) !== 'filters'">
     <ion-segment [value]="showResultTabSelected$|async" (ionChange)="changeResultType($event)">
       <ng-container *ngIf="countLayers$|async as countLayers">
         <ion-segment-button
@@ -132,10 +132,21 @@
         </wm-poi-box>
       </div>
     </ng-container>
-    <ion-item lines="none" *ngIf="(countAll$|async)==0 && (countLayers$|async)==0;">
-      <h5>
-        {{'Spiacenti non ci sono risultati con questi criteri di ricerca.'|wmtrans}}
-      </h5>
-    </ion-item>
+    <div class="wm-home-result-status" role="status">
+      <div class="wm-home-result-empty" *ngIf="emptyState$|async as emptyState">
+        <svg class="wm-home-result-empty-illustration" width="170" height="120" viewBox="0 0 170 120" aria-hidden="true">
+          <ellipse class="wm-home-result-empty-shadow" cx="85" cy="108" rx="74" ry="9" />
+          <path class="wm-home-result-empty-map" d="M22 40 58 28 98 40 134 28 V90 L98 102 58 90 22 102 Z" />
+          <path class="wm-home-result-empty-fold" d="M58 28V90M98 40v62" />
+          <path class="wm-home-result-empty-trail" d="M30 86 C44 76 40 64 54 60" />
+          <circle class="wm-home-result-empty-lens" cx="96" cy="56" r="27" />
+          <path class="wm-home-result-empty-handle" d="M116 76 140 100" />
+          <text class="wm-home-result-empty-question" x="96" y="64" text-anchor="middle">?</text>
+        </svg>
+        <p class="wm-home-result-empty-text">
+          {{emptyMessages[emptyState]|wmtrans}}
+        </p>
+      </div>
+    </div>
   </div>
 </ng-template>

@@ -64,6 +64,8 @@ export const wmFR = {
   'Caricamento in corso.': 'Chargement.',
   'Spiacenti non ci sono risultati con questi criteri di ricerca.':
     "Désolé, il n'y a aucun résultat avec ces critères de recherche",
+  'Spiacenti, non ci sono cammini inerenti alla ricerca':
+    'Désolé, aucun chemin ne correspond à votre recherche',
   'Bentornato!': 'Bienvenue!',
   'Accedi con le tue credenziali per continuare.':
     'Connectez-vous avec vos identifiants pour continuer.',
