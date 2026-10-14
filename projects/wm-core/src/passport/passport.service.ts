@@ -489,6 +489,8 @@ export class PassportService {
     if (req.serialNumber) {
       data.append('serial_number', req.serialNumber);
     }
+    data.append('start_date', req.startDate);
+    data.append('end_date', req.endDate);
     data.append('disclaimer_accepted', '1');
     return data;
   }

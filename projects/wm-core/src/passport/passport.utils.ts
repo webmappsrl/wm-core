@@ -190,8 +190,56 @@ export function passportShortDate(iso: string | undefined, lang: string): string
  * @param lang Lingua corrente dell'app.
  * @returns Il codice per `Intl`, `it` se assente.
  */
-function intlLocale(lang: string | undefined): string {
+export function intlLocale(lang: string | undefined): string {
   return lang === 'pr' ? 'pt' : lang || 'it';
+}
+
+/**
+ * Data odierna locale in formato `AAAA-MM-GG`, costruita dai componenti locali (non da UTC).
+ *
+ * @param now Istante di riferimento, default adesso.
+ * @returns La data locale `AAAA-MM-GG`.
+ */
+export function todayLocal(now: Date = new Date()): string {
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${now.getFullYear()}-${month}-${day}`;
+}
+
+/**
+ * Estrae la parte `AAAA-MM-GG` di un valore ISO di `ion-datetime`, con o senza orario.
+ *
+ * @param value Valore ISO, per esempio `2026-10-04T00:00:00` o `2026-10-04`.
+ * @returns La data `AAAA-MM-GG`.
+ */
+export function toIsoDate(value: string): string {
+  return value.slice(0, 10);
+}
+
+/**
+ * Regola unica delle date di percorrenza: la fine non può precedere l'inizio (oc:8761).
+ *
+ * @param start Data di inizio `AAAA-MM-GG`.
+ * @param end Data di fine `AAAA-MM-GG`.
+ * @returns `true` se la fine precede l'inizio; il confronto lessicografico vale per `AAAA-MM-GG`.
+ */
+export function isEndBeforeStart(start: string, end: string): boolean {
+  return end < start;
+}
+
+/**
+ * Formatta una data `AAAA-MM-GG` nel formato `medium` della lingua, senza passare da UTC.
+ *
+ * @param isoDate Data `AAAA-MM-GG`.
+ * @param lang Lingua corrente dell'app.
+ * @returns La data formattata.
+ */
+export function formatDateForLang(isoDate: string, lang: string | undefined): string {
+  const [y, m, d] = isoDate.split('-').map(Number);
+  // Il cast serve perché la lib TypeScript del progetto non conosce `dateStyle`.
+  return new Intl.DateTimeFormat(intlLocale(lang), {dateStyle: 'medium'} as Intl.DateTimeFormatOptions).format(
+    new Date(y, m - 1, d),
+  );
 }
 
 /**

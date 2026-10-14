@@ -1,5 +1,7 @@
+import {HttpErrorResponse} from '@angular/common/http';
 import {BehaviorSubject, Subject, of, throwError} from 'rxjs';
 import {isLogged, needsPrivacyAgree} from '@wm-core/store/auth/auth.selectors';
+import {formatDateForLang} from '../passport.utils';
 import {WmPassportFormComponent} from './passport-form.component';
 
 describe('WmPassportFormComponent (oc:8166)', () => {
@@ -35,6 +37,8 @@ describe('WmPassportFormComponent (oc:8166)', () => {
   function fill(cmp: WmPassportFormComponent, photos = 1): void {
     cmp.onPhotos(Array.from({length: photos}, (_, i) => photo(i)));
     cmp.form.controls.disclaimer.setValue(true);
+    cmp.form.controls.startDate.setValue('2026-09-01');
+    cmp.form.controls.endDate.setValue('2026-09-05');
   }
 
   beforeEach(() => {
@@ -64,6 +68,8 @@ describe('WmPassportFormComponent (oc:8166)', () => {
     expect(cmp.canSubmit).toBeFalse();
 
     cmp.form.controls.disclaimer.setValue(true);
+    cmp.form.controls.startDate.setValue('2026-09-01');
+    cmp.form.controls.endDate.setValue('2026-09-05');
     expect(cmp.canSubmit).toBeTrue();
   });
 
@@ -191,5 +197,234 @@ describe('WmPassportFormComponent (oc:8166)', () => {
     cmp.ngOnDestroy();
 
     expect(host.registerGuard).toHaveBeenCalledWith(null);
+  });
+
+  describe('date di percorrenza (oc:8761)', () => {
+    it('senza date non si può inviare e compare la nota', async () => {
+      const cmp = create();
+      fill(cmp);
+      cmp.form.controls.startDate.setValue(null);
+      cmp.form.controls.endDate.setValue(null);
+
+      expect(cmp.canSubmit).toBeFalse();
+      await cmp.submit();
+
+      expect(cmp.triedSubmit).toBeTrue();
+      expect(cmp.datesValid).toBeFalse();
+      expect(svc.submitCertification).not.toHaveBeenCalled();
+    });
+
+    it("una fine prima dell'inizio non è valida", () => {
+      const cmp = create();
+      fill(cmp);
+      cmp.form.controls.startDate.setValue('2026-09-05');
+      cmp.form.controls.endDate.setValue('2026-09-01');
+
+      expect(cmp.datesValid).toBeFalse();
+      expect(cmp.canSubmit).toBeFalse();
+    });
+
+    it('inizio uguale alla fine è valido', () => {
+      const cmp = create();
+      fill(cmp);
+      cmp.form.controls.startDate.setValue('2026-09-03');
+      cmp.form.controls.endDate.setValue('2026-09-03');
+
+      expect(cmp.datesValid).toBeTrue();
+      expect(cmp.canSubmit).toBeTrue();
+    });
+
+    it('confermare un inizio oltre la fine svuota la fine', () => {
+      const cmp = create();
+      fill(cmp);
+
+      cmp.openCalendar('start');
+      cmp.onDatePicked('2026-09-10T00:00:00');
+      cmp.confirmDate();
+
+      expect(cmp.form.controls.startDate.value).toBe('2026-09-10');
+      expect(cmp.form.controls.endDate.value).toBeNull();
+      expect(cmp.datesValid).toBeFalse();
+    });
+
+    it('toccare un giorno non imposta il campo finché non si conferma', () => {
+      const cmp = create();
+      fill(cmp);
+
+      cmp.openCalendar('end');
+      expect(cmp.pendingDate).toBe('2026-09-05');
+      cmp.onDatePicked('2026-09-07T10:30:00');
+
+      expect(cmp.pendingDate).toBe('2026-09-07');
+      expect(cmp.form.controls.endDate.value).toBe('2026-09-05');
+    });
+
+    it('calendarValue resta stabile durante la chiusura del foglio', () => {
+      const cmp = create();
+      fill(cmp);
+
+      cmp.openCalendar('end');
+      cmp.closeCalendar();
+      expect(cmp.calendarValue).toBe('2026-09-05');
+
+      cmp.form.controls.endDate.setValue(null);
+      expect(cmp.calendarValue).toBe(cmp.today);
+    });
+
+    it('confirmDate imposta la data e chiude il calendario', () => {
+      const cmp = create();
+      fill(cmp);
+
+      cmp.openCalendar('end');
+      expect(cmp.editing).toBe('end');
+      cmp.onDatePicked(['2026-09-07T10:30:00']);
+      cmp.confirmDate();
+
+      expect(cmp.form.controls.endDate.value).toBe('2026-09-07');
+      expect(cmp.form.controls.startDate.value).toBe('2026-09-01');
+      expect(cmp.editing).toBeNull();
+      expect(cmp.pendingDate).toBeNull();
+    });
+
+    it("chiudere il calendario senza confermare lascia il campo com'era", () => {
+      const cmp = create();
+
+      cmp.openCalendar('start');
+      expect(cmp.pendingDate).toBe(cmp.today);
+      cmp.onDatePicked('2026-09-03');
+      cmp.onDatePicked(null);
+      expect(cmp.pendingDate).toBe('2026-09-03');
+      cmp.closeCalendar();
+
+      expect(cmp.form.controls.startDate.value).toBeNull();
+      expect(cmp.editing).toBeNull();
+      expect(cmp.pendingDate).toBeNull();
+    });
+
+    it('dopo un tentativo di invio segnala in errore il campo vuoto o la fine non valida', async () => {
+      const cmp = create();
+      expect(cmp.startDateInvalid).toBeFalse();
+      expect(cmp.endDateInvalid).toBeFalse();
+
+      cmp.form.controls.startDate.setValue('2026-09-05');
+      await cmp.submit();
+      expect(cmp.startDateInvalid).toBeFalse();
+      expect(cmp.endDateInvalid).toBeTrue();
+
+      cmp.form.controls.endDate.setValue('2026-09-01');
+      expect(cmp.endDateInvalid).toBeTrue();
+
+      cmp.form.controls.endDate.setValue('2026-09-05');
+      expect(cmp.endDateInvalid).toBeFalse();
+    });
+
+    it("l'invio porta startDate ed endDate", async () => {
+      const cmp = create();
+      fill(cmp);
+
+      await cmp.submit();
+
+      expect(svc.submitCertification.calls.mostRecent().args[0]).toEqual(
+        jasmine.objectContaining({startDate: '2026-09-01', endDate: '2026-09-05'}),
+      );
+    });
+
+    it('closeOverlay chiude il calendario aperto', async () => {
+      const cmp = create();
+      fill(cmp);
+      cmp.openCalendar('start');
+      cmp.onDatePicked('2026-08-20');
+
+      expect(await cmp.closeOverlay()).toBeTrue();
+      expect(cmp.editing).toBeNull();
+      expect(cmp.form.controls.startDate.value).toBe('2026-09-01');
+    });
+
+    it('closeOverlay senza calendario risolve false', async () => {
+      const cmp = create();
+
+      expect(await cmp.closeOverlay()).toBeFalse();
+    });
+
+    it('422 sulle date: messaggio sulle date', async () => {
+      svc.submitCertification.and.returnValue(
+        throwError(() => new HttpErrorResponse({status: 422, error: {errors: {start_date: ['x']}}})),
+      );
+      const cmp = create();
+      fill(cmp);
+
+      await cmp.submit();
+
+      expect(toastCtrl.create).toHaveBeenCalledWith(
+        jasmine.objectContaining({message: 'Controlla le date di percorrenza e riprova'}),
+      );
+    });
+
+    it('422 solo sulle foto: messaggio generico', async () => {
+      svc.submitCertification.and.returnValue(
+        throwError(() => new HttpErrorResponse({status: 422, error: {errors: {'images.0': ['x']}}})),
+      );
+      const cmp = create();
+      fill(cmp);
+
+      await cmp.submit();
+
+      expect(toastCtrl.create).toHaveBeenCalledWith(jasmine.objectContaining({message: 'Invio non riuscito, riprova'}));
+    });
+
+    it('422 con errors stringa: messaggio generico', async () => {
+      svc.submitCertification.and.returnValue(
+        throwError(() => new HttpErrorResponse({status: 422, error: {errors: 'start_date'}})),
+      );
+      const cmp = create();
+      fill(cmp);
+
+      await cmp.submit();
+
+      expect(toastCtrl.create).toHaveBeenCalledWith(jasmine.objectContaining({message: 'Invio non riuscito, riprova'}));
+    });
+
+    it('riaprire un campo durante la chiusura non viene annullato dal didDismiss precedente', () => {
+      const cmp = create();
+      cmp.form.controls.startDate.setValue('2026-09-01');
+
+      cmp.openCalendar('start');
+      cmp.confirmDate();
+      cmp.openCalendar('end');
+      cmp.onCalendarDismissed();
+
+      expect(cmp.editing).toBe('end');
+      expect(cmp.pendingDate).not.toBeNull();
+    });
+
+    it('didDismiss dopo trascinamento o sfondo azzera lo stato', () => {
+      const cmp = create();
+
+      cmp.openCalendar('start');
+      cmp.onCalendarDismissed();
+
+      expect(cmp.editing).toBeNull();
+      expect(cmp.pendingDate).toBeNull();
+    });
+
+    it('uscita con sole date: chiede conferma', async () => {
+      const cmp = create();
+      cmp.form.controls.startDate.setValue('2026-09-01');
+
+      alertRole = 'cancel';
+      expect(await cmp.canLeave()).toBeFalse();
+      expect(alertCtrl.create).toHaveBeenCalledWith(
+        jasmine.objectContaining({message: 'Hai dati non inviati. Vuoi uscire e perderli?'}),
+      );
+    });
+
+    it('etichetta del bottone: «Seleziona la data» se vuota, altrimenti la data formattata', () => {
+      const cmp = create();
+
+      expect(cmp.dateLabel(null)).toBe('Seleziona la data');
+      expect(cmp.dateLabel('2026-09-01')).not.toBe('Seleziona la data');
+      // Il mock di LangService non ha `currentLang`: vale la lingua di default.
+      expect(cmp.dateLabel('2026-09-01')).toBe(formatDateForLang('2026-09-01', undefined));
+    });
   });
 });
