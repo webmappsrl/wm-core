@@ -37,6 +37,8 @@ describe('PassportService (oc:8166, oc:8676)', () => {
     layerId: 3,
     photos: [new Blob(['a'], {type: 'image/jpeg'}), new Blob(['b'], {type: 'image/png'})],
     ...(serialNumber ? {serialNumber} : {}),
+    startDate: '2026-09-01',
+    endDate: '2026-09-05',
     disclaimerAccepted: true as const,
   });
 
@@ -359,6 +361,16 @@ describe('PassportService (oc:8166, oc:8676)', () => {
       expect(form.get('serial_number')).toBe('CG-2026-00341');
       expect(form.get('disclaimer_accepted')).toBe('1');
       expect(c).toEqual({layerId: 3, status: 'pending', submittedAt: '2026-09-29T10:00:00+02:00'});
+    });
+
+    it('submitCertification invia start_date ed end_date', async () => {
+      http.post.and.returnValue(of({status: 'pending', submitted_at: '2026-09-29T10:00:00+02:00'}));
+
+      await firstValueFrom(create().submitCertification(request()));
+
+      const form = http.post.calls.mostRecent().args[1] as FormData;
+      expect(form.get('start_date')).toBe('2026-09-01');
+      expect(form.get('end_date')).toBe('2026-09-05');
     });
 
     it('senza numero seriale non manda serial_number', async () => {

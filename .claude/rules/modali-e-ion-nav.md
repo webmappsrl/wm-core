@@ -15,6 +15,10 @@ Contesto: [docs/knowledge/8166-passaporto-camminatore-validazione-credenziale-ca
   il gestore con priorità più alta, e gli overlay usano 100: con 101 un alert aperto non si chiude
   e il back fa altro, per esempio apre un secondo alert. Controlla `AlertController.getTop()`
   prima di tutto (oc:8166).
+- **Un gestore del back hardware sopra 100 deve chiudere anche le modali aperte dalla pagina.**
+  Quella di un `ion-modal` inline usa 100 e non parte: la pagina espone `closeOverlay()` e il
+  gestore lo chiama dopo gli alert. Non usare `ModalController.getTop()`, che restituisce anche la
+  modale che contiene la pagina (oc:8761).
 - **In un componente `OnPush` dentro `ion-nav` non riassegnare l'observable del template in
   `ionViewWillEnter()`**: l'hook non segna la view da aggiornare e il template resta legato allo
   stream vecchio. Usa uno stream stabile che riemette, per esempio un `BehaviorSubject` con

@@ -8,8 +8,8 @@ numeri sono le tappe che il gestore ha riconosciuto all'utente (oc:8676). Il tap
 **modale a tutto schermo** con il dettaglio del cammino: le tappe con ✓ e data per quelle percorse,
 e il tocco su una tappa apre la sua pagina con stato e distanza. Se
 il cammino non è completato e non c'è una richiesta in attesa, c'è il pulsante **«Richiedi
-certificazione»**: porta a un form con 1-6 foto della credenziale cartacea, il numero seriale
-(opzionale) e un disclaimer. Dopo l'invio il dettaglio mostra «In revisione»; quando il gestore
+certificazione»**: porta a un form con 1-6 foto della credenziale cartacea, il periodo in cui è stato percorso il
+cammino (data di inizio e di fine, obbligatorie), il numero seriale (opzionale) e un disclaimer. Dopo l'invio il dettaglio mostra «In revisione»; quando il gestore
 decide in Nova mostra l'esito, «Approvata» o «Non accettata», con la data, la nota del gestore se
 c'è e il bottone «Invia una nuova richiesta» (dopo un'approvazione solo se il cammino non è
 completo). La UI segue il wireframe `webmapp-app/docs/features/passaporto-camminatore-wireframe.html`
@@ -107,8 +107,16 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
   progresso; dai timbri rilegge prima solo il progresso (`reloadProgress`), che un altro
   componente potrebbe avere in memoria vecchio.
 - **Modale:** `ion-nav` con il dettaglio come radice e il form sopra. Il back hardware (priorità
-  101) chiude prima un eventuale alert aperto, poi dal form torna al dettaglio, poi chiude. Il form
-  si registra come guard sulla modale: con foto non inviate ogni uscita chiede conferma.
+  101) chiude prima un eventuale alert aperto, poi il calendario del form (`closeOverlay()` del
+  guard), poi dal form torna al dettaglio, poi chiude. Il form si registra come guard sulla modale:
+  con foto o date non inviate ogni uscita chiede conferma.
+- **Date di percorrenza** (oc:8761): «Dal» e «Al» aprono un `ion-datetime` in un foglio dal basso
+  dichiarato nel template del form; la data si applica solo con «Conferma», mentre ✕,
+  trascinamento, tocco sullo sfondo e back la scartano. Non si va oltre l'oggi del dispositivo e
+  la fine non precede l'inizio: se l'inizio la supera, la fine si svuota. Le date restano stringhe
+  `AAAA-MM-GG` fino all'invio (`start_date`/`end_date`); il server accetta date fino a domani,
+  perché è in UTC, e rifiuta una fine prima dell'inizio. Un 422 su quei campi mostra «Controlla le
+  date di percorrenza e riprova».
 - **Foto:** `WmImagePickerComponent` con `captureOptions` (1600px, qualità 80, senza accendere il
   GPS); salvataggio in galleria attivo per scelta del developer.
 - **Condivisione della tappa e del cammino completato** (oc:8702, oc:8703): vedi
@@ -185,6 +193,14 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
 - **Traguardo nello stesso dettaglio** (oc:8703): vista 2 e vista 6 sono la stessa schermata in due
   stati, uguale da ogni ingresso (timbro o badge della home del layer).
 
+- **Date come stringhe, mai `Date`** (oc:8761): `new Date('2026-10-04')` è la mezzanotte UTC e in
+  un fuso negativo diventa il 3 ottobre; `toISOString()` sposta il giorno nel verso opposto.
+  Confronto, invio e «oggi» (`todayLocal()`) lavorano sui componenti locali.
+- **Foglio dal basso ad altezza automatica** (oc:8761, scelta del dev dopo la prova): il calendario
+  è una seconda modale sopra quella del passaporto, e Ionic azzera lo sfondo scuro delle modali
+  impilate; il foglio lo imposta esplicitamente e si alza quanto il contenuto, quindi «Conferma»
+  resta visibile anche sui telefoni piccoli.
+
 ## Come ci siamo arrivati
 
 
@@ -210,3 +226,8 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
   home.
 - **Nessun flag sul layer per accendere il passaporto** (oc:8701, superata da oc:8763): in camminiditalia è sempre
   attivo; un flag accendi/spegni sarà valutato in seguito. Il cliente ha chiesto di accenderlo per pochi partner prima di estenderlo a tutti.
+- **Due bottoni a tutta larghezza e calendario in una modale centrata `fit-content`** (oc:8761,
+  superati): i bottoni sembravano azioni, e la modale, senza sfondo scuro né bordo, si confondeva
+  con il form sotto.
+- **Modale a mezza altezza (breakpoint 0.5)** (oc:8761, scartata in challenge): su un telefono da
+  640 px il calendario, oltre 400 px nello stile Material, e «Conferma» restavano tagliati.

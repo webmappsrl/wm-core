@@ -157,9 +157,11 @@ export class WmPassportModalComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
-   * Indietro: se è aperto un alert chiude solo quello, altrimenti dal form torna al dettaglio e
-   * dal dettaglio chiude la modale. L'alert va gestito qui perché questo handler ha priorità 101
-   * e Ionic esegue solo quello con priorità più alta: quello dell'alert (100) non partirebbe.
+   * Indietro: se è aperto un alert chiude solo quello; poi, se la pagina ha un overlay aperto
+   * (il calendario delle date, oc:8761), chiude solo quello; altrimenti dal form torna al dettaglio
+   * e dal dettaglio chiude la modale. Alert e overlay vanno gestiti qui perché questo handler ha
+   * priorità 101 e Ionic esegue solo quello con priorità più alta: quelli degli overlay (100)
+   * non partirebbero. L'alert sta sopra il calendario, quindi viene per primo.
    */
   async back(): Promise<void> {
     const alert = await this._alertCtrl.getTop();
@@ -167,6 +169,7 @@ export class WmPassportModalComponent implements AfterViewInit, OnDestroy {
       await alert.dismiss();
       return;
     }
+    if (await this._guard?.closeOverlay?.()) return;
     if (!(await this._activeCanLeave())) return;
     if (await this.nav.canGoBack()) {
       await this.nav.pop();

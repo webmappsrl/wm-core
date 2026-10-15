@@ -217,6 +217,46 @@ describe('WmPassportModalComponent (oc:8166)', () => {
     expect(modalCtrl.dismiss).not.toHaveBeenCalled();
   });
 
+  it('back con un alert aperto chiude solo l\'alert e non chiama closeOverlay', async () => {
+    const alert = jasmine.createSpyObj('HTMLIonAlertElement', ['dismiss']);
+    alertCtrl.getTop.and.resolveTo(alert);
+    const canLeave = jasmine.createSpy('canLeave').and.resolveTo(true);
+    const closeOverlay = jasmine.createSpy('closeOverlay').and.resolveTo(true);
+    cmp.registerGuard({canLeave, closeOverlay});
+
+    await cmp.back();
+
+    expect(alert.dismiss).toHaveBeenCalled();
+    expect(closeOverlay).not.toHaveBeenCalled();
+    expect(canLeave).not.toHaveBeenCalled();
+    expect(nav.pop).not.toHaveBeenCalled();
+    expect(modalCtrl.dismiss).not.toHaveBeenCalled();
+  });
+
+  it('back con il calendario aperto chiude solo il calendario', async () => {
+    const canLeave = jasmine.createSpy('canLeave').and.resolveTo(true);
+    const closeOverlay = jasmine.createSpy('closeOverlay').and.resolveTo(true);
+    cmp.registerGuard({canLeave, closeOverlay});
+
+    await cmp.back();
+
+    expect(closeOverlay).toHaveBeenCalled();
+    expect(canLeave).not.toHaveBeenCalled();
+    expect(nav.pop).not.toHaveBeenCalled();
+    expect(modalCtrl.dismiss).not.toHaveBeenCalled();
+  });
+
+  it('back senza calendario aperto prosegue come prima', async () => {
+    nav.canGoBack.and.resolveTo(true);
+    const closeOverlay = jasmine.createSpy('closeOverlay').and.resolveTo(false);
+    cmp.registerGuard({canLeave: async () => true, closeOverlay});
+
+    await cmp.back();
+
+    expect(closeOverlay).toHaveBeenCalled();
+    expect(nav.pop).toHaveBeenCalled();
+  });
+
   it('un doppio tap sulla CTA apre un solo form', async () => {
     let finish: (v: boolean) => void;
     nav.push.and.returnValue(new Promise<boolean>(r => (finish = r)));

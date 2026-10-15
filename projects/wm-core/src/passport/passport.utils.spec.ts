@@ -1,12 +1,17 @@
 import {PassportRoute, PassportStage, PassportStageIndex} from '@wm-types/passport';
 import {ILAYER} from '@wm-core/types/config';
 import {
+  formatDateForLang,
+  isEndBeforeStart,
+  toIsoDate,
   gpsOutings,
+  intlLocale,
   latestCompletedAt,
   passportKm,
   passportLongDate,
   passportStamps,
   routeShareFileName,
+  todayLocal,
   totalDistanceKm,
   passportShortDate,
   passportStageChip,
@@ -335,5 +340,41 @@ describe('passport.utils, cammino completato (oc:8703)', () => {
     expect(passportKm(35.5, 'it')).toBe('35,5');
     expect(passportKm(35.5, 'en')).toBe('35.5');
     expect(passportKm(130, 'it')).toBe('130');
+  });
+
+  describe('date locali (oc:8761)', () => {
+    it('intlLocale mappa pr su pt', () => {
+      expect(intlLocale('pr')).toBe('pt');
+      expect(intlLocale(undefined)).toBe('it');
+    });
+
+    it('todayLocal usa i componenti locali, non UTC', () => {
+      expect(todayLocal(new Date(2026, 9, 4, 0, 30))).toBe('2026-10-04');
+    });
+
+    it('formatDateForLang non sfasa il giorno', () => {
+      const expected = new Intl.DateTimeFormat('it', {dateStyle: 'medium'} as Intl.DateTimeFormatOptions).format(
+        new Date(2026, 9, 4),
+      );
+      expect(formatDateForLang('2026-10-04', 'it')).toBe(expected);
+    });
+
+    it('formatDateForLang con pr usa pt', () => {
+      const expected = new Intl.DateTimeFormat('pt', {dateStyle: 'medium'} as Intl.DateTimeFormatOptions).format(
+        new Date(2026, 9, 4),
+      );
+      expect(formatDateForLang('2026-10-04', 'pr')).toBe(expected);
+    });
+
+    it('toIsoDate tiene la parte AAAA-MM-GG, con o senza orario', () => {
+      expect(toIsoDate('2026-10-04T00:00:00')).toBe('2026-10-04');
+      expect(toIsoDate('2026-10-04')).toBe('2026-10-04');
+    });
+
+    it('isEndBeforeStart: vero solo se la fine precede l\'inizio', () => {
+      expect(isEndBeforeStart('2026-10-04', '2026-10-03')).toBeTrue();
+      expect(isEndBeforeStart('2026-10-04', '2026-10-04')).toBeFalse();
+      expect(isEndBeforeStart('2026-10-04', '2026-10-05')).toBeFalse();
+    });
   });
 });
