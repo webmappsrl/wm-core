@@ -52,6 +52,11 @@ import {AlertController} from '@ionic/angular';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {GeolocationService} from '@wm-core/services/geolocation.service';
 import {setHomeResultTabSelected} from '@wm-core/store/user-activity/user-activity.action';
+import {
+  HOME_RESULT_EMPTY_MESSAGES,
+  HomeResultEmptyState,
+  homeResultEmptyState,
+} from './home-result-empty-state';
 
 @Component({
   standalone: false,
@@ -80,6 +85,8 @@ export class WmHomeResultComponent {
     ),
   );
   ectracks$ = this._store.select(tracks);
+  emptyState$: Observable<HomeResultEmptyState>;
+  readonly emptyMessages = HOME_RESULT_EMPTY_MESSAGES;
   lastFilterType$ = this._store.select(lastFilterType);
   pois$: Observable<WmFeature<Point>[]> = this._store.select(pois).pipe(
     switchMap(pois =>
@@ -145,6 +152,30 @@ export class WmHomeResultComponent {
     );
 
     this.countLayers$ = this.filteredLayers$.pipe(map(layers => layers.length));
+
+    // Decide quale messaggio di stato vuoto mostrare e, nel caso filtri, nasconde la barra dei tab
+    // (oc:8765). La regola «filtri Home attivi senza layer aperto» vale anche in
+    // showResultTabSelected$ e negli *ngIf dei tab: se cambia, va cambiata in tutti e tre.
+    this.emptyState$ = combineLatest([
+      this.countAll$,
+      this.countLayers$,
+      this.hasActiveRouteFilters$,
+      this.currentLayer$,
+      this.tracksLoading$,
+      this.ugcOpened$,
+    ]).pipe(
+      map(([countAll, countLayers, hasActiveRouteFilters, currentLayer, tracksLoading, ugcOpened]) =>
+        homeResultEmptyState({
+          countAll,
+          countLayers,
+          hasActiveRouteFilters,
+          hasCurrentLayer: currentLayer != null,
+          tracksLoading,
+          ugcOpened,
+        }),
+      ),
+      distinctUntilChanged(),
+    );
 
     this.showResultTabSelected$ = combineLatest([
       this.countTracks$,

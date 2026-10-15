@@ -69,6 +69,8 @@ export const wmSQ = {
   'Caricamento in corso.': 'Po ngarkohet.',
   'Spiacenti non ci sono risultati con questi criteri di ricerca.':
     'Më vjen keq, nuk ka rezultate për këto kritere kërkimi.',
+  'Spiacenti, non ci sono cammini inerenti alla ricerca':
+    'Më vjen keq, nuk ka shtigje që përputhen me kërkimin tuaj',
   'duration': 'Kohëzgjatja',
   'Bentornato!': 'Mirë se u ktheve!',
   'Accedi con le tue credenziali per continuare.': 'Hyni me kredencialet tuaja për të vazhduar.',

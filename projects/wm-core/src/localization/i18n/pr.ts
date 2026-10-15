@@ -63,6 +63,8 @@ export const wmPR = {
   'Caricamento in corso.': 'Carregando.',
   'Spiacenti non ci sono risultati con questi criteri di ricerca.':
     'Desculpe, não há resultados com estes critérios de pesquisa',
+  'Spiacenti, non ci sono cammini inerenti alla ricerca':
+    'Desculpe, não há caminhos correspondentes à sua pesquisa',
   'Bentornato!': 'Boas-vindas!',
   'Accedi con le tue credenziali per continuare.':
     'Faça login com as suas credenciais para continuar.',
