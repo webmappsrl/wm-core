@@ -1,43 +1,33 @@
 <div class="wm-ugc-category-title">{{"Dettagli tecnici" | wmtrans}}</div>
-<ion-list>
-  <ion-item class="wm-ugc-track-data-item" *ngIf="(time$|async) as time">
-    <ion-label class="wm-ugc-track-data-label">
-      {{'Tempo' | wmtrans}}
-    </ion-label>
-    <ion-label slot="end" class="wm-ugc-track-data-value">
-      {{time | wmTimeFormatter}}
-    </ion-label>
-  </ion-item>
-  <ion-item class="wm-ugc-track-data-item" *ngIf="(trackLength$|async) as trackLength">
-    <ion-label class="wm-ugc-track-data-label">
-      {{'distance' | wmtrans}}
-    </ion-label>
-    <ion-label slot="end" class="wm-ugc-track-data-value">
-      {{trackLength | distance:'km':1 }}
-    </ion-label>
-  </ion-item>
-  <ion-item class="wm-ugc-track-data-item">
-    <ion-label class="wm-ugc-track-data-label">
-      {{'ascent' | wmtrans}}
-    </ion-label>
-    <ion-label slot="end" class="wm-ugc-track-data-value">
-      {{slope$ | async | distance:'m':1 }}
-    </ion-label>
-  </ion-item>
-  <ion-item class="wm-ugc-track-data-item" *ngIf="(avgSpeed$|async) as avgSpeed">
-    <ion-label class="wm-ugc-track-data-label">
-      {{'Velocità media' | wmtrans}}
-    </ion-label>
-    <ion-label slot="end" class="wm-ugc-track-data-value">
-      {{avgSpeed | number:'1.1-1'}} km/h
-    </ion-label>
-  </ion-item>
-  <ion-item class="wm-ugc-track-data-item" *ngIf="(topSpeed$|async) as topSpeed">
-    <ion-label class="wm-ugc-track-data-label">
-      {{'Velocità massima' | wmtrans}}
-    </ion-label>
-    <ion-label slot="end" class="wm-ugc-track-data-value">
-      {{topSpeed | number:'1.1-1'}} km/h
-    </ion-label>
-  </ion-item>
+<!-- Righe sempre presenti: un valore che arriva dopo (le chiavi DEM) non sposta il layout. Niente
+     flag OPTIONS.show*: riguardano i dati degli ecTrack, non la traccia registrata dall'utente -->
+<ion-list *ngIf="details$ | async as details">
+  <wm-detail-row icon="icon-outline-duration" label="Durata">
+    <ng-container *ngIf="details.duration != null; else unavailable">{{details.duration * 60 | wmTimeFormatter}}</ng-container>
+  </wm-detail-row>
+  <wm-detail-row icon="icon-outline-walking" label="Tempo in movimento">
+    <ng-container *ngIf="details.duration_moving != null; else unavailable">{{details.duration_moving * 60 | wmTimeFormatter}}</ng-container>
+  </wm-detail-row>
+  <wm-detail-row icon="icon-outline-distance" label="distance">
+    <ng-container *ngIf="details.distance != null; else unavailable">{{details.distance | distance:'km':2}}</ng-container>
+  </wm-detail-row>
+  <wm-detail-row icon="icon-outline-dislivello-positivo" label="ascent">
+    <ng-container *ngIf="details.ascent != null; else unavailable">{{details.ascent | distance:'m':0}}</ng-container>
+  </wm-detail-row>
+  <wm-detail-row icon="icon-outline-dislivello-negativo" label="descent">
+    <ng-container *ngIf="details.descent != null; else unavailable">{{details.descent | distance:'m':0}}</ng-container>
+  </wm-detail-row>
+  <wm-detail-row icon="icon-outline-minus" label="ele_min">
+    <ng-container *ngIf="details.ele_min != null; else unavailable">{{details.ele_min | distance:'m':0}}</ng-container>
+  </wm-detail-row>
+  <wm-detail-row icon="icon-outline-plus" label="ele_max">
+    <ng-container *ngIf="details.ele_max != null; else unavailable">{{details.ele_max | distance:'m':0}}</ng-container>
+  </wm-detail-row>
+  <wm-detail-row icon="icon-outline-running" label="Velocità media">
+    <ng-container *ngIf="details.avg_speed != null; else unavailable">{{details.avg_speed | number:'1.1-1'}} km/h</ng-container>
+  </wm-detail-row>
+  <wm-detail-row icon="icon-outline-running" label="Velocità massima">
+    <ng-container *ngIf="details.max_speed != null; else unavailable">{{details.max_speed | number:'1.1-1'}} km/h</ng-container>
+  </wm-detail-row>
 </ion-list>
+<ng-template #unavailable>—</ng-template>

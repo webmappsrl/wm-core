@@ -1,0 +1,137 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="host?.back()" [attr.aria-label]="'Indietro' | wmtrans">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'Richiedi certificazione' | wmtrans }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="wm-passport-form ion-padding">
+  <p class="wm-passport-form-intro">{{ 'Carica una o più foto della credenziale cartacea timbrata alle tappe percorse. La richiesta verrà revisionata dal gestore del cammino.' | wmtrans }}</p>
+
+  <h3 class="wm-passport-form-label">
+    {{ 'Foto credenziale' | wmtrans }} ({{ photos.length }}/{{ maxPhotos }}) *
+  </h3>
+  <wm-image-picker
+    [maxPhotos]="maxPhotos"
+    [captureOptions]="captureOptions"
+    (photosChanged)="onPhotos($event)"
+  ></wm-image-picker>
+  <ion-note *ngIf="triedSubmit && !photosValid" color="danger" role="alert">
+    {{ 'Aggiungi almeno una foto della credenziale' | wmtrans }}
+  </ion-note>
+
+  <form [formGroup]="form">
+    <h3 class="wm-passport-form-label">{{ 'Periodo del cammino' | wmtrans }} *</h3>
+    <div class="wm-passport-form-dates">
+      <button
+        type="button"
+        class="wm-passport-form-date-field"
+        [class.wm-passport-form-date-field-invalid]="startDateInvalid"
+        [attr.aria-invalid]="startDateInvalid || null"
+        (click)="openCalendar('start')"
+      >
+        <span class="wm-passport-form-date-caption"
+          >{{ 'Dal' | wmtrans }}<span class="wm-passport-form-visually-hidden"> ({{ 'Data di inizio' | wmtrans }})</span></span
+        >
+        <span class="wm-passport-form-date-row">
+          <span
+            class="wm-passport-form-date-value"
+            [class.wm-passport-form-date-empty]="!form.controls.startDate.value"
+          >{{ dateLabel(form.controls.startDate.value) }}</span>
+          <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+        </span>
+      </button>
+      <button
+        type="button"
+        class="wm-passport-form-date-field"
+        [class.wm-passport-form-date-field-invalid]="endDateInvalid"
+        [attr.aria-invalid]="endDateInvalid || null"
+        (click)="openCalendar('end')"
+      >
+        <span class="wm-passport-form-date-caption"
+          >{{ 'Al' | wmtrans }}<span class="wm-passport-form-visually-hidden"> ({{ 'Data di fine' | wmtrans }})</span></span
+        >
+        <span class="wm-passport-form-date-row">
+          <span
+            class="wm-passport-form-date-value"
+            [class.wm-passport-form-date-empty]="!form.controls.endDate.value"
+          >{{ dateLabel(form.controls.endDate.value) }}</span>
+          <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+        </span>
+      </button>
+    </div>
+    <ion-note *ngIf="triedSubmit && !datesValid" color="danger" role="alert">
+      {{ 'Indica le date in cui hai percorso il cammino' | wmtrans }}
+    </ion-note>
+
+    <ion-modal
+      class="wm-passport-form-calendar"
+      [isOpen]="editing !== null"
+      [breakpoints]="[0, 1]"
+      [initialBreakpoint]="1"
+      [handle]="true"
+      [keepContentsMounted]="true"
+      (didDismiss)="onCalendarDismissed()"
+    >
+      <ng-template>
+        <div class="wm-passport-form-calendar-header">
+          <h2 class="wm-passport-form-calendar-title">
+            {{ (calendarField === 'end' ? 'Data di fine' : 'Data di inizio') | wmtrans }}
+          </h2>
+          <ion-button
+            class="wm-passport-form-calendar-close"
+            fill="clear"
+            [attr.aria-label]="'Chiudi' | wmtrans"
+            (click)="closeCalendar()"
+          >
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </div>
+        <ion-datetime
+          presentation="date"
+          [value]="pendingDate ?? calendarValue"
+          [max]="today"
+          [min]="calendarField === 'end' ? (form.controls.startDate.value ?? undefined) : undefined"
+          [locale]="locale"
+          [firstDayOfWeek]="1"
+          (ionChange)="onDatePicked($event.detail.value)"
+        ></ion-datetime>
+        <div class="wm-passport-form-calendar-footer">
+          <ion-button class="wm-passport-form-calendar-confirm" expand="block" color="primary" (click)="confirmDate()">
+            {{ 'Conferma' | wmtrans }}
+          </ion-button>
+        </div>
+      </ng-template>
+    </ion-modal>
+
+    <ion-item lines="none" class="wm-passport-form-serial">
+      <ion-input
+        formControlName="serialNumber"
+        labelPlacement="stacked"
+        [label]="'Numero seriale' | wmtrans"
+        [helperText]="'Inserisci il numero seriale se richiesto dal cammino' | wmtrans"
+        [placeholder]="'es. CG-2026-00341' | wmtrans"
+      ></ion-input>
+    </ion-item>
+
+    <wm-privacy-agree-button *ngIf="needsPrivacyAgree$ | async"></wm-privacy-agree-button>
+
+    <ion-item lines="none" class="wm-passport-form-disclaimer">
+      <ion-checkbox formControlName="disclaimer" labelPlacement="end" justify="start">
+        <span class="ion-text-wrap">{{ 'Acconsento al trattamento di nome, cognome e foto della credenziale al solo fine di verificare il cammino percorso, nel rispetto del Regolamento UE 2016/679 (GDPR).' | wmtrans }}</span>
+      </ion-checkbox>
+    </ion-item>
+    <ion-note *ngIf="triedSubmit && !form.controls.disclaimer.value" color="danger" role="alert">
+      {{ 'Accetta il disclaimer per inviare la richiesta' | wmtrans }}
+    </ion-note>
+  </form>
+
+  <ion-button class="wm-passport-form-submit" expand="block" [disabled]="submitting" (click)="submit()">
+    <ion-spinner *ngIf="submitting" name="crescent" slot="start"></ion-spinner>
+    {{ 'Invia richiesta' | wmtrans }}
+  </ion-button>
+</ion-content>

@@ -188,10 +188,24 @@ export interface IFILTERSLIDER extends IFILTER {
   type: 'slider';
 }
 
+/** Parametri della pulizia GPS e dei dati tecnici delle tracce UGC (oc:8743), in `GEOLOCATION.record.stats`. */
+export interface UgcTrackStatsParams {
+  /** m: sopra questa accuracy un punto è sospetto */
+  max_accuracy: number;
+  /** m: un sospetto più lontano di così dal percorso si scarta */
+  max_deviation: number;
+  /** percentile della velocità massima, in (0, 100] */
+  max_speed_percentile: number;
+  /** km/h: sotto questa velocità un tratto è una sosta */
+  moving_min_speed: number;
+}
+
 export interface IGEOLOCATION {
   gps_accuracy_default: number;
   record: {
     enable: boolean;
+    /** Parametri della pulizia GPS e dei dati tecnici delle tracce UGC (oc:8743), già normalizzati dal server. */
+    stats?: Partial<UgcTrackStatsParams>;
   };
 }
 

@@ -28,3 +28,15 @@ Contesto e perché: [docs/knowledge/testbed-isolamento.md](../../docs/knowledge/
 - **`posthog-capacitor.client.spec.ts` chiama `resetTestingModule()` dentro il corpo di un
   `it()`**, non in un hook: un nuovo `describe` eredita il TestBed già istanziato. Difenditi col
   reset nel tuo `beforeEach`; quel file non è stato normalizzato.
+- **Non spiare i plugin Capacitor (`App`, `Camera`…) con `spyOn`**: sono Proxy e lo spy non si
+  aggancia, la chiamata vera parte comunque. Avvolgi la chiamata in un metodo del service e spia
+  quello (`spyOn<any>(svc, '_addResumeListener')`) (oc:8671).
+- **Non fare `spyOn` su `Share` o `Filesystem` di Capacitor**: sono proxy che ricreano il wrapper a
+  ogni accesso, e la spia non viene mai chiamata. Stubba l'implementazione web
+  (`ShareWeb.prototype`, `FilesystemWeb.prototype` da `@capacitor/*/dist/esm/web`) (oc:8702).
+- **`flatMap`/`flat` compilano nell'app ma non negli spec di wm-core**: `tsconfig.json` ha
+  `"lib": ["es2018", "dom"]` e i test falliscono con `TS2550`. Usa `reduce` + `concat` (oc:8741).
+- **`Disconnected … ping timeout` prima di qualunque test non è un bug del codice**: con la
+  macchina carica il browser non finisce di caricare il bundle degli spec in tempo. Rilancia in
+  headless (`CHROME_HEADLESS=1`) o con `pingTimeout`/`browserNoActivityTimeout` più alti in una
+  config Karma temporanea che estende `karma.conf.js` (oc:8741).

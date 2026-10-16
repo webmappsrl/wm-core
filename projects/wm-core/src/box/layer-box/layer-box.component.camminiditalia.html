@@ -1,0 +1,64 @@
+<!-- Variante camminiditalia (oc:8701): copia di layer-box.component.html più lo stato del passaporto.
+     Ogni correzione a layer-box.component.html va riportata a mano anche qui. -->
+<div class="wm-box" (click)="onClick()" *ngIf="data && data.layer">
+  <div
+    class="color"
+    [ngStyle]="{'background-color':data.layer.style?.color?data.layer.style.color:''}"
+  ></div>
+  <div
+    class="wm-box-icon"
+    *ngIf="data.icon as icon"
+    appBuildSvg
+    [svg]="icon"
+    [color]="data.color"
+  ></div>
+  <wm-img
+    class="webmapp-card-big-image-container wm-result-img"
+    [src]="data.layer.feature_image"
+    size="225x100"
+  >
+    <!-- Anello del passaporto attorno al logo (oc:8701): solo se il layer ha un logo. -->
+    <ng-container *ngIf="{ring: ring$ | async} as vm">
+      <wm-img
+        *ngIf="data.layer.logo_image | hasLogo"
+        class="wm-layer-box-logo-overlay"
+        [class.wm-passport-logo-ring]="!!vm.ring"
+        [style.--wm-passport-ring-deg]="vm.ring ? vm.ring.deg + 'deg' : null"
+        [attr.role]="vm.ring ? 'img' : null"
+        [attr.aria-label]="vm.ring
+          ? (vm.ring.completed ? ('Cammino completato' | wmtrans) : ('{{percent}}% completato' | wmtrans: {percent: vm.ring.percent}))
+          : null"
+        [src]="data.layer.logo_image"
+      ></wm-img>
+    </ng-container>
+  </wm-img>
+  <div class="wm-box-title">{{data.layer.title??data.title | wmtrans}}</div>
+  <div
+    class="wm-layer-box-badge-combo"
+    [class.wm-layer-box-badge-combo--with-heart]="showFavoriteHeart$|async"
+    [class.wm-layer-box-badge-combo--interactive]="favoriteInteractive && (showFavoriteHeart$|async)"
+    (click)="onFavoriteClick($event)"
+  >
+    <wm-layer-features-counter-badge
+      *ngIf="showBadge"
+      [layerId]="data.layer?.id"
+      [useTotal]="useTotal"
+    ></wm-layer-features-counter-badge>
+    <ng-container *ngIf="showFavoriteHeart$|async">
+      <span class="wm-layer-box-favorite-divider"></span>
+      <i
+        class="wm-layer-box-favorite"
+        [class.wm-layer-box-favorite--interactive]="favoriteInteractive"
+        [class.wm-layer-box-favorite--disabled]="favoriteInteractive && isTogglingFavorite"
+        [attr.aria-label]="favoriteInteractive
+          ? ((isFavorite$|async) ? ('Rimuovi dai preferiti'|wmtrans) : ('Aggiungi ai preferiti'|wmtrans))
+          : ((isFavorite$|async) ? ('Preferito'|wmtrans) : ('Non preferito'|wmtrans))"
+        [ngClass]="{
+          'icon-fill-heart': isFavorite$|async,
+          'icon-outline-heart': !(isFavorite$|async)
+        }"
+      ></i>
+    </ng-container>
+  </div>
+  <ng-content></ng-content>
+</div>

@@ -10,11 +10,13 @@ import {
   startWith,
   withLatestFrom,
   take,
+  tap,
 } from 'rxjs/operators';
 import {of, from, interval, EMPTY, combineLatest} from 'rxjs';
 import {
   currentUgcPoiId,
   currentUgcTrackId,
+  removedSynchronizedUgc,
   deleteUgcMedia,
   deleteUgcMediaFailure,
   deleteUgcMediaSuccess,
@@ -51,6 +53,7 @@ import {
   syncUgcIntervalEnabled,
   currentUgcPoiDrawnGeometry,
   currentUgcPoi,
+  currentUgcTrack,
 } from '@wm-core/store/features/ugc/ugc.selector';
 import {
   getUgcPoi,
@@ -64,12 +67,37 @@ import {
 } from '@wm-core/utils/localForage';
 import {AlertController} from '@ionic/angular';
 import {LangService} from '@wm-core/localization/lang.service';
+import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {areFeatureGeometriesEqual} from '@wm-core/utils/features';
 const SYNC_INTERVAL = 60000;
 @Injectable({
   providedIn: 'root',
 })
 export class UgcEffects {
+  /**
+   * Chiude il pannello di dettaglio se la UGC aperta è stata tolta dal telefono perché il
+   * server non la restituisce più (oc:8741). Senza, al cambio successivo dei query param
+   * `getUgcTrack()`/`getUgcPoi()` ripiegherebbero sull'ultima UGC sincronizzata e il pannello
+   * mostrerebbe un'altra UGC. Il confronto usa l'oggetto in store e non il parametro dell'URL,
+   * che per una traccia appena registrata può contenere l'uuid.
+   */
+  closeRemovedCurrentUgc$ = createEffect(
+    () =>
+      this._actions$.pipe(
+        ofType(removedSynchronizedUgc),
+        withLatestFrom(this._store.select(currentUgcTrack), this._store.select(currentUgcPoi)),
+        tap(([{ugcType, ids}, track, poi]) => {
+          const currentId = (ugcType === 'track' ? track : poi)?.properties?.id;
+          if (currentId == null || !ids.includes(`${currentId}`)) {
+            return;
+          }
+          this._urlHandlerSvc.updateURL(
+            ugcType === 'track' ? {ugc_track: undefined} : {ugc_poi: undefined},
+          );
+        }),
+      ),
+    {dispatch: false},
+  );
   currentUgcPoi$ = createEffect(() =>
     this._actions$.pipe(
       ofType(currentUgcPoiId),
@@ -538,5 +566,6 @@ export class UgcEffects {
     private _store: Store,
     private _alertCtrl: AlertController,
     private _langSvc: LangService,
+    private _urlHandlerSvc: UrlHandlerService,
   ) {}
 }

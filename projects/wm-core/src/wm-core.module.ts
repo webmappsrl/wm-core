@@ -26,6 +26,7 @@ import {ConfEffects} from './store/conf/conf.effects';
 import {confReducer} from './store/conf/conf.reducer';
 import {WmTabDescriptionComponent} from './tab-description/tab-description.component';
 import {WmTabDetailComponent} from './tab-detail/tab-detail.component';
+import {WmDetailRowComponent} from './detail-row/detail-row.component';
 import {WmTabHowtoComponent} from './tab-howto/tab-howto.component';
 import {WmTabNearestPoiComponent} from './tab-nearest-poi/tab-nearest-poi.component';
 import {WmTaxonomyWhereComponent} from './taxonomy-where/taxonomy-where.component';
@@ -79,6 +80,15 @@ import {ImageDetailComponent} from './image-detail/image-detail.component';
 import {WmFeaturesInViewportComponent} from './features-in-viewport/features-in-viewport.component';
 import {WmDifficultyComponent} from './difficulty/difficulty.component';
 import {WmImagePickerComponent} from './image-picker/image-picker.component';
+import {WmPassportProgressBadgeComponent} from './passport/passport-progress-badge/passport-progress-badge.component';
+import {WmPassportModalComponent} from './passport/passport-modal/passport-modal.component';
+import {WmPassportDetailComponent} from './passport/passport-detail/passport-detail.component';
+import {WmPassportFormComponent} from './passport/passport-form/passport-form.component';
+import {WmPassportNoteComponent} from './passport/passport-note/passport-note.component';
+import {WmPassportStageDetailComponent} from './passport/passport-stage-detail/passport-stage-detail.component';
+import {WmPassportSharePreviewComponent} from './passport/passport-share-preview/passport-share-preview.component';
+import {WmPassportLogoRingDirective} from './passport/passport-logo-ring/passport-logo-ring.directive';
+import {WmPassportStampsComponent} from './passport/passport-stamps/passport-stamps.component';
 import {ModalGetDirectionsComponent} from './modal-get-directions/modal-get-directions.component';
 import {ModalReleaseUpdateComponent} from './modal-release-update/modal-release-update.component';
 import {WmDrawUgcComponent} from './draw-ugc/draw-ugc.component';
@@ -107,6 +117,7 @@ register();
 
 export const declarations = [
   WmTabDetailComponent,
+  WmDetailRowComponent,
   WmTabDescriptionComponent,
   WmTabHowtoComponent,
   WmTabNearestPoiComponent,
@@ -155,6 +166,15 @@ export const declarations = [
   WmFeaturesInViewportComponent,
   WmDifficultyComponent,
   WmImagePickerComponent,
+  WmPassportProgressBadgeComponent,
+  WmPassportModalComponent,
+  WmPassportDetailComponent,
+  WmPassportFormComponent,
+  WmPassportStageDetailComponent,
+  WmPassportSharePreviewComponent,
+  WmPassportNoteComponent,
+  WmPassportLogoRingDirective,
+  WmPassportStampsComponent,
   ModalGetDirectionsComponent,
   ModalReleaseUpdateComponent,
   WmDrawUgcComponent,

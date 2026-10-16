@@ -1,0 +1,26 @@
+// Stessa dimensione e pesi delle righe di «Form» e «Dove» del dettaglio UGC
+wm-detail-row {
+  display: block;
+
+  ion-item {
+    font-size: var(--wm-font-mf);
+  }
+
+  .wm-detail-row-label {
+    color: var(--wm-color-dark);
+    font-weight: 400;
+    font-family: var(--wm-font-family-content);
+  }
+
+  .wm-detail-row-icon {
+    color: var(--wm-color-primary);
+    padding: 0 5px;
+  }
+
+  .wm-detail-row-value {
+    color: var(--wm-color-dark);
+    font-weight: 600;
+    font-family: var(--wm-font-family-content);
+    font-size: inherit;
+  }
+}

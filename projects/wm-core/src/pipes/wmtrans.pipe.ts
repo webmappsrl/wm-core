@@ -1,6 +1,7 @@
 import {ApplicationRef, ChangeDetectorRef, OnDestroy, Pipe, PipeTransform} from '@angular/core';
 import {LangService} from '../localization/lang.service';
 import {Subscription} from 'rxjs';
+import {wmTranslate} from './wmtrans.utils';
 
 @Pipe({
   name: 'wmtrans',
@@ -25,19 +26,6 @@ export class WmTransPipe implements PipeTransform, OnDestroy {
   }
 
   transform(value: any, ...args: unknown[]): string {
-    const currentLang = this.langSvc.currentLang;
-    const defaultLang = this.langSvc.defaultLang;
-
-    if (value) {
-      if (currentLang && value[currentLang]) return value[currentLang];
-      if (defaultLang && value[defaultLang]) return value[defaultLang];
-
-      if (typeof value === 'string' || typeof value === 'number') {
-        return this.langSvc.instant(`${value}`, ...args);
-      }
-
-      for (const k in value) if (value[k]) return value[k];
-    }
-    return '';
+    return wmTranslate(value, this.langSvc, ...args);
   }
 }

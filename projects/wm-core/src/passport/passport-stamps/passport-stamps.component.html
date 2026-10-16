@@ -1,0 +1,85 @@
+<!-- Passaporto a timbri, viste 5b e 5c del wireframe (oc:8703) -->
+<ng-container *ngIf="vm$ | async as vm">
+  <div *ngIf="vm.status === 'loading'" class="wm-passport-stamps-loading" role="status">
+    <ion-spinner></ion-spinner>
+  </div>
+
+  <div *ngIf="vm.status === 'error'" class="wm-passport-stamps-error" role="alert">
+    <span>{{ 'Impossibile caricare il passaporto' | wmtrans }}</span>
+    <button type="button" class="wm-passport-stamps-retry" (click)="retry()">
+      {{ 'Riprova' | wmtrans }}
+    </button>
+  </div>
+
+  <!-- Nessun cammino col passaporto acceso (oc:8763) -->
+  <div *ngIf="vm.status === 'ready' && vm.empty" class="wm-passport-stamps-empty">
+    <div class="wm-passport-stamps-empty-art" aria-hidden="true">
+      <span class="wm-passport-stamps-empty-stamp wm-passport-stamps-empty-stamp--left"></span>
+      <span class="wm-passport-stamps-empty-stamp wm-passport-stamps-empty-stamp--right"></span>
+      <span class="wm-passport-stamps-empty-main">
+        <span class="wm-passport-stamps-empty-ring"></span>
+        <span class="wm-passport-stamps-empty-core">
+          <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 3.5c1.6 0 2.4 1.7 2.4 3.6S9.7 11 8.4 11 6 9.8 6 7.6 6.6 3.5 8 3.5z"></path>
+            <path d="M6.6 13.2h3.3l-.4 2.2c-.2 1.1-.9 1.7-1.6 1.7s-1.4-.6-1.4-1.6z"></path>
+            <path d="M16 7.5c-1.4 0-2 1.7-2 3.8s.6 3.4 1.9 3.4 2.4-1.2 2.4-3.4-.7-3.8-2.3-3.8z"></path>
+            <path d="M14.4 17.1h3.3l-.4 2.2c-.2 1.1-.9 1.7-1.6 1.7s-1.4-.6-1.4-1.6z"></path>
+          </svg>
+        </span>
+      </span>
+      <span class="wm-passport-stamps-empty-tag">{{ 'PRESTO' | wmtrans }}</span>
+    </div>
+    <h2 class="wm-passport-stamps-empty-title">{{ 'Il passaporto non è ancora attivo' | wmtrans }}</h2>
+    <p class="wm-passport-stamps-empty-text">
+      {{
+        'Il servizio passaporto non è ancora attivo su nessun cammino. Appena verrà attivato, qui troverai i timbri da completare di tutti i cammini in cui è disponibile.'
+          | wmtrans
+      }}
+    </p>
+  </div>
+
+  <ng-container *ngIf="vm.status === 'ready' && !vm.empty">
+    <p *ngIf="!vm.anyStarted" class="wm-passport-stamps-hint">
+      {{ 'Ogni tappa che ti viene riconosciuta colora il timbro del suo cammino.' | wmtrans }}
+    </p>
+    <div class="wm-passport-stamps-grid">
+      <button
+        *ngFor="let stamp of vm.stamps; trackBy: trackStamp"
+        type="button"
+        class="wm-passport-stamp"
+        [class.wm-passport-stamp--off]="stamp.status === 'not_started'"
+        [attr.aria-label]="ariaLabel(stamp)"
+        (click)="open(stamp)"
+      >
+        <span
+          class="wm-passport-stamp-ring"
+          [style.--wm-passport-ring-deg]="ringDegrees(stamp) + 'deg'"
+          aria-hidden="true"
+        >
+          <span
+            class="wm-passport-stamp-logo"
+            [class.wm-passport-stamp-logo--initials]="!(stamp.logo | hasLogo)"
+          >
+            <wm-img *ngIf="stamp.logo | hasLogo; else initials" [src]="stamp.logo"></wm-img>
+            <ng-template #initials>{{ initialsOf(stamp) }}</ng-template>
+          </span>
+        </span>
+        <span class="wm-passport-stamp-name" aria-hidden="true">{{ title(stamp) }}</span>
+        <ng-container [ngSwitch]="stamp.status">
+          <span *ngSwitchCase="'completed'" class="wm-passport-stamp-chip" aria-hidden="true"
+            >✓ {{ 'Completato' | wmtrans }}</span
+          >
+          <span *ngSwitchCase="'in_progress'" class="wm-passport-stamp-meta" aria-hidden="true">
+            {{ '{{validated}}/{{total}} tappe' | wmtrans: {validated: stamp.validated, total:
+            stamp.total} }}
+          </span>
+          <ng-container *ngSwitchDefault>
+            <span *ngIf="stamp.total != null" class="wm-passport-stamp-meta" aria-hidden="true">
+              {{ '{{n}} tappe' | wmtrans: {n: stamp.total} }}
+            </span>
+          </ng-container>
+        </ng-container>
+      </button>
+    </div>
+  </ng-container>
+</ng-container>

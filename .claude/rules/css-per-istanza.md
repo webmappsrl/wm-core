@@ -68,3 +68,10 @@ referenzia: il `<link>` lo costruisce `meta/meta.component.ts:50` a runtime.
   dichiarazione può vincere da una parte e perdere dall'altra: `wm-map-details` è un elemento,
   `.details-container` una classe, quindi il ramo webapp ha una specificità in più. L'esito va
   **misurato su entrambi**, non dedotto dal fatto che la regola è la stessa.
+
+- **Una variabile CSS definita in un solo prodotto rompe lo stile nell'altro, in silenzio.** I due
+  `variables.scss` non hanno lo stesso elenco: `--wm-color-grey` esiste solo nell'app, `--wm-color-white`
+  in nessuno dei due. Una `var()` non definita rende invalida la dichiarazione: un `fill`/`stroke` SVG
+  torna al valore ereditato (sotto un `svg` con `fill: none`, sparisce). Prima di usare una
+  `--wm-color-*` nello SCSS condiviso cercala in entrambi i `variables.scss` e in `theme/theme.ts`,
+  oppure dalle un fallback `var(--x, …)` (oc:8765).

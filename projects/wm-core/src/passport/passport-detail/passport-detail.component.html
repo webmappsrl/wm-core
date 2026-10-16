@@ -1,0 +1,172 @@
+<!-- Dettaglio del cammino, wireframe V1/V3 (oc:8166), E1–E5 (oc:8671) e vista 2 (oc:8676) -->
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="host?.close()" [attr.aria-label]="'Chiudi' | wmtrans">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ layerTitle }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="wm-passport-detail" [scrollY]="false">
+  <div class="wm-passport-detail-layout" *ngIf="vm$ | async as vm; else loading">
+    <div
+      class="wm-passport-detail-ring"
+      [style.background-image]="layerImage ? 'linear-gradient(rgba(255,255,255,.88), rgba(255,255,255,.88)), url(&quot;' + layerImage + '&quot;)' : null"
+    >
+      <div
+        class="wm-passport-detail-ring-progress"
+        [style.--wm-passport-ring-deg]="ringDegrees(vm.progress?.percent) + 'deg'"
+      >
+        <!-- stesso wm-img della home del layer: un url() CSS senza virgolette si rompe con spazi o parentesi nell'URL -->
+        <div class="wm-passport-detail-ring-logo">
+          <wm-img *ngIf="layerLogo | hasLogo" [src]="layerLogo"></wm-img>
+        </div>
+      </div>
+      <!-- cammino completato, vista 6 (oc:8703): celebrazione e data, al posto del conteggio -->
+      <ng-container *ngIf="vm.completed; else headInProgress">
+        <div class="wm-passport-detail-head">{{ 'Cammino completato! 🎉' | wmtrans }}</div>
+        <div class="wm-passport-detail-sub">
+          <ng-container *ngIf="vm.completedAt; else noDate">
+            {{ 'Completato il {{date}}' | wmtrans: {date: longDate(vm.completedAt)} }}
+          </ng-container>
+          <ng-template #noDate>{{ 'Cammino completato' | wmtrans }}</ng-template>
+        </div>
+      </ng-container>
+      <ng-template #headInProgress>
+        <!-- senza progresso (prima lettura fallita) la testata resta vuota: il messaggio è al posto della lista -->
+        <div class="wm-passport-detail-head" *ngIf="vm.progress">
+          {{ '{{completed}} di {{total}} tappe' | wmtrans: {completed: vm.progress.completedStages, total: vm.progress.totalStages} }}
+        </div>
+        <!-- qui il cammino non è completato: lo stato completato ha la sua testata sopra (oc:8703) -->
+        <div class="wm-passport-detail-sub" *ngIf="vm.progress">
+          <ng-container *ngIf="vm.progress.completedStages === 0; else remaining">
+            {{ 'Nessuna tappa ancora riconosciuta' | wmtrans }}
+          </ng-container>
+          <ng-template #remaining>
+            {{ 'Completa le restanti {{remaining}} per sbloccare il timbro' | wmtrans: {remaining: vm.progress.totalStages - vm.progress.completedStages} }}
+          </ng-template>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- traguardo (oc:8703): caselle e condivisione del cammino -->
+    <ng-container *ngIf="vm.completed">
+      <div class="wm-passport-detail-stats">
+        <div *ngIf="vm.totalKm != null" class="wm-passport-detail-stat">
+          <span class="wm-passport-detail-stat-num">{{ km(vm.totalKm) }}</span>
+          <span class="wm-passport-detail-stat-label">{{ 'km' | wmtrans }}</span>
+        </div>
+        <div class="wm-passport-detail-stat">
+          <span class="wm-passport-detail-stat-num">{{ vm.progress.completedStages }}/{{ vm.progress.totalStages }}</span>
+          <span class="wm-passport-detail-stat-label">{{ 'tappe' | wmtrans }}</span>
+        </div>
+        <div *ngIf="vm.outings != null" class="wm-passport-detail-stat">
+          <span class="wm-passport-detail-stat-num">{{ vm.outings }}</span>
+          <span class="wm-passport-detail-stat-label">{{ 'uscite' | wmtrans }}</span>
+        </div>
+      </div>
+      <button type="button" class="wm-passport-detail-share" (click)="shareRoute()">
+        <ion-icon name="share-social-outline" aria-hidden="true"></ion-icon>
+        <span>{{ 'Condividi il traguardo' | wmtrans }}</span>
+      </button>
+      <button
+        type="button"
+        class="wm-passport-detail-toggle"
+        [attr.aria-expanded]="stagesOpen$ | async"
+        aria-controls="wm-passport-detail-stages"
+        (click)="toggleStages()"
+      >
+        <ng-container *ngIf="(stagesOpen$ | async); else showStages">{{ 'Nascondi le tappe' | wmtrans }}</ng-container>
+        <ng-template #showStages>{{ 'Vedi le {{n}} tappe' | wmtrans: {n: vm.progress.totalStages} }}</ng-template>
+      </button>
+    </ng-container>
+
+    <!-- fuori dallo scroll: resta visibile anche con molte tappe, come nel wireframe -->
+    <button *ngIf="vm.showCta" type="button" class="wm-passport-detail-cta" (click)="host?.openForm()">
+      <span class="wm-passport-detail-cta-title">📷 {{ 'Richiedi certificazione' | wmtrans }}</span>
+      <span class="wm-passport-detail-cta-hint">{{ 'Hai timbrato la credenziale cartacea? Carica la foto per validare il cammino' | wmtrans }}</span>
+    </button>
+
+    <div *ngIf="vm.certification?.status === 'pending'" class="wm-passport-detail-pending" role="status">
+      <span class="wm-passport-detail-pending-chip">⏳ {{ 'In revisione' | wmtrans }}</span>
+      <span class="wm-passport-detail-pending-hint">
+        {{ 'Inviata il {{date}} — riceverai un esito via email' | wmtrans: {date: shortDate(vm.certification?.submittedAt)} }}
+      </span>
+    </div>
+
+    <!-- esito del gestore (oc:8671): stessa posizione della CTA e del chip «In revisione» -->
+    <div
+      *ngIf="vm.outcome"
+      class="wm-passport-detail-outcome"
+      [class.wm-passport-detail-outcome--rejected]="vm.outcome === 'rejected'"
+      role="status"
+    >
+      <div class="wm-passport-detail-outcome-row">
+        <span class="wm-passport-detail-outcome-chip">
+          <ng-container *ngIf="vm.outcome === 'approved'; else rejectedChip">
+            ✓ {{ 'Approvata' | wmtrans }}
+          </ng-container>
+          <ng-template #rejectedChip>✕ {{ 'Non accettata' | wmtrans }}</ng-template>
+        </span>
+        <span *ngIf="vm.certification.decidedAt" class="wm-passport-detail-outcome-date">
+          {{ 'Decisa il {{date}}' | wmtrans: {date: shortDate(vm.certification.decidedAt)} }}
+        </span>
+      </div>
+      <wm-passport-note *ngIf="vm.certification.decisionNote" [note]="vm.certification.decisionNote"></wm-passport-note>
+      <!-- solo per la non accettata: dopo un'approvazione le tappe riconosciute sono nella lista (oc:8676) -->
+      <div *ngIf="vm.showEmailHint" class="wm-passport-detail-outcome-hint">
+        {{ 'Trovi il motivo nell\'email che ti abbiamo inviato. Puoi inviare nuove foto della credenziale.' | wmtrans }}
+      </div>
+      <button *ngIf="vm.showRetry" type="button" class="wm-passport-detail-retry" (click)="host?.openForm()">
+        📷 {{ 'Invia una nuova richiesta' | wmtrans }}
+      </button>
+    </div>
+
+    <!-- a cammino completato la lista è chiusa finché non la si apre (oc:8703) -->
+    <div
+      id="wm-passport-detail-stages"
+      class="wm-passport-detail-stages"
+      *ngIf="vm.progress; else progressError"
+      [hidden]="vm.completed && !(stagesOpen$ | async)"
+    >
+      <!-- ogni tappa apre la sua pagina nella modale (vista 3, oc:8676) -->
+      <button
+        *ngFor="let stage of vm.stages; let i = index; trackBy: trackStage"
+        type="button"
+        class="wm-passport-stage"
+        [class.wm-passport-stage--todo]="stage.status === 'not_started'"
+        [attr.aria-label]="rowAriaLabel(stage)"
+        (click)="openStage(stage)"
+      >
+        <ng-container [ngSwitch]="stage.status">
+          <span *ngSwitchCase="'completed'" class="wm-passport-stage-icon wm-passport-stage-icon--done" aria-hidden="true">✓</span>
+          <span
+            *ngSwitchCase="'in_progress'"
+            class="wm-passport-stage-icon wm-passport-stage-icon--progress"
+            [style.--wm-passport-ring-deg]="ringDegrees(stage.percent) + 'deg'"
+            aria-hidden="true"
+          >{{ stage.percent }}%</span>
+          <span *ngSwitchDefault class="wm-passport-stage-icon wm-passport-stage-icon--todo" aria-hidden="true">{{ i + 1 }}</span>
+        </ng-container>
+        <span class="wm-passport-stage-name">{{ stageLabel(stage) }}</span>
+        <span class="wm-passport-stage-date" [ngSwitch]="stage.status">
+          <ng-container *ngSwitchCase="'completed'">{{ shortDate(stage.completedAt) }}</ng-container>
+          <span *ngSwitchCase="'in_progress'" class="wm-passport-stage-date--progress">{{ stage.percent }}%</span>
+          <ng-container *ngSwitchDefault>—</ng-container>
+        </span>
+      </button>
+    </div>
+    <ng-template #progressError>
+      <div class="wm-passport-detail-error" role="alert">
+        <span>{{ 'Impossibile caricare le tappe' | wmtrans }}</span>
+        <button type="button" class="wm-passport-detail-retry" (click)="refresh()">{{ 'Riprova' | wmtrans }}</button>
+      </div>
+    </ng-template>
+  </div>
+  <ng-template #loading>
+    <div class="wm-passport-detail-loading"><ion-spinner></ion-spinner></div>
+  </ng-template>
+</ion-content>

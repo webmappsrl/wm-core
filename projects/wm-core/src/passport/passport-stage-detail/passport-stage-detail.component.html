@@ -1,0 +1,59 @@
+<!-- Pagina della tappa nel passaporto, vista 3 del wireframe (oc:8676); foto, dislivelli e «Condividi» (oc:8702). -->
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="host?.back()" [attr.aria-label]="'Indietro' | wmtrans">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ layerTitle }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="wm-passport-stage-detail">
+  <img
+    *ngIf="showImage"
+    class="wm-passport-stage-detail-photo"
+    [src]="stage.image"
+    alt=""
+    (error)="onImageError()"
+  />
+
+  <h2 class="wm-passport-stage-detail-title">{{ title }}</h2>
+
+  <div class="wm-passport-stage-detail-status">
+    <span
+      class="wm-passport-stage-detail-chip"
+      [class.wm-passport-stage-detail-chip--todo]="!done"
+      role="status"
+    >
+      <span aria-hidden="true">{{ done ? '✓' : '○' }}</span>
+      {{ chipLabel }}
+    </span>
+
+    <button
+      *ngIf="shareable"
+      type="button"
+      class="wm-passport-stage-detail-share"
+      (click)="openSharePreview()"
+    >
+      <ion-icon name="share-social-outline" aria-hidden="true"></ion-icon>
+      <span>{{ 'Condividi' | wmtrans }}</span>
+    </button>
+  </div>
+
+  <div *ngIf="showDistance" class="wm-passport-stage-detail-row">
+    <span class="wm-passport-stage-detail-row-label">{{ 'Lunghezza' | wmtrans }}</span>
+    <span class="wm-passport-stage-detail-row-value">{{ stage.distance }} Km</span>
+  </div>
+
+  <div *ngIf="showAscent" class="wm-passport-stage-detail-row">
+    <span class="wm-passport-stage-detail-row-label">{{ 'ascent' | wmtrans }}</span>
+    <span class="wm-passport-stage-detail-row-value">{{ stage.ascent }} m</span>
+  </div>
+
+  <div *ngIf="showDescent" class="wm-passport-stage-detail-row">
+    <span class="wm-passport-stage-detail-row-label">{{ 'descent' | wmtrans }}</span>
+    <span class="wm-passport-stage-detail-row-value">{{ stage.descent }} m</span>
+  </div>
+</ion-content>

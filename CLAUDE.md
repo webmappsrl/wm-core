@@ -25,6 +25,14 @@ nel repo di quel prodotto.
   regola, vista dall'altro lato, sta nel suo `CLAUDE.md`.
 - **Una modifica qui arriva a entrambi i prodotti.** Prima di cambiare un componente condiviso,
   considera che i consumer hanno temi e varianti propri che questo repo non vede.
+- **Nei file `localization/i18n/*.ts` la chiave è il testo italiano**, ripetuto come valore anche in
+  `it.ts` (`'Richiedi certificazione': 'Demander la certification'`), mai una chiave strutturata
+  come `passport.cta.title`. Prima di aggiungerne una, cerca se lo stesso testo esiste già: due
+  chiavi uguali nello stesso file non compilano.
+- **Distanza, tempi, velocità e dislivello di una traccia UGC si calcolano solo in
+  `utils/ugc-track-stats.ts`**, letti tramite `UgcTrackStatsService`: è la traduzione della
+  specifica di wm-package e i suoi casi di test sono condivisi. Una regola che cambia si cambia in
+  entrambi i repo, insieme alle fixture.
 - **La CI di questo repo controlla i temi, non i test.** `.github/workflows/test.yml` confronta
   l'elenco dei nove temi per istanza con quello atteso, per nome. **I test unitari qui non girano**:
   questo repo da solo non compila, perché `tsconfig.json` risolve `@wm-types/*` e `@map-core/*` in
@@ -78,26 +86,31 @@ Il dettaglio di ogni lavoro sta nel proprio cantiere sotto `docs/features/<slug>
 | Ambiente e hostname | Riconoscimento dello shard dall'hostname, domini di anteprima a N parti | oc:8031 | [docs/knowledge/ambiente-e-hostname.md](docs/knowledge/ambiente-e-hostname.md) |
 | Box informativi configurabili | Accordion custom `wm-config-detail`, apertura multipla, meccanismo di assestamento rimosso | oc:8181, oc:8458, oc:8427 | [docs/knowledge/config-detail.md](docs/knowledge/config-detail.md) |
 | Cache delle API e log in produzione | Header condizionale in `handleApiCache`, triage dei `console.*` | oc:8374, oc:8369 | [docs/knowledge/cache-e-log.md](docs/knowledge/cache-e-log.md) |
+| Dati tecnici e pulizia GPS delle tracce UGC | `stats` del server o calcolo locale con la regola del backend, pulizia incrementale in registrazione, casi di test condivisi con wm-package | oc:8743 | [docs/knowledge/8743-app-dettagli-tecnici-e-mappa-delle-tracce-ugc-dai-dati-del-server-calcolo-al-volo-con-la-stessa-pulizia-gps-se-non-sincronizzate.md](docs/knowledge/8743-app-dettagli-tecnici-e-mappa-delle-tracce-ugc-dai-dati-del-server-calcolo-al-volo-con-la-stessa-pulizia-gps-se-non-sincronizzate.md) |
 | Deep link | Perché il percorso nativo è stato scartato, ordine in `initialize()`, navigazione Home→Map | oc:8470, oc:7980 | [docs/knowledge/deep-link.md](docs/knowledge/deep-link.md) |
 | Dettaglio di un POI | Cosa rende `wm-poi-properties` e cosa resta ai contenitori, da dove vengono indirizzo, telefoni e località | oc:8406 | [docs/knowledge/dettaglio-poi.md](docs/knowledge/dettaglio-poi.md) |
 | Filtro dei POI | Due stage tassonomia + layer ID, pannello con una track aperta, `search` azzerato all'apertura e ripristinato dalla X, binding multi-direttiva | oc:8147, oc:7646, oc:8684 | [docs/knowledge/filtri-poi.md](docs/knowledge/filtri-poi.md) |
-| Home: tab, conteggi ed etichette | Scelta del tab risultati, badge non filtrato, chiavi i18n condivise badge/segment | oc:7643, oc:8221 | [docs/knowledge/home-ricerca-e-tab.md](docs/knowledge/home-ricerca-e-tab.md) |
+| Home: tab, conteggi, etichette e stato vuoto | Scelta del tab risultati, badge non filtrato, chiavi i18n condivise badge/segment, messaggio con filtri Home senza cammini | oc:7643, oc:8221, oc:8765 | [docs/knowledge/home-ricerca-e-tab.md](docs/knowledge/home-ricerca-e-tab.md) |
 | Immagini: galleria e dettaglio | Un solo `wm-image-detail` in due contenitori, `isAppMobile` vs `isMobile`, `object-fit` nei box e nel dettaglio | oc:8406 | [docs/knowledge/immagini-e-galleria.md](docs/knowledge/immagini-e-galleria.md) |
 | Isolamento del TestBed | Reset fra spec file, campi `static`, config Karma del progetto | oc:7989 | [docs/knowledge/testbed-isolamento.md](docs/knowledge/testbed-isolamento.md) |
 | `layer-box` e `home-layer` | Overlay su CSS Grid, logo dentro `wm-img`, cuoricino preferiti | oc:8305, oc:8176, oc:8164 | [docs/knowledge/layer-box-e-home-layer.md](docs/knowledge/layer-box-e-home-layer.md) |
+| Passaporto del camminatore | Badge, anello e dettaglio in camminiditalia, passaporto a timbri e traguardo, attivazione per cammino, tappe validate dal backend con stream condiviso, modale con `ion-nav`, date di percorrenza nel form con foglio dal basso | oc:8166, oc:8671, oc:8676, oc:8701, oc:8703, oc:8763, oc:8761 | [docs/knowledge/8166-passaporto-camminatore-validazione-credenziale-cartacea.md](docs/knowledge/8166-passaporto-camminatore-validazione-credenziale-cartacea.md) |
+| Condivisione della tappa e del cammino del passaporto | Anteprima prima di condividere, pulsanti per nativo e browser, evento `contentShared` | oc:8702, oc:8703 | [docs/knowledge/condivisione-tappa-passaporto.md](docs/knowledge/condivisione-tappa-passaporto.md) |
 | PostHog | `PosthogContextService`, contesto degli eventi, `user_id` e `userMoved` | oc:8115, oc:8127, oc:8159 | [docs/knowledge/posthog.md](docs/knowledge/posthog.md) |
 | Profilo altimetrico e distanza | Badge live distance, proiezione GPS→traccia, etichetta dislivello sugli anelli | oc:8177, oc:8493, oc:8284 | [docs/knowledge/profilo-altimetrico-e-distanza.md](docs/knowledge/profilo-altimetrico-e-distanza.md) |
 | Profilo utente | Modale di editing, avatar e fallback a iniziali, compressione parametrizzata | oc:8163 | [docs/knowledge/profilo-utente.md](docs/knowledge/profilo-utente.md) |
-| UGC | Pre-selezione del layer da GPS, foto condivise fra POI e track, condivisione social | oc:7639, oc:5125, oc:8183 | [docs/knowledge/ugc.md](docs/knowledge/ugc.md) |
-| Varianti per shard | `fileReplacements`, quando estrarre una classe base, filtri della searchbar camminiditalia, il CSS per app caricato a runtime | oc:8391, oc:8414, oc:8406, oc:8613 | [docs/knowledge/varianti-per-shard.md](docs/knowledge/varianti-per-shard.md) |
+| Stato del GPS: attesa, segnale debole, permesso negato | Stati e isteresi in una funzione pura, comportamento del watcher per piattaforma (posizione approssimativa su Android, iOS che ferma il watcher), watcher web sempre ad alta precisione | oc:8766 | [docs/knowledge/8766-mappa-indicazione-di-segnale-gps-scarso-posizione-non-disponibile-o-poco-affidabile.md](docs/knowledge/8766-mappa-indicazione-di-segnale-gps-scarso-posizione-non-disponibile-o-poco-affidabile.md) |
+| UGC | Pre-selezione del layer da GPS, foto condivise fra POI e track, condivisione social | oc:7639, oc:5125, oc:8183, oc:8166, oc:8764 | [docs/knowledge/ugc.md](docs/knowledge/ugc.md) |
+| UGC sincronizzate | Il telefono rispecchia l'index del server: riconciliazione per id, immagini non più usate, chiusura del pannello della UGC tolta | oc:8741 | [docs/knowledge/8741-app-le-ugc-cancellate-sul-server-restano-visibili-sul-telefono-fino-al-logout.md](docs/knowledge/8741-app-le-ugc-cancellate-sul-server-restano-visibili-sul-telefono-fino-al-logout.md) |
+| Varianti per shard | `fileReplacements`, quando estrarre una classe base, filtri della searchbar camminiditalia, il CSS per app caricato a runtime | oc:8391, oc:8414, oc:8166, oc:8701, oc:8406, oc:8613, oc:8764 | [docs/knowledge/varianti-per-shard.md](docs/knowledge/varianti-per-shard.md) |
 
 ## Trappole
 
 Le trappole — ciò che non si deduce leggendo il codice e che si scopre solo sbagliando — stanno
 in `.claude/rules/`, un file per soggetto, con il frontmatter `paths:` che le carica quando si
 toccano i file corrispondenti: `box-e-immagini`, `spec-e-testbed`, `form-e-cva`,
-`varianti-e-classi-base`, `posthog-e-log`, `template-wm-map`, `css-per-istanza`. Ogni rule
-rimanda alla pagina di conoscenza per il perché.
+`varianti-e-classi-base`, `posthog-e-log`, `template-wm-map`, `modali-e-ion-nav`, `condivisione`,
+`css-per-istanza`. Ogni rule rimanda alla pagina di conoscenza per il perché.
 
 ## Lavori senza una pagina dedicata
 

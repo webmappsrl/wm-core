@@ -7,6 +7,11 @@ export const syncUgcTracks = createAction('[Ugc] Sync Tracks');
 export const syncUgcPois = createAction('[Ugc] Sync Pois');
 
 export const syncUgcSuccess = createAction('[Ugc] Sync Success', props<{responseType: string}>());
+/** UGC tolte dalla memoria sincronizzata perché il server non le restituisce più (oc:8741). */
+export const removedSynchronizedUgc = createAction(
+  '[Ugc] Removed synchronized Ugc',
+  props<{ugcType: 'track' | 'poi'; ids: string[]}>(),
+);
 export const syncUgcFailure = createAction(
   '[Ugc] Sync Failure',
   props<{responseType: string; error: any}>(),

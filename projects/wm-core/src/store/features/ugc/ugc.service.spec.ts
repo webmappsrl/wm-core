@@ -4,7 +4,13 @@ import {Store} from '@ngrx/store';
 import {of} from 'rxjs';
 
 import {UgcService} from './ugc.service';
+import {removedSynchronizedUgc} from './ugc.actions';
 import {EnvironmentService} from '@wm-core/services/environment.service';
+import {
+  synchronizedImg,
+  synchronizedUgcPoi,
+  synchronizedUgcTrack,
+} from '@wm-core/utils/localForage';
 import {WmFeature} from '@wm-types/feature';
 import {Point} from 'geojson';
 
@@ -75,7 +81,7 @@ beforeEach(() => {
     providers: [
       UgcService,
       {provide: Store, useValue: storeSpy},
-      {provide: EnvironmentService, useValue: environmentSpy}
+      {provide: EnvironmentService, useValue: environmentSpy},
     ]
   });
 
@@ -193,6 +199,183 @@ describe('UgcService', () => {
     it('should return null for null POI', async () => {
       const result = await service.saveApiPoi(null as any);
       expect(result).toBeNull();
+    });
+  });
+
+  describe('riconciliazione (oc:8741)', () => {
+    const track = (id: any, webPaths: string[] = [], uuid = `uuid-${id}`): any => ({
+      type: 'Feature',
+      geometry: {type: 'LineString', coordinates: []},
+      properties: {id, uuid, media: webPaths.map(webPath => ({webPath}))},
+    });
+    const poi = (id: any, webPaths: string[] = []): any => ({
+      type: 'Feature',
+      geometry: {type: 'Point', coordinates: [0, 0]},
+      properties: {id, uuid: `poi-${id}`, media: webPaths.map(webPath => ({webPath}))},
+    });
+    const ids = (features: any[]) => features.map(f => f.properties.id);
+
+    /** Simula una memoria localForage con le feature date, indicizzate per id. */
+    const fakeStore = (instance: any, features: any[]) => {
+      const items = new Map(features.map(f => [`${f.properties.id}`, f]));
+      spyOn(instance, 'keys').and.callFake(() => Promise.resolve([...items.keys()]));
+      spyOn(instance, 'getItem').and.callFake((k: string) => Promise.resolve(items.get(k) ?? null));
+      spyOn(instance, 'removeItem').and.callFake((k: string) => {
+        items.delete(k);
+        return Promise.resolve();
+      });
+    };
+
+    describe('_findUgcToRemove', () => {
+      it('toglie le UGC il cui id il server non restituisce più', () => {
+        const toRemove = (service as any)._findUgcToRemove(
+          [track(133)],
+          [track(133), track(134), track(135)],
+        );
+        expect(ids(toRemove)).toEqual([134, 135]);
+      });
+
+      it('non toglie nulla se il server restituisce tutte le UGC locali', () => {
+        expect((service as any)._findUgcToRemove([track(1), track(2)], [track(1), track(2)])).toEqual([]);
+      });
+
+      it('confronta gli id come stringa', () => {
+        expect((service as any)._findUgcToRemove([track(7)], [track('7')])).toEqual([]);
+      });
+
+      it('con elenco del server vuoto toglie tutte le sincronizzate', () => {
+        expect(ids((service as any)._findUgcToRemove([], [track(1), track(2)]))).toEqual([1, 2]);
+      });
+
+      it('tiene due UGC del server con lo stesso uuid', () => {
+        const server = [track(133, [], 'A'), track(134, [], 'A')];
+        expect((service as any)._findUgcToRemove(server, server)).toEqual([]);
+      });
+
+      it('ignora le UGC locali senza id e le voci null', () => {
+        expect((service as any)._findUgcToRemove([], [track(undefined), null])).toEqual([]);
+      });
+    });
+
+    describe('_findImgUrlsToRemove', () => {
+      it('cancella le immagini usate solo dalla UGC tolta', () => {
+        const urls = (service as any)._findImgUrlsToRemove(
+          [track(134, ['a.jpg', 'b.jpg'])],
+          [track(133, ['a.jpg'])],
+        );
+        expect(urls).toEqual(['b.jpg']);
+      });
+
+      it("non cancella un'immagine usata da una UGC dell'altro tipo", () => {
+        expect((service as any)._findImgUrlsToRemove([track(1, ['p.jpg'])], [poi(9, ['p.jpg'])])).toEqual([]);
+      });
+
+      it('restituisce ogni URL una sola volta', () => {
+        const urls = (service as any)._findImgUrlsToRemove([track(1, ['x.jpg']), track(2, ['x.jpg'])], []);
+        expect(urls).toEqual(['x.jpg']);
+      });
+    });
+
+    describe('_fetchUgc*', () => {
+      const cases = [
+        {fetch: '_fetchUgcTracks', getApi: '_getApiTracks'},
+        {fetch: '_fetchUgcPois', getApi: '_getApiPois'},
+      ];
+      const badResponses = [
+        {label: 'il server restituisce null', value: null},
+        {label: 'features non è un array', value: {type: 'FeatureCollection'}},
+      ];
+      cases.forEach(({fetch, getApi}) =>
+        badResponses.forEach(({label, value}) =>
+          it(`${fetch} non riconcilia se ${label}`, async () => {
+            spyOn<any>(service, getApi).and.returnValue(Promise.resolve(value));
+            const reconcile = spyOn<any>(service, '_reconcileUgc');
+            await (service as any)[fetch]();
+            expect(reconcile).not.toHaveBeenCalled();
+          }),
+        ),
+      );
+    });
+
+    describe('_reconcileUgc', () => {
+      it('toglie la copia, poi le sue immagini non più usate, e notifica gli id tolti', async () => {
+        const local = [track(133, ['a.jpg']), track(134, ['a.jpg', 'b.jpg'])];
+        fakeStore(synchronizedUgcTrack, local);
+        fakeStore(synchronizedUgcPoi, []);
+        const removeImg = spyOn(synchronizedImg, 'removeItem').and.returnValue(Promise.resolve());
+
+        await (service as any)._reconcileUgc('track', [track(133, ['a.jpg'])], local);
+
+        expect(synchronizedUgcTrack.removeItem).toHaveBeenCalledOnceWith('134');
+        expect(synchronizedUgcTrack.removeItem).toHaveBeenCalledBefore(removeImg);
+        expect(removeImg).toHaveBeenCalledOnceWith('b.jpg');
+        expect(mockStore.dispatch).toHaveBeenCalledOnceWith(
+          removedSynchronizedUgc({ugcType: 'track', ids: ['134']}),
+        );
+      });
+
+      it('per i POI usa la memoria dei POI e protegge le immagini delle tracce', async () => {
+        const local = [poi(1), poi(2, ['p.jpg'])];
+        fakeStore(synchronizedUgcPoi, local);
+        fakeStore(synchronizedUgcTrack, [track(9, ['p.jpg'])]);
+        const removeImg = spyOn(synchronizedImg, 'removeItem').and.returnValue(Promise.resolve());
+
+        await (service as any)._reconcileUgc('poi', [poi(1)], local);
+
+        expect(synchronizedUgcPoi.removeItem).toHaveBeenCalledOnceWith('2');
+        expect(removeImg).not.toHaveBeenCalled();
+        expect(mockStore.dispatch).toHaveBeenCalledOnceWith(
+          removedSynchronizedUgc({ugcType: 'poi', ids: ['2']}),
+        );
+      });
+
+      it("senza UGC da togliere non legge l'altro tipo e non notifica nulla", async () => {
+        const local = [track(133, ['a.jpg'])];
+        fakeStore(synchronizedUgcPoi, []);
+
+        await (service as any)._reconcileUgc('track', [track(133, ['a.jpg'])], local);
+
+        expect(synchronizedUgcPoi.keys).not.toHaveBeenCalled();
+        expect(mockStore.dispatch).not.toHaveBeenCalled();
+      });
+
+      it("non legge l'altro tipo se le UGC tolte non hanno immagini", async () => {
+        const local = [track(133), track(134)];
+        fakeStore(synchronizedUgcTrack, local);
+        fakeStore(synchronizedUgcPoi, []);
+
+        await (service as any)._reconcileUgc('track', [track(133)], local);
+
+        expect(synchronizedUgcTrack.removeItem).toHaveBeenCalledOnceWith('134');
+        expect(synchronizedUgcPoi.keys).not.toHaveBeenCalled();
+      });
+
+      it('se la rimozione fallisce non cancella le immagini e non notifica la UGC', async () => {
+        const local = [track(133), track(134, ['b.jpg'])];
+        spyOn(synchronizedUgcTrack, 'removeItem').and.returnValue(Promise.reject(new Error('quota')));
+        fakeStore(synchronizedUgcPoi, []);
+        const removeImg = spyOn(synchronizedImg, 'removeItem').and.returnValue(Promise.resolve());
+
+        await (service as any)._reconcileUgc('track', [track(133)], local);
+
+        expect(removeImg).not.toHaveBeenCalled();
+        expect(mockStore.dispatch).not.toHaveBeenCalled();
+      });
+
+      it("se la lettura dell'altro tipo fallisce non cancella immagini, ma toglie la UGC", async () => {
+        const local = [track(133), track(134, ['b.jpg'])];
+        fakeStore(synchronizedUgcTrack, local);
+        spyOn(synchronizedUgcPoi, 'keys').and.returnValue(Promise.reject(new Error('idb')));
+        const removeImg = spyOn(synchronizedImg, 'removeItem').and.returnValue(Promise.resolve());
+
+        await (service as any)._reconcileUgc('track', [track(133)], local);
+
+        expect(synchronizedUgcTrack.removeItem).toHaveBeenCalledOnceWith('134');
+        expect(removeImg).not.toHaveBeenCalled();
+        expect(mockStore.dispatch).toHaveBeenCalledOnceWith(
+          removedSynchronizedUgc({ugcType: 'track', ids: ['134']}),
+        );
+      });
     });
   });
 });

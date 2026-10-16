@@ -118,7 +118,8 @@ export class LangService extends TranslateService {
       return key[this.defaultLang];
     }
     if (typeof key === 'string') {
-      return super.instant(key);
+      // i parametri servono a `wmtrans: {…}` per le chiavi con segnaposto (oc:8166)
+      return super.instant(key, interpolateParams);
     }
 
     if (key[0]) {

@@ -1,0 +1,107 @@
+// Colori e riquadro «nuovo» del passaporto, presi dal wireframe (oc:8166). Unico punto da cambiare
+// per badge, dettaglio e anello del logo.
+$passport-green: #2f9e44;
+$passport-green-bg: #eaf7ee;
+$passport-green-dark: #1d6b30;
+$passport-green-text: #3d7a4a;
+$passport-ring-bg: #e0ddd6;
+$passport-amber: #c99b3f;
+$passport-amber-bg: #fdf3e0;
+$passport-amber-chip: #fbe4b0;
+$passport-amber-text: #8a6412;
+$passport-empty-dashed: #d3cfc6;
+
+// Riquadro tratteggiato cliccabile (badge nella home del layer, CTA nel dettaglio).
+@mixin passport-tappable-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 2px dashed $passport-green;
+  border-radius: 10px;
+  background: $passport-green-bg;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+@mixin passport-box-title {
+  font-weight: 800;
+  color: $passport-green-dark;
+}
+
+@mixin passport-box-hint {
+  font-size: 13px;
+  color: $passport-green-text;
+}
+
+// Esito della richiesta di certificazione (oc:8671): non accettata in rosso, etichetta della nota.
+$passport-red: #c0392b;
+$passport-red-bg: #fbeceb;
+$passport-red-chip: #f6d3cf;
+$passport-red-text: #8e2a1f;
+$passport-green-chip: #cfeed8;
+$passport-note-label: #6b6b6b;
+$passport-note-bg: #fff;
+$passport-text: #333;
+$passport-outcome-text: #444;
+$passport-link: #2874a6;
+$passport-on-green: #fff;
+
+// Chip dello stato della tappa sulle card (oc:8701): «non ancora percorsa», e ombra dell'anello
+// sulla foto di copertina delle card dei cammini.
+$passport-todo-text: #555;
+$passport-todo-bg: #f0efeb;
+$passport-logo-bg: #fff;
+// Fondo delle iniziali del timbro senza logo (oc:8703, wireframe 5b/5c).
+$passport-initials-bg: #e9eef2;
+$passport-ring-shadow: rgba(0, 0, 0, 0.4);
+
+// Anello di avanzamento attorno al logo del cammino (oc:8166, oc:8701): i gradi arrivano in
+// `--wm-passport-ring-deg`. `$inner` è l'immagine del logo dentro `wm-img`, che diventa rotonda su
+// fondo bianco; il padding lascia vedere l'anello.
+@mixin passport-logo-ring($padding, $inner) {
+  padding: $padding;
+  box-sizing: border-box;
+  background: conic-gradient(
+    $passport-green 0deg var(--wm-passport-ring-deg, 0deg),
+    $passport-ring-bg var(--wm-passport-ring-deg, 0deg) 360deg
+  );
+
+  #{$inner} {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: contain;
+    background: $passport-logo-bg;
+  }
+}
+
+// Riquadro di stato della richiesta fuori dallo scroll (in revisione, esito): cambiano solo i colori.
+@mixin passport-status-box($border, $bg) {
+  flex-shrink: 0;
+  margin: 12px 16px;
+  padding: 12px 14px;
+  border: 2px dashed $border;
+  border-radius: 10px;
+  background: $bg;
+}
+
+@mixin passport-status-chip($bg, $color) {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: $bg;
+  color: $color;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+// Colore primario dell'app (oc:8703) per pulsanti e badge del traguardo e dei timbri: segue il tema
+// dello shard. Il verde resta agli anelli di avanzamento. `--wm-color-primary-rgb` non è affidabile
+// (nel tema di default non corrisponde al colore), quindi lo sfondo chiaro si ricava con color-mix.
+$passport-primary: var(--wm-color-primary, #{$passport-green});
+$passport-primary-bg: color-mix(in srgb, var(--wm-color-primary, #{$passport-green}) 12%, #fff);
+$passport-on-primary: #fff;

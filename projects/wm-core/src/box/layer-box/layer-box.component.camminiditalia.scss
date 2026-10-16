@@ -1,0 +1,11 @@
+// Variante camminiditalia (oc:8701): si aggiunge allo SCSS di layer-box, non lo sostituisce.
+@import '../../passport/passport-theme';
+
+// Anello del passaporto attorno al logo del cammino (wireframe, vista 0); la classe c'è solo per
+// l'utente loggato su un cammino iniziato. Stessa resa dell'anello della home del cammino
+// (`passport-logo-ring`), più il logo rotondo e l'ombra che lo stacca dalla foto di copertina.
+wm-layer-box .wm-box wm-img.wm-layer-box-logo-overlay.wm-passport-logo-ring {
+  @include passport-logo-ring(4px, 'img');
+  border-radius: 50%;
+  box-shadow: 0 1px 3px $passport-ring-shadow;
+}

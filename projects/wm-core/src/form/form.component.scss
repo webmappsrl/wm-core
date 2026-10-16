@@ -132,6 +132,10 @@ wm-form {
       overflow-wrap: break-word;
       word-wrap: break-word;
       white-space: normal;
+      i,
+      ion-icon {
+        color: var(--wm-color-primary);
+      }
     }
     .wm-ugc-form-value {
       font-weight: 600;

@@ -9,11 +9,17 @@ import {
   getImg,
   getSynchronizedUgcPoi,
   getSynchronizedUgcPois,
+  getSynchronizedUgcPoisOrNull,
   getSynchronizedUgcTracks,
+  getSynchronizedUgcTracksOrNull,
+  getUgcMediaUrls,
   getUgcPois,
   getUgcTracks,
   removeDeviceUgcPoi,
   removeDeviceUgcTrack,
+  removeImg,
+  removeSynchronizedUgcPoi,
+  removeSynchronizedUgcTrack,
   saveImg,
   saveUgcPoi,
   saveUgcTrack,
@@ -24,7 +30,7 @@ import {LineString, Point} from 'geojson';
 import {Observable, from, of} from 'rxjs';
 
 import {isLogged, isLoggedAndHasPrivacyAgree} from './../../auth/auth.selectors';
-import {updateUgcPois, updateUgcTracks} from './ugc.actions';
+import {removedSynchronizedUgc, updateUgcPois, updateUgcTracks} from './ugc.actions';
 import {catchError, map, take, tap} from 'rxjs/operators';
 
 @Injectable({
@@ -80,20 +86,21 @@ export class UgcService {
   private async _fetchUgcPois(): Promise<void> {
     try {
       const apiUgcPois = await this._getApiPois();
-      if (apiUgcPois == null) {
+      if (apiUgcPois == null || !Array.isArray(apiUgcPois.features)) {
         return;
       }
-      const cloudUgcPois = await getSynchronizedUgcPois();
+      const synchronizedUgcPois = await getSynchronizedUgcPois();
 
       for (let apiUgcPoi of apiUgcPois.features) {
-        const cloudPoi = cloudUgcPois.find(
+        const synchronizedUgcPoi = synchronizedUgcPois.find(
           poi => poi.properties.uuid === apiUgcPoi.properties.uuid,
         );
-        if (!cloudPoi || this._isFeatureModified(apiUgcPoi, cloudPoi)) {
+        if (!synchronizedUgcPoi || this._isFeatureModified(apiUgcPoi, synchronizedUgcPoi)) {
           await saveUgcPoi(apiUgcPoi);
           // DEBUG: console.log(`fetchUgcPois sync: ${apiUgcPoi.properties.id}`);
         }
       }
+      await this._reconcileUgc('poi', apiUgcPois.features, synchronizedUgcPois);
       // DEBUG: console.log('fetchUgcPois: Synchronization completed successfully');
     } catch (error) {
       console.error('fetchUgcPois: Error during synchronization:', error);
@@ -103,7 +110,7 @@ export class UgcService {
   private async _fetchUgcTracks(): Promise<void> {
     try {
       const apiUgcTracks = await this._getApiTracks();
-      if (apiUgcTracks == null) {
+      if (apiUgcTracks == null || !Array.isArray(apiUgcTracks.features)) {
         return;
       }
       const synchronizedUgcTracks = await getSynchronizedUgcTracks();
@@ -117,10 +124,116 @@ export class UgcService {
           // DEBUG: console.log(`fetchUgcTracks sync: ${apiTrack.properties.id}`);
         }
       }
+      await this._reconcileUgc('track', apiUgcTracks.features, synchronizedUgcTracks);
       // DEBUG: console.log('fetchUgcTracks: Synchronization completed successfully');
     } catch (error) {
       console.error('fetchUgcTracks: Error during synchronization:', error);
     }
+  }
+
+  /**
+   * Riconciliazione delle UGC sincronizzate con l'elenco del server (oc:8741): toglie dal
+   * telefono quelle il cui id il server non restituisce più, poi le loro immagini non più
+   * usate, e notifica gli id tolti con `removedSynchronizedUgc` (un effect chiude il pannello
+   * se la UGC aperta è fra queste).
+   *
+   * Presuppone che l'index del server restituisca TUTTE le UGC dell'utente
+   * (`UgcController::index()` in wm-package, oggi non paginato). Se diventa paginato o
+   * filtrato questa logica va rivista, altrimenti le UGC escluse sparirebbero dai telefoni.
+   * @param ugcType tipo delle UGC riconciliate
+   * @param apiFeatures elenco completo restituito dall'index del server
+   * @param localFeatures UGC sincronizzate lette prima del salvataggio: quelle salvate nel
+   * frattempo sono fra `apiFeatures`, quindi non vanno tolte e le loro immagini restano protette
+   */
+  private async _reconcileUgc(
+    ugcType: 'track' | 'poi',
+    apiFeatures: WmFeature<LineString | Point>[],
+    localFeatures: WmFeature<LineString | Point>[],
+  ): Promise<void> {
+    const toRemove = this._findUgcToRemove(apiFeatures, localFeatures);
+    if (toRemove.length === 0) {
+      return;
+    }
+    const removeSynchronized =
+      ugcType === 'track' ? removeSynchronizedUgcTrack : removeSynchronizedUgcPoi;
+    const removed: WmFeature<LineString | Point>[] = [];
+    for (const feature of toRemove) {
+      if (await removeSynchronized(feature.properties.id)) {
+        removed.push(feature);
+      }
+    }
+    if (removed.length === 0) {
+      return;
+    }
+    const kept = [...apiFeatures, ...localFeatures.filter(f => !removed.includes(f))];
+    await this._removeUnusedImgs(
+      removed,
+      kept,
+      ugcType === 'track' ? getSynchronizedUgcPoisOrNull : getSynchronizedUgcTracksOrNull,
+    );
+    this._store.dispatch(
+      removedSynchronizedUgc({ugcType, ids: removed.map(f => `${f.properties.id}`)}),
+    );
+  }
+
+  /**
+   * Cancella da `synchronizedImg` le immagini delle UGC tolte che nessuna UGC rimasta usa più.
+   * Le UGC dell'altro tipo si leggono solo se le UGC tolte hanno immagini, per non deserializzare
+   * a ogni sync una memoria intera che quasi sempre non serve. Se quella lettura fallisce, o
+   * restituisce voci illeggibili, non si cancella nulla: meglio un'immagine orfana che una
+   * immagine ancora usata cancellata.
+   * @param removed le UGC tolte
+   * @param keptSameType le UGC rimaste dello stesso tipo, comprese quelle del server
+   * @param getOtherType lettura delle UGC sincronizzate dell'altro tipo, `null` se fallisce
+   */
+  private async _removeUnusedImgs(
+    removed: WmFeature<LineString | Point>[],
+    keptSameType: WmFeature<LineString | Point>[],
+    getOtherType: () => Promise<WmFeature<LineString | Point>[] | null>,
+  ): Promise<void> {
+    if (!removed.some(f => getUgcMediaUrls(f).length > 0)) {
+      return;
+    }
+    const otherType = await getOtherType();
+    if (otherType == null || otherType.some(f => f == null)) {
+      return;
+    }
+    for (const url of this._findImgUrlsToRemove(removed, [...keptSameType, ...otherType])) {
+      await removeImg(url);
+    }
+  }
+
+  /**
+   * Restituisce le UGC sincronizzate da togliere perché il server non le restituisce più. Il
+   * confronto è solo per id, come stringa: due UGC del server con lo stesso uuid restano
+   * entrambe, il telefono rispecchia il server. Le voci `null` e le UGC senza id sono ignorate.
+   * @param apiFeatures elenco completo restituito dall'index del server
+   * @param localFeatures UGC dello stesso tipo nella memoria `synchronized`
+   * @returns le UGC locali da togliere
+   */
+  private _findUgcToRemove<G extends LineString | Point>(
+    apiFeatures: WmFeature<G>[],
+    localFeatures: WmFeature<G>[],
+  ): WmFeature<G>[] {
+    const apiIds = new Set(apiFeatures.map(f => `${f?.properties?.id}`));
+    return localFeatures.filter(f => f?.properties?.id != null && !apiIds.has(`${f.properties.id}`));
+  }
+
+  /**
+   * Restituisce gli URL delle immagini delle UGC tolte che nessuna UGC rimasta usa più, senza
+   * doppioni: dopo l'unione dei doppioni (oc:8718) la UGC tenuta può avere le stesse foto.
+   * @param removed le UGC tolte
+   * @param kept le UGC sincronizzate rimaste, di entrambi i tipi (`synchronizedImg` è una sola)
+   * @returns gli URL da cancellare da `synchronizedImg`
+   */
+  private _findImgUrlsToRemove(
+    removed: WmFeature<LineString | Point>[],
+    kept: WmFeature<LineString | Point>[],
+  ): string[] {
+    const mediaUrlsOf = (features: WmFeature<LineString | Point>[]) =>
+      features.reduce<string[]>((urls, f) => urls.concat(getUgcMediaUrls(f)), []);
+    const usedUrls = new Set(mediaUrlsOf(kept));
+    return Array.from(new Set(mediaUrlsOf(removed).filter(url => !usedUrls.has(url))));
   }
 
   private async _getApiPois(): Promise<WmFeatureCollection<Point>> {

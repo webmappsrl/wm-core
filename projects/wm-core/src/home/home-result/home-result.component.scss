@@ -3,4 +3,73 @@ wm-home-result {
     height: 100%;
     overflow: scroll;
   }
+
+  // Stato vuoto (oc:8765): il padding sta qui e non sul contenitore role="status", che resta
+  // sempre nel DOM e da vuoto non deve occupare spazio.
+  .wm-home-result-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 32px 16px;
+  }
+
+  // Illustrazione: una lente nel colore primario dello shard su una mappa neutra. Solo variabili
+  // definite sia nell'app sia nella webapp (rule css-per-istanza): i grigi sono
+  // --wm-color-darkgrey a opacità ridotta. La lente usa
+  // color-mix e non --wm-color-primary-rgb, che nel tema di default non corrisponde al colore
+  // (vedi passport/_passport-theme.scss); il fill semplice prima è il ripiego senza color-mix.
+  .wm-home-result-empty-illustration {
+    max-width: 100%;
+    height: auto;
+    fill: none;
+  }
+  .wm-home-result-empty-shadow {
+    fill: var(--wm-color-darkgrey);
+    opacity: 0.2;
+  }
+  .wm-home-result-empty-map {
+    fill: var(--wm-color-light);
+    stroke: var(--wm-color-darkgrey);
+    stroke-opacity: 0.45;
+    stroke-width: 2.5;
+    stroke-linejoin: round;
+  }
+  .wm-home-result-empty-fold {
+    stroke: var(--wm-color-darkgrey);
+    stroke-opacity: 0.3;
+    stroke-width: 2.5;
+  }
+  .wm-home-result-empty-trail {
+    stroke: var(--wm-color-darkgrey);
+    stroke-opacity: 0.45;
+    stroke-width: 3;
+    stroke-dasharray: 2 7;
+    stroke-linecap: round;
+  }
+  .wm-home-result-empty-lens {
+    fill: var(--wm-color-light);
+    fill: color-mix(in srgb, var(--wm-color-primary) 8%, var(--wm-color-light));
+    stroke: var(--wm-color-primary);
+    stroke-width: 7;
+  }
+  .wm-home-result-empty-handle {
+    stroke: var(--wm-color-primary);
+    stroke-width: 10;
+    stroke-linecap: round;
+  }
+  .wm-home-result-empty-question {
+    fill: var(--wm-color-darkgrey);
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .wm-home-result-empty-text {
+    margin: 14px auto 0;
+    max-width: 260px;
+    font-size: 18px;
+    line-height: 1.35;
+    font-weight: 700;
+    color: var(--wm-color-primary);
+  }
 }
