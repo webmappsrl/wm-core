@@ -319,7 +319,7 @@ describe('WmPassportDetailComponent (oc:8166)', () => {
       cmp.host = {
         openForm: () => Promise.resolve(),
         openStage: () => Promise.resolve(),
-        close: () => Promise.resolve(),
+        close: () => Promise.resolve(true),
         openRouteSharePreview: () => Promise.resolve(),
       };
       const sub = cmp.vm$.subscribe();

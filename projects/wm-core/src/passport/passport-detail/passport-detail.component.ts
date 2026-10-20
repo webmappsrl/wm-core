@@ -10,7 +10,9 @@ import {BehaviorSubject, combineLatest, defer, Observable, of, Subscription} fro
 import {catchError, map, startWith, switchMap, tap} from 'rxjs/operators';
 import {PassportCertification, PassportProgress, PassportStage} from '@wm-types/passport';
 import {LangService} from '@wm-core/localization/lang.service';
+import {IonNav} from '@ionic/angular';
 import {PassportService} from '../passport.service';
+import {PassportLeaveGuard} from '../passport-leave-guard';
 import {
   gpsOutings,
   latestCompletedAt,
@@ -59,9 +61,14 @@ export interface PassportDetailVm {
 export interface PassportDetailHost {
   openForm(): Promise<void>;
   openStage(stage: PassportStage): Promise<void>;
-  close(): Promise<void>;
+  /** Chiude la modale; `true` se si è chiusa davvero (il guard può rifiutare, oc:8169). */
+  close(): Promise<boolean>;
   /** Anteprima della condivisione del cammino completato (oc:8703). */
   openRouteSharePreview(): Promise<void>;
+  /** `ion-nav` della modale, dove il blocco delle esperienze spinge form e dettaglio (oc:8169). */
+  nav: IonNav;
+  /** Il form delle esperienze registra qui il guard d'uscita, come quello della richiesta. */
+  registerGuard(guard: PassportLeaveGuard | null): void;
 }
 
 /**

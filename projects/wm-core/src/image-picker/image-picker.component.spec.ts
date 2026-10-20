@@ -1,4 +1,5 @@
 import {WmImagePickerComponent} from './image-picker.component';
+import {deleteUgcMedia} from '@wm-core/store/features/ugc/ugc.actions';
 
 describe('WmImagePickerComponent — limite foto (oc:8166)', () => {
   let cmp: WmImagePickerComponent;
@@ -109,5 +110,78 @@ describe('WmImagePickerComponent — limite foto (oc:8166)', () => {
     await cmp.addPhotosFromLibrary();
 
     expect(ended).toHaveBeenCalled();
+  });
+});
+
+
+describe('WmImagePickerComponent rimozione (oc:8169)', () => {
+  let store: {dispatch: jasmine.Spy};
+
+  function create(): WmImagePickerComponent {
+    store = {dispatch: jasmine.createSpy('dispatch')};
+    return new WmImagePickerComponent({} as any, {markForCheck() {}} as any, store as any, {isMobile: false} as any);
+  }
+
+  it('removeMode local non dispatcha deleteUgcMedia ed emette l\'id', () => {
+    const cmp = create();
+    const emitted: number[] = [];
+    cmp.syncedPhotoRemoved.subscribe(id => emitted.push(id));
+    cmp.removeMode = 'local';
+    cmp.synchronizedPhotos = [{id: 7} as any, {id: 8} as any];
+
+    cmp.remove(0, {id: 7} as any);
+
+    expect(store.dispatch).not.toHaveBeenCalled();
+    expect(emitted).toEqual([7]);
+    expect(cmp.photos.value.map(p => p.id)).toEqual([8]);
+  });
+
+  it('removeMode local: la foto tolta non torna se l\'input viene riassegnato', () => {
+    const cmp = create();
+    cmp.removeMode = 'local';
+    cmp.synchronizedPhotos = [{id: 7} as any];
+    cmp.remove(0, {id: 7} as any);
+    cmp.synchronizedPhotos = [{id: 7} as any];
+    expect(cmp.photos.value.length).toBe(0);
+  });
+
+  it('removeMode ugc invariato: dispatcha deleteUgcMedia e non emette', () => {
+    const cmp = create();
+    const emitted: number[] = [];
+    cmp.syncedPhotoRemoved.subscribe(id => emitted.push(id));
+    const media = {id: 7} as any;
+    cmp.synchronizedPhotos = [media];
+
+    cmp.remove(0, media);
+
+    expect(store.dispatch).toHaveBeenCalledWith(deleteUgcMedia({media}));
+    expect(emitted).toEqual([]);
+  });
+
+  it('removeMode local libera lo slot: dopo la rimozione si può aggiungere una foto', async () => {
+    const cameraSvc = jasmine.createSpyObj('CameraService', ['getPhotos', 'getPhotoData', 'shotPhoto']);
+    cameraSvc.shotPhoto.and.resolveTo({webPath: 'blob:1'});
+    const cmp = new WmImagePickerComponent(cameraSvc, {markForCheck() {}} as any, {dispatch() {}} as any, {isMobile: false} as any);
+    cmp.maxPhotos = 1;
+    cmp.removeMode = 'local';
+    cmp.synchronizedPhotos = [{id: 7} as any];
+
+    await cmp.takePhoto();
+    expect(cameraSvc.shotPhoto).not.toHaveBeenCalled();
+
+    cmp.remove(0, {id: 7} as any);
+    await cmp.takePhoto();
+
+    expect(cameraSvc.shotPhoto).toHaveBeenCalled();
+    expect(cmp.photos.value.length).toBe(1);
+  });
+
+  it('una foto locale senza id si toglie dalla lista in entrambe le modalità', () => {
+    const cmp = create();
+    cmp.removeMode = 'local';
+    (cmp as any)._localPhotos$.next([{webPath: 'a'}, {webPath: 'b'}]);
+    cmp.remove(0, {webPath: 'a'} as any);
+    expect(cmp.photos.value.map(p => p.webPath)).toEqual(['b']);
+    expect(store.dispatch).not.toHaveBeenCalled();
   });
 });

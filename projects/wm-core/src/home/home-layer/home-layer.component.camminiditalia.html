@@ -38,4 +38,11 @@
   ></wm-tab-description>
 
   <wm-config-detail [groups]="layer?.config_detail"></wm-config-detail>
+  <wm-experiences-section
+    class="wm-experiences-feature"
+    layout="carousel"
+    title="Le tue esperienze"
+    [layerId]="layer?.id"
+    [contextLabel]="layer?.title | wmtrans"
+  ></wm-experiences-section>
 </ng-container>

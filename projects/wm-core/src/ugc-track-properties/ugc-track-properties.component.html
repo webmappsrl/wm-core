@@ -47,6 +47,15 @@
       </ng-container>
       <wm-ugc-medias [showArrows]="true" class="wm-ugc-track-media-content"></wm-ugc-medias>
       <wm-feature-useful-urls [track]="track"></wm-feature-useful-urls>
+      <wm-experiences-section
+        *ngIf="showExperiences && track?.properties?.id != null"
+        class="wm-experiences-feature wm-experiences-feature--divided"
+        layout="list"
+        title="Esperienze collegate"
+        [ugcTrackId]="track.properties.id"
+        [hideWhenEmpty]="true"
+        [showCreate]="false"
+      ></wm-experiences-section>
     </ng-template>
     <ng-container *ngIf="!(isEditing$|async); else editingButtons">
       <ion-grid class="ion-margin-top">

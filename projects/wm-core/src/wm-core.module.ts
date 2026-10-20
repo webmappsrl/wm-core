@@ -83,6 +83,9 @@ import {WmImagePickerComponent} from './image-picker/image-picker.component';
 import {WmPassportProgressBadgeComponent} from './passport/passport-progress-badge/passport-progress-badge.component';
 import {WmPassportModalComponent} from './passport/passport-modal/passport-modal.component';
 import {WmPassportDetailComponent} from './passport/passport-detail/passport-detail.component';
+import {WmExperienceFormComponent} from './experiences/experience-form/experience-form.component';
+import {WmExperienceDetailComponent} from './experiences/experience-detail/experience-detail.component';
+import {WmExperiencesSectionComponent} from './experiences/experiences-section/experiences-section.component';
 import {WmPassportFormComponent} from './passport/passport-form/passport-form.component';
 import {WmPassportNoteComponent} from './passport/passport-note/passport-note.component';
 import {WmPassportStageDetailComponent} from './passport/passport-stage-detail/passport-stage-detail.component';
@@ -170,6 +173,9 @@ export const declarations = [
   WmPassportModalComponent,
   WmPassportDetailComponent,
   WmPassportFormComponent,
+  WmExperienceFormComponent,
+  WmExperienceDetailComponent,
+  WmExperiencesSectionComponent,
   WmPassportStageDetailComponent,
   WmPassportSharePreviewComponent,
   WmPassportNoteComponent,

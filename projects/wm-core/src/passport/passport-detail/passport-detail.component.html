@@ -72,6 +72,17 @@
         <ion-icon name="share-social-outline" aria-hidden="true"></ion-icon>
         <span>{{ 'Condividi il traguardo' | wmtrans }}</span>
       </button>
+      <!-- esperienze sul cammino (oc:8169, vista 6): form e dettaglio restano nella modale -->
+      <wm-experiences-section
+        *ngIf="!(stagesOpen$ | async)"
+        class="wm-experiences-gutter"
+        layout="carousel"
+        title="Le tue esperienze"
+        [layerId]="layerId"
+        [contextLabel]="layerTitle"
+        [nav]="host?.nav"
+        [guardHost]="host"
+      ></wm-experiences-section>
       <button
         type="button"
         class="wm-passport-detail-toggle"

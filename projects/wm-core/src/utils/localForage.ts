@@ -679,3 +679,51 @@ export const deviceCurrentUgcTrackLocations = localforage.createInstance({
   name: 'device',
   storeName: 'current-ugc-track-locations',
 });
+/** Ultima lista delle esperienze dell'utente (oc:8169), una chiave per utente: solo `mine`. */
+export const synchronizedExperiences = localforage.createInstance({
+  name: 'synchronized',
+  storeName: 'experiences',
+});
+
+/**
+ * Marcatore in localStorage della copia offline delle esperienze: c'è solo dopo la prima
+ * scrittura, così il logout non apre (e non crea) lo store `synchronized/experiences` sugli shard
+ * e sui prodotti che le esperienze non le usano.
+ */
+export const EXPERIENCES_CACHE_MARKER = 'wm-experiences-cache';
+
+/** Segna che esiste una copia offline delle esperienze (prima di scriverla). */
+export function markExperiencesCache(): void {
+  try {
+    localStorage.setItem(EXPERIENCES_CACHE_MARKER, '1');
+  } catch {
+    // localStorage non disponibile: al logout la copia non si svuota, ma è per utente
+  }
+}
+
+/**
+ * Indica se esiste una copia offline delle esperienze.
+ *
+ * @returns `true` se il marcatore è presente.
+ */
+function hasExperiencesCache(): boolean {
+  try {
+    return localStorage.getItem(EXPERIENCES_CACHE_MARKER) === '1';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Svuota la copia offline delle esperienze (al logout e al cambio d'utente). Senza marcatore
+ * esce subito, senza toccare localForage.
+ */
+export async function clearExperiencesCache(): Promise<void> {
+  if (!hasExperiencesCache()) return;
+  await synchronizedExperiences.clear();
+  try {
+    localStorage.removeItem(EXPERIENCES_CACHE_MARKER);
+  } catch {
+    // ignorato: il marcatore rimasto costa solo una pulizia in più al prossimo logout
+  }
+}

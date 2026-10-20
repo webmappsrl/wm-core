@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ title | wmtrans }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()" [attr.aria-label]="'Chiudi' | wmtrans">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="wm-experience-form ion-padding">
+  <div class="wm-experience-form-context" *ngIf="contextLabel">{{ contextLabel }}</div>
+
+  <label class="wm-experience-form-label" for="wm-experience-text">{{ 'Il tuo racconto' | wmtrans }}</label>
+  <textarea
+    id="wm-experience-text"
+    class="wm-experience-form-text"
+    rows="7"
+    [value]="description"
+    [placeholder]="placeholder | wmtrans"
+    (input)="onDescription($any($event.target).value)"
+  ></textarea>
+
+  <div class="wm-experience-form-photos-head">
+    <span class="wm-experience-form-label">{{ 'Foto' | wmtrans }}</span>
+    <span class="wm-experience-form-count">{{ '{{n}} di {{max}}' | wmtrans: {n: photosCount, max: maxPhotos} }}</span>
+  </div>
+  <wm-image-picker
+    [maxPhotos]="maxPhotos"
+    [captureOptions]="captureOptions"
+    [synchronizedPhotos]="syncedPhotos"
+    removeMode="local"
+    (photosChanged)="onPhotos($event)"
+    (syncedPhotoRemoved)="onSyncedPhotoRemoved($event)"
+  ></wm-image-picker>
+
+  <div class="wm-experience-form-error" role="alert" *ngIf="errorMessage">
+    <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <button
+    type="button"
+    class="wm-experience-form-submit"
+    [disabled]="!canSubmit"
+    (click)="submit()"
+  >
+    <ion-spinner *ngIf="submitting" name="crescent"></ion-spinner>
+    {{ (networkError ? 'Riprova' : experience ? 'Salva' : 'Pubblica') | wmtrans }}
+  </button>
+</ion-content>

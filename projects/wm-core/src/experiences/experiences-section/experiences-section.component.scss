@@ -1,0 +1,301 @@
+// Blocco «esperienze» (oc:8169).
+// Host nel Passaporto: gutter di 16px per titolo e lista, la riga del carosello scorre fino al bordo.
+wm-experiences-section.wm-experiences-gutter {
+  display: block;
+  flex-shrink: 0;
+  // 18px sopra: stacco dall'ultima riga del Passaporto, come nell'artifact (viste 3 e 6).
+  padding: 18px 16px 0;
+
+  .wm-experiences-section-row {
+    margin: 0 -16px;
+    padding: 4px 16px 8px;
+  }
+}
+
+// Host su home-layer e tappa: stesso margine dei fratelli (`wm-config-detail`).
+wm-experiences-section.wm-experiences-feature {
+  display: block;
+  margin: var(--wm-feature-details-margin);
+}
+
+// Mount sulla tappa: filetto di separazione sopra il blocco, come nel mockup.
+wm-experiences-section.wm-experiences-feature--divided {
+  border-top: 1px solid #ececec;
+  padding-top: 14px;
+}
+
+.wm-experiences-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 0;
+  color: #222428;
+
+  button {
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  & &-create--card {
+    text-align: center;
+  }
+
+  &-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  // Specificità alzata (due classi) di proposito: il titolo risultava non in grassetto
+  // nell'app reale, probabilmente per uno stile globale (h2/h3 o tema) che vinceva sulla
+  // regola a una sola classe. Unica sorgente per titolo e conteggio.
+  & &-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  & &-count {
+    font-size: 13px;
+    color: #5f6368;
+  }
+
+  // Avviso sotto il titolo senza dati freschi (offline o lettura fallita), con «Riprova» a destra.
+  &-notice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: -4px;
+  }
+
+  & &-offline {
+    flex: 1;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #5f6368;
+  }
+
+  & &-retry {
+    flex: none;
+    min-height: 32px;
+    padding: 0 4px;
+    border: 0;
+    background: transparent;
+    color: var(--wm-color-primary, #ef7821);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  &-row {
+    display: flex;
+    gap: 10px;
+    margin: 0 -4px;
+    padding: 4px 4px 8px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &-create {
+    border: 1.5px dashed var(--wm-color-primary, #ef7821);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--wm-color-primary, #ef7821);
+
+    ion-icon {
+      font-size: 28px;
+    }
+
+    &--card {
+      display: flex;
+      flex: 0 0 112px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-sizing: border-box;
+      height: 168px;
+      padding: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      scroll-snap-align: start;
+    }
+
+    &--wide {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px;
+      color: #222428;
+    }
+
+    &-icon {
+      display: flex;
+      flex: 0 0 44px;
+      align-items: center;
+      justify-content: center;
+      height: 44px;
+      border-radius: 22px;
+      background: color-mix(in srgb, var(--wm-color-primary, #ef7821) 12%, #fff);
+      color: var(--wm-color-primary, #ef7821);
+
+      ion-icon {
+        font-size: 22px;
+      }
+    }
+
+    &-text {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    &-title {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    &-hint {
+      font-size: 12px;
+      line-height: 1.4;
+      color: #5f6368;
+    }
+
+    &--outline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      border-style: solid;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+
+      ion-icon {
+        font-size: 20px;
+      }
+    }
+  }
+
+  &-card {
+    display: flex;
+    flex: 0 0 150px;
+    flex-direction: column;
+    height: 168px;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    color: inherit;
+    scroll-snap-align: start;
+
+    // Altezza fissa e overflow nascosto: con la sola flex-basis l'altezza al 100% dell'img
+    // non sempre si aggancia e la foto prende la sua altezza naturale (schede disallineate).
+    &-photo {
+      display: block;
+      flex: none;
+      height: 84px;
+      overflow: hidden;
+      background: #e9ecef;
+
+      img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    &-body {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 8px 10px;
+    }
+    // Esperienza di solo testo: stessa misura e stesso fondo bianco delle altre; cambia solo
+    // che l'estratto occupa l'altezza della foto assente (circa 7 righe).
+    &--text {
+      .wm-experiences-section-card-body {
+        flex: 1;
+        min-height: 0;
+        padding: 12px 10px;
+        overflow: hidden;
+      }
+      .wm-experiences-section-excerpt {
+        -webkit-line-clamp: 7;
+      }
+    }
+  }
+
+  &-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px;
+    border: 0;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    color: inherit;
+
+    &-photo {
+      display: block;
+      flex: 0 0 72px;
+      height: 72px;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #e9ecef;
+
+      img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    &-body {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .wm-experiences-section-excerpt {
+      font-size: 13px;
+    }
+    // Senza miniatura il corpo prende tutta la larghezza e l'estratto arriva a 3 righe.
+    &--text .wm-experiences-section-excerpt {
+      -webkit-line-clamp: 3;
+    }
+  }
+
+  &-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #5f6368;
+
+    &--stage {
+      color: var(--wm-color-primary, #ef7821);
+    }
+  }
+
+  &-excerpt {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 1.35;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+}

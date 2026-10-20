@@ -1,0 +1,107 @@
+<!-- Blocco «esperienze» (oc:8169): carosello sul cammino, elenco sulla tappa e nelle registrazioni. -->
+<ng-container *ngIf="vm$ | async as vm">
+  <section
+    *ngIf="vm.visible"
+    class="wm-experiences-section"
+    [class.wm-experiences-section--list]="layout === 'list'"
+  >
+    <div class="wm-experiences-section-head">
+      <h2 class="wm-experiences-section-title">{{ title | wmtrans }}</h2>
+      <span class="wm-experiences-section-count" *ngIf="vm.list.length > 0">{{ vm.list.length }}</span>
+    </div>
+
+    <!-- senza dati freschi (rete assente o lettura fallita): avviso e «Riprova» sotto il titolo -->
+    <div class="wm-experiences-section-notice" *ngIf="vm.notice as notice">
+      <p class="wm-experiences-section-offline">{{ notice | wmtrans }}</p>
+      <button type="button" class="wm-experiences-section-retry" (click)="retry()">
+        {{ 'Riprova' | wmtrans }}
+      </button>
+    </div>
+
+    <!-- senza copia salvata: niente lista né scheda di creazione, solo l'avviso -->
+    <ng-container *ngIf="!vm.unavailable">
+      <ng-container *ngIf="layout === 'carousel'; else listLayout">
+        <!-- vuoto o non loggato: solo la scheda larga -->
+        <button
+          type="button"
+          *ngIf="vm.list.length === 0; else carousel"
+          class="wm-experiences-section-create wm-experiences-section-create--wide"
+          (click)="create()"
+        >
+          <span class="wm-experiences-section-create-icon" aria-hidden="true">
+            <ion-icon name="add"></ion-icon>
+          </span>
+          <span class="wm-experiences-section-create-text">
+            <span class="wm-experiences-section-create-title">{{ createLabel | wmtrans }}</span>
+            <span class="wm-experiences-section-create-hint">{{
+              'Un pensiero e fino a 6 foto su questo cammino.' | wmtrans
+            }}</span>
+          </span>
+        </button>
+
+        <ng-template #carousel>
+          <div class="wm-experiences-section-row">
+            <button
+              type="button"
+              *ngIf="showCreate"
+              class="wm-experiences-section-create wm-experiences-section-create--card"
+              (click)="create()"
+            >
+              <ion-icon name="add" aria-hidden="true"></ion-icon>
+              {{ createLabel | wmtrans }}
+            </button>
+            <button
+              type="button"
+              *ngFor="let experience of vm.list; trackBy: trackById"
+              class="wm-experiences-section-card"
+              [class.wm-experiences-section-card--text]="!cover(experience)"
+              (click)="open(experience)"
+            >
+              <!-- senza foto niente riquadro grigio: la scheda diventa di solo testo -->
+              <span class="wm-experiences-section-card-photo" *ngIf="cover(experience) as src">
+                <img [src]="src" alt="" loading="lazy" (error)="onImgError($event)" />
+              </span>
+              <span class="wm-experiences-section-card-body">
+                <span
+                  class="wm-experiences-section-label"
+                  [class.wm-experiences-section-label--stage]="!!experience.ecTrack"
+                >{{ label(experience) }}</span>
+                <span class="wm-experiences-section-excerpt">{{ experience.description }}</span>
+              </span>
+            </button>
+          </div>
+        </ng-template>
+      </ng-container>
+
+      <ng-template #listLayout>
+        <button
+          type="button"
+          *ngFor="let experience of vm.list; trackBy: trackById"
+          class="wm-experiences-section-item"
+          [class.wm-experiences-section-item--text]="!cover(experience)"
+          (click)="open(experience)"
+        >
+          <span class="wm-experiences-section-item-photo" *ngIf="cover(experience) as src">
+            <img [src]="src" alt="" loading="lazy" (error)="onImgError($event)" />
+          </span>
+          <span class="wm-experiences-section-item-body">
+            <span
+              class="wm-experiences-section-label"
+              [class.wm-experiences-section-label--stage]="ecTrackId == null && !!experience.ecTrack"
+            >{{ meta(experience) }}</span>
+            <span class="wm-experiences-section-excerpt">{{ experience.description }}</span>
+          </span>
+        </button>
+        <button
+          type="button"
+          *ngIf="showCreate"
+          class="wm-experiences-section-create wm-experiences-section-create--outline"
+          (click)="create()"
+        >
+          <ion-icon name="add" aria-hidden="true"></ion-icon>
+          {{ createLabel | wmtrans }}
+        </button>
+      </ng-template>
+    </ng-container>
+  </section>
+</ng-container>
