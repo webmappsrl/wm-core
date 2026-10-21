@@ -24,6 +24,8 @@ describe('ExperienceService (oc:8169)', () => {
   /** Copia offline in memoria al posto di IndexedDB. */
   let cache: Map<string, unknown>;
   let httpMock: HttpTestingController;
+  /** Service creati nel test: le loro code sulla copia offline si svuotano in `afterEach`. */
+  let created: ExperienceService[];
 
   /**
    * Store finto: applica il selettore a uno stato costruito da login, utente e rete.
@@ -40,6 +42,21 @@ describe('ExperienceService (oc:8169)', () => {
 
   /** Lascia completare le letture e scritture asincrone della copia offline. */
   const settle = () => new Promise(resolve => setTimeout(resolve));
+
+  /**
+   * Attende che la condizione diventi vera, entro un tetto: con la suite completa e la macchina
+   * carica i timer reali e le code asincrone arrivano più tardi di quanto un'attesa fissa preveda.
+   *
+   * @param condition Condizione da attendere.
+   * @param maxMs Tetto dell'attesa.
+   */
+  const until = async (condition: () => boolean, maxMs = 2000): Promise<void> => {
+    const start = Date.now();
+    while (!condition()) {
+      if (Date.now() - start > maxMs) return;
+      await new Promise(resolve => setTimeout(resolve, 5));
+    }
+  };
 
   const item = (id: number, layerId: number, trackId: number | null) => ({
     id,
@@ -64,10 +81,13 @@ describe('ExperienceService (oc:8169)', () => {
       ],
     });
     httpMock = TestBed.inject(HttpTestingController);
-    return TestBed.inject(ExperienceService);
+    const svc = TestBed.inject(ExperienceService);
+    created.push(svc);
+    return svc;
   }
 
   beforeEach(() => {
+    created = [];
     logged$ = new BehaviorSubject<boolean>(true);
     user$ = new BehaviorSubject<{id: number} | undefined>({id: 1});
     online$ = new BehaviorSubject<boolean>(true);
@@ -91,7 +111,12 @@ describe('ExperienceService (oc:8169)', () => {
     });
   });
 
-  afterEach(() => localStorage.removeItem(EXPERIENCES_CACHE_MARKER));
+  afterEach(async () => {
+    // Le operazioni ancora in coda partirebbero dopo il test, senza più gli spy: sul localForage
+    // vero, lente, e toglierebbero il marcatore mentre gira il test successivo.
+    await Promise.all(created.map(svc => (svc as unknown as {_cacheQueue: Promise<void>})._cacheQueue));
+    localStorage.removeItem(EXPERIENCES_CACHE_MARKER);
+  });
 
   it('nessuna GET finché nessuno si sottoscrive', () => {
     const svc = create();
@@ -115,6 +140,7 @@ describe('ExperienceService (oc:8169)', () => {
     });
     httpMock = TestBed.inject(HttpTestingController);
     const svc = TestBed.inject(ExperienceService);
+    created.push(svc);
     let status: ExperiencesStatus | undefined;
     svc.status$().subscribe(s => (status = s));
     httpMock.expectOne(URL).flush({data: []});
@@ -291,14 +317,16 @@ describe('ExperienceService (oc:8169)', () => {
 
     it('404 → off: la copia salvata non si mostra e si scarta', async () => {
       cache.set('mine:1', [cached]);
-      localStorage.setItem(EXPERIENCES_CACHE_MARKER, '1');
       const svc = create();
       let status: ExperiencesStatus | undefined;
       let list: Experience[] = [];
       svc.status$().subscribe(s => (status = s));
       svc.experiences$({}).subscribe(l => (list = l));
+      // il marcatore subito prima della risposta: una pulizia asincrona rimasta da un altro spec
+      // potrebbe toglierlo se messo all'inizio
+      localStorage.setItem(EXPERIENCES_CACHE_MARKER, '1');
       httpMock.expectOne(URL).flush({}, {status: 404, statusText: 'Not Found'});
-      await settle();
+      await until(() => cache.size === 0);
       expect(status).toBe('off');
       expect(list).toEqual([]);
       expect(cache.size).toBe(0);
@@ -340,16 +368,18 @@ describe('ExperienceService (oc:8169)', () => {
       const svc = create();
       svc.status$().subscribe();
       httpMock.expectOne(URL).flush({data: [item(1, 3, null)]});
-      await settle();
+      await until(() => cache.has('mine:1'));
       expect(cache.has('mine:1')).toBeTrue();
       user$.next({id: 2});
       httpMock.expectOne(URL).flush({data: []});
-      await settle();
+      // la coda della copia è in serie: la lista dell'utente 2 si scrive dopo la pulizia
+      await until(() => cache.has('mine:2'));
       expect(synchronizedExperiences.clear).toHaveBeenCalledTimes(1);
       logged$.next(false);
       user$.next(undefined);
       httpMock.expectOne(URL).flush({}, {status: 401, statusText: 'Unauthorized'});
-      await settle();
+      const clear = synchronizedExperiences.clear as jasmine.Spy;
+      await until(() => clear.calls.count() === 2 && cache.size === 0);
       expect(synchronizedExperiences.clear).toHaveBeenCalledTimes(2);
       expect(cache.size).toBe(0);
     });
@@ -473,23 +503,31 @@ describe('ExperienceService (oc:8169)', () => {
       const svc = create([{provide: EXPERIENCES_RETRY_DELAY, useValue: 40}]);
       let status: ExperiencesStatus | undefined;
       svc.status$().subscribe(s => (status = s));
-      const fail = () => httpMock.expectOne(URL).flush({}, {status: 500, statusText: 'Err'});
-      fail();
-      // tentativi dopo 40, 80 e 160 ms
-      for (const delay of [40, 80, 160]) {
+      const pending = () => httpMock.match(URL);
+      // il tentativo arriva quando arriva: si aspetta la richiesta, non un numero di millisecondi
+      const nextRequest = async () => {
+        let found = pending();
+        await until(() => found.length > 0 || (found = pending()).length > 0);
+        expect(found.length).withContext('tentativo atteso').toBe(1);
+        return found[0];
+      };
+      const fail = async () =>
+        (await nextRequest()).flush({}, {status: 500, statusText: 'Err'});
+      await fail();
+      // tre tentativi automatici (dopo 40, 80 e 160 ms): nessuno parte subito
+      for (let i = 0; i < 3; i++) {
         await settle();
         httpMock.expectNone(URL);
-        await wait(delay + 30);
-        fail();
+        await fail();
       }
-      await wait(400);
+      // nessun quarto tentativo (arriverebbe dopo 320 ms)
+      await wait(500);
       httpMock.expectNone(URL);
       expect(status).toBe('error');
       svc.refresh();
-      fail();
-      await wait(70);
-      // contatore azzerato: il primo tentativo automatico riparte dopo 40 ms
-      httpMock.expectOne(URL).flush({data: []});
+      await fail();
+      // contatore azzerato: riparte il primo tentativo automatico
+      (await nextRequest()).flush({data: []});
       expect(status).toBe('active');
     });
   });

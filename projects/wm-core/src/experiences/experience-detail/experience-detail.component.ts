@@ -23,6 +23,7 @@ import {UgcTrackStatsParams} from '@wm-core/types/config';
 import {ugcTrackDetails} from '@wm-core/utils/ugc-track-stats';
 import {WmFeature} from '@wm-types/feature';
 import {LineString} from 'geojson';
+import type {SwiperOptions} from 'swiper/types';
 import {Experience} from '../experience.model';
 import {ExperienceService} from '../experience.service';
 import {presentExperienceOfflineToast} from '../experience-offline.utils';
@@ -90,6 +91,8 @@ export class WmExperienceDetailComponent implements OnInit, OnDestroy {
 
   /** Foto mostrata nella galleria, per i pallini. */
   activePhoto = 0;
+  /** Galleria: una foto per volta; i pallini restano quelli del componente. */
+  readonly galleryOptions: SwiperOptions = {slidesPerView: 1};
   deleting = false;
   /** Messaggio d'errore dell'ultima cancellazione, `null` se non ce n'è. */
   errorMessage: string | null = null;
@@ -255,13 +258,12 @@ export class WmExperienceDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Aggiorna il pallino attivo allo scorrimento della galleria.
+   * Aggiorna il pallino attivo al cambio di foto della galleria.
    *
-   * @param el Contenitore a scorrimento orizzontale.
+   * @param event Evento `swiperslidechange` di `wm-swiper`, con l'istanza Swiper in `detail[0]`.
    */
-  onGalleryScroll(el: HTMLElement): void {
-    const width = el.clientWidth || 1;
-    const index = Math.round(el.scrollLeft / width);
+  onGallerySlideChange(event: CustomEvent): void {
+    const index = event.detail?.[0]?.activeIndex ?? 0;
     if (index !== this.activePhoto) {
       this.activePhoto = index;
       this._cdr.markForCheck();

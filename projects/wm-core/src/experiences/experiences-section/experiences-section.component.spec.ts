@@ -1,4 +1,4 @@
-import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {NO_ERRORS_SCHEMA, SimpleChange, SimpleChanges} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {AlertController, ModalController, Platform, ToastController} from '@ionic/angular';
 import {MockStore, provideMockStore} from '@ngrx/store/testing';
@@ -100,8 +100,14 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
   function render(inputs: Partial<WmExperiencesSectionComponent> = {}): void {
     fixture = TestBed.createComponent(WmExperiencesSectionComponent);
     cmp = fixture.componentInstance;
-    Object.assign(cmp, {layerId: 7, title: 'Le tue esperienze', ...inputs});
-    cmp.ngOnChanges();
+    const values = {layerId: 7, title: 'Le tue esperienze', ...inputs};
+    Object.assign(cmp, values);
+    cmp.ngOnChanges(
+      Object.keys(values).reduce<SimpleChanges>(
+        (acc, key) => ({...acc, [key]: new SimpleChange(undefined, (values as Record<string, unknown>)[key], true)}),
+        {},
+      ),
+    );
     fixture.detectChanges();
   }
 
@@ -149,9 +155,9 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
     render({layout: 'carousel'});
     expect(labels()).toEqual(['TAPPA 05', 'CAMMINO']);
     expect(el().querySelectorAll('.wm-experiences-section-card').length).toBe(2);
-    // la scheda «Racconta…» viene prima delle esperienze
-    const row = el().querySelector('.wm-experiences-section-row') as HTMLElement;
-    expect(row.firstElementChild?.classList).toContain('wm-experiences-section-create--card');
+    // la scheda «Racconta…» è la prima slide del carosello, prima delle esperienze
+    const firstSlide = el().querySelector('.wm-experiences-section-row swiper-slide') as HTMLElement;
+    expect(firstSlide.firstElementChild?.classList).toContain('wm-experiences-section-create--card');
     expect(el().querySelector('.wm-experiences-section-count')?.textContent?.trim()).toBe('2');
   });
 

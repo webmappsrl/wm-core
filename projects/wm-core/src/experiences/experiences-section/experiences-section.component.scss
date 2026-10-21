@@ -6,9 +6,9 @@ wm-experiences-section.wm-experiences-gutter {
   // 18px sopra: stacco dall'ultima riga del Passaporto, come nell'artifact (viste 3 e 6).
   padding: 18px 16px 0;
 
-  .wm-experiences-section-row {
+  // il margine delle schede dal bordo lo dà `carouselInset` (16) del componente
+  wm-swiper.wm-experiences-section-row {
     margin: 0 -16px;
-    padding: 4px 16px 8px;
   }
 }
 
@@ -90,17 +90,17 @@ wm-experiences-section.wm-experiences-feature--divided {
     text-align: center;
   }
 
-  &-row {
-    display: flex;
-    gap: 10px;
+  // Carosello su `wm-swiper`: la classe finisce anche sullo `swiper-container` interno (input
+  // `class`), quindi le regole sull'host sono qualificate con l'elemento. Gap e margini dai bordi
+  // sono opzioni di Swiper (`spaceBetween`, `carouselInset`).
+  wm-swiper.wm-experiences-section-row {
+    display: block;
     margin: 0 -4px;
-    padding: 4px 4px 8px;
-    overflow-x: auto;
-    scroll-snap-type: x proximity;
-    scrollbar-width: none;
 
-    &::-webkit-scrollbar {
-      display: none;
+    // Swiper ritaglia le slide: il padding verticale lascia spazio all'ombra delle schede.
+    swiper-slide {
+      width: auto;
+      padding: 4px 0 8px;
     }
   }
 
@@ -116,17 +116,16 @@ wm-experiences-section.wm-experiences-feature--divided {
 
     &--card {
       display: flex;
-      flex: 0 0 112px;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 8px;
       box-sizing: border-box;
+      width: 112px;
       height: 168px;
       padding: 8px;
       font-size: 13px;
       font-weight: 500;
-      scroll-snap-align: start;
     }
 
     &--wide {
@@ -188,8 +187,8 @@ wm-experiences-section.wm-experiences-feature--divided {
 
   &-card {
     display: flex;
-    flex: 0 0 150px;
     flex-direction: column;
+    width: 150px;
     height: 168px;
     padding: 0;
     overflow: hidden;
@@ -198,7 +197,6 @@ wm-experiences-section.wm-experiences-feature--divided {
     background: #fff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     color: inherit;
-    scroll-snap-align: start;
 
     // Altezza fissa e overflow nascosto: con la sola flex-basis l'altezza al 100% dell'img
     // non sempre si aggancia e la foto prende la sua altezza naturale (schede disallineate).

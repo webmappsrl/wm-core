@@ -1,21 +1,22 @@
 <!-- Dettaglio di un'esperienza (oc:8169). -->
 <ion-content class="wm-experience-detail" *ngIf="vm$ | async as vm">
   <div class="wm-experience-detail-gallery">
-    <div
-      #gallery
+    <wm-swiper
       class="wm-experience-detail-photos"
       *ngIf="vm.experience.photos.length > 0; else noPhoto"
-      (scroll)="onGalleryScroll(gallery)"
+      [options]="galleryOptions"
+      (swiperslidechange)="onGallerySlideChange($event)"
     >
-      <img
-        *ngFor="let photo of vm.experience.photos"
-        class="wm-experience-detail-photo"
-        [src]="photo.url || photo.thumbnail"
-        alt=""
-        loading="lazy"
-        (error)="onImgError($event)"
-      />
-    </div>
+      <swiper-slide *ngFor="let photo of vm.experience.photos">
+        <img
+          class="wm-experience-detail-photo"
+          [src]="photo.url || photo.thumbnail"
+          alt=""
+          loading="lazy"
+          (error)="onImgError($event)"
+        />
+      </swiper-slide>
+    </wm-swiper>
     <ng-template #noPhoto>
       <div class="wm-experience-detail-photos wm-experience-detail-photos--empty"></div>
     </ng-template>

@@ -40,36 +40,38 @@
         </button>
 
         <ng-template #carousel>
-          <div class="wm-experiences-section-row">
-            <button
-              type="button"
-              *ngIf="showCreate"
-              class="wm-experiences-section-create wm-experiences-section-create--card"
-              (click)="create()"
-            >
-              <ion-icon name="add" aria-hidden="true"></ion-icon>
-              {{ createLabel | wmtrans }}
-            </button>
-            <button
-              type="button"
-              *ngFor="let experience of vm.list; trackBy: trackById"
-              class="wm-experiences-section-card"
-              [class.wm-experiences-section-card--text]="!cover(experience)"
-              (click)="open(experience)"
-            >
-              <!-- senza foto niente riquadro grigio: la scheda diventa di solo testo -->
-              <span class="wm-experiences-section-card-photo" *ngIf="cover(experience) as src">
-                <img [src]="src" alt="" loading="lazy" (error)="onImgError($event)" />
-              </span>
-              <span class="wm-experiences-section-card-body">
-                <span
-                  class="wm-experiences-section-label"
-                  [class.wm-experiences-section-label--stage]="!!experience.ecTrack"
-                >{{ label(experience) }}</span>
-                <span class="wm-experiences-section-excerpt">{{ experience.description }}</span>
-              </span>
-            </button>
-          </div>
+          <wm-swiper class="wm-experiences-section-row" [options]="carouselOptions">
+            <swiper-slide *ngIf="showCreate">
+              <button
+                type="button"
+                class="wm-experiences-section-create wm-experiences-section-create--card"
+                (click)="create()"
+              >
+                <ion-icon name="add" aria-hidden="true"></ion-icon>
+                {{ createLabel | wmtrans }}
+              </button>
+            </swiper-slide>
+            <swiper-slide *ngFor="let experience of vm.list; trackBy: trackById">
+              <button
+                type="button"
+                class="wm-experiences-section-card"
+                [class.wm-experiences-section-card--text]="!cover(experience)"
+                (click)="open(experience)"
+              >
+                <!-- senza foto niente riquadro grigio: la scheda diventa di solo testo -->
+                <span class="wm-experiences-section-card-photo" *ngIf="cover(experience) as src">
+                  <img [src]="src" alt="" loading="lazy" (error)="onImgError($event)" />
+                </span>
+                <span class="wm-experiences-section-card-body">
+                  <span
+                    class="wm-experiences-section-label"
+                    [class.wm-experiences-section-label--stage]="!!experience.ecTrack"
+                  >{{ label(experience) }}</span>
+                  <span class="wm-experiences-section-excerpt">{{ experience.description }}</span>
+                </span>
+              </button>
+            </swiper-slide>
+          </wm-swiper>
         </ng-template>
       </ng-container>
 

@@ -3,12 +3,14 @@ import {
   Component,
   Input,
   OnChanges,
+  SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
 import {IonNav, ToastController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, Observable, combineLatest} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
+import type {SwiperOptions} from 'swiper/types';
 import {LangService} from '@wm-core/localization/lang.service';
 import {passportLongDate} from '@wm-core/passport/passport.utils';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
@@ -61,6 +63,14 @@ export class WmExperiencesSectionComponent implements OnChanges {
   @Input() guardHost?: ExperienceGuardHost;
   @Input() hideWhenEmpty = false;
   @Input() showCreate = true;
+  /**
+   * Margine laterale del carosello, in px: la riga va oltre il padding del contenitore di questa
+   * misura e le schede ne restano staccate (16 nel Passaporto, dove la riga va a filo del bordo).
+   */
+  @Input() carouselInset = 4;
+
+  /** Opzioni di `wm-swiper` per il carosello; ricreate solo se cambia `carouselInset`. */
+  carouselOptions: SwiperOptions = this._carouselOptions();
 
   readonly vm$: Observable<ExperiencesSectionVm>;
 
@@ -104,7 +114,8 @@ export class WmExperiencesSectionComponent implements OnChanges {
    * cammino di un'esperienza lo decide il backend (ricerca, deep link, tappa condivisa fra più
    * cammini) e può non coincidere con `layerId`, che resta solo per la creazione.
    */
-  ngOnChanges(): void {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['carouselInset']) this.carouselOptions = this._carouselOptions();
     const onStage = this.ecTrackId != null;
     this._filter$.next({
       layerId: onStage ? undefined : this.layerId ?? undefined,
@@ -214,6 +225,22 @@ export class WmExperiencesSectionComponent implements OnChanges {
    */
   trackById(_: number, experience: Experience): number {
     return experience.id;
+  }
+
+  /**
+   * Schede a larghezza fissa (`slidesPerView: 'auto'`) staccate dai bordi di `carouselInset`;
+   * `observer` riprende le schede aggiunte o tolte dopo l'avvio (esperienza creata o cancellata).
+   *
+   * @returns Le opzioni di `wm-swiper`.
+   */
+  private _carouselOptions(): SwiperOptions {
+    return {
+      slidesPerView: 'auto',
+      spaceBetween: 10,
+      slidesOffsetBefore: this.carouselInset,
+      slidesOffsetAfter: this.carouselInset,
+      observer: true,
+    };
   }
 
   /**

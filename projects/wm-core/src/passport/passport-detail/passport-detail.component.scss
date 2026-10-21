@@ -1,10 +1,14 @@
 @import '../passport-theme';
 
 // Dettaglio del cammino, wireframe V1/V3 (oc:8166).
+// `ion-content` non scorre: di norma scorre solo la lista delle tappe. Se i blocchi fissi non ci
+// stanno (vista 6 con caselle ed esperienze e lista chiusa, nella modale da 500-600px di Ionic sul desktop)
+// scorre tutto il dettaglio invece di tagliarne il fondo (oc:8169).
 .wm-passport-detail-layout {
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow-y: auto;
 }
 
 .wm-passport-detail-ring {
@@ -153,6 +157,13 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+
+  // A cammino completato la lista si apre sotto le esperienze con la sua altezza: scorre tutto il
+  // dettaglio, invece di una lista schiacciata fra i blocchi fissi (oc:8169).
+  &--below {
+    flex: none;
+    overflow-y: visible;
+  }
 }
 
 .wm-passport-stage {
