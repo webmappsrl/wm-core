@@ -57,15 +57,15 @@
     <span class="wm-passport-stage-detail-row-value">{{ stage.descent }} m</span>
   </div>
 
-  <!-- esperienze su questa tappa (oc:8169): form e dettaglio restano nella modale, con il suo guard -->
-  <wm-experiences-section
-    class="wm-experiences-gutter"
+  <!-- diario di questa tappa (oc:8169): form e dettaglio restano nella modale, con il suo guard -->
+  <wm-diaries-section
+    class="wm-diaries-gutter"
     layout="list"
-    title="Le tue esperienze su questa tappa"
+    title="Il mio diario di questa tappa"
     [ecTrackId]="stage?.trackId"
     [layerId]="host?.layerId"
     [contextLabel]="contextLabel"
     [nav]="host?.nav"
     [guardHost]="host"
-  ></wm-experiences-section>
+  ></wm-diaries-section>
 </ion-content>

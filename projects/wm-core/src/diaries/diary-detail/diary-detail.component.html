@@ -1,0 +1,124 @@
+<!-- Dettaglio di un diario (oc:8169). -->
+<ng-container *ngIf="vm$ | async as vm">
+<ion-content class="wm-diary-detail">
+  <div class="wm-diary-detail-gallery">
+    <wm-swiper
+      class="wm-diary-detail-photos"
+      *ngIf="vm.diary.photos.length > 0; else noPhoto"
+      [options]="galleryOptions"
+      (swiperslidechange)="onGallerySlideChange($event)"
+    >
+      <swiper-slide *ngFor="let photo of vm.diary.photos">
+        <img
+          class="wm-diary-detail-photo"
+          [src]="photo.url || photo.thumbnail"
+          alt=""
+          loading="lazy"
+          (error)="onImgError($event)"
+        />
+      </swiper-slide>
+    </wm-swiper>
+    <ng-template #noPhoto>
+      <div class="wm-diary-detail-photos wm-diary-detail-photos--empty"></div>
+    </ng-template>
+    <button
+      type="button"
+      class="wm-diary-detail-close"
+      (click)="close()"
+      [attr.aria-label]="'Chiudi' | wmtrans"
+    >
+      <ion-icon name="close" aria-hidden="true"></ion-icon>
+    </button>
+    <div class="wm-diary-detail-dots" *ngIf="vm.diary.photos.length > 1" aria-hidden="true">
+      <span
+        *ngFor="let photo of vm.diary.photos; let i = index"
+        class="wm-diary-detail-dot"
+        [class.wm-diary-detail-dot--active]="i === activePhoto"
+      ></span>
+    </div>
+  </div>
+
+  <div class="wm-diary-detail-body">
+    <div class="wm-diary-detail-chips">
+      <span class="wm-diary-detail-chip wm-diary-detail-chip--stage" *ngIf="vm.diary.ecTrack">
+        {{ vm.diary.ecTrack.name }}
+      </span>
+      <span class="wm-diary-detail-chip">{{ vm.diary.layer.name }}</span>
+    </div>
+    <!-- il consenso alla ripubblicazione si vede qui senza aprire la modifica (oc:8169, ciclo 2) -->
+    <span class="wm-diary-detail-meta"
+      >{{ vm.date }}<ng-container *ngIf="vm.diary.publicationConsent">
+        · {{ "Cammini d'Italia può pubblicarlo" | wmtrans }}</ng-container
+      ></span
+    >
+    <p class="wm-diary-detail-text" *ngIf="vm.diary.description">{{ vm.diary.description }}</p>
+
+    <section class="wm-diary-detail-ugc" *ngIf="vm.ugcRows.length > 0">
+      <div class="wm-diary-detail-ugc-head">
+        <h2 class="wm-diary-detail-ugc-title">{{ 'Registrazioni collegate' | wmtrans }}</h2>
+        <span class="wm-diary-detail-ugc-count" *ngIf="vm.ugcRows.length > 1">{{ vm.ugcRows.length }}</span>
+      </div>
+      <ng-container *ngFor="let row of vm.ugcRows">
+        <!-- toccabile solo se la registrazione è sul telefono: vedi DiaryLinkedUgcRow.openable -->
+        <button
+          *ngIf="row.openable; else staticRow"
+          type="button"
+          class="wm-diary-detail-ugc-row"
+          (click)="openUgcTrack(row)"
+        >
+          <ng-container *ngTemplateOutlet="rowContent; context: {$implicit: row}"></ng-container>
+          <svg class="wm-diary-detail-ugc-chevron" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 6l6 6-6 6" />
+          </svg>
+        </button>
+        <ng-template #staticRow>
+          <div class="wm-diary-detail-ugc-row wm-diary-detail-ugc-row--static">
+            <ng-container *ngTemplateOutlet="rowContent; context: {$implicit: row}"></ng-container>
+          </div>
+        </ng-template>
+      </ng-container>
+    </section>
+
+    <ng-template #rowContent let-row>
+      <span class="wm-diary-detail-ugc-icon" aria-hidden="true">
+        <!-- stessa icona del pulsante «Inizia il cammino»: si riconosce come registrazione -->
+        <ion-icon name="analytics-outline"></ion-icon>
+      </span>
+      <span class="wm-diary-detail-ugc-text">
+        <span class="wm-diary-detail-ugc-name">{{ row.name }}</span>
+        <span class="wm-diary-detail-ugc-sub" *ngIf="row.subline">{{ row.subline }}</span>
+      </span>
+    </ng-template>
+
+    <div class="wm-diary-detail-error" role="alert" *ngIf="errorMessage">
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      <span>{{ errorMessage }}</span>
+    </div>
+  </div>
+</ion-content>
+
+<!-- azioni sempre in fondo alla pagina, qualunque sia la lunghezza del contenuto (wireframe X12) -->
+<ion-footer class="wm-diary-detail-footer">
+  <div class="wm-diary-detail-actions">
+    <button
+      type="button"
+      class="wm-diary-detail-button wm-diary-detail-edit"
+      [disabled]="deleting"
+      (click)="edit(vm.diary)"
+    >
+      <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+      {{ 'Modifica' | wmtrans }}
+    </button>
+    <button
+      type="button"
+      class="wm-diary-detail-button wm-diary-detail-delete"
+      [disabled]="deleting"
+      (click)="remove(vm.diary)"
+    >
+      <ion-spinner *ngIf="deleting" name="crescent"></ion-spinner>
+      <ion-icon *ngIf="!deleting" name="trash-outline" aria-hidden="true"></ion-icon>
+      {{ 'Elimina' | wmtrans }}
+    </button>
+  </div>
+</ion-footer>
+</ng-container>

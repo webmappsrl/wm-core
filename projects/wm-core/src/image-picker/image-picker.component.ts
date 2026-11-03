@@ -33,6 +33,10 @@ export class WmImagePickerComponent implements OnDestroy {
   @Output() syncedPhotoRemoved = new EventEmitter<number>();
   /** Opzioni di acquisizione (oc:8166); `null` mantiene il comportamento di default. */
   @Input() captureOptions: CaptureOptions | null = null;
+  /** Foto locali da ripristinare, per esempio da una bozza salvata sul telefono (oc:8169). */
+  @Input() set localPhotos(localPhotos: Media[] | null) {
+    if (localPhotos?.length) this._localPhotos$.next(localPhotos);
+  }
   @Input() set synchronizedPhotos(synchronizedPhotos: Media[]) {
     this._synchronizedPhotos$.next(synchronizedPhotos);
   }

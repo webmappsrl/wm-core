@@ -60,15 +60,16 @@
   ></wm-tab-description>
 
   <wm-config-detail [groups]="ecTrackProperties?.config_detail"></wm-config-detail>
-  <ng-container *ngIf="showExperiences && {layer: currentLayer$|async} as ctx">
-    <wm-experiences-section
-      class="wm-experiences-feature wm-experiences-feature--divided"
+  <ng-container *ngIf="showDiaries && {layer: currentLayer$|async} as ctx">
+    <wm-diaries-section
+      class="wm-diaries-feature wm-diaries-feature--divided"
       layout="list"
-      title="Le tue esperienze su questa tappa"
+      title="Il mio diario di questa tappa"
       [ecTrackId]="ecTrackProperties?.id"
       [layerId]="ctx.layer?.id"
-      [contextLabel]="experienceContextLabel(ecTrackProperties?.name | wmtrans, ctx.layer?.title | wmtrans)"
-    ></wm-experiences-section>
+      [showCreate]="(diaryCanWrite$ | async) !== false"
+      [contextLabel]="diaryContextLabel(ecTrackProperties?.name | wmtrans, ctx.layer?.title | wmtrans)"
+    ></wm-diaries-section>
   </ng-container>
 
   <ng-container *ngIf="ecTrackProperties.related_pois?.length > 0">

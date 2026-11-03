@@ -40,7 +40,7 @@ export interface UgcTrackShareResult {
 /**
  * Logica condivisa fra `wm-ugc-track-properties` di default e la sua variante camminiditalia
  * (oc:8169). Ogni sottoclasse dichiara `selector`, `templateUrl` e `styleUrls` — gli stessi: il
- * template è uno solo e la variante accende soltanto `showExperiences`. Si inserisce fra
+ * template è uno solo e la variante accende soltanto `showDiaries`. Si inserisce fra
  * `UgcPropertiesBaseComponent` (foto di `wm-image-picker`, condivisa con il POI) e i componenti.
  *
  * File mai soggetto a `fileReplacements`: la variante non può importare dal file di default
@@ -108,7 +108,7 @@ export abstract class UgcTrackPropertiesBaseComponent
   private _isTrackSynced = false;
   shareErrorMessage: string | null = null;
   /** Mostra le esperienze collegate (oc:8169): accesa solo dalla variante camminiditalia. */
-  readonly showExperiences: boolean = false;
+  readonly showDiaries: boolean = false;
   shareState$: BehaviorSubject<EUgcTrackShareState> = new BehaviorSubject<EUgcTrackShareState>(
     EUgcTrackShareState.IDLE,
   );

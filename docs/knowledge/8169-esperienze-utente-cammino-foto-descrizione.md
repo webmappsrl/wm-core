@@ -1,4 +1,36 @@
-# Esperienze utente: cammino, foto e descrizione
+# Diario del camminatore: cammino, foto e descrizione
+
+## Ciclo 2 — «Il mio diario» (oc:8169, 3 novembre 2026)
+
+La funzione si chiama **diario** per l'utente e `Diary` nel codice (cartella `diaries/`, blocco
+`wm-diaries-section`, flag `showDiaries`, `DiaryService`, API `/api/diaries`). Il resto della pagina
+descrive il primo ciclo con la parola «esperienza»; dove il secondo ciclo l'ha cambiato vale questa
+sezione.
+
+- **Pulsante solo vicino al cammino** (`ActiveRouteService`, avviato solo da
+  `tabs.page.camminiditalia.ts` dell'app). In sottofondo salva **solo le posizioni** del telefono:
+  al massimo una ogni 3 minuti (`throttleTime` con `leading` e `trailing`, perché uno spostamento
+  dentro la finestra non vada perso), almeno 200 m dall'ultima, per 90 giorni. Il confronto si fa
+  **all'apertura del dettaglio**, e si rifà a ogni posizione nuova (`lastPositionAt$`): sul cammino
+  con le tappe di Elastic (`ecTracks`, campo `layers`) e le loro linee da `EcService.getEcTrack`,
+  sulla tappa con la sua linea e i suoi `properties.layers`. Entro 1 km il cammino è attivo per 90
+  giorni, per tutte le sue tappe. Senza linee disponibili vale il rettangolo del cammino. **Le tappe
+  non si possono leggere dalla configurazione**: `MAP.layers` non ha né `tracks` né `edges`.
+  Fuori da camminiditalia `canWrite$` vale sempre `true`. Nel Passaporto la regola non vale.
+- **Passaporto.** Il diario del cammino compare da quando c'è almeno una tappa riconosciuta
+  (`vm.showDiary`), non solo a cammino completato.
+- **Bozza** (`DiaryDraftStore`, localforage `device/diaryDrafts`): chiave `u<utente>:l<cammino>:t<tappa>`
+  per un diario nuovo, `u<utente>:d<id>` per una modifica; uuid nella bozza; si cancella dopo
+  pubblicazione, uscita confermata o passaggio in coda; scade dopo 90 giorni.
+- **Coda offline** (`DiaryOutboxService`, `device/diaryOutbox`): solo diari nuovi, solo dove la coda
+  è avviata (l'app camminiditalia). Invio a evento — rete tornata, login, attese di 1, 5 e 15
+  minuti dopo rete assente, 5xx o 429 — un elemento alla volta e solo per l'utente che l'ha scritto.
+  401 resta in attesa del login; 422, 413 e 404 diventano «Non inviato» e si riaprono nel form come
+  bozza con il messaggio vero (`diaryHttpErrorKey`). Nella registrazione la coda non si mostra.
+- **Consenso** `publicationConsent`: spunta facoltativa nel form; nel dettaglio la riga della data
+  dice «Cammini d'Italia può pubblicarlo» solo se c'è.
+- **Dettaglio.** «Modifica» ed «Elimina» in un `ion-footer`; la ✕ sopra la galleria ha `z-index`,
+  altrimenti lo `swiper-container` la copre. Carosello del cammino con schede basse (215×76).
 
 ## Come funziona oggi
 

@@ -1,5 +1,5 @@
 // Dettaglio di un'esperienza (oc:8169).
-.wm-experience-detail {
+.wm-diary-detail {
   &-gallery {
     position: relative;
     height: 300px;
@@ -20,8 +20,10 @@
     object-fit: cover;
   }
 
+  // sopra lo `swiper-container` della galleria, che altrimenti lo copre (oc:8169, ciclo 2)
   &-close {
     position: absolute;
+    z-index: 2;
     top: calc(14px + var(--ion-safe-area-top, 0px));
     right: 14px;
     display: flex;
@@ -38,6 +40,7 @@
 
   &-dots {
     position: absolute;
+    z-index: 2;
     right: 0;
     bottom: 12px;
     left: 0;
@@ -198,8 +201,9 @@
   &-actions {
     display: flex;
     gap: 10px;
-    padding: 12px 20px calc(24px + var(--ion-safe-area-bottom, 0px));
+    padding: 12px 20px calc(16px + var(--ion-safe-area-bottom, 0px));
     border-top: 1px solid #ececec;
+    background: #fff;
   }
 
   &-button {

@@ -9,44 +9,53 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="wm-experience-form ion-padding">
-  <div class="wm-experience-form-context" *ngIf="contextLabel">{{ contextLabel }}</div>
+<ion-content class="wm-diary-form ion-padding">
+  <div class="wm-diary-form-context" *ngIf="contextLabel">{{ contextLabel }}</div>
 
-  <label class="wm-experience-form-label" for="wm-experience-text">{{ 'Il tuo racconto' | wmtrans }}</label>
+  <label class="wm-diary-form-label" for="wm-diary-text">{{ 'Il tuo racconto' | wmtrans }}</label>
   <textarea
-    id="wm-experience-text"
-    class="wm-experience-form-text"
+    id="wm-diary-text"
+    class="wm-diary-form-text"
     rows="7"
     [value]="description"
     [placeholder]="placeholder | wmtrans"
     (input)="onDescription($any($event.target).value)"
   ></textarea>
 
-  <div class="wm-experience-form-photos-head">
-    <span class="wm-experience-form-label">{{ 'Foto' | wmtrans }}</span>
-    <span class="wm-experience-form-count">{{ '{{n}} di {{max}}' | wmtrans: {n: photosCount, max: maxPhotos} }}</span>
+  <div class="wm-diary-form-photos-head">
+    <span class="wm-diary-form-label">{{ 'Foto' | wmtrans }}</span>
+    <span class="wm-diary-form-count">{{ '{{n}} di {{max}}' | wmtrans: {n: photosCount, max: maxPhotos} }}</span>
   </div>
   <wm-image-picker
     [maxPhotos]="maxPhotos"
     [captureOptions]="captureOptions"
     [synchronizedPhotos]="syncedPhotos"
+    [localPhotos]="restoredPhotos"
     removeMode="local"
     (photosChanged)="onPhotos($event)"
     (syncedPhotoRemoved)="onSyncedPhotoRemoved($event)"
   ></wm-image-picker>
 
-  <div class="wm-experience-form-error" role="alert" *ngIf="errorMessage">
+  <ion-checkbox
+    class="wm-diary-form-consent"
+    labelPlacement="end"
+    justify="start"
+    [checked]="publicationConsent"
+    (ionChange)="onPublicationConsent($any($event).detail.checked)"
+  >{{ "Cammini d'Italia può pubblicare il mio racconto sui suoi canali" | wmtrans }}</ion-checkbox>
+
+  <div class="wm-diary-form-error" role="alert" *ngIf="errorMessage">
     <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
     <span>{{ errorMessage }}</span>
   </div>
 
   <button
     type="button"
-    class="wm-experience-form-submit"
+    class="wm-diary-form-submit"
     [disabled]="!canSubmit"
     (click)="submit()"
   >
     <ion-spinner *ngIf="submitting" name="crescent"></ion-spinner>
-    {{ (networkError ? 'Riprova' : experience ? 'Salva' : 'Pubblica') | wmtrans }}
+    {{ (networkError ? 'Riprova' : diary ? 'Salva' : 'Pubblica') | wmtrans }}
   </button>
 </ion-content>

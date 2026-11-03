@@ -2,6 +2,8 @@ import {of} from 'rxjs';
 import {TrackPropertiesBaseComponent} from './track-properties-base.component';
 import {TrackPropertiesComponent} from './track-properties.component';
 import {TrackPropertiesComponent as TrackPropertiesCamminiditaliaComponent} from './track-properties.component.camminiditalia';
+import {TestBed} from '@angular/core/testing';
+import {ActiveRouteService} from '@wm-core/diaries/active-route.service';
 
 /**
  * Base e varianti di `wm-track-properties` (oc:8169): la sezione delle esperienze è accesa solo
@@ -9,6 +11,18 @@ import {TrackPropertiesComponent as TrackPropertiesCamminiditaliaComponent} from
  */
 describe('TrackPropertiesBaseComponent — varianti (oc:8169)', () => {
   const store = {select: () => of(null)} as any;
+  /** La variante legge ActiveRouteService con `inject()`: si crea in un contesto di iniezione. */
+  const variant = () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [{provide: ActiveRouteService, useValue: {canWrite$: () => of(true), evaluateTrack: async () => {}, lastPositionAt$: of(null)}}],
+    });
+    return TestBed.runInInjectionContext(
+      () => new TrackPropertiesCamminiditaliaComponent(store, null as any, null as any),
+    );
+  };
+
+  afterEach(() => TestBed.resetTestingModule());
 
   /**
    * Guardia di regressione, come per `WmHomeLayerBaseComponent`: senza decorator Angular sulla
@@ -21,17 +35,25 @@ describe('TrackPropertiesBaseComponent — varianti (oc:8169)', () => {
 
   it('il default non mostra le esperienze', () => {
     const component = new TrackPropertiesComponent(store, null as any, null as any);
-    expect(component.showExperiences).toBeFalse();
+    expect(component.showDiaries).toBeFalse();
+  });
+
+  it('nel default il pulsante del diario c\'è sempre (oc:8169, ciclo 2)', done => {
+    const component = new TrackPropertiesComponent(store, null as any, null as any);
+    component.diaryCanWrite$.subscribe(v => {
+      expect(v).toBeTrue();
+      done();
+    });
   });
 
   it('la variante camminiditalia mostra le esperienze', () => {
-    const component = new TrackPropertiesCamminiditaliaComponent(store, null as any, null as any);
-    expect(component.showExperiences).toBeTrue();
+    const component = variant();
+    expect(component.showDiaries).toBeTrue();
   });
 
-  it('la variante camminiditalia eredita experienceContextLabel', () => {
-    const component = new TrackPropertiesCamminiditaliaComponent(store, null as any, null as any);
-    expect(component.experienceContextLabel('Tappa 05', 'Cammino X')).toBe('Tappa 05 · Cammino X');
+  it('la variante camminiditalia eredita diaryContextLabel', () => {
+    const component = variant();
+    expect(component.diaryContextLabel('Tappa 05', 'Cammino X')).toBe('Tappa 05 · Cammino X');
   });
 
   it('default e variante dichiarano lo stesso selettore', () => {

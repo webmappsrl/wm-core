@@ -16,5 +16,5 @@ export type {UgcTrackShareResult} from './ugc-track-properties-base.component';
   encapsulation: ViewEncapsulation.None,
 })
 export class UgcTrackPropertiesComponent extends UgcTrackPropertiesBaseComponent {
-  override readonly showExperiences: boolean = true;
+  override readonly showDiaries: boolean = true;
 }

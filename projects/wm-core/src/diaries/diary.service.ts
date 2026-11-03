@@ -9,6 +9,7 @@ import {
   shareReplay,
   startWith,
   switchMap,
+  take,
   takeUntil,
   tap,
 } from 'rxjs/operators';
@@ -16,19 +17,19 @@ import {EnvironmentService} from '@wm-core/services/environment.service';
 import {isLogged, user} from '@wm-core/store/auth/auth.selectors';
 import {online} from '@wm-core/store/network/network.selector';
 import {
-  clearExperiencesCache,
-  markExperiencesCache,
-  synchronizedExperiences,
+  clearDiariesCache,
+  markDiariesCache,
+  synchronizedDiaries,
 } from '@wm-core/utils/localForage';
 import {
-  Experience,
-  ExperienceDraft,
-  ExperienceFilter,
-  ExperiencesStatus,
-} from './experience.model';
+  Diary,
+  DiaryDraft,
+  DiaryFilter,
+  DiariesStatus,
+} from './diary.model';
 
 /** Elemento della risposta del backend (snake_case). */
-interface ExperienceResponse {
+interface DiaryResponse {
   id: number;
   uuid: string;
   layer: {id: number; name: string};
@@ -38,12 +39,13 @@ interface ExperienceResponse {
   updated_at: string;
   photos?: {id: number; url: string; thumbnail: string}[] | null;
   ugc_track_ids?: number[] | null;
+  publication_consent?: boolean | null;
 }
 
 /** Stato interno: stato della funzione e lista (vuota se non attiva). */
-interface ExperiencesState {
-  status: ExperiencesStatus;
-  list: Experience[];
+interface DiariesState {
+  status: DiariesStatus;
+  list: Diary[];
   /** `true` se, in `offline` o `error`, la lista è la copia salvata sul telefono (anche vuota). */
   saved?: boolean;
 }
@@ -51,9 +53,9 @@ interface ExperiencesState {
 /**
  * Attesa prima del primo tentativo automatico dopo una lettura fallita con la rete presente
  * (`error`); i successivi raddoppiano (30 s, 60 s, 120 s), al massimo
- * `EXPERIENCES_MAX_AUTO_RETRIES`.
+ * `DIARIES_MAX_AUTO_RETRIES`.
  */
-export const EXPERIENCES_RETRY_DELAY = new InjectionToken<number>('EXPERIENCES_RETRY_DELAY', {
+export const DIARIES_RETRY_DELAY = new InjectionToken<number>('DIARIES_RETRY_DELAY', {
   providedIn: 'root',
   factory: () => 30000,
 });
@@ -62,20 +64,20 @@ export const EXPERIENCES_RETRY_DELAY = new InjectionToken<number>('EXPERIENCES_R
  * Tentativi automatici consecutivi dopo una lettura fallita: poi si aspetta «Riprova», la rete o
  * un cambio d'utente, che ripartono da zero.
  */
-export const EXPERIENCES_MAX_AUTO_RETRIES = 3;
+export const DIARIES_MAX_AUTO_RETRIES = 3;
 
 /** Sessione che decide la GET e la chiave della copia offline. */
-interface ExperiencesSession {
+interface DiariesSession {
   logged: boolean;
   /** Id dell'utente loggato, `null` da non loggato. */
   userId: number | null;
 }
 
 /** Login e utente letti insieme: un solo cambio di stato produce una sola emissione. */
-const selectExperiencesSession = createSelector(
+export const selectDiariesSession = createSelector(
   isLogged,
   user,
-  (logged, current): ExperiencesSession => ({
+  (logged, current): DiariesSession => ({
     logged: !!logged,
     userId: logged && current?.id != null ? current.id : null,
   }),
@@ -95,15 +97,15 @@ const selectExperiencesSession = createSelector(
  * d'utente (anche dall'effect di logout, se il service non è mai nato).
  */
 @Injectable({providedIn: 'root'})
-export class ExperienceService implements OnDestroy {
+export class DiaryService implements OnDestroy {
   private _refresh$ = new BehaviorSubject<void>(undefined);
-  private _state$: Observable<ExperiencesState>;
+  private _state$: Observable<DiariesState>;
   /** Utente dell'ultima sessione vista, per svuotare la copia offline quando cambia. */
   private _lastUserId: number | null = null;
   /** Operazioni sulla copia offline, eseguite in fila nell'ordine in cui sono chieste. */
   private _cacheQueue: Promise<void> = Promise.resolve();
   private _destroy$ = new Subject<void>();
-  private _retryDelay = inject(EXPERIENCES_RETRY_DELAY);
+  private _retryDelay = inject(DIARIES_RETRY_DELAY);
 
   constructor(
     private _store: Store,
@@ -115,7 +117,7 @@ export class ExperienceService implements OnDestroy {
       map(value => value !== false),
       distinctUntilChanged(),
     );
-    this._state$ = this._store.select(selectExperiencesSession).pipe(
+    this._state$ = this._store.select(selectDiariesSession).pipe(
       distinctUntilChanged((a, b) => a.logged === b.logged && a.userId === b.userId),
       tap(session => this._onSessionChange(session)),
       // il login non cambia la chiamata, ma la rilancia (il token dell'interceptor cambia)
@@ -126,7 +128,7 @@ export class ExperienceService implements OnDestroy {
           switchMap(([, isOnline]) =>
             isOnline ? this._load(session.userId) : this._fromCache(session.userId),
           ),
-          startWith<ExperiencesState>({status: 'loading', list: []}),
+          startWith<DiariesState>({status: 'loading', list: []}),
         ),
       ),
       takeUntil(this._destroy$),
@@ -142,17 +144,28 @@ export class ExperienceService implements OnDestroy {
   }
 
   /**
+   * Utente loggato secondo lo store (null se non loggato): serve a bozze e coda per sapere di chi sono.
+   * @returns id dell'utente corrente
+   */
+  currentUserId$(): Observable<number | null> {
+    return this._store.select(selectDiariesSession).pipe(
+      map(session => session.userId),
+      take(1),
+    );
+  }
+
+  /**
    * Crea un'esperienza e ricarica lo stream.
    * @param draft dati dell'esperienza
    */
-  create(draft: ExperienceDraft): Observable<Experience> {
+  create(draft: DiaryDraft): Observable<Diary> {
     return this._http
-      .post<ExperienceResponse | {data: ExperienceResponse}>(
-        `${this._environmentSvc.origin}/api/experiences`,
+      .post<DiaryResponse | {data: DiaryResponse}>(
+        `${this._environmentSvc.origin}/api/diaries`,
         this._toFormData(draft, false),
       )
       .pipe(
-        map(res => this._toExperience(this._unwrap(res))),
+        map(res => this._toDiary(this._unwrap(res))),
         tap(created => {
           this._patchCache(list => [created, ...list.filter(e => e.id !== created.id)]);
           this.refresh();
@@ -164,7 +177,7 @@ export class ExperienceService implements OnDestroy {
    * Esperienze filtrate per cammino (tappe comprese), tappa o registrazione.
    * @param filter filtro; `scope` è ignorato (solo `mine`)
    */
-  experiences$(filter: ExperienceFilter = {}): Observable<Experience[]> {
+  diaries$(filter: DiaryFilter = {}): Observable<Diary[]> {
     return this._state$.pipe(
       map(state =>
         state.list.filter(
@@ -188,7 +201,7 @@ export class ExperienceService implements OnDestroy {
    */
   remove(id: number): Observable<void> {
     return this._http
-      .delete<void>(`${this._environmentSvc.origin}/api/experiences/${id}`)
+      .delete<void>(`${this._environmentSvc.origin}/api/diaries/${id}`)
       .pipe(
         map(() => undefined),
         tap(() => {
@@ -213,7 +226,7 @@ export class ExperienceService implements OnDestroy {
    * Stato della funzione: `active`, `login-required` (401), `off` (solo 404), `offline` (rete
    * assente) oppure `error` (rete presente, lettura fallita).
    */
-  status$(): Observable<ExperiencesStatus> {
+  status$(): Observable<DiariesStatus> {
     return this._state$.pipe(map(state => state.status));
   }
 
@@ -222,14 +235,14 @@ export class ExperienceService implements OnDestroy {
    * @param id id dell'esperienza
    * @param draft dati aggiornati
    */
-  update(id: number, draft: ExperienceDraft): Observable<Experience> {
+  update(id: number, draft: DiaryDraft): Observable<Diary> {
     return this._http
-      .post<ExperienceResponse | {data: ExperienceResponse}>(
-        `${this._environmentSvc.origin}/api/experiences/${id}`,
+      .post<DiaryResponse | {data: DiaryResponse}>(
+        `${this._environmentSvc.origin}/api/diaries/${id}`,
         this._toFormData(draft, true),
       )
       .pipe(
-        map(res => this._toExperience(this._unwrap(res))),
+        map(res => this._toDiary(this._unwrap(res))),
         tap(updated => {
           this._patchCache(list => list.map(e => (e.id === updated.id ? updated : e)));
           this.refresh();
@@ -265,13 +278,13 @@ export class ExperienceService implements OnDestroy {
   private _fromCache(
     userId: number | null,
     status: 'offline' | 'error' = 'offline',
-  ): Observable<ExperiencesState> {
-    if (userId == null) return of<ExperiencesState>({status, list: [], saved: false});
+  ): Observable<DiariesState> {
+    if (userId == null) return of<DiariesState>({status, list: [], saved: false});
     return from(
-      synchronizedExperiences.getItem<Experience[]>(this._cacheKey(userId)).catch(() => null),
+      synchronizedDiaries.getItem<Diary[]>(this._cacheKey(userId)).catch(() => null),
     ).pipe(
       map(
-        (list): ExperiencesState =>
+        (list): DiariesState =>
           Array.isArray(list) ? {status, list, saved: true} : {status, list: [], saved: false},
       ),
     );
@@ -283,15 +296,15 @@ export class ExperienceService implements OnDestroy {
    *
    * @param change Trasformazione della lista salvata.
    */
-  private _patchCache(change: (list: Experience[]) => Experience[]): void {
+  private _patchCache(change: (list: Diary[]) => Diary[]): void {
     const userId = this._lastUserId;
     if (userId == null) return;
     const key = this._cacheKey(userId);
     this._enqueueCache(async () => {
-      const list = await synchronizedExperiences.getItem<Experience[]>(key);
+      const list = await synchronizedDiaries.getItem<Diary[]>(key);
       if (!Array.isArray(list) || this._lastUserId !== userId) return;
-      markExperiencesCache();
-      await synchronizedExperiences.setItem(key, change(list));
+      markDiariesCache();
+      await synchronizedDiaries.setItem(key, change(list));
     });
   }
 
@@ -302,13 +315,13 @@ export class ExperienceService implements OnDestroy {
    * @param userId Utente della lettura.
    * @param list Lista letta.
    */
-  private _writeCache(userId: number, list: Experience[]): void {
+  private _writeCache(userId: number, list: Diary[]): void {
     const key = this._cacheKey(userId);
     this._enqueueCache(async () => {
       // il marcatore si mette in fila, dopo un'eventuale pulizia che lo toglie
-      markExperiencesCache();
-      await synchronizedExperiences.setItem(key, list);
-      if (this._lastUserId !== userId) await synchronizedExperiences.removeItem(key);
+      markDiariesCache();
+      await synchronizedDiaries.setItem(key, list);
+      if (this._lastUserId !== userId) await synchronizedDiaries.removeItem(key);
     });
   }
 
@@ -316,8 +329,8 @@ export class ExperienceService implements OnDestroy {
    * Legge lo stato dal backend, anche da non loggato (l'interruttore risponde 404 senza token).
    * 401 → `login-required`; 404 → `off` (la funzione è spenta: la copia offline si scarta);
    * ogni altro errore (5xx, gateway, timeout, status 0 con il segnale di rete ancora «online») →
-   * `error` con la copia salvata, e un nuovo tentativo automatico dopo `EXPERIENCES_RETRY_DELAY`,
-   * raddoppiato a ogni fallimento, fino a `EXPERIENCES_MAX_AUTO_RETRIES` consecutivi; poi più
+   * `error` con la copia salvata, e un nuovo tentativo automatico dopo `DIARIES_RETRY_DELAY`,
+   * raddoppiato a ogni fallimento, fino a `DIARIES_MAX_AUTO_RETRIES` consecutivi; poi più
    * nulla. `refresh()`, il cambio di rete o di utente annullano il tentativo in attesa e
    * ripartono da zero (rilanciano `_load` con `attempt` 0).
    *
@@ -325,14 +338,14 @@ export class ExperienceService implements OnDestroy {
    * @param attempt Tentativi automatici già fatti dopo l'ultima lettura chiesta.
    * @returns Lo stato letto.
    */
-  private _load(userId: number | null, attempt = 0): Observable<ExperiencesState> {
+  private _load(userId: number | null, attempt = 0): Observable<DiariesState> {
     return this._http
-      .get<{data: ExperienceResponse[]}>(`${this._environmentSvc.origin}/api/experiences`)
+      .get<{data: DiaryResponse[]}>(`${this._environmentSvc.origin}/api/diaries`)
       .pipe(
         map(
-          (res): ExperiencesState => ({
+          (res): DiariesState => ({
             status: 'active',
-            list: (res?.data ?? []).map(item => this._toExperience(item)),
+            list: (res?.data ?? []).map(item => this._toDiary(item)),
           }),
         ),
         tap(state => {
@@ -340,13 +353,13 @@ export class ExperienceService implements OnDestroy {
           if (userId != null) this._writeCache(userId, state.list);
         }),
         catchError((err: HttpErrorResponse) => {
-          if (err?.status === 401) return of<ExperiencesState>({status: 'login-required', list: []});
+          if (err?.status === 401) return of<DiariesState>({status: 'login-required', list: []});
           if (err?.status === 404) {
-            this._enqueueCache(() => clearExperiencesCache());
-            return of<ExperiencesState>({status: 'off', list: []});
+            this._enqueueCache(() => clearDiariesCache());
+            return of<DiariesState>({status: 'off', list: []});
           }
           const cached$ = this._fromCache(userId, 'error');
-          if (attempt >= EXPERIENCES_MAX_AUTO_RETRIES) return cached$;
+          if (attempt >= DIARIES_MAX_AUTO_RETRIES) return cached$;
           return concat(
             cached$,
             timer(this._retryDelay * 2 ** attempt).pipe(
@@ -362,11 +375,11 @@ export class ExperienceService implements OnDestroy {
    *
    * @param session Nuova sessione.
    */
-  private _onSessionChange(session: ExperiencesSession): void {
+  private _onSessionChange(session: DiariesSession): void {
     const previous = this._lastUserId;
     this._lastUserId = session.userId;
     if (previous != null && previous !== session.userId) {
-      this._enqueueCache(() => clearExperiencesCache());
+      this._enqueueCache(() => clearDiariesCache());
     }
   }
 
@@ -378,7 +391,7 @@ export class ExperienceService implements OnDestroy {
   }
 
   /** Costruisce il multipart del backend. */
-  private _toFormData(draft: ExperienceDraft, edit: boolean): FormData {
+  private _toFormData(draft: DiaryDraft, edit: boolean): FormData {
     const form = new FormData();
     if (!edit) {
       form.append('uuid', draft.uuid);
@@ -386,6 +399,7 @@ export class ExperienceService implements OnDestroy {
       if (draft.ecTrackId != null) form.append('ec_track_id', String(draft.ecTrackId));
     }
     form.append('description', draft.description ?? '');
+    form.append('publication_consent', draft.publicationConsent ? '1' : '0');
     (draft.newPhotos ?? []).forEach((photo, i) =>
       form.append('images[]', photo, `photo-${i}.${this._extension(photo)}`),
     );
@@ -395,8 +409,8 @@ export class ExperienceService implements OnDestroy {
     return form;
   }
 
-  /** Mappa l'elemento snake_case del backend sull'interfaccia `Experience`. */
-  private _toExperience(item: ExperienceResponse): Experience {
+  /** Mappa l'elemento snake_case del backend sull'interfaccia `Diary`. */
+  private _toDiary(item: DiaryResponse): Diary {
     return {
       id: item.id,
       uuid: item.uuid,
@@ -407,11 +421,12 @@ export class ExperienceService implements OnDestroy {
       updatedAt: item.updated_at,
       photos: item.photos ?? [],
       ugcTrackIds: item.ugc_track_ids ?? [],
+      publicationConsent: item.publication_consent === true,
     };
   }
 
   /** Il backend può rispondere con l'elemento nudo o dentro `data`. */
-  private _unwrap(res: ExperienceResponse | {data: ExperienceResponse}): ExperienceResponse {
-    return (res as {data?: ExperienceResponse}).data ?? (res as ExperienceResponse);
+  private _unwrap(res: DiaryResponse | {data: DiaryResponse}): DiaryResponse {
+    return (res as {data?: DiaryResponse}).data ?? (res as DiaryResponse);
   }
 }

@@ -1,12 +1,12 @@
 import {BehaviorSubject} from 'rxjs';
 import {openLoginModal} from '@wm-core/store/user-activity/user-activity.action';
-import {Experience} from './experience.model';
-import {EXPERIENCE_BACK_PRIORITY, ExperienceLauncherService} from './experience-launcher.service';
-import {WmExperienceFormComponent} from './experience-form/experience-form.component';
-import {WmExperienceDetailComponent} from './experience-detail/experience-detail.component';
+import {Diary} from './diary.model';
+import {DIARY_BACK_PRIORITY, DiaryLauncherService} from './diary-launcher.service';
+import {WmDiaryFormComponent} from './diary-form/diary-form.component';
+import {WmDiaryDetailComponent} from './diary-detail/diary-detail.component';
 
-describe('ExperienceLauncherService (oc:8169)', () => {
-  const experience: Experience = {
+describe('DiaryLauncherService (oc:8169)', () => {
+  const diary: Diary = {
     id: 4,
     uuid: 'u4',
     layer: {id: 7, name: 'Cammino'},
@@ -16,6 +16,7 @@ describe('ExperienceLauncherService (oc:8169)', () => {
     updatedAt: '',
     photos: [],
     ugcTrackIds: [],
+    publicationConsent: false,
   };
 
   let logged$: BehaviorSubject<boolean>;
@@ -26,7 +27,7 @@ describe('ExperienceLauncherService (oc:8169)', () => {
   let backHandler: (() => Promise<void>) | null;
   let backSub: {unsubscribe: jasmine.Spy};
   let resolveDismiss: () => void;
-  let svc: ExperienceLauncherService;
+  let svc: DiaryLauncherService;
 
   /** Opzioni passate a `ModalController.create`. */
   const modalOpts = (): any => modalCtrl.create.calls.mostRecent().args[0];
@@ -59,7 +60,7 @@ describe('ExperienceLauncherService (oc:8169)', () => {
       },
     };
     const alertCtrl = {getTop: async () => topAlert};
-    svc = new ExperienceLauncherService(store as any, modalCtrl as any, alertCtrl as any, platform as any);
+    svc = new DiaryLauncherService(store as any, modalCtrl as any, alertCtrl as any, platform as any);
   });
 
   /** Host passato al componente nella modale. */
@@ -80,7 +81,7 @@ describe('ExperienceLauncherService (oc:8169)', () => {
     const guardHost = jasmine.createSpyObj('guardHost', ['registerGuard']);
     await svc.openForm({layerId: 7, ecTrackId: 70, contextLabel: 'ctx', nav, guardHost});
     const [component, params] = nav.push.calls.mostRecent().args;
-    expect(component).toBe(WmExperienceFormComponent);
+    expect(component).toBe(WmDiaryFormComponent);
     expect(params).toEqual(jasmine.objectContaining({layerId: 7, ecTrackId: 70, contextLabel: 'ctx'}));
     const guard = {canLeave: async () => true};
     params.host.registerGuard(guard);
@@ -92,12 +93,12 @@ describe('ExperienceLauncherService (oc:8169)', () => {
 
   it('senza nav apre il form in una modale con il back hardware sopra 100', async () => {
     await svc.openForm({layerId: 7, contextLabel: 'ctx'});
-    expect(modalOpts().component).toBe(WmExperienceFormComponent);
+    expect(modalOpts().component).toBe(WmDiaryFormComponent);
     expect(modal.present).toHaveBeenCalled();
     expect((svc as any)._platform.backButton.subscribeWithPriority.calls.mostRecent().args[0]).toBe(
-      EXPERIENCE_BACK_PRIORITY,
+      DIARY_BACK_PRIORITY,
     );
-    expect(EXPERIENCE_BACK_PRIORITY).toBeGreaterThan(100);
+    expect(DIARY_BACK_PRIORITY).toBeGreaterThan(100);
   });
 
   it('swipe o backdrop: canDismiss chiede canLeave al form', async () => {
@@ -149,20 +150,20 @@ describe('ExperienceLauncherService (oc:8169)', () => {
   it('openDetail con nav spinge il dettaglio; «Modifica» spinge il form nello stesso nav', async () => {
     const nav = jasmine.createSpyObj('IonNav', ['push', 'pop']);
     nav.push.and.resolveTo(true);
-    await svc.openDetail(experience, nav);
+    await svc.openDetail(diary, nav);
     const [component, params] = nav.push.calls.mostRecent().args;
-    expect(component).toBe(WmExperienceDetailComponent);
-    expect(params.experience).toBe(experience);
-    params.host.edit(experience);
+    expect(component).toBe(WmDiaryDetailComponent);
+    expect(params.diary).toBe(diary);
+    params.host.edit(diary);
     await new Promise(r => setTimeout(r));
     const [formComponent, formParams] = nav.push.calls.mostRecent().args;
-    expect(formComponent).toBe(WmExperienceFormComponent);
-    expect(formParams.experience).toBe(experience);
+    expect(formComponent).toBe(WmDiaryFormComponent);
+    expect(formParams.diary).toBe(diary);
     expect(formParams.contextLabel).toBe('Tappa 05 · Cammino');
   });
 
   it('openDetail in modale: exit() chiude passando da canDismiss già approvato', async () => {
-    await svc.openDetail(experience);
+    await svc.openDetail(diary);
     expect(await modalHost().exit()).toBeTrue();
     expect(modal.dismiss).toHaveBeenCalled();
     expect(await modalOpts().canDismiss()).toBeTrue();
@@ -175,7 +176,7 @@ describe('ExperienceLauncherService (oc:8169)', () => {
       registerGuard: jasmine.createSpy('registerGuard'),
       close: jasmine.createSpy('close').and.resolveTo(true),
     };
-    await svc.openDetail(experience, nav, guardHost);
+    await svc.openDetail(diary, nav, guardHost);
     const [, params] = nav.push.calls.mostRecent().args;
     expect(await params.host.exit()).toBeTrue();
     expect(guardHost.close).toHaveBeenCalled();
@@ -189,7 +190,7 @@ describe('ExperienceLauncherService (oc:8169)', () => {
       registerGuard: jasmine.createSpy('registerGuard'),
       close: jasmine.createSpy('close').and.resolveTo(false),
     };
-    await svc.openDetail(experience, nav, guardHost);
+    await svc.openDetail(diary, nav, guardHost);
     const [, params] = nav.push.calls.mostRecent().args;
     expect(await params.host.exit()).toBeFalse();
   });
@@ -198,16 +199,16 @@ describe('ExperienceLauncherService (oc:8169)', () => {
     const nav = jasmine.createSpyObj('IonNav', ['push', 'pop']);
     nav.push.and.resolveTo(true);
     nav.pop.and.resolveTo(true);
-    await svc.openDetail(experience, nav);
+    await svc.openDetail(diary, nav);
     const [, params] = nav.push.calls.mostRecent().args;
     expect(await params.host.exit()).toBeTrue();
     expect(nav.pop).toHaveBeenCalled();
   });
 
   it('openDetail senza nav apre una modale', async () => {
-    await svc.openDetail(experience);
-    expect(modalOpts().component).toBe(WmExperienceDetailComponent);
-    expect(modalOpts().componentProps.experience).toBe(experience);
+    await svc.openDetail(diary);
+    expect(modalOpts().component).toBe(WmDiaryDetailComponent);
+    expect(modalOpts().componentProps.diary).toBe(diary);
   });
 
   it('due back ravvicinati: una sola richiesta di conferma', async () => {

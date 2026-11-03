@@ -55,6 +55,8 @@ export interface PassportDetailVm {
   totalKm: number | null;
   /** Uscite, solo con tutte le tappe validate col GPS; altrimenti `null`. */
   outings: number | null;
+  /** Diario del cammino: dalla prima tappa riconosciuta, senza la regola della vicinanza (oc:8169, ciclo 2). */
+  showDiary: boolean;
 }
 
 /** Operazioni della modale host usate dal dettaglio. */
@@ -158,6 +160,7 @@ export class WmPassportDetailComponent implements OnInit, OnDestroy {
           completedAt: completed ? latestCompletedAt(stages) : null,
           totalKm: completed ? totalDistanceKm(stages) : null,
           outings: completed ? gpsOutings(stages) : null,
+          showDiary: completed || (progress?.completedStages ?? 0) > 0,
         };
       }),
     );

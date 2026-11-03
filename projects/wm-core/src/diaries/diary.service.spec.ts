@@ -8,16 +8,16 @@ import {EnvironmentService} from '@wm-core/services/environment.service';
 import {isLogged, user} from '@wm-core/store/auth/auth.selectors';
 import {online} from '@wm-core/store/network/network.selector';
 import {
-  EXPERIENCES_CACHE_MARKER,
-  clearExperiencesCache,
-  synchronizedExperiences,
+  DIARIES_CACHE_MARKER,
+  clearDiariesCache,
+  synchronizedDiaries,
 } from '@wm-core/utils/localForage';
-import {Experience, ExperiencesStatus} from './experience.model';
-import {EXPERIENCES_RETRY_DELAY, ExperienceService} from './experience.service';
+import {Diary, DiariesStatus} from './diary.model';
+import {DIARIES_RETRY_DELAY, DiaryService} from './diary.service';
 
-describe('ExperienceService (oc:8169)', () => {
+describe('DiaryService (oc:8169)', () => {
   const ORIGIN = 'http://127.0.0.1:8000';
-  const URL = `${ORIGIN}/api/experiences`;
+  const URL = `${ORIGIN}/api/diaries`;
   let logged$: BehaviorSubject<boolean>;
   let user$: BehaviorSubject<{id: number} | undefined>;
   let online$: BehaviorSubject<boolean>;
@@ -25,7 +25,7 @@ describe('ExperienceService (oc:8169)', () => {
   let cache: Map<string, unknown>;
   let httpMock: HttpTestingController;
   /** Service creati nel test: le loro code sulla copia offline si svuotano in `afterEach`. */
-  let created: ExperienceService[];
+  let created: DiaryService[];
 
   /**
    * Store finto: applica il selettore a uno stato costruito da login, utente e rete.
@@ -70,7 +70,7 @@ describe('ExperienceService (oc:8169)', () => {
     ugc_track_ids: [7],
   });
 
-  function create(extraProviders: unknown[] = []): ExperienceService {
+  function create(extraProviders: unknown[] = []): DiaryService {
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
@@ -81,7 +81,7 @@ describe('ExperienceService (oc:8169)', () => {
       ],
     });
     httpMock = TestBed.inject(HttpTestingController);
-    const svc = TestBed.inject(ExperienceService);
+    const svc = TestBed.inject(DiaryService);
     created.push(svc);
     return svc;
   }
@@ -92,17 +92,17 @@ describe('ExperienceService (oc:8169)', () => {
     user$ = new BehaviorSubject<{id: number} | undefined>({id: 1});
     online$ = new BehaviorSubject<boolean>(true);
     cache = new Map();
-    spyOn(synchronizedExperiences, 'getItem').and.callFake((async (key: string) =>
+    spyOn(synchronizedDiaries, 'getItem').and.callFake((async (key: string) =>
       cache.has(key) ? cache.get(key) : null) as any);
-    spyOn(synchronizedExperiences, 'setItem').and.callFake((async (key: string, value: unknown) => {
+    spyOn(synchronizedDiaries, 'setItem').and.callFake((async (key: string, value: unknown) => {
       cache.set(key, value);
       return value;
     }) as any);
-    spyOn(synchronizedExperiences, 'clear').and.callFake(async () => cache.clear());
-    spyOn(synchronizedExperiences, 'removeItem').and.callFake((async (key: string) => {
+    spyOn(synchronizedDiaries, 'clear').and.callFake(async () => cache.clear());
+    spyOn(synchronizedDiaries, 'removeItem').and.callFake((async (key: string) => {
       cache.delete(key);
     }) as any);
-    localStorage.removeItem(EXPERIENCES_CACHE_MARKER);
+    localStorage.removeItem(DIARIES_CACHE_MARKER);
     // lo store finto applica i selettori veri: un override di MockStore lasciato da un altro spec
     // (setResult sul selettore memoizzato, che è globale) li fisserebbe
     [isLogged, user, online].forEach(sel => {
@@ -115,13 +115,13 @@ describe('ExperienceService (oc:8169)', () => {
     // Le operazioni ancora in coda partirebbero dopo il test, senza più gli spy: sul localForage
     // vero, lente, e toglierebbero il marcatore mentre gira il test successivo.
     await Promise.all(created.map(svc => (svc as unknown as {_cacheQueue: Promise<void>})._cacheQueue));
-    localStorage.removeItem(EXPERIENCES_CACHE_MARKER);
+    localStorage.removeItem(DIARIES_CACHE_MARKER);
   });
 
   it('nessuna GET finché nessuno si sottoscrive', () => {
     const svc = create();
     httpMock.expectNone(URL);
-    const statuses: ExperiencesStatus[] = [];
+    const statuses: DiariesStatus[] = [];
     svc.status$().subscribe(s => statuses.push(s));
     expect(statuses).toEqual(['loading']);
     httpMock.expectOne(URL).flush({data: []});
@@ -139,9 +139,9 @@ describe('ExperienceService (oc:8169)', () => {
       ],
     });
     httpMock = TestBed.inject(HttpTestingController);
-    const svc = TestBed.inject(ExperienceService);
+    const svc = TestBed.inject(DiaryService);
     created.push(svc);
-    let status: ExperiencesStatus | undefined;
+    let status: DiariesStatus | undefined;
     svc.status$().subscribe(s => (status = s));
     httpMock.expectOne(URL).flush({data: []});
     expect(status).toBe('active');
@@ -149,7 +149,7 @@ describe('ExperienceService (oc:8169)', () => {
 
   it('401 → login-required', () => {
     const svc = create();
-    let status: ExperiencesStatus | undefined;
+    let status: DiariesStatus | undefined;
     svc.status$().subscribe(s => (status = s));
     httpMock.expectOne(URL).flush({}, {status: 401, statusText: 'Unauthorized'});
     expect(status).toBe('login-required');
@@ -158,7 +158,7 @@ describe('ExperienceService (oc:8169)', () => {
   it('non loggato + 404 → off (chiamata fatta comunque)', () => {
     logged$.next(false);
     const svc = create();
-    let status: ExperiencesStatus | undefined;
+    let status: DiariesStatus | undefined;
     svc.status$().subscribe(s => (status = s));
     httpMock.expectOne(URL).flush({}, {status: 404, statusText: 'Not Found'});
     expect(status).toBe('off');
@@ -167,7 +167,7 @@ describe('ExperienceService (oc:8169)', () => {
   it('non loggato + 401 → login-required', () => {
     logged$.next(false);
     const svc = create();
-    let status: ExperiencesStatus | undefined;
+    let status: DiariesStatus | undefined;
     svc.status$().subscribe(s => (status = s));
     httpMock.expectOne(URL).flush({}, {status: 401, statusText: 'Unauthorized'});
     expect(status).toBe('login-required');
@@ -175,7 +175,7 @@ describe('ExperienceService (oc:8169)', () => {
 
   it('refresh dopo un errore riattiva lo stato', async () => {
     const svc = create();
-    let status: ExperiencesStatus | undefined;
+    let status: DiariesStatus | undefined;
     svc.status$().subscribe(s => (status = s));
     httpMock.expectOne(URL).flush({}, {status: 500, statusText: 'Err'});
     await settle();
@@ -188,7 +188,7 @@ describe('ExperienceService (oc:8169)', () => {
 
   it('404 → off', () => {
     const svc = create();
-    let status: ExperiencesStatus | undefined;
+    let status: DiariesStatus | undefined;
     svc.status$().subscribe(s => (status = s));
     httpMock.expectOne(URL).flush({}, {status: 404, statusText: 'Not Found'});
     expect(status).toBe('off');
@@ -196,10 +196,10 @@ describe('ExperienceService (oc:8169)', () => {
 
   it('200 → active, mappando il payload in camelCase', () => {
     const svc = create();
-    let status: ExperiencesStatus | undefined;
-    let list: Experience[] = [];
+    let status: DiariesStatus | undefined;
+    let list: Diary[] = [];
     svc.status$().subscribe(s => (status = s));
-    svc.experiences$({}).subscribe(l => (list = l));
+    svc.diaries$({}).subscribe(l => (list = l));
     httpMock.expectOne(URL).flush({data: [item(1, 3, 10)]});
     expect(status).toBe('active');
     expect(list[0].ecTrack).toEqual({id: 10, name: 'T10'});
@@ -207,14 +207,14 @@ describe('ExperienceService (oc:8169)', () => {
     expect(list[0].createdAt).toBe('2026-01-01');
   });
 
-  it('experiences$ del cammino include le tappe', () => {
+  it('diaries$ del cammino include le tappe', () => {
     const svc = create();
-    let byLayer: Experience[] = [];
-    let byTrack: Experience[] = [];
-    let byUgc: Experience[] = [];
-    svc.experiences$({layerId: 3}).subscribe(l => (byLayer = l));
-    svc.experiences$({ecTrackId: 11}).subscribe(l => (byTrack = l));
-    svc.experiences$({ugcTrackId: 7}).subscribe(l => (byUgc = l));
+    let byLayer: Diary[] = [];
+    let byTrack: Diary[] = [];
+    let byUgc: Diary[] = [];
+    svc.diaries$({layerId: 3}).subscribe(l => (byLayer = l));
+    svc.diaries$({ecTrackId: 11}).subscribe(l => (byTrack = l));
+    svc.diaries$({ugcTrackId: 7}).subscribe(l => (byUgc = l));
     httpMock.expectOne(URL).flush({data: [item(1, 3, null), item(2, 3, 11), item(3, 4, 12)]});
     expect(byLayer.map(e => e.id)).toEqual([1, 2]);
     expect(byTrack.map(e => e.id)).toEqual([2]);
@@ -223,7 +223,7 @@ describe('ExperienceService (oc:8169)', () => {
 
   it('update invia keep_media_ids "[]" quando vuoto e rilegge', () => {
     const svc = create();
-    svc.experiences$({}).subscribe();
+    svc.diaries$({}).subscribe();
     httpMock.expectOne(URL).flush({data: []});
     svc.update(5, {uuid: 'u5', description: 'x', newPhotos: []}).subscribe();
     const req = httpMock.expectOne(`${URL}/5`);
@@ -235,7 +235,7 @@ describe('ExperienceService (oc:8169)', () => {
 
   it('create invia uuid, layer_id, ec_track_id e images[]', () => {
     const svc = create();
-    svc.experiences$({}).subscribe();
+    svc.diaries$({}).subscribe();
     httpMock.expectOne(URL).flush({data: []});
     svc
       .create({uuid: 'u1', layerId: 3, ecTrackId: 9, description: 'x', newPhotos: [new Blob(['a'], {type: 'image/jpeg'})]})
@@ -251,9 +251,33 @@ describe('ExperienceService (oc:8169)', () => {
     httpMock.expectOne({method: 'GET', url: URL}).flush({data: [item(1, 3, 9)]});
   });
 
+  it('create invia publication_consent=1 quando la spunta è attiva, 0 altrimenti', () => {
+    const svc = create();
+    svc.diaries$({}).subscribe();
+    httpMock.expectOne(URL).flush({data: []});
+    svc.create({uuid: 'u1', layerId: 3, description: 'x', newPhotos: [], publicationConsent: true}).subscribe();
+    const req = httpMock.expectOne({method: 'POST', url: URL});
+    expect((req.request.body as FormData).get('publication_consent')).toBe('1');
+    req.flush(item(1, 3, null), {status: 201, statusText: 'Created'});
+    httpMock.expectOne({method: 'GET', url: URL}).flush({data: []});
+    svc.create({uuid: 'u2', layerId: 3, description: 'x', newPhotos: []}).subscribe();
+    const req2 = httpMock.expectOne({method: 'POST', url: URL});
+    expect((req2.request.body as FormData).get('publication_consent')).toBe('0');
+    req2.flush(item(2, 3, null), {status: 201, statusText: 'Created'});
+    httpMock.expectOne({method: 'GET', url: URL}).flush({data: []});
+  });
+
+  it('legge publicationConsent dalla risposta', () => {
+    const svc = create();
+    let list: Diary[] = [];
+    svc.diaries$({}).subscribe(l => (list = l));
+    httpMock.expectOne(URL).flush({data: [{...item(1, 3, null), publication_consent: true}, item(2, 3, null)]});
+    expect(list.map(d => d.publicationConsent)).toEqual([true, false]);
+  });
+
   it('remove cancella e rilegge', () => {
     const svc = create();
-    svc.experiences$({}).subscribe();
+    svc.diaries$({}).subscribe();
     httpMock.expectOne(URL).flush({data: [item(1, 3, null)]});
     let done = false;
     svc.remove(1).subscribe(() => (done = true));
@@ -267,7 +291,7 @@ describe('ExperienceService (oc:8169)', () => {
     const first = svc.status$().subscribe();
     httpMock.expectOne(URL).flush({data: [item(1, 3, null)]});
     first.unsubscribe();
-    const statuses: ExperiencesStatus[] = [];
+    const statuses: DiariesStatus[] = [];
     const second = svc.status$().subscribe(s => statuses.push(s));
     httpMock.expectNone(URL);
     expect(statuses).toEqual(['active']);
@@ -276,8 +300,8 @@ describe('ExperienceService (oc:8169)', () => {
 
   it('logout svuota le esperienze', () => {
     const svc = create();
-    let list: Experience[] = [];
-    svc.experiences$({}).subscribe(l => (list = l));
+    let list: Diary[] = [];
+    svc.diaries$({}).subscribe(l => (list = l));
     httpMock.expectOne(URL).flush({data: [item(1, 3, null)]});
     expect(list.length).toBe(1);
     logged$.next(false);
@@ -287,7 +311,7 @@ describe('ExperienceService (oc:8169)', () => {
   });
 
   describe('offline', () => {
-    const cached: Experience = {
+    const cached: Diary = {
       id: 9,
       uuid: 'u9',
       layer: {id: 3, name: 'L3'},
@@ -297,16 +321,17 @@ describe('ExperienceService (oc:8169)', () => {
       updatedAt: '2026-01-01',
       photos: [],
       ugcTrackIds: [],
+      publicationConsent: false,
     };
 
     it('rete «online» ma GET fallita (status 0) → error con la copia salvata', async () => {
       cache.set('mine:1', [cached]);
       const svc = create();
-      let status: ExperiencesStatus | undefined;
-      let list: Experience[] = [];
+      let status: DiariesStatus | undefined;
+      let list: Diary[] = [];
       let saved = false;
       svc.status$().subscribe(s => (status = s));
-      svc.experiences$({layerId: 3}).subscribe(l => (list = l));
+      svc.diaries$({layerId: 3}).subscribe(l => (list = l));
       svc.savedCopy$().subscribe(v => (saved = v));
       httpMock.expectOne(URL).error(new ProgressEvent('error'));
       await settle();
@@ -318,13 +343,13 @@ describe('ExperienceService (oc:8169)', () => {
     it('404 → off: la copia salvata non si mostra e si scarta', async () => {
       cache.set('mine:1', [cached]);
       const svc = create();
-      let status: ExperiencesStatus | undefined;
-      let list: Experience[] = [];
+      let status: DiariesStatus | undefined;
+      let list: Diary[] = [];
       svc.status$().subscribe(s => (status = s));
-      svc.experiences$({}).subscribe(l => (list = l));
+      svc.diaries$({}).subscribe(l => (list = l));
       // il marcatore subito prima della risposta: una pulizia asincrona rimasta da un altro spec
       // potrebbe toglierlo se messo all'inizio
-      localStorage.setItem(EXPERIENCES_CACHE_MARKER, '1');
+      localStorage.setItem(DIARIES_CACHE_MARKER, '1');
       httpMock.expectOne(URL).flush({}, {status: 404, statusText: 'Not Found'});
       await until(() => cache.size === 0);
       expect(status).toBe('off');
@@ -335,7 +360,7 @@ describe('ExperienceService (oc:8169)', () => {
     it('rete assente e nessuna copia: offline senza copia, nessuna GET', async () => {
       online$.next(false);
       const svc = create();
-      let status: ExperiencesStatus | undefined;
+      let status: DiariesStatus | undefined;
       let saved = true;
       svc.status$().subscribe(s => (status = s));
       svc.savedCopy$().subscribe(v => (saved = v));
@@ -350,8 +375,8 @@ describe('ExperienceService (oc:8169)', () => {
       svc.status$().subscribe();
       httpMock.expectOne(URL).flush({data: [item(1, 3, null)]});
       await settle();
-      expect(synchronizedExperiences.setItem).toHaveBeenCalledTimes(1);
-      expect((cache.get('mine:1') as Experience[]).map(e => e.id)).toEqual([1]);
+      expect(synchronizedDiaries.setItem).toHaveBeenCalledTimes(1);
+      expect((cache.get('mine:1') as Diary[]).map(e => e.id)).toEqual([1]);
     });
 
     it('da non loggato non salva nulla', async () => {
@@ -361,7 +386,7 @@ describe('ExperienceService (oc:8169)', () => {
       svc.status$().subscribe();
       httpMock.expectOne(URL).flush({data: [item(1, 3, null)]});
       await settle();
-      expect(synchronizedExperiences.setItem).not.toHaveBeenCalled();
+      expect(synchronizedDiaries.setItem).not.toHaveBeenCalled();
     });
 
     it('logout e cambio d\'utente svuotano la copia salvata', async () => {
@@ -374,19 +399,19 @@ describe('ExperienceService (oc:8169)', () => {
       httpMock.expectOne(URL).flush({data: []});
       // la coda della copia è in serie: la lista dell'utente 2 si scrive dopo la pulizia
       await until(() => cache.has('mine:2'));
-      expect(synchronizedExperiences.clear).toHaveBeenCalledTimes(1);
+      expect(synchronizedDiaries.clear).toHaveBeenCalledTimes(1);
       logged$.next(false);
       user$.next(undefined);
       httpMock.expectOne(URL).flush({}, {status: 401, statusText: 'Unauthorized'});
-      const clear = synchronizedExperiences.clear as jasmine.Spy;
+      const clear = synchronizedDiaries.clear as jasmine.Spy;
       await until(() => clear.calls.count() === 2 && cache.size === 0);
-      expect(synchronizedExperiences.clear).toHaveBeenCalledTimes(2);
+      expect(synchronizedDiaries.clear).toHaveBeenCalledTimes(2);
       expect(cache.size).toBe(0);
     });
 
     it('al ritorno della rete rilegge da sola', async () => {
       const svc = create();
-      let status: ExperiencesStatus | undefined;
+      let status: DiariesStatus | undefined;
       svc.status$().subscribe(s => (status = s));
       httpMock.expectOne(URL).flush({data: [item(1, 3, null)]});
       online$.next(false);
@@ -402,7 +427,7 @@ describe('ExperienceService (oc:8169)', () => {
       cache.set('mine:1', [cached]);
       online$.next(false);
       const svc = create();
-      let status: ExperiencesStatus | undefined;
+      let status: DiariesStatus | undefined;
       let saved = false;
       svc.status$().subscribe(s => (status = s));
       svc.savedCopy$().subscribe(v => (saved = v));
@@ -413,8 +438,8 @@ describe('ExperienceService (oc:8169)', () => {
     });
 
     it('GET fallita con la rete presente: ritenta da sola dopo il ritardo, una volta', async () => {
-      const svc = create([{provide: EXPERIENCES_RETRY_DELAY, useValue: 20}]);
-      let status: ExperiencesStatus | undefined;
+      const svc = create([{provide: DIARIES_RETRY_DELAY, useValue: 20}]);
+      let status: DiariesStatus | undefined;
       svc.status$().subscribe(s => (status = s));
       httpMock.expectOne(URL).flush({}, {status: 503, statusText: 'Unavailable'});
       await settle();
@@ -428,12 +453,12 @@ describe('ExperienceService (oc:8169)', () => {
     });
 
     it('senza marcatore la pulizia non tocca localForage', async () => {
-      await clearExperiencesCache();
-      expect(synchronizedExperiences.clear).not.toHaveBeenCalled();
-      localStorage.setItem(EXPERIENCES_CACHE_MARKER, '1');
-      await clearExperiencesCache();
-      expect(synchronizedExperiences.clear).toHaveBeenCalledTimes(1);
-      expect(localStorage.getItem(EXPERIENCES_CACHE_MARKER)).toBeNull();
+      await clearDiariesCache();
+      expect(synchronizedDiaries.clear).not.toHaveBeenCalled();
+      localStorage.setItem(DIARIES_CACHE_MARKER, '1');
+      await clearDiariesCache();
+      expect(synchronizedDiaries.clear).toHaveBeenCalledTimes(1);
+      expect(localStorage.getItem(DIARIES_CACHE_MARKER)).toBeNull();
     });
 
     it('la scrittura della GET mette il marcatore', async () => {
@@ -441,12 +466,12 @@ describe('ExperienceService (oc:8169)', () => {
       svc.status$().subscribe();
       httpMock.expectOne(URL).flush({data: []});
       await settle();
-      expect(localStorage.getItem(EXPERIENCES_CACHE_MARKER)).toBe('1');
+      expect(localStorage.getItem(DIARIES_CACHE_MARKER)).toBe('1');
     });
 
     it('utente cambiato mentre la copia si scrive: la chiave scritta si toglie', async () => {
       let release!: () => void;
-      (synchronizedExperiences.setItem as jasmine.Spy).and.callFake((async (key: string, value: unknown) => {
+      (synchronizedDiaries.setItem as jasmine.Spy).and.callFake((async (key: string, value: unknown) => {
         await new Promise<void>(resolve => (release = resolve));
         cache.set(key, value);
         return value;
@@ -460,7 +485,7 @@ describe('ExperienceService (oc:8169)', () => {
       httpMock.expectOne(URL).flush({}, {status: 401, statusText: 'Unauthorized'});
       release();
       await settle();
-      expect(synchronizedExperiences.removeItem).toHaveBeenCalledWith('mine:1');
+      expect(synchronizedDiaries.removeItem).toHaveBeenCalledWith('mine:1');
       expect(cache.has('mine:1')).toBeFalse();
     });
 
@@ -473,7 +498,7 @@ describe('ExperienceService (oc:8169)', () => {
       httpMock.expectOne(`${URL}/1`).flush({data: {...item(1, 3, null), description: 'nuova'}});
       const reload = httpMock.expectOne({method: 'GET', url: URL});
       await settle();
-      const afterUpdate = cache.get('mine:1') as Experience[];
+      const afterUpdate = cache.get('mine:1') as Diary[];
       expect(afterUpdate.find(e => e.id === 1)?.description).toBe('nuova');
       reload.flush({data: [{...item(1, 3, null), description: 'nuova'}, item(2, 3, null)]});
       await settle();
@@ -481,7 +506,7 @@ describe('ExperienceService (oc:8169)', () => {
       httpMock.expectOne({method: 'DELETE', url: `${URL}/2`}).flush(null, {status: 204, statusText: 'No Content'});
       const reload2 = httpMock.expectOne({method: 'GET', url: URL});
       await settle();
-      expect((cache.get('mine:1') as Experience[]).map(e => e.id)).toEqual([1]);
+      expect((cache.get('mine:1') as Diary[]).map(e => e.id)).toEqual([1]);
       reload2.flush({data: [item(1, 3, null)]});
     });
 
@@ -494,14 +519,14 @@ describe('ExperienceService (oc:8169)', () => {
       httpMock.expectOne({method: 'POST', url: URL}).flush(item(7, 3, null));
       const reload = httpMock.expectOne({method: 'GET', url: URL});
       await settle();
-      expect((cache.get('mine:1') as Experience[]).map(e => e.id)).toEqual([7, 1]);
+      expect((cache.get('mine:1') as Diary[]).map(e => e.id)).toEqual([7, 1]);
       reload.flush({data: [item(7, 3, null), item(1, 3, null)]});
     });
 
     it('al massimo 3 tentativi automatici, con attesa che raddoppia; «Riprova» riparte da zero', async () => {
       const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-      const svc = create([{provide: EXPERIENCES_RETRY_DELAY, useValue: 40}]);
-      let status: ExperiencesStatus | undefined;
+      const svc = create([{provide: DIARIES_RETRY_DELAY, useValue: 40}]);
+      let status: DiariesStatus | undefined;
       svc.status$().subscribe(s => (status = s));
       const pending = () => httpMock.match(URL);
       // il tentativo arriva quando arriva: si aspetta la richiesta, non un numero di millisecondi

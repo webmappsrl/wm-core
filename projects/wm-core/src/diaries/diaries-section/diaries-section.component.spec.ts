@@ -9,13 +9,15 @@ import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {online} from '@wm-core/store/network/network.selector';
 import {openLoginModal} from '@wm-core/store/user-activity/user-activity.action';
 import {FakeTransPipe, fakeLangService} from '@wm-core/passport/testing/fake-trans';
-import {Experience, ExperienceFilter, ExperiencesStatus} from '../experience.model';
-import {ExperienceService} from '../experience.service';
-import {ExperienceLauncherService} from '../experience-launcher.service';
-import {WmExperiencesSectionComponent} from './experiences-section.component';
+import {Diary, DiaryFilter, DiariesStatus} from '../diary.model';
+import {DiaryService} from '../diary.service';
+import {DiaryLauncherService} from '../diary-launcher.service';
+import {WmDiariesSectionComponent} from './diaries-section.component';
+import {DiaryOutboxItem, DiaryOutboxService} from '../diary-outbox.service';
+import {DiaryDraftStore} from '../diary-draft.store';
 
-describe('WmExperiencesSectionComponent (oc:8169)', () => {
-  const stageExp: Experience = {
+describe('WmDiariesSectionComponent (oc:8169)', () => {
+  const stageExp: Diary = {
     id: 1,
     uuid: 'u1',
     layer: {id: 7, name: 'Cammino Minerario'},
@@ -25,24 +27,28 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
     updatedAt: '2026-06-12T10:00:00Z',
     photos: [{id: 3, url: 'u3', thumbnail: 't3'}],
     ugcTrackIds: [],
+    publicationConsent: false,
   };
-  const layerExp: Experience = {...stageExp, id: 2, uuid: 'u2', ecTrack: null, description: 'Trenta giorni'};
+  const layerExp: Diary = {...stageExp, id: 2, uuid: 'u2', ecTrack: null, description: 'Trenta giorni'};
 
-  let status$: BehaviorSubject<ExperiencesStatus>;
-  let list$: BehaviorSubject<Experience[]>;
+  let status$: BehaviorSubject<DiariesStatus>;
+  let list$: BehaviorSubject<Diary[]>;
   let saved$: BehaviorSubject<boolean>;
   let refresh: jasmine.Spy;
   let toast: {present: jasmine.Spy};
   let toastCtrl: {create: jasmine.Spy};
   let store: MockStore;
   let modalCtrl: {create: jasmine.Spy};
-  let fixture: ComponentFixture<WmExperiencesSectionComponent>;
-  let cmp: WmExperiencesSectionComponent;
+  let fixture: ComponentFixture<WmDiariesSectionComponent>;
+  let queued$: BehaviorSubject<DiaryOutboxItem[]>;
+  let outbox: any;
+  let drafts: any;
+  let cmp: WmDiariesSectionComponent;
 
   beforeEach(() => {
     TestBed.resetTestingModule();
-    status$ = new BehaviorSubject<ExperiencesStatus>('active');
-    list$ = new BehaviorSubject<Experience[]>([]);
+    status$ = new BehaviorSubject<DiariesStatus>('active');
+    list$ = new BehaviorSubject<Diary[]>([]);
     saved$ = new BehaviorSubject<boolean>(false);
     refresh = jasmine.createSpy('refresh');
     toast = {present: jasmine.createSpy('present').and.resolveTo()};
@@ -52,7 +58,7 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
       status$: () => status$.asObservable(),
       savedCopy$: () => saved$.asObservable(),
       refresh,
-      experiences$: (f: ExperienceFilter) =>
+      diaries$: (f: DiaryFilter) =>
         list$.pipe(
           map(list =>
             list.filter(
@@ -63,17 +69,26 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
           ),
         ),
     };
+    queued$ = new BehaviorSubject<DiaryOutboxItem[]>([]);
+    outbox = {
+      active: false,
+      items$: () => queued$.asObservable(),
+      discard: jasmine.createSpy('discard').and.resolveTo(),
+    };
+    drafts = {save: jasmine.createSpy('save').and.resolveTo(), load: jasmine.createSpy('load').and.resolveTo(null)};
     TestBed.configureTestingModule({
-      declarations: [WmExperiencesSectionComponent, FakeTransPipe],
+      declarations: [WmDiariesSectionComponent, FakeTransPipe],
       providers: [
-        ExperienceLauncherService,
+        DiaryLauncherService,
         provideMockStore({
           selectors: [
             {selector: isLogged, value: false},
             {selector: online, value: true},
           ],
         }),
-        {provide: ExperienceService, useValue: svc},
+        {provide: DiaryService, useValue: svc},
+        {provide: DiaryOutboxService, useValue: outbox},
+        {provide: DiaryDraftStore, useValue: drafts},
         {provide: LangService, useValue: fakeLangService()},
         {provide: ModalController, useValue: modalCtrl},
         {provide: AlertController, useValue: {getTop: async () => undefined}},
@@ -97,10 +112,10 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
    *
    * @param inputs Input del componente.
    */
-  function render(inputs: Partial<WmExperiencesSectionComponent> = {}): void {
-    fixture = TestBed.createComponent(WmExperiencesSectionComponent);
+  function render(inputs: Partial<WmDiariesSectionComponent> = {}): void {
+    fixture = TestBed.createComponent(WmDiariesSectionComponent);
     cmp = fixture.componentInstance;
-    const values = {layerId: 7, title: 'Le tue esperienze', ...inputs};
+    const values = {layerId: 7, title: 'Il mio diario', ...inputs};
     Object.assign(cmp, values);
     cmp.ngOnChanges(
       Object.keys(values).reduce<SimpleChanges>(
@@ -112,11 +127,79 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
   }
 
   const el = (): HTMLElement => fixture.nativeElement;
-  const section = (): HTMLElement | null => el().querySelector('.wm-experiences-section');
+  const section = (): HTMLElement | null => el().querySelector('.wm-diaries-section');
   const createButtons = (): HTMLButtonElement[] =>
-    Array.from(el().querySelectorAll('.wm-experiences-section-create'));
+    Array.from(el().querySelectorAll('.wm-diaries-section-create'));
   const labels = (): string[] =>
-    Array.from(el().querySelectorAll('.wm-experiences-section-label')).map(l => (l.textContent ?? '').trim());
+    Array.from(el().querySelectorAll('.wm-diaries-section-label')).map(l => (l.textContent ?? '').trim());
+
+  const queuedItem = (status: 'pending' | 'failed'): DiaryOutboxItem => ({
+    uuid: 'q-1', userId: 5, layerId: 3, description: 'scritto in rifugio', photos: [],
+    publicationConsent: false, status, attempts: 0, nextAttemptAt: 0, updatedAt: 1,
+    ...(status === 'failed' ? {errorMessage: 'Il diario non è stato inviato: aprilo per correggerlo.'} : {}),
+  });
+
+  it('con la coda attiva il tocco su «Racconta…» apre il form anche senza rete', () => {
+    outbox.active = true;
+    store.overrideSelector(online, false);
+    render({layerId: 3});
+    const launcher = TestBed.inject(DiaryLauncherService);
+    spyOn(launcher, 'openForm').and.resolveTo();
+    cmp.create();
+    expect(launcher.openForm).toHaveBeenCalled();
+  });
+
+  it('senza pulsante (lontano dal cammino) i diari già scritti restano visibili', () => {
+    store.overrideSelector(isLogged, true);
+    list$.next([layerExp]);
+    render({layerId: 7, layout: 'list', showCreate: false});
+    expect(fixture.nativeElement.querySelectorAll('.wm-diaries-section-item').length).toBe(1);
+    expect(fixture.nativeElement.querySelector('.wm-diaries-section-create')).toBeNull();
+  });
+
+  it('nella registrazione non si mostrano i diari in coda', () => {
+    queued$.next([queuedItem('pending')]);
+    store.overrideSelector(isLogged, true);
+    list$.next([layerExp]);
+    render({ugcTrackId: 55, layout: 'list'});
+    expect(fixture.nativeElement.querySelector('.wm-diaries-section-queued')).toBeNull();
+  });
+
+  it('riaprendo un non inviato con una bozza diversa già nello stesso contesto non la sovrascrive', async () => {
+    drafts.load = jasmine.createSpy('load').and.resolveTo({uuid: 'altra-bozza'});
+    render({layerId: 3});
+    const launcher = TestBed.inject(DiaryLauncherService);
+    spyOn(launcher, 'openForm').and.resolveTo();
+    await cmp.openQueued(queuedItem('failed'));
+    expect(drafts.save).not.toHaveBeenCalled();
+    expect(outbox.discard).not.toHaveBeenCalled();
+    expect(launcher.openForm).not.toHaveBeenCalled();
+    expect(toastCtrl.create).toHaveBeenCalled();
+  });
+
+  it('un diario in coda mostra «In attesa di invio» come stato', () => {
+    queued$.next([queuedItem('pending')]);
+    render({layerId: 3});
+    const state = fixture.nativeElement.querySelector('.wm-diaries-section-queued-state');
+    expect(state.getAttribute('role')).toBe('status');
+    expect(state.textContent).toContain('In attesa di invio');
+  });
+
+  it('un diario non inviato si riapre nel form come bozza con il messaggio', async () => {
+    queued$.next([queuedItem('failed')]);
+    render({layerId: 3});
+    const launcher = TestBed.inject(DiaryLauncherService);
+    spyOn(launcher, 'openForm').and.resolveTo();
+    const btn = fixture.nativeElement.querySelector('.wm-diaries-section-queued');
+    expect(btn.textContent).toContain('Non inviato');
+    await cmp.openQueued(queuedItem('failed'));
+    expect(drafts.save).toHaveBeenCalled();
+    const saved = drafts.save.calls.mostRecent().args[0];
+    expect(saved.uuid).toBe('q-1');
+    expect(saved.errorMessage).toBeTruthy();
+    expect(outbox.discard).toHaveBeenCalledWith('q-1');
+    expect(launcher.openForm).toHaveBeenCalled();
+  });
 
   it('status off non rende nulla', () => {
     status$.next('off');
@@ -136,9 +219,9 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
     render();
     expect(section()).not.toBeNull();
     expect(createButtons().length).toBe(1);
-    expect(createButtons()[0].textContent).toContain('Racconta la tua esperienza');
-    expect(el().querySelectorAll('.wm-experiences-section-card').length).toBe(0);
-    expect(el().querySelector('.wm-experiences-section-count')).toBeNull();
+    expect(createButtons()[0].textContent).toContain('Racconta il tuo cammino');
+    expect(el().querySelectorAll('.wm-diaries-section-card').length).toBe(0);
+    expect(el().querySelector('.wm-diaries-section-count')).toBeNull();
   });
 
   it('tocco da non loggato dispatcha openLoginModal', fakeAsync(() => {
@@ -154,11 +237,11 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
     list$.next([stageExp, layerExp]);
     render({layout: 'carousel'});
     expect(labels()).toEqual(['TAPPA 05', 'CAMMINO']);
-    expect(el().querySelectorAll('.wm-experiences-section-card').length).toBe(2);
+    expect(el().querySelectorAll('.wm-diaries-section-card').length).toBe(2);
     // la scheda «Racconta…» è la prima slide del carosello, prima delle esperienze
-    const firstSlide = el().querySelector('.wm-experiences-section-row swiper-slide') as HTMLElement;
-    expect(firstSlide.firstElementChild?.classList).toContain('wm-experiences-section-create--card');
-    expect(el().querySelector('.wm-experiences-section-count')?.textContent?.trim()).toBe('2');
+    const firstSlide = el().querySelector('.wm-diaries-section-row swiper-slide') as HTMLElement;
+    expect(firstSlide.firstElementChild?.classList).toContain('wm-diaries-section-create--card');
+    expect(el().querySelector('.wm-diaries-section-count')?.textContent?.trim()).toBe('2');
   });
 
   it('nelle registrazioni l\'esperienza sul cammino mostra il nome del cammino', () => {
@@ -177,10 +260,10 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
   });
 
   it('sulla tappa mostra anche l\'esperienza che il backend ha legato a un altro cammino', () => {
-    const otherLayer: Experience = {...stageExp, id: 3, uuid: 'u3', layer: {id: 99, name: 'Altro cammino'}};
+    const otherLayer: Diary = {...stageExp, id: 3, uuid: 'u3', layer: {id: 99, name: 'Altro cammino'}};
     list$.next([otherLayer, layerExp]);
     render({layout: 'list', layerId: 7, ecTrackId: 70});
-    expect(el().querySelectorAll('.wm-experiences-section-item').length).toBe(1);
+    expect(el().querySelectorAll('.wm-diaries-section-item').length).toBe(1);
   });
 
   it('hideWhenEmpty nasconde a zero', () => {
@@ -200,39 +283,39 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
     list$.next([layerExp]);
     const nav = {} as any;
     render({nav});
-    const launcher = TestBed.inject(ExperienceLauncherService);
+    const launcher = TestBed.inject(DiaryLauncherService);
     spyOn(launcher, 'openDetail').and.resolveTo();
-    (el().querySelector('.wm-experiences-section-card') as HTMLButtonElement).click();
+    (el().querySelector('.wm-diaries-section-card') as HTMLButtonElement).click();
     expect(launcher.openDetail).toHaveBeenCalledWith(layerExp, nav, undefined);
   });
 
   it('carousel: l\'esperienza di solo testo non rende la foto e ha il modificatore text', () => {
-    const textExp: Experience = {...layerExp, id: 4, uuid: 'u4', photos: []};
+    const textExp: Diary = {...layerExp, id: 4, uuid: 'u4', photos: []};
     list$.next([textExp]);
     render({layout: 'carousel'});
-    const card = el().querySelector('.wm-experiences-section-card') as HTMLElement;
-    expect(card.querySelector('.wm-experiences-section-card-photo')).toBeNull();
-    expect(card.classList).toContain('wm-experiences-section-card--text');
+    const card = el().querySelector('.wm-diaries-section-card') as HTMLElement;
+    expect(card.querySelector('.wm-diaries-section-card-photo')).toBeNull();
+    expect(card.classList).toContain('wm-diaries-section-card--text');
   });
   it('carousel: con foto la scheda ha il riquadro foto e nessun modificatore text', () => {
     list$.next([layerExp]);
     render({layout: 'carousel'});
-    const card = el().querySelector('.wm-experiences-section-card') as HTMLElement;
-    expect(card.querySelector('.wm-experiences-section-card-photo')).not.toBeNull();
-    expect(card.classList).not.toContain('wm-experiences-section-card--text');
+    const card = el().querySelector('.wm-diaries-section-card') as HTMLElement;
+    expect(card.querySelector('.wm-diaries-section-card-photo')).not.toBeNull();
+    expect(card.classList).not.toContain('wm-diaries-section-card--text');
   });
   it('elenco: senza foto niente miniatura, con foto la miniatura c\'e\'', () => {
-    const textExp: Experience = {...layerExp, id: 4, uuid: 'u4', photos: []};
+    const textExp: Diary = {...layerExp, id: 4, uuid: 'u4', photos: []};
     list$.next([textExp, layerExp]);
     render({layout: 'list'});
-    const items = el().querySelectorAll('.wm-experiences-section-item');
-    expect(items[0].querySelector('.wm-experiences-section-item-photo')).toBeNull();
-    expect(items[1].querySelector('.wm-experiences-section-item-photo')).not.toBeNull();
+    const items = el().querySelectorAll('.wm-diaries-section-item');
+    expect(items[0].querySelector('.wm-diaries-section-item-photo')).toBeNull();
+    expect(items[1].querySelector('.wm-diaries-section-item-photo')).not.toBeNull();
   });
 
   describe('offline', () => {
-    const notice = (): HTMLElement | null => el().querySelector('.wm-experiences-section-offline');
-    const retryButton = (): HTMLButtonElement | null => el().querySelector('.wm-experiences-section-retry');
+    const notice = (): HTMLElement | null => el().querySelector('.wm-diaries-section-offline');
+    const retryButton = (): HTMLButtonElement | null => el().querySelector('.wm-diaries-section-retry');
 
     /**
      * Imposta il segnale di rete dell'app.
@@ -250,7 +333,7 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
       list$.next([layerExp]);
       render({layout: 'carousel'});
       expect(notice()?.textContent).toContain("Sei offline: stai vedendo l'ultima versione salvata.");
-      expect(el().querySelectorAll('.wm-experiences-section-card').length).toBe(1);
+      expect(el().querySelectorAll('.wm-diaries-section-card').length).toBe(1);
       expect(createButtons().length).toBe(1);
       retryButton()?.click();
       expect(refresh).toHaveBeenCalled();
@@ -261,7 +344,7 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
       status$.next('offline');
       saved$.next(true);
       render();
-      const launcher = TestBed.inject(ExperienceLauncherService);
+      const launcher = TestBed.inject(DiaryLauncherService);
       spyOn(launcher, 'openForm').and.resolveTo();
       createButtons()[0].click();
       flushMicrotasks();
@@ -277,11 +360,11 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
       saved$.next(true);
       list$.next([layerExp]);
       render();
-      expect(notice()?.textContent).toContain('Non è stato possibile aggiornare le esperienze.');
+      expect(notice()?.textContent).toContain('Non è stato possibile aggiornare il diario.');
       expect(retryButton()).not.toBeNull();
-      const launcher = TestBed.inject(ExperienceLauncherService);
+      const launcher = TestBed.inject(DiaryLauncherService);
       spyOn(launcher, 'openForm').and.resolveTo();
-      (el().querySelector('.wm-experiences-section-create') as HTMLButtonElement).click();
+      (el().querySelector('.wm-diaries-section-create') as HTMLButtonElement).click();
       flushMicrotasks();
       expect(launcher.openForm).toHaveBeenCalled();
       expect(toastCtrl.create).not.toHaveBeenCalled();
@@ -291,7 +374,7 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
       status$.next('error');
       saved$.next(false);
       render();
-      expect(notice()?.textContent).toContain('Non è stato possibile aggiornare le esperienze.');
+      expect(notice()?.textContent).toContain('Non è stato possibile aggiornare il diario.');
       expect(createButtons().length).toBe(0);
     });
 
@@ -302,7 +385,7 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
       saved$.next(false);
       render();
       expect(section()).not.toBeNull();
-      expect(notice()?.textContent).toContain('Le tue esperienze non sono disponibili senza connessione.');
+      expect(notice()?.textContent).toContain('Il tuo diario non è disponibile senza connessione.');
       expect(createButtons().length).toBe(0);
       expect(retryButton()?.textContent).toContain('Riprova');
       retryButton()?.click();
@@ -313,7 +396,7 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
       status$.next('offline');
       saved$.next(false);
       render();
-      expect(notice()?.textContent).toContain('Le esperienze non sono disponibili senza connessione.');
+      expect(notice()?.textContent).toContain('Il diario non è disponibile senza connessione.');
     });
 
     it('senza copia salvata e hideWhenEmpty non rende nulla', () => {
@@ -333,10 +416,10 @@ describe('WmExperiencesSectionComponent (oc:8169)', () => {
     it('foto che non si carica: si nasconde e resta il riquadro neutro', () => {
       list$.next([layerExp]);
       render({layout: 'carousel'});
-      const img = el().querySelector('.wm-experiences-section-card-photo img') as HTMLImageElement;
+      const img = el().querySelector('.wm-diaries-section-card-photo img') as HTMLImageElement;
       img.dispatchEvent(new Event('error'));
       expect(img.style.visibility).toBe('hidden');
-      expect(el().querySelector('.wm-experiences-section-card-photo')).not.toBeNull();
+      expect(el().querySelector('.wm-diaries-section-card-photo')).not.toBeNull();
     });
   });
 });

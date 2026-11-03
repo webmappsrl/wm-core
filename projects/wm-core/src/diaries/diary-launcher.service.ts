@@ -5,19 +5,19 @@ import {firstValueFrom} from 'rxjs';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {openLoginModal} from '@wm-core/store/user-activity/user-activity.action';
 import {PassportLeaveGuard} from '@wm-core/passport/passport-leave-guard';
-import {Experience} from './experience.model';
-import {ExperienceFormHost, WmExperienceFormComponent} from './experience-form/experience-form.component';
+import {Diary} from './diary.model';
+import {DiaryFormHost, WmDiaryFormComponent} from './diary-form/diary-form.component';
 import {
-  ExperienceDetailHost,
-  WmExperienceDetailComponent,
-} from './experience-detail/experience-detail.component';
+  DiaryDetailHost,
+  WmDiaryDetailComponent,
+} from './diary-detail/diary-detail.component';
 
 /**
  * Contenitore con un proprio meccanismo di guard (la modale del Passaporto): quando form e
  * dettaglio sono spinti nel suo `ion-nav`, è lui a gestire il back hardware chiedendo `canLeave()`
  * al guard registrato.
  */
-export interface ExperienceGuardHost {
+export interface DiaryGuardHost {
   registerGuard(guard: PassportLeaveGuard | null): void;
   /**
    * Chiude l'intero contenitore (la modale del Passaporto), rispettando il suo guard.
@@ -28,30 +28,30 @@ export interface ExperienceGuardHost {
 }
 
 /** Host della modale aperta dal launcher, passato a chi costruisce l'host della pagina. */
-interface ExperienceModalHost extends ExperienceFormHost {
+interface DiaryModalHost extends DiaryFormHost {
   /** Chiude la modale senza chiedere conferma; `true` se si è chiusa davvero. */
   exit(): Promise<boolean>;
 }
 
 /** Opzioni di apertura del form. */
-export interface ExperienceFormOptions {
+export interface DiaryFormOptions {
   layerId?: number;
   ecTrackId?: number;
   /** Cammino e tappa mostrati in cima al form. */
   contextLabel: string;
   /** Esperienza da modificare; assente in creazione. */
-  experience?: Experience;
+  diary?: Diary;
   /** `ion-nav` del Passaporto: se c'è, il form viene spinto lì invece che in una modale. */
   nav?: IonNav;
   /** Contenitore di `nav` su cui il form registra il guard (la modale del Passaporto). */
-  guardHost?: ExperienceGuardHost;
+  guardHost?: DiaryGuardHost;
 }
 
 /**
  * Priorità del back hardware delle modali aperte dal launcher: sopra quella con cui Ionic chiude
  * gli overlay (100), quindi questo gestore chiude da sé gli alert aperti.
  */
-export const EXPERIENCE_BACK_PRIORITY = 101;
+export const DIARY_BACK_PRIORITY = 101;
 
 /**
  * Apre form e dettaglio delle esperienze (oc:8169). Da non loggato apre il login e basta. Dentro
@@ -59,7 +59,7 @@ export const EXPERIENCE_BACK_PRIORITY = 101;
  * l'uscita (swipe, backdrop, back hardware, chiusura) passa dal `canLeave()` del form.
  */
 @Injectable({providedIn: 'root'})
-export class ExperienceLauncherService {
+export class DiaryLauncherService {
   /** Vero mentre una pagina viene aperta: protegge dal doppio tap. */
   private _opening = false;
 
@@ -73,25 +73,25 @@ export class ExperienceLauncherService {
   /**
    * Apre il dettaglio di un'esperienza; «Modifica» apre il form nello stesso contenitore.
    *
-   * @param experience Esperienza da mostrare.
+   * @param diary Esperienza da mostrare.
    * @param nav `ion-nav` del Passaporto, se il dettaglio va spinto lì.
    * @param guardHost Contenitore di `nav`, per il guard del form aperto da «Modifica».
    */
-  async openDetail(experience: Experience, nav?: IonNav, guardHost?: ExperienceGuardHost): Promise<void> {
+  async openDetail(diary: Diary, nav?: IonNav, guardHost?: DiaryGuardHost): Promise<void> {
     await this._guarded(async () => {
-      const edit = (exp: Experience): void => {
-        void this.openForm({experience: exp, contextLabel: experienceContextLabel(exp), nav, guardHost});
+      const edit = (exp: Diary): void => {
+        void this.openForm({diary: exp, contextLabel: diaryContextLabel(exp), nav, guardHost});
       };
       if (nav) {
         // per aprire una registrazione sulla mappa si chiude tutta la modale del Passaporto; senza
         // un contenitore che sappia chiudersi si toglie almeno il dettaglio
         const exit = async (): Promise<boolean> =>
           guardHost?.close ? guardHost.close() : (await nav.pop()) === true;
-        const host: ExperienceDetailHost = {back: () => void nav.pop(), edit, exit};
-        await nav.push(WmExperienceDetailComponent, {experience, host});
+        const host: DiaryDetailHost = {back: () => void nav.pop(), edit, exit};
+        await nav.push(WmDiaryDetailComponent, {diary, host});
         return;
       }
-      await this._presentModal(WmExperienceDetailComponent, {experience}, modalHost => ({
+      await this._presentModal(WmDiaryDetailComponent, {diary}, modalHost => ({
         back: () => modalHost.back(),
         edit,
         exit: () => modalHost.exit(),
@@ -104,7 +104,7 @@ export class ExperienceLauncherService {
    *
    * @param opts Contesto del form e contenitore.
    */
-  async openForm(opts: ExperienceFormOptions): Promise<void> {
+  async openForm(opts: DiaryFormOptions): Promise<void> {
     const logged = await firstValueFrom(this._store.select(isLogged));
     if (!logged) {
       this._store.dispatch(openLoginModal());
@@ -115,20 +115,20 @@ export class ExperienceLauncherService {
         layerId: opts.layerId,
         ecTrackId: opts.ecTrackId,
         contextLabel: opts.contextLabel,
-        experience: opts.experience,
+        diary: opts.diary,
       };
       if (opts.nav) {
         const nav = opts.nav;
         // il form ha già chiesto conferma (o ha pubblicato): qui si torna indietro e basta, il
         // back hardware lo gestisce la modale del Passaporto tramite il guard registrato
-        const host: ExperienceFormHost = {
+        const host: DiaryFormHost = {
           back: () => void nav.pop(),
           registerGuard: guard => opts.guardHost?.registerGuard(guard),
         };
-        await nav.push(WmExperienceFormComponent, {...inputs, host});
+        await nav.push(WmDiaryFormComponent, {...inputs, host});
         return;
       }
-      await this._presentModal(WmExperienceFormComponent, inputs, modalHost => modalHost);
+      await this._presentModal(WmDiaryFormComponent, inputs, modalHost => modalHost);
     });
   }
 
@@ -161,7 +161,7 @@ export class ExperienceLauncherService {
   private async _presentModal<H>(
     component: Type<unknown>,
     inputs: Record<string, unknown>,
-    toHost: (modalHost: ExperienceModalHost) => H,
+    toHost: (modalHost: DiaryModalHost) => H,
   ): Promise<void> {
     let guard: PassportLeaveGuard | null = null;
     /** Vero quando l'uscita è già stata approvata da chi chiude. */
@@ -171,7 +171,7 @@ export class ExperienceLauncherService {
     /** Vero mentre il back hardware sta chiudendo la modale. */
     let closing = false;
     let modal: HTMLIonModalElement;
-    const modalHost: ExperienceModalHost = {
+    const modalHost: DiaryModalHost = {
       back: () => {
         approved = true;
         void modal?.dismiss();
@@ -209,7 +209,7 @@ export class ExperienceLauncherService {
     await modal.present();
     // iscritto dopo present(): se present() fallisce non resta un gestore orfano
     if (dismissed) return;
-    backSub = this._platform.backButton.subscribeWithPriority(EXPERIENCE_BACK_PRIORITY, async () => {
+    backSub = this._platform.backButton.subscribeWithPriority(DIARY_BACK_PRIORITY, async () => {
       const alert = await this._alertCtrl.getTop();
       if (alert) {
         await alert.dismiss();
@@ -230,10 +230,10 @@ export class ExperienceLauncherService {
 /**
  * Cammino e tappa di un'esperienza, per la riga in cima al form di modifica.
  *
- * @param experience Esperienza.
+ * @param diary Esperienza.
  * @returns «Tappa · Cammino», o solo il cammino.
  */
-export function experienceContextLabel(experience: Experience): string {
-  const layer = experience.layer?.name ?? '';
-  return experience.ecTrack?.name ? `${experience.ecTrack.name} · ${layer}` : layer;
+export function diaryContextLabel(diary: Diary): string {
+  const layer = diary.layer?.name ?? '';
+  return diary.ecTrack?.name ? `${diary.ecTrack.name} · ${layer}` : layer;
 }

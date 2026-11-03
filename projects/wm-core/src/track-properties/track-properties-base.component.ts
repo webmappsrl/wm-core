@@ -15,13 +15,13 @@ import {OPTIONS} from '@wm-types/config';
 import {LineStringProperties, WmFeature} from '@wm-types/feature';
 import {WmSlopeChartFlowLineQuote, WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 import {LineString} from 'geojson';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 /**
  * Logica condivisa fra `wm-track-properties` di default e la sua variante camminiditalia
  * (oc:8169). Ogni sottoclasse dichiara `selector`, `templateUrl` e `styleUrls` — gli stessi: il
- * template è uno solo e la variante accende soltanto `showExperiences`.
+ * template è uno solo e la variante accende soltanto `showDiaries`.
  *
  * File mai soggetto a `fileReplacements`: la variante non può importare dal file di default
  * (l'import diventerebbe circolare, `TS2506`). `@Directive()` astratta genera la factory DI
@@ -46,7 +46,12 @@ export abstract class TrackPropertiesBaseComponent {
   );
   flowLineQuoteShow$: Observable<boolean> = this._store.select(flowLineQuoteShow);
   /** Mostra la sezione delle esperienze (oc:8169): accesa solo dalla variante camminiditalia. */
-  readonly showExperiences: boolean = false;
+  readonly showDiaries: boolean = false;
+  /**
+   * Pulsante per scrivere il diario della tappa (oc:8169, ciclo 2): sempre nel default, solo vicino
+   * al cammino nella variante camminiditalia.
+   */
+  diaryCanWrite$: Observable<boolean> = of(true);
   trackProgress$: Observable<number | null> = this._store.select(trackProgress);
 
   constructor(
@@ -67,7 +72,7 @@ export abstract class TrackPropertiesBaseComponent {
    * @param layerTitle Titolo del cammino, già tradotto.
    * @returns «Tappa · Cammino», o la sola parte presente.
    */
-  experienceContextLabel(trackName?: string, layerTitle?: string): string {
+  diaryContextLabel(trackName?: string, layerTitle?: string): string {
     return [trackName, layerTitle].filter(part => !!part).join(' · ');
   }
 

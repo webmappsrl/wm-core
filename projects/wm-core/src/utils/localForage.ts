@@ -679,23 +679,38 @@ export const deviceCurrentUgcTrackLocations = localforage.createInstance({
   name: 'device',
   storeName: 'current-ugc-track-locations',
 });
+/** Bozze del form del diario, una per contesto e utente (oc:8169, ciclo 2). */
+export const deviceDiaryDrafts = localforage.createInstance({
+  name: 'device',
+  storeName: 'diaryDrafts',
+});
+/** Cammini dove il telefono è stato vicino, con l'ultima volta (ms), per il pulsante del diario (oc:8169). */
+export const deviceActiveRoutes = localforage.createInstance({
+  name: 'device',
+  storeName: 'activeRoutes',
+});
+/** Diari nuovi scritti senza rete, in attesa di invio (oc:8169, ciclo 2). */
+export const deviceDiaryOutbox = localforage.createInstance({
+  name: 'device',
+  storeName: 'diaryOutbox',
+});
 /** Ultima lista delle esperienze dell'utente (oc:8169), una chiave per utente: solo `mine`. */
-export const synchronizedExperiences = localforage.createInstance({
+export const synchronizedDiaries = localforage.createInstance({
   name: 'synchronized',
-  storeName: 'experiences',
+  storeName: 'diaries',
 });
 
 /**
  * Marcatore in localStorage della copia offline delle esperienze: c'è solo dopo la prima
- * scrittura, così il logout non apre (e non crea) lo store `synchronized/experiences` sugli shard
+ * scrittura, così il logout non apre (e non crea) lo store `synchronized/diaries` sugli shard
  * e sui prodotti che le esperienze non le usano.
  */
-export const EXPERIENCES_CACHE_MARKER = 'wm-experiences-cache';
+export const DIARIES_CACHE_MARKER = 'wm-diaries-cache';
 
 /** Segna che esiste una copia offline delle esperienze (prima di scriverla). */
-export function markExperiencesCache(): void {
+export function markDiariesCache(): void {
   try {
-    localStorage.setItem(EXPERIENCES_CACHE_MARKER, '1');
+    localStorage.setItem(DIARIES_CACHE_MARKER, '1');
   } catch {
     // localStorage non disponibile: al logout la copia non si svuota, ma è per utente
   }
@@ -706,9 +721,9 @@ export function markExperiencesCache(): void {
  *
  * @returns `true` se il marcatore è presente.
  */
-function hasExperiencesCache(): boolean {
+function hasDiariesCache(): boolean {
   try {
-    return localStorage.getItem(EXPERIENCES_CACHE_MARKER) === '1';
+    return localStorage.getItem(DIARIES_CACHE_MARKER) === '1';
   } catch {
     return false;
   }
@@ -718,11 +733,11 @@ function hasExperiencesCache(): boolean {
  * Svuota la copia offline delle esperienze (al logout e al cambio d'utente). Senza marcatore
  * esce subito, senza toccare localForage.
  */
-export async function clearExperiencesCache(): Promise<void> {
-  if (!hasExperiencesCache()) return;
-  await synchronizedExperiences.clear();
+export async function clearDiariesCache(): Promise<void> {
+  if (!hasDiariesCache()) return;
+  await synchronizedDiaries.clear();
   try {
-    localStorage.removeItem(EXPERIENCES_CACHE_MARKER);
+    localStorage.removeItem(DIARIES_CACHE_MARKER);
   } catch {
     // ignorato: il marcatore rimasto costa solo una pulizia in più al prossimo logout
   }

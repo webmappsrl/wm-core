@@ -12,12 +12,12 @@ import {openUgc} from '@wm-core/store/user-activity/user-activity.action';
 import {online} from '@wm-core/store/network/network.selector';
 import {UGC_TRACK_STATS_DEFAULT_PARAMS} from '@wm-core/utils/ugc-track-stats';
 import {FakeTransPipe, fakeLangService} from '@wm-core/passport/testing/fake-trans';
-import {Experience, ExperiencesStatus} from '../experience.model';
-import {ExperienceService} from '../experience.service';
-import {WmExperienceDetailComponent, formatUgcDuration} from './experience-detail.component';
+import {Diary, DiariesStatus} from '../diary.model';
+import {DiaryService} from '../diary.service';
+import {WmDiaryDetailComponent, formatUgcDuration} from './diary-detail.component';
 
-describe('WmExperienceDetailComponent (oc:8169)', () => {
-  const experience: Experience = {
+describe('WmDiaryDetailComponent (oc:8169)', () => {
+  const diary: Diary = {
     id: 4,
     uuid: 'u4',
     layer: {id: 7, name: 'Cammino Minerario'},
@@ -30,11 +30,12 @@ describe('WmExperienceDetailComponent (oc:8169)', () => {
       {id: 2, url: 'u2', thumbnail: 't2'},
     ],
     ugcTrackIds: [],
+    publicationConsent: false,
   };
 
-  let list$: BehaviorSubject<Experience[]>;
-  let status$: BehaviorSubject<ExperiencesStatus>;
-  let svc: {experiences$: () => any; status$: () => any; remove: jasmine.Spy};
+  let list$: BehaviorSubject<Diary[]>;
+  let status$: BehaviorSubject<DiariesStatus>;
+  let svc: {diaries$: () => any; status$: () => any; remove: jasmine.Spy};
   let toastCtrl: {create: jasmine.Spy};
   let alertRole: string;
   let host: {back: jasmine.Spy; edit: jasmine.Spy; exit?: jasmine.Spy};
@@ -46,15 +47,15 @@ describe('WmExperienceDetailComponent (oc:8169)', () => {
   };
   /** Ordine delle chiamate, per verificare che il contenitore si chiuda prima di navigare. */
   let calls: string[];
-  let fixture: ComponentFixture<WmExperienceDetailComponent>;
-  let cmp: WmExperienceDetailComponent;
+  let fixture: ComponentFixture<WmDiaryDetailComponent>;
+  let cmp: WmDiaryDetailComponent;
 
   beforeEach(() => {
     TestBed.resetTestingModule();
-    list$ = new BehaviorSubject<Experience[]>([experience]);
-    status$ = new BehaviorSubject<ExperiencesStatus>('active');
+    list$ = new BehaviorSubject<Diary[]>([diary]);
+    status$ = new BehaviorSubject<DiariesStatus>('active');
     svc = {
-      experiences$: () => list$,
+      diaries$: () => list$,
       status$: () => status$,
       remove: jasmine.createSpy('remove').and.returnValue(of(undefined)),
     };
@@ -76,7 +77,7 @@ describe('WmExperienceDetailComponent (oc:8169)', () => {
       getCurrentPath: jasmine.createSpy('getCurrentPath').and.returnValue('home'),
     };
     TestBed.configureTestingModule({
-      declarations: [WmExperienceDetailComponent, FakeTransPipe],
+      declarations: [WmDiaryDetailComponent, FakeTransPipe],
       providers: [
         provideMockStore({
           selectors: [
@@ -99,7 +100,7 @@ describe('WmExperienceDetailComponent (oc:8169)', () => {
         }),
         {provide: UrlHandlerService, useValue: urlHandler},
         {provide: UgcTrackStatsService, useValue: {params$: of(UGC_TRACK_STATS_DEFAULT_PARAMS)}},
-        {provide: ExperienceService, useValue: svc},
+        {provide: DiaryService, useValue: svc},
         {provide: ToastController, useValue: toastCtrl},
         {provide: LangService, useValue: fakeLangService()},
         {
@@ -127,65 +128,74 @@ describe('WmExperienceDetailComponent (oc:8169)', () => {
    *
    * @param exp Esperienza.
    */
-  function render(exp: Experience = experience): void {
-    fixture = TestBed.createComponent(WmExperienceDetailComponent);
+  function render(exp: Diary = diary): void {
+    fixture = TestBed.createComponent(WmDiaryDetailComponent);
     cmp = fixture.componentInstance;
-    cmp.experience = exp;
+    cmp.diary = exp;
     cmp.host = host;
     fixture.detectChanges();
   }
 
   const text = (): string => (fixture.nativeElement as HTMLElement).textContent ?? '';
 
-  it('mostra tappa, cammino, data, «visibile solo a te» e le foto', () => {
+  it('mostra tappa, cammino, data e le foto; senza consenso nessuna indicazione', () => {
     render();
     expect(text()).toContain('Tappa 05: Portixeddu - Piscinas');
     expect(text()).toContain('Cammino Minerario');
-    expect(text()).toContain('12 giugno 2026 · visibile solo a te');
-    expect(fixture.nativeElement.querySelectorAll('.wm-experience-detail-photo').length).toBe(2);
-    expect(fixture.nativeElement.querySelector('.wm-experience-detail-ugc')).toBeNull();
+    expect(text()).toContain('12 giugno 2026');
+    expect(text()).not.toContain('visibile solo a te');
+    expect(text()).not.toContain("Cammini d'Italia può pubblicarlo");
+    expect(fixture.nativeElement.querySelectorAll('.wm-diary-detail-photo').length).toBe(2);
+    expect(fixture.nativeElement.querySelector('.wm-diary-detail-ugc')).toBeNull();
+  });
+
+  it('con il consenso la riga lo dice: «Cammini d\'Italia può pubblicarlo»', () => {
+    const consented = {...diary, publicationConsent: true};
+    list$.next([consented]);
+    render(consented);
+    expect(text()).toContain("12 giugno 2026 · Cammini d'Italia può pubblicarlo");
   });
 
   /** Righe delle registrazioni collegate. */
   const ugcRows = (): HTMLElement[] =>
-    Array.from(fixture.nativeElement.querySelectorAll('.wm-experience-detail-ugc-row'));
+    Array.from(fixture.nativeElement.querySelectorAll('.wm-diary-detail-ugc-row'));
 
   it('una riga per ogni registrazione collegata, con nome, data, km e durata', () => {
-    const linked = {...experience, ugcTrackIds: [55, 56]};
+    const linked = {...diary, ugcTrackIds: [55, 56]};
     list$.next([linked]);
     render(linked);
     expect(text()).toContain('Registrazioni collegate');
-    expect(fixture.nativeElement.querySelector('.wm-experience-detail-ugc-count')?.textContent).toContain('2');
+    expect(fixture.nativeElement.querySelector('.wm-diary-detail-ugc-count')?.textContent).toContain('2');
     const rows = ugcRows();
     expect(rows.length).toBe(2);
     expect(rows[0].textContent).toContain('Portixeddu → Piscinas');
     expect(rows[0].textContent).toContain("12 giugno 2026 · 16,4 km · 5 h 12'");
     // senza nome né dati tecnici: «Registrazione» e solo la data
     expect(rows[1].textContent).toContain('Registrazione');
-    expect(rows[1].querySelector('.wm-experience-detail-ugc-sub')?.textContent?.trim()).toBe('13 giugno 2026');
+    expect(rows[1].querySelector('.wm-diary-detail-ugc-sub')?.textContent?.trim()).toBe('13 giugno 2026');
     expect(rows.every(r => r.tagName === 'BUTTON')).toBeTrue();
   });
 
   it('una sola registrazione: niente conteggio', () => {
-    const linked = {...experience, ugcTrackIds: [55]};
+    const linked = {...diary, ugcTrackIds: [55]};
     list$.next([linked]);
     render(linked);
     expect(ugcRows().length).toBe(1);
-    expect(fixture.nativeElement.querySelector('.wm-experience-detail-ugc-count')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.wm-diary-detail-ugc-count')).toBeNull();
   });
 
   it('registrazione non presente sul telefono: «Registrazione», non toccabile', () => {
-    const linked = {...experience, ugcTrackIds: [99]};
+    const linked = {...diary, ugcTrackIds: [99]};
     list$.next([linked]);
     render(linked);
     const [row] = ugcRows();
     expect(row.tagName).toBe('DIV');
     expect(row.textContent).toContain('Registrazione');
-    expect(row.querySelector('.wm-experience-detail-ugc-chevron')).toBeNull();
+    expect(row.querySelector('.wm-diary-detail-ugc-chevron')).toBeNull();
   });
 
   it('tap su una registrazione: chiude il contenitore, poi la apre sulla mappa come «I miei percorsi»', async () => {
-    const linked = {...experience, ugcTrackIds: [55]};
+    const linked = {...diary, ugcTrackIds: [55]};
     list$.next([linked]);
     render(linked);
     const store = TestBed.inject(MockStore);
@@ -232,7 +242,7 @@ describe('WmExperienceDetailComponent (oc:8169)', () => {
     expect(urlHandler.updateURL).not.toHaveBeenCalled();
     expect(urlHandler.navigateTo).not.toHaveBeenCalled();
     // il dettaglio non è uscito: una cancellazione riuscita dopo fa ancora il back
-    await cmp.remove(experience);
+    await cmp.remove(diary);
     expect(host.back).toHaveBeenCalled();
   });
 
@@ -245,7 +255,7 @@ describe('WmExperienceDetailComponent (oc:8169)', () => {
   });
 
   it('registrazione non presente sul telefono: il tap non fa nulla', async () => {
-    render({...experience, ugcTrackIds: [99]});
+    render({...diary, ugcTrackIds: [99]});
     await cmp.openUgcTrack({id: 99, name: 'Registrazione', subline: '', openable: false});
     expect(host.exit).not.toHaveBeenCalled();
     expect(urlHandler.updateURL).not.toHaveBeenCalled();
@@ -267,20 +277,20 @@ describe('WmExperienceDetailComponent (oc:8169)', () => {
 
   it('segue lo stream: dopo una modifica mostra il testo salvato', () => {
     render();
-    list$.next([{...experience, description: 'Testo nuovo'}]);
+    list$.next([{...diary, description: 'Testo nuovo'}]);
     fixture.detectChanges();
     expect(text()).toContain('Testo nuovo');
   });
 
   it('«Modifica» chiede al contenitore di aprire il form', () => {
     render();
-    (fixture.nativeElement.querySelector('.wm-experience-detail-edit') as HTMLButtonElement).click();
-    expect(host.edit).toHaveBeenCalledWith(experience);
+    (fixture.nativeElement.querySelector('.wm-diary-detail-edit') as HTMLButtonElement).click();
+    expect(host.edit).toHaveBeenCalledWith(diary);
   });
 
   it('«Elimina» confermato: cancella e chiude', async () => {
     render();
-    await cmp.remove(experience);
+    await cmp.remove(diary);
     expect(svc.remove).toHaveBeenCalledWith(4);
     expect(host.back).toHaveBeenCalled();
   });
@@ -289,7 +299,7 @@ describe('WmExperienceDetailComponent (oc:8169)', () => {
     const pending = new Subject<void>();
     svc.remove.and.returnValue(pending);
     render();
-    const done = cmp.remove(experience);
+    const done = cmp.remove(diary);
     await new Promise(resolve => setTimeout(resolve));
     expect(cmp.deleting).toBeTrue();
     fixture.destroy();
@@ -302,7 +312,7 @@ describe('WmExperienceDetailComponent (oc:8169)', () => {
   it('«Elimina» annullato: non cancella', async () => {
     alertRole = 'cancel';
     render();
-    await cmp.remove(experience);
+    await cmp.remove(diary);
     expect(svc.remove).not.toHaveBeenCalled();
     expect(host.back).not.toHaveBeenCalled();
   });
@@ -310,7 +320,7 @@ describe('WmExperienceDetailComponent (oc:8169)', () => {
   it('cancellazione non riuscita: resta aperto con il messaggio', async () => {
     svc.remove.and.returnValue(throwError(() => new Error('x')));
     render();
-    await cmp.remove(experience);
+    await cmp.remove(diary);
     expect(host.back).not.toHaveBeenCalled();
     expect(cmp.errorMessage).toBe('Eliminazione non riuscita, riprova');
   });
@@ -318,7 +328,7 @@ describe('WmExperienceDetailComponent (oc:8169)', () => {
   it('cancellazione senza connessione: messaggio dedicato', async () => {
     svc.remove.and.returnValue(throwError(() => new HttpErrorResponse({status: 0})));
     render();
-    await cmp.remove(experience);
+    await cmp.remove(diary);
     expect(host.back).not.toHaveBeenCalled();
     expect(cmp.errorMessage).toBe('Nessuna connessione: riprova quando sei online.');
   });
@@ -338,7 +348,7 @@ describe('WmExperienceDetailComponent (oc:8169)', () => {
     it('senza rete «Modifica» avvisa che serve la connessione e non apre il form', async () => {
       setOnline(false);
       render();
-      (fixture.nativeElement.querySelector('.wm-experience-detail-edit') as HTMLButtonElement).click();
+      (fixture.nativeElement.querySelector('.wm-diary-detail-edit') as HTMLButtonElement).click();
       await fixture.whenStable();
       expect(host.edit).not.toHaveBeenCalled();
       expect(toastCtrl.create).toHaveBeenCalledWith(
@@ -349,7 +359,7 @@ describe('WmExperienceDetailComponent (oc:8169)', () => {
     it('senza rete «Elimina» avvisa senza chiedere conferma e non cancella', async () => {
       setOnline(false);
       render();
-      await cmp.remove(experience);
+      await cmp.remove(diary);
       expect(TestBed.inject(AlertController).create).not.toHaveBeenCalled();
       expect(svc.remove).not.toHaveBeenCalled();
       expect(host.back).not.toHaveBeenCalled();
@@ -359,9 +369,9 @@ describe('WmExperienceDetailComponent (oc:8169)', () => {
     it('stato offline/error del service ma rete presente: «Modifica» ed «Elimina» provano', async () => {
       status$.next('error');
       render();
-      (fixture.nativeElement.querySelector('.wm-experience-detail-edit') as HTMLButtonElement).click();
-      expect(host.edit).toHaveBeenCalledWith(experience);
-      await cmp.remove(experience);
+      (fixture.nativeElement.querySelector('.wm-diary-detail-edit') as HTMLButtonElement).click();
+      expect(host.edit).toHaveBeenCalledWith(diary);
+      await cmp.remove(diary);
       expect(svc.remove).toHaveBeenCalledWith(4);
       expect(toastCtrl.create).not.toHaveBeenCalled();
     });
@@ -371,16 +381,16 @@ describe('WmExperienceDetailComponent (oc:8169)', () => {
       render();
       setOnline(true);
       fixture.detectChanges();
-      (fixture.nativeElement.querySelector('.wm-experience-detail-edit') as HTMLButtonElement).click();
-      expect(host.edit).toHaveBeenCalledWith(experience);
+      (fixture.nativeElement.querySelector('.wm-diary-detail-edit') as HTMLButtonElement).click();
+      expect(host.edit).toHaveBeenCalledWith(diary);
     });
 
     it('foto che non si carica: si nasconde senza uscire dalla galleria', () => {
       render();
-      const photos = fixture.nativeElement.querySelectorAll('.wm-experience-detail-photo');
+      const photos = fixture.nativeElement.querySelectorAll('.wm-diary-detail-photo');
       (photos[0] as HTMLImageElement).dispatchEvent(new Event('error'));
       expect((photos[0] as HTMLImageElement).style.visibility).toBe('hidden');
-      expect(fixture.nativeElement.querySelectorAll('.wm-experience-detail-photo').length).toBe(2);
+      expect(fixture.nativeElement.querySelectorAll('.wm-diary-detail-photo').length).toBe(2);
     });
   });
 });

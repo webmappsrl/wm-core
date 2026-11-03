@@ -1,4 +1,4 @@
-import {resizeImageBlob} from './experience-photo.utils';
+import {resizeImageBlob} from './diary-photo.utils';
 
 describe('resizeImageBlob (oc:8169)', () => {
   /**

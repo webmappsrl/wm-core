@@ -22,7 +22,7 @@ describe('UgcTrackPropertiesBaseComponent — varianti (oc:8169)', () => {
 
   it('il default non mostra le esperienze collegate', () => {
     const component = new UgcTrackPropertiesComponent(store, null as any, null as any, null as any);
-    expect(component.showExperiences).toBeFalse();
+    expect(component.showDiaries).toBeFalse();
   });
 
   it('la variante camminiditalia mostra le esperienze collegate', () => {
@@ -32,7 +32,7 @@ describe('UgcTrackPropertiesBaseComponent — varianti (oc:8169)', () => {
       null as any,
       null as any,
     );
-    expect(component.showExperiences).toBeTrue();
+    expect(component.showDiaries).toBeTrue();
   });
 
   it('la gerarchia conserva UgcPropertiesBaseComponent (foto di wm-image-picker)', () => {

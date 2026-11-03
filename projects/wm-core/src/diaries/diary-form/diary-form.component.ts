@@ -10,27 +10,30 @@ import {
 } from '@angular/core';
 import {Photo} from '@capacitor/camera';
 import {Capacitor} from '@capacitor/core';
-import {AlertController} from '@ionic/angular';
+import {AlertController, ToastController} from '@ionic/angular';
 import {firstValueFrom} from 'rxjs';
 import {Media} from '@wm-types/feature';
 import {LangService} from '@wm-core/localization/lang.service';
 import {CaptureOptions} from '@wm-core/services/camera.service';
 import {PassportLeaveGuard} from '@wm-core/passport/passport-leave-guard';
-import {Experience} from '../experience.model';
-import {ExperienceService} from '../experience.service';
-import {resizeImageBlob} from '../experience-photo.utils';
+import {Diary, DiaryDraft} from '../diary.model';
+import {DiaryService} from '../diary.service';
+import {DiaryDraftKey, DiaryDraftStore, diaryDraftKey} from '../diary-draft.store';
+import {DiaryOutboxService} from '../diary-outbox.service';
+import {diaryHttpErrorKey} from '../diary-offline.utils';
+import {resizeImageBlob} from '../diary-photo.utils';
 
 /** Foto massime di un'esperienza (oc:8169). */
-export const EXPERIENCE_MAX_PHOTOS = 6;
+export const DIARY_MAX_PHOTOS = 6;
 /** Acquisizione delle foto di un'esperienza: ridotte e senza accendere il GPS. */
-export const EXPERIENCE_PHOTO_CAPTURE: CaptureOptions = {
+export const DIARY_PHOTO_CAPTURE: CaptureOptions = {
   maxWidth: 1600,
   quality: 80,
   startNavigation: false,
 };
 
 /** Operazioni del contenitore usate dal form. */
-export interface ExperienceFormHost {
+export interface DiaryFormHost {
   back(): void;
   registerGuard?(guard: PassportLeaveGuard | null): void;
 }
@@ -40,35 +43,43 @@ export interface ExperienceFormHost {
  * online: in caso di errore testo e foto restano nel form. Con contenuto non pubblicato l'uscita
  * chiede conferma, tramite il guard registrato sul contenitore.
  */
+/** Conferma del passaggio in coda di un diario scritto senza rete. */
+export const DIARY_QUEUED_MESSAGE = 'Sei offline: il diario partirà appena torni online';
+/** Pausa nella scrittura dopo cui si salva la bozza del testo (ms). */
+export const DIARY_DRAFT_DEBOUNCE_MS = 800;
+
 @Component({
   standalone: false,
-  selector: 'wm-experience-form',
-  templateUrl: './experience-form.component.html',
-  styleUrls: ['./experience-form.component.scss'],
+  selector: 'wm-diary-form',
+  templateUrl: './diary-form.component.html',
+  styleUrls: ['./diary-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class WmExperienceFormComponent implements OnInit, OnDestroy, PassportLeaveGuard {
+export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGuard {
   @Input() layerId?: number;
   @Input() ecTrackId?: number;
   @Input() contextLabel = '';
-  @Input() host?: ExperienceFormHost;
-  @Input() set experience(experience: Experience | undefined) {
-    this._experience = experience;
-    this.description = experience?.description ?? '';
-    this.keepMediaIds = (experience?.photos ?? []).map(p => p.id);
-    this.syncedPhotos = (experience?.photos ?? []).map(
+  @Input() host?: DiaryFormHost;
+  @Input() set diary(diary: Diary | undefined) {
+    this._diary = diary;
+    this.description = diary?.description ?? '';
+    this.keepMediaIds = (diary?.photos ?? []).map(p => p.id);
+    this.publicationConsent = diary?.publicationConsent === true;
+    this.syncedPhotos = (diary?.photos ?? []).map(
       p => ({id: p.id, webPath: p.thumbnail || p.url, format: 'jpeg'}) as Media,
     );
   }
-  get experience(): Experience | undefined {
-    return this._experience;
+  get diary(): Diary | undefined {
+    return this._diary;
   }
 
-  readonly maxPhotos = EXPERIENCE_MAX_PHOTOS;
-  readonly captureOptions = EXPERIENCE_PHOTO_CAPTURE;
+  readonly maxPhotos = DIARY_MAX_PHOTOS;
+  readonly captureOptions = DIARY_PHOTO_CAPTURE;
 
   description = '';
+  /** Spunta facoltativa del consenso alla ripubblicazione, non selezionata di default. */
+  publicationConsent = false;
   newPhotos: Photo[] = [];
   /** Foto già pubblicate mostrate dal picker (solo in modifica). */
   syncedPhotos: Media[] = [];
@@ -80,22 +91,38 @@ export class WmExperienceFormComponent implements OnInit, OnDestroy, PassportLea
   /** `true` se l'ultimo errore è mancanza di connessione (mostra «Riprova»). */
   networkError = false;
 
-  /** Generato una volta sola: un nuovo invio dopo un errore non crea un duplicato. */
-  private readonly _uuid = this._newUuid();
-  private _experience?: Experience;
+  /**
+   * Generato una volta sola: un nuovo invio dopo un errore non crea un duplicato. Se c'è una
+   * bozza dello stesso contesto si riusa il suo, per lo stesso motivo (oc:8169, ciclo 2).
+   */
+  private _uuid = this._newUuid();
+  /** Chiave della bozza sul telefono; `null` finché non si conosce l'utente o se non è loggato. */
+  private _draftKey: DiaryDraftKey | null = null;
+  private _draftUserId: number | null = null;
+  private _draftTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Foto convertite all'ultimo cambio delle foto: il salvataggio del solo testo le riusa. */
+  private _photoBlobs: Blob[] | null = null;
+  /** Foto della bozza da ripristinare nel picker. */
+  restoredPhotos: Media[] = [];
+  /** Si risolve quando la bozza (se c'è) è stata ripristinata. */
+  draftReady: Promise<void> = Promise.resolve();
+  private _diary?: Diary;
   /** `true` dopo un invio riuscito: l'uscita non chiede più conferma. */
   private _done = false;
 
   constructor(
-    private _experienceSvc: ExperienceService,
+    private _diarySvc: DiaryService,
     private _alertCtrl: AlertController,
     private _langSvc: LangService,
     private _cdr: ChangeDetectorRef,
+    private _drafts: DiaryDraftStore,
+    private _outbox: DiaryOutboxService,
+    private _toastCtrl: ToastController,
   ) {}
 
   /** Titolo: «Nuova esperienza» in creazione, «Modifica esperienza» in modifica. */
   get title(): string {
-    return this._experience ? 'Modifica esperienza' : 'Nuova esperienza';
+    return this._diary ? 'Modifica il diario' : 'Nuova pagina di diario';
   }
 
   /** Segnaposto del racconto: della tappa se il form è aperto da una tappa, altrimenti del cammino. */
@@ -117,12 +144,13 @@ export class WmExperienceFormComponent implements OnInit, OnDestroy, PassportLea
 
   /** Il form ha contenuto non pubblicato (in modifica: diverso dall'esperienza salvata). */
   get isDirty(): boolean {
-    if (!this._experience) return this.description.trim().length > 0 || this.newPhotos.length > 0;
-    const original = this._experience.photos.map(p => p.id);
+    if (!this._diary) return this.description.trim().length > 0 || this.newPhotos.length > 0;
+    const original = this._diary.photos.map(p => p.id);
     return (
-      this.description !== (this._experience.description ?? '') ||
+      this.description !== (this._diary.description ?? '') ||
       this.newPhotos.length > 0 ||
-      this.keepMediaIds.length !== original.length
+      this.keepMediaIds.length !== original.length ||
+      this.publicationConsent !== (this._diary.publicationConsent === true)
     );
   }
 
@@ -134,11 +162,13 @@ export class WmExperienceFormComponent implements OnInit, OnDestroy, PassportLea
   /** Si registra come guard sul contenitore. */
   ngOnInit(): void {
     this.host?.registerGuard?.(this);
+    this.draftReady = this._restoreDraft();
   }
 
   /** Si toglie da guard del contenitore. */
   ngOnDestroy(): void {
     this.host?.registerGuard?.(null);
+    if (this._draftTimer) clearTimeout(this._draftTimer);
   }
 
   /**
@@ -148,6 +178,7 @@ export class WmExperienceFormComponent implements OnInit, OnDestroy, PassportLea
    */
   onDescription(value: string | null | undefined): void {
     this.description = value ?? '';
+    this._scheduleDraftSave();
     this._cdr.markForCheck();
   }
 
@@ -159,6 +190,8 @@ export class WmExperienceFormComponent implements OnInit, OnDestroy, PassportLea
    */
   onPhotos(photos: Photo[]): void {
     this.newPhotos = (photos ?? []).filter(p => (p as Media).id == null);
+    this._photoBlobs = null;
+    void this.flushDraft();
     this._cdr.markForCheck();
   }
 
@@ -169,7 +202,17 @@ export class WmExperienceFormComponent implements OnInit, OnDestroy, PassportLea
    */
   onSyncedPhotoRemoved(id: number): void {
     this.keepMediaIds = this.keepMediaIds.filter(k => k !== id);
+    void this.flushDraft();
     this._cdr.markForCheck();
+  }
+
+  /**
+   * Aggiorna la spunta del consenso alla ripubblicazione.
+   * @param checked nuovo valore della spunta
+   */
+  onPublicationConsent(checked: boolean): void {
+    this.publicationConsent = checked === true;
+    void this.flushDraft();
   }
 
   /** Pubblica (creazione) o salva (modifica); in caso di errore il form resta aperto. */
@@ -179,24 +222,29 @@ export class WmExperienceFormComponent implements OnInit, OnDestroy, PassportLea
     this.errorMessage = null;
     this.networkError = false;
     this._cdr.markForCheck();
+    let draftForQueue: DiaryDraft | null = null;
     try {
       const photos = await Promise.all(this.newPhotos.map(p => this._toBlob(p)));
-      const draft = {
-        uuid: this._experience?.uuid ?? this._uuid,
+      const draft: DiaryDraft = {
+        uuid: this._diary?.uuid ?? this._uuid,
         layerId: this.layerId,
         ecTrackId: this.ecTrackId,
         description: this.description.trim(),
         newPhotos: photos,
-        ...(this._experience ? {keepMediaIds: this.keepMediaIds} : {}),
+        publicationConsent: this.publicationConsent,
+        ...(this._diary ? {keepMediaIds: this.keepMediaIds} : {}),
       };
+      draftForQueue = draft;
       await firstValueFrom(
-        this._experience
-          ? this._experienceSvc.update(this._experience.id, draft)
-          : this._experienceSvc.create(draft),
+        this._diary
+          ? this._diarySvc.update(this._diary.id, draft)
+          : this._diarySvc.create(draft),
       );
       this._done = true;
+      await this._removeDraft();
       this.host?.back();
     } catch (err) {
+      if (await this._enqueueIfOffline(err, draftForQueue)) return;
       this.networkError = this._isOffline(err);
       this.errorMessage = this._langSvc.instant(this._errorKey(err));
     } finally {
@@ -224,6 +272,7 @@ export class WmExperienceFormComponent implements OnInit, OnDestroy, PassportLea
     });
     await alert.present();
     const {role} = await alert.onDidDismiss();
+    if (role === 'confirm') await this._removeDraft();
     return role === 'confirm';
   }
 
@@ -237,21 +286,7 @@ export class WmExperienceFormComponent implements OnInit, OnDestroy, PassportLea
     if (this.networkError) {
       return 'Nessuna connessione. Il tuo racconto e le foto restano qui: riprova quando sei online.';
     }
-    if (err instanceof HttpErrorResponse && err.status === 422) {
-      // Il messaggio segue il campo rifiutato dal backend: il suo testo è sempre in italiano,
-      // la chiave qui invece si traduce nella lingua dell'app.
-      const fields = Object.keys(err.error?.errors ?? {});
-      if (fields.some(f => f === 'ec_track_id' || f === 'layer_id')) {
-        return 'La tappa non appartiene a questo cammino.';
-      }
-      if (fields.includes('description')) {
-        return 'Scrivi un testo o aggiungi almeno una foto.';
-      }
-      if (fields.some(f => f === 'images' || f.startsWith('images.'))) {
-        return 'Una o più foto non sono valide: usa JPEG, PNG o WebP fino a 5 MB.';
-      }
-    }
-    return 'Invio non riuscito, riprova';
+    return diaryHttpErrorKey(err);
   }
 
   /**
@@ -263,6 +298,100 @@ export class WmExperienceFormComponent implements OnInit, OnDestroy, PassportLea
   private _isOffline(err: unknown): boolean {
     if (err instanceof HttpErrorResponse && err.status === 0) return true;
     return typeof navigator !== 'undefined' && navigator.onLine === false;
+  }
+
+  /**
+   * Salva subito la bozza sul telefono (testo dopo una pausa, foto e spunta subito).
+   * @returns quando la bozza è salvata
+   */
+  async flushDraft(): Promise<void> {
+    if (this._draftTimer) {
+      clearTimeout(this._draftTimer);
+      this._draftTimer = null;
+    }
+    if (!this._draftKey || this._draftUserId == null || this._done) return;
+    if (this._photoBlobs == null) {
+      this._photoBlobs = await Promise.all(this.newPhotos.map(p => this._toBlob(p)));
+    }
+    const photos = this._photoBlobs;
+    // pubblicato o messo in coda mentre si convertivano le foto: la bozza non va riscritta
+    if (this._done) return;
+    await this._drafts
+      .save({
+        key: this._draftKey,
+        userId: this._draftUserId,
+        uuid: this._diary?.uuid ?? this._uuid,
+        layerId: this.layerId,
+        ecTrackId: this.ecTrackId,
+        diaryId: this._diary?.id,
+        description: this.description,
+        photos,
+        keepMediaIds: this._diary ? this.keepMediaIds : undefined,
+        publicationConsent: this.publicationConsent,
+        updatedAt: Date.now(),
+      })
+      .catch(() => undefined);
+  }
+
+  /**
+   * Senza rete un diario nuovo va in coda e parte da solo al ritorno della rete (oc:8169, ciclo 2).
+   * Solo dove la coda è attiva (app camminiditalia); la modifica resta bloccata come prima.
+   * @param err errore dell'invio
+   * @param draft dati del diario
+   * @returns `true` se il diario è andato in coda e il form si è chiuso
+   */
+  private async _enqueueIfOffline(err: unknown, draft: DiaryDraft | null): Promise<boolean> {
+    if (this._diary || !draft || !this._outbox.active || this._draftUserId == null) return false;
+    if (!this._isOffline(err)) return false;
+    await this._outbox.enqueue(draft, this._draftUserId);
+    this._done = true;
+    await this._removeDraft();
+    const toast = await this._toastCtrl.create({
+      message: this._langSvc.instant(DIARY_QUEUED_MESSAGE),
+      duration: 3000,
+    });
+    await toast.present();
+    this.host?.back();
+    return true;
+  }
+
+  /** Salvataggio del testo dopo una pausa nella scrittura. */
+  private _scheduleDraftSave(): void {
+    if (this._draftTimer) clearTimeout(this._draftTimer);
+    this._draftTimer = setTimeout(() => void this.flushDraft(), DIARY_DRAFT_DEBOUNCE_MS);
+  }
+
+  /** Ripristina la bozza dello stesso contesto, se c'è (oc:8169, ciclo 2). */
+  private async _restoreDraft(): Promise<void> {
+    const userId = await firstValueFrom(this._diarySvc.currentUserId$()).catch(() => null);
+    if (userId == null) return;
+    this._draftUserId = userId;
+    this._draftKey = diaryDraftKey(userId, {
+      layerId: this.layerId,
+      ecTrackId: this.ecTrackId,
+      diaryId: this._diary?.id,
+    });
+    const draft = await this._drafts.load(this._draftKey).catch(() => null);
+    if (!draft) return;
+    this.description = draft.description ?? '';
+    this.publicationConsent = draft.publicationConsent === true;
+    if (draft.errorMessage) this.errorMessage = this._langSvc.instant(draft.errorMessage);
+    if (!this._diary && draft.uuid) this._uuid = draft.uuid;
+    if (this._diary && draft.keepMediaIds) this.keepMediaIds = draft.keepMediaIds;
+    this.restoredPhotos = (draft.photos ?? []).map(
+      blob => ({webPath: URL.createObjectURL(blob), format: 'jpeg'}) as Media,
+    );
+    this.newPhotos = this.restoredPhotos as unknown as Photo[];
+    this._cdr.markForCheck();
+  }
+
+  /** Cancella la bozza: dopo la pubblicazione, l'uscita confermata o il passaggio in coda. */
+  private async _removeDraft(): Promise<void> {
+    if (this._draftTimer) {
+      clearTimeout(this._draftTimer);
+      this._draftTimer = null;
+    }
+    if (this._draftKey) await this._drafts.remove(this._draftKey).catch(() => undefined);
   }
 
   /**

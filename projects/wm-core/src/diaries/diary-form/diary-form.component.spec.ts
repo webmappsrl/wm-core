@@ -1,16 +1,19 @@
 import {HttpErrorResponse} from '@angular/common/http';
 import {of, throwError} from 'rxjs';
-import {Experience} from '../experience.model';
-import {WmExperienceFormComponent} from './experience-form.component';
+import {Diary} from '../diary.model';
+import {WmDiaryFormComponent} from './diary-form.component';
 
-describe('WmExperienceFormComponent (oc:8169)', () => {
-  let svc: {create: jasmine.Spy; update: jasmine.Spy};
+describe('WmDiaryFormComponent (oc:8169)', () => {
+  let svc: {create: jasmine.Spy; update: jasmine.Spy; currentUserId$: () => any};
+  let drafts: any;
+  let saved: any;
+  let outbox: any;
   let host: {back: jasmine.Spy; registerGuard: jasmine.Spy};
   let alertCtrl: {create: jasmine.Spy};
   let alertRole: 'confirm' | 'cancel';
 
   const photo = (n: number) => ({webPath: `blob:${n}`}) as any;
-  const experience: Experience = {
+  const diary: Diary = {
     id: 9,
     uuid: 'uuid-9',
     layer: {id: 1, name: 'L'},
@@ -23,14 +26,18 @@ describe('WmExperienceFormComponent (oc:8169)', () => {
       {id: 11, url: 'u11', thumbnail: 't11'},
     ],
     ugcTrackIds: [],
+    publicationConsent: false,
   };
 
-  function create(): WmExperienceFormComponent {
-    const cmp = new WmExperienceFormComponent(
+  function create(): WmDiaryFormComponent {
+    const cmp = new WmDiaryFormComponent(
       svc as any,
       alertCtrl as any,
       {instant: (k: string) => k} as any,
       {markForCheck() {}} as any,
+      drafts as any,
+      outbox as any,
+      {create: async () => ({present: async () => {}})} as any,
     );
     cmp.layerId = 1;
     cmp.host = host;
@@ -43,6 +50,14 @@ describe('WmExperienceFormComponent (oc:8169)', () => {
     svc = {
       create: jasmine.createSpy('create').and.returnValue(of({})),
       update: jasmine.createSpy('update').and.returnValue(of({})),
+      currentUserId$: () => of(5),
+    };
+    saved = null;
+    outbox = {active: false, enqueue: jasmine.createSpy('enqueue').and.resolveTo()};
+    drafts = {
+      load: jasmine.createSpy('load').and.callFake(async () => saved),
+      save: jasmine.createSpy('save').and.callFake(async (d: any) => (saved = d)),
+      remove: jasmine.createSpy('remove').and.callFake(async () => (saved = null)),
     };
     host = {back: jasmine.createSpy('back'), registerGuard: jasmine.createSpy('registerGuard')};
     alertRole = 'confirm';
@@ -52,6 +67,101 @@ describe('WmExperienceFormComponent (oc:8169)', () => {
         onDidDismiss: async () => ({role: alertRole}),
       })),
     };
+  });
+
+  it('la spunta del consenso parte non selezionata e si invia', async () => {
+    const cmp = create();
+    expect(cmp.publicationConsent).toBeFalse();
+    cmp.onDescription('ciao');
+    cmp.onPublicationConsent(true);
+    await cmp.submit();
+    expect(svc.create.calls.argsFor(0)[0].publicationConsent).toBeTrue();
+  });
+
+  it('in modifica ripropone il consenso salvato', () => {
+    const cmp = create();
+    cmp.diary = {...diary, publicationConsent: true};
+    expect(cmp.publicationConsent).toBeTrue();
+  });
+
+  it('riaprendo il form nello stesso contesto ripropone testo, consenso e uuid della bozza', async () => {
+    saved = {key: 'u5:l1:t0', userId: 5, uuid: 'uuid-bozza', layerId: 1, description: 'scritto ieri', photos: [], publicationConsent: true, updatedAt: Date.now()};
+    const cmp = create();
+    await cmp.draftReady;
+    expect(drafts.load).toHaveBeenCalledWith('u5:l1:t0');
+    expect(cmp.description).toBe('scritto ieri');
+    expect(cmp.publicationConsent).toBeTrue();
+    cmp.onDescription('scritto ieri e oggi');
+    await cmp.submit();
+    expect(svc.create.calls.argsFor(0)[0].uuid).toBe('uuid-bozza');
+  });
+
+  it('salva la bozza quando cambia la spunta e la cancella dopo la pubblicazione', async () => {
+    const cmp = create();
+    await cmp.draftReady;
+    cmp.onDescription('ciao');
+    cmp.onPublicationConsent(true);
+    await cmp.flushDraft();
+    expect(drafts.save).toHaveBeenCalled();
+    expect(drafts.save.calls.mostRecent().args[0].description).toBe('ciao');
+    await cmp.submit();
+    expect(drafts.remove).toHaveBeenCalledWith('u5:l1:t0');
+  });
+
+  it('uscendo senza pubblicare (conferma) la bozza si cancella', async () => {
+    const cmp = create();
+    await cmp.draftReady;
+    cmp.onDescription('ciao');
+    alertRole = 'confirm';
+    expect(await cmp.canLeave()).toBeTrue();
+    expect(drafts.remove).toHaveBeenCalledWith('u5:l1:t0');
+  });
+
+  it('offline, «Pubblica» su un diario nuovo lo mette in coda, cancella la bozza e chiude', async () => {
+    outbox.active = true;
+    const cmp = create();
+    await cmp.draftReady;
+    cmp.onDescription('in rifugio');
+    svc.create.and.returnValue(throwError(() => new HttpErrorResponse({status: 0})));
+    await cmp.submit();
+    expect(outbox.enqueue).toHaveBeenCalledTimes(1);
+    expect(outbox.enqueue.calls.argsFor(0)[1]).toBe(5);
+    expect(drafts.remove).toHaveBeenCalledWith('u5:l1:t0');
+    expect(host.back).toHaveBeenCalledTimes(1);
+  });
+
+  it('offline, la modifica non va in coda: resta l\'errore di rete', async () => {
+    outbox.active = true;
+    const cmp = create();
+    cmp.diary = diary;
+    await cmp.draftReady;
+    cmp.onDescription('modifica');
+    svc.update.and.returnValue(throwError(() => new HttpErrorResponse({status: 0})));
+    await cmp.submit();
+    expect(outbox.enqueue).not.toHaveBeenCalled();
+    expect(cmp.networkError).toBeTrue();
+  });
+
+  it('senza coda attiva (webapp) offline resta l\'errore di rete', async () => {
+    outbox.active = false;
+    const cmp = create();
+    await cmp.draftReady;
+    cmp.onDescription('ciao');
+    svc.create.and.returnValue(throwError(() => new HttpErrorResponse({status: 0})));
+    await cmp.submit();
+    expect(outbox.enqueue).not.toHaveBeenCalled();
+    expect(cmp.networkError).toBeTrue();
+  });
+
+  it('salvando solo il testo non riconverte le foto', async () => {
+    const cmp = create();
+    await cmp.draftReady;
+    cmp.onPhotos([photo(1)]);
+    await cmp.flushDraft();
+    const conversions = (cmp as any)._toBlob.calls.count();
+    cmp.onDescription('altro testo');
+    await cmp.flushDraft();
+    expect((cmp as any)._toBlob.calls.count()).toBe(conversions);
   });
 
   it('pubblica disabilitato con solo spazi', () => {
@@ -138,7 +248,7 @@ describe('WmExperienceFormComponent (oc:8169)', () => {
 
   it('in modifica senza cambi, durante «Salva» canLeave nega l\'uscita', async () => {
     const cmp = create();
-    cmp.experience = experience;
+    cmp.diary = diary;
     cmp.submitting = true;
     expect(await cmp.canLeave()).toBeFalse();
     expect(alertCtrl.create).not.toHaveBeenCalled();
@@ -188,7 +298,7 @@ describe('WmExperienceFormComponent (oc:8169)', () => {
 
   it('in modifica invia keepMediaIds senza la foto tolta', async () => {
     const cmp = create();
-    cmp.experience = experience;
+    cmp.diary = diary;
     cmp.onSyncedPhotoRemoved(10);
     await cmp.submit();
     expect(svc.update).toHaveBeenCalledTimes(1);
@@ -200,14 +310,14 @@ describe('WmExperienceFormComponent (oc:8169)', () => {
 
   it('in modifica senza cambi si esce senza conferma', async () => {
     const cmp = create();
-    cmp.experience = experience;
+    cmp.diary = diary;
     expect(await cmp.canLeave()).toBeTrue();
     expect(alertCtrl.create).not.toHaveBeenCalled();
   });
 
   it('la lista combinata del picker conta solo le foto nuove', async () => {
     const cmp = create();
-    cmp.experience = experience;
+    cmp.diary = diary;
     const combined = [
       {webPath: 'blob:new'},
       {id: 10, webPath: 't10'},

@@ -1,30 +1,30 @@
 // Blocco «esperienze» (oc:8169).
 // Host nel Passaporto: gutter di 16px per titolo e lista, la riga del carosello scorre fino al bordo.
-wm-experiences-section.wm-experiences-gutter {
+wm-diaries-section.wm-diaries-gutter {
   display: block;
   flex-shrink: 0;
   // 18px sopra: stacco dall'ultima riga del Passaporto, come nell'artifact (viste 3 e 6).
   padding: 18px 16px 0;
 
   // il margine delle schede dal bordo lo dà `carouselInset` (16) del componente
-  wm-swiper.wm-experiences-section-row {
+  wm-swiper.wm-diaries-section-row {
     margin: 0 -16px;
   }
 }
 
 // Host su home-layer e tappa: stesso margine dei fratelli (`wm-config-detail`).
-wm-experiences-section.wm-experiences-feature {
+wm-diaries-section.wm-diaries-feature {
   display: block;
   margin: var(--wm-feature-details-margin);
 }
 
 // Mount sulla tappa: filetto di separazione sopra il blocco, come nel mockup.
-wm-experiences-section.wm-experiences-feature--divided {
+wm-diaries-section.wm-diaries-feature--divided {
   border-top: 1px solid #ececec;
   padding-top: 14px;
 }
 
-.wm-experiences-section {
+.wm-diaries-section {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -93,7 +93,7 @@ wm-experiences-section.wm-experiences-feature--divided {
   // Carosello su `wm-swiper`: la classe finisce anche sullo `swiper-container` interno (input
   // `class`), quindi le regole sull'host sono qualificate con l'elemento. Gap e margini dai bordi
   // sono opzioni di Swiper (`spaceBetween`, `carouselInset`).
-  wm-swiper.wm-experiences-section-row {
+  wm-swiper.wm-diaries-section-row {
     display: block;
     margin: 0 -4px;
 
@@ -114,18 +114,25 @@ wm-experiences-section.wm-experiences-feature--divided {
       font-size: 28px;
     }
 
+    // Schede basse del carosello (wireframe del dettaglio del cammino, oc:8169 ciclo 2):
+    // «+ Racconta» stretta accanto alle schede orizzontali.
     &--card {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 2px;
       box-sizing: border-box;
-      width: 112px;
-      height: 168px;
-      padding: 8px;
-      font-size: 13px;
+      width: 64px;
+      height: 76px;
+      padding: 4px;
+      font-size: 11px;
       font-weight: 500;
+      line-height: 1.2;
+
+      ion-icon {
+        font-size: 22px;
+      }
     }
 
     &--wide {
@@ -185,12 +192,16 @@ wm-experiences-section.wm-experiences-feature--divided {
     }
   }
 
+  // Scheda orizzontale: miniatura a sinistra, etichetta ed estratto a destra (wireframe).
   &-card {
     display: flex;
-    flex-direction: column;
-    width: 150px;
-    height: 168px;
-    padding: 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+    width: 215px;
+    height: 76px;
+    padding: 8px;
     overflow: hidden;
     border: 0;
     border-radius: 12px;
@@ -202,9 +213,10 @@ wm-experiences-section.wm-experiences-feature--divided {
     // non sempre si aggancia e la foto prende la sua altezza naturale (schede disallineate).
     &-photo {
       display: block;
-      flex: none;
-      height: 84px;
+      flex: 0 0 60px;
+      height: 60px;
       overflow: hidden;
+      border-radius: 8px;
       background: #e9ecef;
 
       img {
@@ -217,21 +229,19 @@ wm-experiences-section.wm-experiences-feature--divided {
 
     &-body {
       display: flex;
+      flex: 1;
       flex-direction: column;
-      gap: 4px;
-      padding: 8px 10px;
+      gap: 2px;
+      min-width: 0;
+      text-align: left;
     }
-    // Esperienza di solo testo: stessa misura e stesso fondo bianco delle altre; cambia solo
-    // che l'estratto occupa l'altezza della foto assente (circa 7 righe).
+    // Diario di solo testo: stessa misura, il testo prende anche lo spazio della miniatura.
     &--text {
-      .wm-experiences-section-card-body {
-        flex: 1;
-        min-height: 0;
-        padding: 12px 10px;
-        overflow: hidden;
+      .wm-diaries-section-card-body {
+        padding: 0 2px;
       }
-      .wm-experiences-section-excerpt {
-        -webkit-line-clamp: 7;
+      .wm-diaries-section-excerpt {
+        -webkit-line-clamp: 3;
       }
     }
   }
@@ -269,11 +279,11 @@ wm-experiences-section.wm-experiences-feature--divided {
       min-width: 0;
     }
 
-    .wm-experiences-section-excerpt {
+    .wm-diaries-section-excerpt {
       font-size: 13px;
     }
     // Senza miniatura il corpo prende tutta la larghezza e l'estratto arriva a 3 righe.
-    &--text .wm-experiences-section-excerpt {
+    &--text .wm-diaries-section-excerpt {
       -webkit-line-clamp: 3;
     }
   }
@@ -295,5 +305,47 @@ wm-experiences-section.wm-experiences-feature--divided {
     line-height: 1.35;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+  }
+}
+
+// Diari in coda (oc:8169, ciclo 2): stato scritto, non solo colore.
+.wm-diaries-section-outbox {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wm-diaries-section-queued {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px dashed var(--wm-color-medium, #92949c);
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  color: inherit;
+
+  &--failed {
+    border-style: solid;
+    border-color: var(--ion-color-danger, #c5000f);
+  }
+}
+
+.wm-diaries-section-queued-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+
+  .wm-diaries-section-queued--failed & {
+    color: var(--ion-color-danger, #c5000f);
   }
 }

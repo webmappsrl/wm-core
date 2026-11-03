@@ -10,7 +10,7 @@ import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Action, Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
 import {
-  clearExperiencesCache,
+  clearDiariesCache,
   clearUgcDeviceData,
   clearUgcSynchronizedData,
   getAuth,
@@ -281,7 +281,7 @@ export class AuthEffects {
     await removeAuth();
     // copia offline delle esperienze (oc:8169): appartiene all'utente che esce; non blocca il
     // logout, e senza marcatore non tocca localForage
-    void clearExperiencesCache().catch(() => undefined);
+    void clearDiariesCache().catch(() => undefined);
     this._store.dispatch(syncUgc());
   }
 }

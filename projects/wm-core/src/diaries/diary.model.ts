@@ -1,5 +1,5 @@
 /** Esperienza dell'utente su un cammino o una tappa (oc:8169). */
-export interface Experience {
+export interface Diary {
   id: number;
   uuid: string;
   layer: {id: number; name: string};
@@ -9,6 +9,8 @@ export interface Experience {
   updatedAt: string;
   photos: {id: number; url: string; thumbnail: string}[];
   ugcTrackIds: number[];
+  /** Consenso alla ripubblicazione sui canali di Cammini d'Italia (oc:8169, ciclo 2). */
+  publicationConsent: boolean;
 }
 
 /**
@@ -17,7 +19,7 @@ export interface Experience {
  * (5xx, status 0, timeout). In `offline` ed `error` la lista è l'ultima copia salvata sul
  * telefono, se c'è.
  */
-export type ExperiencesStatus =
+export type DiariesStatus =
   | 'loading'
   | 'active'
   | 'login-required'
@@ -26,7 +28,7 @@ export type ExperiencesStatus =
   | 'error';
 
 /** Filtro delle esperienze: per cammino, tappa o registrazione. */
-export interface ExperienceFilter {
+export interface DiaryFilter {
   layerId?: number;
   ecTrackId?: number;
   ugcTrackId?: number;
@@ -35,11 +37,13 @@ export interface ExperienceFilter {
 }
 
 /** Dati di creazione o modifica di un'esperienza. */
-export interface ExperienceDraft {
+export interface DiaryDraft {
   uuid: string;
   layerId?: number;
   ecTrackId?: number;
   description: string;
   newPhotos: Blob[];
   keepMediaIds?: number[];
+  /** Spunta del consenso alla ripubblicazione; assente vale `false`. */
+  publicationConsent?: boolean;
 }

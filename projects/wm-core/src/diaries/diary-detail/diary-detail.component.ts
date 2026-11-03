@@ -24,15 +24,15 @@ import {ugcTrackDetails} from '@wm-core/utils/ugc-track-stats';
 import {WmFeature} from '@wm-types/feature';
 import {LineString} from 'geojson';
 import type {SwiperOptions} from 'swiper/types';
-import {Experience} from '../experience.model';
-import {ExperienceService} from '../experience.service';
-import {presentExperienceOfflineToast} from '../experience-offline.utils';
+import {Diary} from '../diary.model';
+import {DiaryService} from '../diary.service';
+import {presentDiaryOfflineToast} from '../diary-offline.utils';
 
 /** Operazioni del contenitore usate dal dettaglio. */
-export interface ExperienceDetailHost {
+export interface DiaryDetailHost {
   back(): void;
   /** Apre il form di modifica nello stesso contenitore. */
-  edit(experience: Experience): void;
+  edit(diary: Diary): void;
   /**
    * Chiude l'intero contenitore: la modale, o la modale del Passaporto se il dettaglio sta nel
    * suo `ion-nav`. Serve prima di aprire una registrazione sulla mappa. Senza, il dettaglio usa
@@ -44,7 +44,7 @@ export interface ExperienceDetailHost {
 }
 
 /** Riga di una registrazione collegata. */
-export interface ExperienceLinkedUgcRow {
+export interface DiaryLinkedUgcRow {
   id: number;
   name: string;
   /**
@@ -60,11 +60,11 @@ export interface ExperienceLinkedUgcRow {
 }
 
 /** Dati del dettaglio pronti per il template. */
-interface ExperienceDetailVm {
-  experience: Experience;
+interface DiaryDetailVm {
+  diary: Diary;
   date: string;
   /** Registrazioni collegate, una riga per id. */
-  ugcRows: ExperienceLinkedUgcRow[];
+  ugcRows: DiaryLinkedUgcRow[];
 }
 
 /**
@@ -77,16 +77,16 @@ interface ExperienceDetailVm {
  */
 @Component({
   standalone: false,
-  selector: 'wm-experience-detail',
-  templateUrl: './experience-detail.component.html',
-  styleUrls: ['./experience-detail.component.scss'],
+  selector: 'wm-diary-detail',
+  templateUrl: './diary-detail.component.html',
+  styleUrls: ['./diary-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class WmExperienceDetailComponent implements OnInit, OnDestroy {
-  @Input() host?: ExperienceDetailHost;
-  @Input() set experience(experience: Experience | undefined) {
-    if (experience) this._experience$.next(experience);
+export class WmDiaryDetailComponent implements OnInit, OnDestroy {
+  @Input() host?: DiaryDetailHost;
+  @Input() set diary(diary: Diary | undefined) {
+    if (diary) this._diary$.next(diary);
   }
 
   /** Foto mostrata nella galleria, per i pallini. */
@@ -96,9 +96,9 @@ export class WmExperienceDetailComponent implements OnInit, OnDestroy {
   deleting = false;
   /** Messaggio d'errore dell'ultima cancellazione, `null` se non ce n'è. */
   errorMessage: string | null = null;
-  vm$: Observable<ExperienceDetailVm | null>;
+  vm$: Observable<DiaryDetailVm | null>;
 
-  private _experience$ = new BehaviorSubject<Experience | null>(null);
+  private _diary$ = new BehaviorSubject<Diary | null>(null);
   /** `true` dopo l'uscita (chiusura o back): una DELETE che finisce dopo non deve rifare il pop. */
   private _left = false;
   /** Vero mentre si apre una registrazione: protegge dal doppio tap. */
@@ -107,7 +107,7 @@ export class WmExperienceDetailComponent implements OnInit, OnDestroy {
   private _offline = false;
 
   constructor(
-    private _experienceSvc: ExperienceService,
+    private _diarySvc: DiaryService,
     private _store: Store,
     private _alertCtrl: AlertController,
     private _langSvc: LangService,
@@ -121,11 +121,11 @@ export class WmExperienceDetailComponent implements OnInit, OnDestroy {
    * Collega lo stream: l'esperienza aggiornata dal service, se c'è, altrimenti quella ricevuta.
    */
   ngOnInit(): void {
-    const current$ = this._experience$.pipe(
+    const current$ = this._diary$.pipe(
       switchMap(input =>
         input == null
           ? of(null)
-          : this._experienceSvc.experiences$().pipe(
+          : this._diarySvc.diaries$().pipe(
               map(list => list.find(e => e.id === input.id) ?? input),
               catchError(() => of(input)),
             ),
@@ -137,9 +137,9 @@ export class WmExperienceDetailComponent implements OnInit, OnDestroy {
       this._ugcTrackStatsSvc.params$,
       this._store.select(online),
     ]).pipe(
-      map(([experience, ugcTracks, params, isOnline]) => {
+      map(([diary, ugcTracks, params, isOnline]) => {
         this._offline = isOnline === false;
-        return experience == null ? null : this._toVm(experience, ugcTracks ?? [], params);
+        return diary == null ? null : this._toVm(diary, ugcTracks ?? [], params);
       }),
     );
   }
@@ -158,14 +158,14 @@ export class WmExperienceDetailComponent implements OnInit, OnDestroy {
   /**
    * Apre il form di modifica; offline avvisa che serve la connessione.
    *
-   * @param experience Esperienza mostrata.
+   * @param diary Esperienza mostrata.
    */
-  edit(experience: Experience): void {
+  edit(diary: Diary): void {
     if (this._offline) {
-      void presentExperienceOfflineToast(this._toastCtrl, this._langSvc);
+      void presentDiaryOfflineToast(this._toastCtrl, this._langSvc);
       return;
     }
-    this.host?.edit(experience);
+    this.host?.edit(diary);
   }
 
   /**
@@ -187,7 +187,7 @@ export class WmExperienceDetailComponent implements OnInit, OnDestroy {
    *
    * @param row Riga toccata.
    */
-  async openUgcTrack(row: ExperienceLinkedUgcRow): Promise<void> {
+  async openUgcTrack(row: DiaryLinkedUgcRow): Promise<void> {
     if (!row.openable || this._openingUgc || this.deleting) return;
     this._openingUgc = true;
     try {
@@ -220,16 +220,16 @@ export class WmExperienceDetailComponent implements OnInit, OnDestroy {
    * Chiede conferma e cancella l'esperienza; poi chiude il dettaglio. Offline avvisa che serve la
    * connessione, senza chiedere conferma.
    *
-   * @param experience Esperienza mostrata.
+   * @param diary Esperienza mostrata.
    */
-  async remove(experience: Experience): Promise<void> {
+  async remove(diary: Diary): Promise<void> {
     if (this.deleting) return;
     if (this._offline) {
-      await presentExperienceOfflineToast(this._toastCtrl, this._langSvc);
+      await presentDiaryOfflineToast(this._toastCtrl, this._langSvc);
       return;
     }
     const alert = await this._alertCtrl.create({
-      header: this._langSvc.instant('Eliminare questa esperienza?'),
+      header: this._langSvc.instant('Eliminare questa pagina di diario?'),
       buttons: [
         {text: this._langSvc.instant('Annulla'), role: 'cancel'},
         {text: this._langSvc.instant('Elimina'), role: 'destructive'},
@@ -242,7 +242,7 @@ export class WmExperienceDetailComponent implements OnInit, OnDestroy {
     this.errorMessage = null;
     this._cdr.markForCheck();
     try {
-      await firstValueFrom(this._experienceSvc.remove(experience.id));
+      await firstValueFrom(this._diarySvc.remove(diary.id));
       // se nel frattempo si è già usciti, un secondo back chiuderebbe la pagina sotto (doppio pop)
       if (!this._left) this.host?.back();
     } catch (err) {
@@ -296,18 +296,18 @@ export class WmExperienceDetailComponent implements OnInit, OnDestroy {
   /**
    * Prepara i dati del template.
    *
-   * @param experience Esperienza.
+   * @param diary Esperienza.
    * @param ugcTracks Registrazioni dell'utente nello store, per nome, data e dati tecnici.
    * @param params Parametri della pulizia GPS, per i dati tecnici calcolati in locale.
    * @returns I dati del dettaglio.
    */
   private _toVm(
-    experience: Experience,
+    diary: Diary,
     ugcTracks: WmFeature<LineString>[],
     params: UgcTrackStatsParams,
-  ): ExperienceDetailVm {
+  ): DiaryDetailVm {
     const lang = this._langSvc.currentLang;
-    const ugcRows = (experience.ugcTrackIds ?? []).map(id =>
+    const ugcRows = (diary.ugcTrackIds ?? []).map(id =>
       this._toUgcRow(
         id,
         ugcTracks.find(f => f?.properties?.id != null && `${f.properties.id}` === `${id}`),
@@ -315,7 +315,7 @@ export class WmExperienceDetailComponent implements OnInit, OnDestroy {
         lang,
       ),
     );
-    return {experience, date: passportLongDate(experience.createdAt, lang), ugcRows};
+    return {diary, date: passportLongDate(diary.createdAt, lang), ugcRows};
   }
 
   /**
@@ -334,7 +334,7 @@ export class WmExperienceDetailComponent implements OnInit, OnDestroy {
     track: WmFeature<LineString> | undefined,
     params: UgcTrackStatsParams,
     lang: string,
-  ): ExperienceLinkedUgcRow {
+  ): DiaryLinkedUgcRow {
     const fallback = this._langSvc.instant('Registrazione');
     if (!track) return {id, name: fallback, subline: '', openable: false};
     const details = ugcTrackDetails(track, params);

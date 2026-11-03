@@ -1,5 +1,5 @@
 // Form di creazione e modifica delle esperienze (oc:8169).
-.wm-experience-form {
+.wm-diary-form {
   &-context {
     margin-bottom: 18px;
     padding: 10px 12px;
@@ -78,5 +78,18 @@
     &:disabled {
       opacity: 0.5;
     }
+  }
+}
+
+// Spunta del consenso (oc:8169, ciclo 2): etichetta su più righe, area di tocco di almeno 44px.
+.wm-diary-form-consent {
+  display: flex;
+  min-height: 44px;
+  margin: 16px 0 8px;
+  white-space: normal;
+
+  &::part(label) {
+    white-space: normal;
+    line-height: 1.4;
   }
 }

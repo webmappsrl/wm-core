@@ -1,7 +1,7 @@
 /** Lato lungo massimo delle foto di un'esperienza inviate dal browser (oc:8169). */
-export const EXPERIENCE_WEB_PHOTO_MAX_SIDE = 1600;
+export const DIARY_WEB_PHOTO_MAX_SIDE = 1600;
 /** Qualità JPEG delle foto di un'esperienza inviate dal browser. */
-export const EXPERIENCE_WEB_PHOTO_QUALITY = 0.8;
+export const DIARY_WEB_PHOTO_QUALITY = 0.8;
 
 /**
  * Ridimensiona un'immagine su canvas, lato lungo al massimo `maxSide`, e la ricodifica in JPEG.
@@ -15,8 +15,8 @@ export const EXPERIENCE_WEB_PHOTO_QUALITY = 0.8;
  */
 export async function resizeImageBlob(
   blob: Blob,
-  maxSide = EXPERIENCE_WEB_PHOTO_MAX_SIDE,
-  quality = EXPERIENCE_WEB_PHOTO_QUALITY,
+  maxSide = DIARY_WEB_PHOTO_MAX_SIDE,
+  quality = DIARY_WEB_PHOTO_QUALITY,
 ): Promise<Blob> {
   let bitmap: ImageBitmap;
   try {
