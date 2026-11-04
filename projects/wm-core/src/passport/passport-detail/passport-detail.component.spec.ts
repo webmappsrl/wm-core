@@ -77,6 +77,24 @@ describe('WmPassportDetailComponent (oc:8166)', () => {
     sub.unsubscribe();
   });
 
+  it('mostra il diario del cammino con almeno una tappa riconosciuta (oc:8169)', async () => {
+    const started = {...partial, completedStages: 1, percent: 8};
+    const vm = await firstValueFrom(create(started, {status: 'none'}).cmp.vm$);
+    expect(vm.completed).toBeFalse();
+    expect(vm.showDiary).toBeTrue();
+  });
+
+  it('non mostra il diario del cammino senza tappe riconosciute (oc:8169)', async () => {
+    const vm = await firstValueFrom(create(partial, {status: 'none'}).cmp.vm$);
+    expect(vm.showDiary).toBeFalse();
+  });
+
+  it('a cammino completato il diario resta nel traguardo (oc:8169)', async () => {
+    const vm = await firstValueFrom(create(done, {status: 'none'}).cmp.vm$);
+    expect(vm.completed).toBeTrue();
+    expect(vm.showDiary).toBeTrue();
+  });
+
   it("l'anello di avanzamento converte la percentuale in gradi", () => {
     const {cmp} = create(partial, {status: 'none'});
 
@@ -319,8 +337,10 @@ describe('WmPassportDetailComponent (oc:8166)', () => {
       cmp.host = {
         openForm: () => Promise.resolve(),
         openStage: () => Promise.resolve(),
-        close: () => Promise.resolve(),
+        close: () => Promise.resolve(true),
         openRouteSharePreview: () => Promise.resolve(),
+        nav: undefined as any,
+        registerGuard: () => {},
       };
       const sub = cmp.vm$.subscribe();
       cmp.ionViewWillEnter();

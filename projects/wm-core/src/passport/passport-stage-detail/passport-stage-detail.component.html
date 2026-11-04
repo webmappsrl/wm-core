@@ -56,4 +56,16 @@
     <span class="wm-passport-stage-detail-row-label">{{ 'descent' | wmtrans }}</span>
     <span class="wm-passport-stage-detail-row-value">{{ stage.descent }} m</span>
   </div>
+
+  <!-- diario di questa tappa (oc:8169): form e dettaglio restano nella modale, con il suo guard -->
+  <wm-diaries-section
+    class="wm-diaries-gutter"
+    layout="list"
+    title="Il mio diario di questa tappa"
+    [ecTrackId]="stage?.trackId"
+    [layerId]="host?.layerId"
+    [contextLabel]="contextLabel"
+    [nav]="host?.nav"
+    [guardHost]="host"
+  ></wm-diaries-section>
 </ion-content>

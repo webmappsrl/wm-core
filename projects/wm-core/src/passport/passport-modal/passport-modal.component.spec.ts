@@ -77,9 +77,16 @@ describe('WmPassportModalComponent (oc:8166)', () => {
   it('senza guard registrato close() chiude', async () => {
     cmp.registerGuard(null);
 
-    await cmp.close();
+    expect(await cmp.close()).toBeTrue();
 
     expect(modalCtrl.dismiss).toHaveBeenCalled();
+  });
+
+  it('close() restituisce false se il guard rifiuta l\'uscita (oc:8169)', async () => {
+    cmp.registerGuard({canLeave: async () => false});
+
+    expect(await cmp.close()).toBeFalse();
+    expect(modalCtrl.dismiss).not.toHaveBeenCalled();
   });
 
   it('backToDetail torna alla radice senza chiedere al guard', async () => {

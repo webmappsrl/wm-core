@@ -1,7 +1,6 @@
 import {HttpErrorResponse} from '@angular/common/http';
 import {BehaviorSubject, Subject, of, throwError} from 'rxjs';
 import {isLogged, needsPrivacyAgree} from '@wm-core/store/auth/auth.selectors';
-import {formatDateForLang} from '../passport.utils';
 import {WmPassportFormComponent} from './passport-form.component';
 
 describe('WmPassportFormComponent (oc:8166)', () => {
@@ -234,71 +233,37 @@ describe('WmPassportFormComponent (oc:8166)', () => {
       expect(cmp.canSubmit).toBeTrue();
     });
 
-    it('confermare un inizio oltre la fine svuota la fine', () => {
+    it('il calendario a intervallo scrive le due date (oc:8169, ciclo 4)', () => {
+      const cmp = create();
+
+      cmp.onRange({start: '2026-09-02', end: '2026-09-04'});
+
+      expect(cmp.form.controls.startDate.value).toBe('2026-09-02');
+      expect(cmp.form.controls.endDate.value).toBe('2026-09-04');
+      expect(cmp.range).toEqual({start: '2026-09-02', end: '2026-09-04'});
+    });
+
+    it('un giorno solo rende uguali inizio e fine, come oggi', async () => {
       const cmp = create();
       fill(cmp);
 
-      cmp.openCalendar('start');
-      cmp.onDatePicked('2026-09-10T00:00:00');
-      cmp.confirmDate();
+      cmp.onRange({start: '2026-09-03', end: '2026-09-03'});
+      await cmp.submit();
 
-      expect(cmp.form.controls.startDate.value).toBe('2026-09-10');
-      expect(cmp.form.controls.endDate.value).toBeNull();
-      expect(cmp.datesValid).toBeFalse();
+      expect(svc.submitCertification.calls.mostRecent().args[0]).toEqual(
+        jasmine.objectContaining({startDate: '2026-09-03', endDate: '2026-09-03'}),
+      );
     });
 
-    it('toccare un giorno non imposta il campo finché non si conferma', () => {
+    it('svuotare il calendario svuota le due date', () => {
       const cmp = create();
       fill(cmp);
 
-      cmp.openCalendar('end');
-      expect(cmp.pendingDate).toBe('2026-09-05');
-      cmp.onDatePicked('2026-09-07T10:30:00');
-
-      expect(cmp.pendingDate).toBe('2026-09-07');
-      expect(cmp.form.controls.endDate.value).toBe('2026-09-05');
-    });
-
-    it('calendarValue resta stabile durante la chiusura del foglio', () => {
-      const cmp = create();
-      fill(cmp);
-
-      cmp.openCalendar('end');
-      cmp.closeCalendar();
-      expect(cmp.calendarValue).toBe('2026-09-05');
-
-      cmp.form.controls.endDate.setValue(null);
-      expect(cmp.calendarValue).toBe(cmp.today);
-    });
-
-    it('confirmDate imposta la data e chiude il calendario', () => {
-      const cmp = create();
-      fill(cmp);
-
-      cmp.openCalendar('end');
-      expect(cmp.editing).toBe('end');
-      cmp.onDatePicked(['2026-09-07T10:30:00']);
-      cmp.confirmDate();
-
-      expect(cmp.form.controls.endDate.value).toBe('2026-09-07');
-      expect(cmp.form.controls.startDate.value).toBe('2026-09-01');
-      expect(cmp.editing).toBeNull();
-      expect(cmp.pendingDate).toBeNull();
-    });
-
-    it("chiudere il calendario senza confermare lascia il campo com'era", () => {
-      const cmp = create();
-
-      cmp.openCalendar('start');
-      expect(cmp.pendingDate).toBe(cmp.today);
-      cmp.onDatePicked('2026-09-03');
-      cmp.onDatePicked(null);
-      expect(cmp.pendingDate).toBe('2026-09-03');
-      cmp.closeCalendar();
+      cmp.onRange(null);
 
       expect(cmp.form.controls.startDate.value).toBeNull();
-      expect(cmp.editing).toBeNull();
-      expect(cmp.pendingDate).toBeNull();
+      expect(cmp.form.controls.endDate.value).toBeNull();
+      expect(cmp.range).toBeNull();
     });
 
     it('dopo un tentativo di invio segnala in errore il campo vuoto o la fine non valida', async () => {
@@ -329,15 +294,13 @@ describe('WmPassportFormComponent (oc:8166)', () => {
       );
     });
 
-    it('closeOverlay chiude il calendario aperto', async () => {
+    it('closeOverlay chiude il foglio del calendario aperto', async () => {
       const cmp = create();
-      fill(cmp);
-      cmp.openCalendar('start');
-      cmp.onDatePicked('2026-08-20');
+      const picker = {isOpen: true, cancel: jasmine.createSpy('cancel')};
+      (cmp as any)._picker = picker;
 
       expect(await cmp.closeOverlay()).toBeTrue();
-      expect(cmp.editing).toBeNull();
-      expect(cmp.form.controls.startDate.value).toBe('2026-09-01');
+      expect(picker.cancel).toHaveBeenCalled();
     });
 
     it('closeOverlay senza calendario risolve false', async () => {
@@ -384,29 +347,6 @@ describe('WmPassportFormComponent (oc:8166)', () => {
       expect(toastCtrl.create).toHaveBeenCalledWith(jasmine.objectContaining({message: 'Invio non riuscito, riprova'}));
     });
 
-    it('riaprire un campo durante la chiusura non viene annullato dal didDismiss precedente', () => {
-      const cmp = create();
-      cmp.form.controls.startDate.setValue('2026-09-01');
-
-      cmp.openCalendar('start');
-      cmp.confirmDate();
-      cmp.openCalendar('end');
-      cmp.onCalendarDismissed();
-
-      expect(cmp.editing).toBe('end');
-      expect(cmp.pendingDate).not.toBeNull();
-    });
-
-    it('didDismiss dopo trascinamento o sfondo azzera lo stato', () => {
-      const cmp = create();
-
-      cmp.openCalendar('start');
-      cmp.onCalendarDismissed();
-
-      expect(cmp.editing).toBeNull();
-      expect(cmp.pendingDate).toBeNull();
-    });
-
     it('uscita con sole date: chiede conferma', async () => {
       const cmp = create();
       cmp.form.controls.startDate.setValue('2026-09-01');
@@ -416,15 +356,6 @@ describe('WmPassportFormComponent (oc:8166)', () => {
       expect(alertCtrl.create).toHaveBeenCalledWith(
         jasmine.objectContaining({message: 'Hai dati non inviati. Vuoi uscire e perderli?'}),
       );
-    });
-
-    it('etichetta del bottone: «Seleziona la data» se vuota, altrimenti la data formattata', () => {
-      const cmp = create();
-
-      expect(cmp.dateLabel(null)).toBe('Seleziona la data');
-      expect(cmp.dateLabel('2026-09-01')).not.toBe('Seleziona la data');
-      // Il mock di LangService non ha `currentLang`: vale la lingua di default.
-      expect(cmp.dateLabel('2026-09-01')).toBe(formatDateForLang('2026-09-01', undefined));
     });
   });
 });

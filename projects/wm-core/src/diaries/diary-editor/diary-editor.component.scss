@@ -1,0 +1,128 @@
+@use '../diary-rich-text';
+
+// Editor del racconto (oc:8169, prova): barra dei comandi sopra, area di scrittura sotto.
+.wm-diary-editor {
+  margin-bottom: 18px;
+  border: 1px solid #c9c9c9;
+  border-radius: 10px;
+
+  &:focus-within {
+    border-color: var(--ion-color-primary);
+  }
+
+  // resta in alto mentre si scorre un racconto lungo (oc:8169, ciclo 3); `overflow: hidden` sul
+  // riquadro la bloccherebbe, per questo il bordo arrotondato è sulla barra
+  &-toolbar {
+    position: sticky;
+    // il padding di ion-content sta dentro l'area che scorre: con `top: 0` la barra si fermerebbe
+    // 16 px sotto il bordo e il testo passerebbe sopra
+    top: calc(-1 * var(--padding-top, 0px));
+    z-index: 2;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    gap: 2px;
+    padding: 4px;
+    border-bottom: 1px solid #e3e5e8;
+    background: #f7f8f9;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &-button {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    height: 44px;
+    padding: 0 6px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #3c4043;
+    font-family: inherit;
+    font-size: 16px;
+    cursor: pointer;
+
+    ion-icon {
+      font-size: 20px;
+    }
+
+    &.is-active {
+      background: rgba(var(--ion-color-primary-rgb), 0.14);
+      color: var(--ion-color-primary);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+    }
+
+    .is-bold {
+      font-weight: 800;
+    }
+
+    .is-italic {
+      font-style: italic;
+      font-family: Georgia, serif;
+    }
+
+    .is-underline {
+      text-decoration: underline;
+    }
+
+    .is-strike {
+      text-decoration: line-through;
+    }
+
+    .is-h2 {
+      font-weight: 800;
+      font-size: 19px;
+    }
+
+    .is-h3 {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .is-quote {
+      font-size: 24px;
+      line-height: 1;
+      padding-top: 8px;
+    }
+  }
+
+  &-fallback {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px;
+    border: 0;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 1.55;
+    resize: none;
+  }
+
+  &-content {
+    min-height: 168px;
+    padding: 12px;
+  }
+
+  &-area {
+    min-height: 144px;
+    outline: none;
+
+    // segnaposto di Tiptap: il primo paragrafo vuoto mostra `data-placeholder`
+    p.is-editor-empty:first-child::before {
+      content: attr(data-placeholder);
+      float: left;
+      height: 0;
+      color: #9aa0a6;
+      pointer-events: none;
+    }
+  }
+}

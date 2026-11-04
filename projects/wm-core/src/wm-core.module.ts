@@ -83,6 +83,12 @@ import {WmImagePickerComponent} from './image-picker/image-picker.component';
 import {WmPassportProgressBadgeComponent} from './passport/passport-progress-badge/passport-progress-badge.component';
 import {WmPassportModalComponent} from './passport/passport-modal/passport-modal.component';
 import {WmPassportDetailComponent} from './passport/passport-detail/passport-detail.component';
+import {WmDiaryFormComponent} from './diaries/diary-form/diary-form.component';
+import {WmDiaryRatingComponent} from './diaries/diary-rating/diary-rating.component';
+import {WmDiaryEditorComponent} from './diaries/diary-editor/diary-editor.component';
+import {WmDateRangePickerComponent} from './shared/date-range-picker/date-range-picker.component';
+import {WmDiaryDetailComponent} from './diaries/diary-detail/diary-detail.component';
+import {WmDiariesSectionComponent} from './diaries/diaries-section/diaries-section.component';
 import {WmPassportFormComponent} from './passport/passport-form/passport-form.component';
 import {WmPassportNoteComponent} from './passport/passport-note/passport-note.component';
 import {WmPassportStageDetailComponent} from './passport/passport-stage-detail/passport-stage-detail.component';
@@ -170,6 +176,12 @@ export const declarations = [
   WmPassportModalComponent,
   WmPassportDetailComponent,
   WmPassportFormComponent,
+  WmDiaryFormComponent,
+  WmDiaryRatingComponent,
+  WmDiaryEditorComponent,
+  WmDateRangePickerComponent,
+  WmDiaryDetailComponent,
+  WmDiariesSectionComponent,
   WmPassportStageDetailComponent,
   WmPassportSharePreviewComponent,
   WmPassportNoteComponent,

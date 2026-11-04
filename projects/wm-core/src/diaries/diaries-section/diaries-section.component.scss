@@ -1,0 +1,351 @@
+// Blocco «esperienze» (oc:8169).
+// Host nel Passaporto: gutter di 16px per titolo e lista, la riga del carosello scorre fino al bordo.
+wm-diaries-section.wm-diaries-gutter {
+  display: block;
+  flex-shrink: 0;
+  // 18px sopra: stacco dall'ultima riga del Passaporto, come nell'artifact (viste 3 e 6).
+  padding: 18px 16px 0;
+
+  // il margine delle schede dal bordo lo dà `carouselInset` (16) del componente
+  wm-swiper.wm-diaries-section-row {
+    margin: 0 -16px;
+  }
+}
+
+// Host su home-layer e tappa: stesso margine dei fratelli (`wm-config-detail`).
+wm-diaries-section.wm-diaries-feature {
+  display: block;
+  margin: var(--wm-feature-details-margin);
+}
+
+// Mount sulla tappa: filetto di separazione sopra il blocco, come nel mockup.
+wm-diaries-section.wm-diaries-feature--divided {
+  border-top: 1px solid #ececec;
+  padding-top: 14px;
+}
+
+.wm-diaries-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 0;
+  color: #222428;
+
+  button {
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  & &-create--card {
+    text-align: center;
+  }
+
+  &-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  // Specificità alzata (due classi) di proposito: il titolo risultava non in grassetto
+  // nell'app reale, probabilmente per uno stile globale (h2/h3 o tema) che vinceva sulla
+  // regola a una sola classe. Unica sorgente per titolo e conteggio.
+  & &-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  & &-count {
+    font-size: 13px;
+    color: #5f6368;
+  }
+
+  // Avviso sotto il titolo senza dati freschi (offline o lettura fallita), con «Riprova» a destra.
+  &-notice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: -4px;
+  }
+
+  & &-offline {
+    flex: 1;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #5f6368;
+  }
+
+  & &-retry {
+    flex: none;
+    min-height: 32px;
+    padding: 0 4px;
+    border: 0;
+    background: transparent;
+    color: var(--wm-color-primary, #ef7821);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  // Carosello su `wm-swiper`: la classe finisce anche sullo `swiper-container` interno (input
+  // `class`), quindi le regole sull'host sono qualificate con l'elemento. Gap e margini dai bordi
+  // sono opzioni di Swiper (`spaceBetween`, `carouselInset`).
+  wm-swiper.wm-diaries-section-row {
+    display: block;
+    margin: 0 -4px;
+
+    // Swiper ritaglia le slide: il padding verticale lascia spazio all'ombra delle schede.
+    swiper-slide {
+      width: auto;
+      padding: 4px 0 8px;
+    }
+  }
+
+  &-create {
+    border: 1.5px dashed var(--wm-color-primary, #ef7821);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--wm-color-primary, #ef7821);
+
+    ion-icon {
+      font-size: 28px;
+    }
+
+    // Schede basse del carosello (wireframe del dettaglio del cammino, oc:8169 ciclo 2):
+    // «+ Racconta» stretta accanto alle schede orizzontali.
+    &--card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      box-sizing: border-box;
+      width: 64px;
+      height: 76px;
+      padding: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.2;
+
+      ion-icon {
+        font-size: 22px;
+      }
+    }
+
+    &--wide {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px;
+      color: #222428;
+    }
+
+    &-icon {
+      display: flex;
+      flex: 0 0 44px;
+      align-items: center;
+      justify-content: center;
+      height: 44px;
+      border-radius: 22px;
+      background: color-mix(in srgb, var(--wm-color-primary, #ef7821) 12%, #fff);
+      color: var(--wm-color-primary, #ef7821);
+
+      ion-icon {
+        font-size: 22px;
+      }
+    }
+
+    &-text {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    &-title {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    &-hint {
+      font-size: 12px;
+      line-height: 1.4;
+      color: #5f6368;
+    }
+
+    &--outline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      border-style: solid;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+
+      ion-icon {
+        font-size: 20px;
+      }
+    }
+  }
+
+  // Scheda orizzontale: miniatura a sinistra, etichetta ed estratto a destra (wireframe).
+  &-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+    width: 215px;
+    height: 76px;
+    padding: 8px;
+    overflow: hidden;
+    border: 0;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    color: inherit;
+
+    // Altezza fissa e overflow nascosto: con la sola flex-basis l'altezza al 100% dell'img
+    // non sempre si aggancia e la foto prende la sua altezza naturale (schede disallineate).
+    &-photo {
+      display: block;
+      flex: 0 0 60px;
+      height: 60px;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #e9ecef;
+
+      img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    &-body {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      text-align: left;
+    }
+    // Diario di solo testo: stessa misura, il testo prende anche lo spazio della miniatura.
+    &--text {
+      .wm-diaries-section-card-body {
+        padding: 0 2px;
+      }
+      .wm-diaries-section-excerpt {
+        -webkit-line-clamp: 3;
+      }
+    }
+  }
+
+  &-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px;
+    border: 0;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    color: inherit;
+
+    &-photo {
+      display: block;
+      flex: 0 0 72px;
+      height: 72px;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #e9ecef;
+
+      img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    &-body {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .wm-diaries-section-excerpt {
+      font-size: 13px;
+    }
+    // Senza miniatura il corpo prende tutta la larghezza e l'estratto arriva a 3 righe.
+    &--text .wm-diaries-section-excerpt {
+      -webkit-line-clamp: 3;
+    }
+  }
+
+  &-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #5f6368;
+
+    &--stage {
+      color: var(--wm-color-primary, #ef7821);
+    }
+  }
+
+  &-excerpt {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 1.35;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+}
+
+// Diari in coda (oc:8169, ciclo 2): stato scritto, non solo colore.
+.wm-diaries-section-outbox {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wm-diaries-section-queued {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px dashed var(--wm-color-medium, #92949c);
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  color: inherit;
+
+  &--failed {
+    border-style: solid;
+    border-color: var(--ion-color-danger, #c5000f);
+  }
+}
+
+.wm-diaries-section-queued-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+
+  .wm-diaries-section-queued--failed & {
+    color: var(--ion-color-danger, #c5000f);
+  }
+}

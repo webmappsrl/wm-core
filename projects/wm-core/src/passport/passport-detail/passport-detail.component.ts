@@ -10,7 +10,9 @@ import {BehaviorSubject, combineLatest, defer, Observable, of, Subscription} fro
 import {catchError, map, startWith, switchMap, tap} from 'rxjs/operators';
 import {PassportCertification, PassportProgress, PassportStage} from '@wm-types/passport';
 import {LangService} from '@wm-core/localization/lang.service';
+import {IonNav} from '@ionic/angular';
 import {PassportService} from '../passport.service';
+import {PassportLeaveGuard} from '../passport-leave-guard';
 import {
   gpsOutings,
   latestCompletedAt,
@@ -53,15 +55,22 @@ export interface PassportDetailVm {
   totalKm: number | null;
   /** Uscite, solo con tutte le tappe validate col GPS; altrimenti `null`. */
   outings: number | null;
+  /** Diario del cammino: dalla prima tappa riconosciuta, senza la regola della vicinanza (oc:8169, ciclo 2). */
+  showDiary: boolean;
 }
 
 /** Operazioni della modale host usate dal dettaglio. */
 export interface PassportDetailHost {
   openForm(): Promise<void>;
   openStage(stage: PassportStage): Promise<void>;
-  close(): Promise<void>;
+  /** Chiude la modale; `true` se si è chiusa davvero (il guard può rifiutare, oc:8169). */
+  close(): Promise<boolean>;
   /** Anteprima della condivisione del cammino completato (oc:8703). */
   openRouteSharePreview(): Promise<void>;
+  /** `ion-nav` della modale, dove il blocco delle esperienze spinge form e dettaglio (oc:8169). */
+  nav: IonNav;
+  /** Il form delle esperienze registra qui il guard d'uscita, come quello della richiesta. */
+  registerGuard(guard: PassportLeaveGuard | null): void;
 }
 
 /**
@@ -151,6 +160,7 @@ export class WmPassportDetailComponent implements OnInit, OnDestroy {
           completedAt: completed ? latestCompletedAt(stages) : null,
           totalKm: completed ? totalDistanceKm(stages) : null,
           outings: completed ? gpsOutings(stages) : null,
+          showDiary: completed || (progress?.completedStages ?? 0) > 0,
         };
       }),
     );

@@ -5,7 +5,9 @@ import {
   Input,
   ViewEncapsulation,
 } from '@angular/core';
+import {IonNav} from '@ionic/angular';
 import {PassportStage} from '@wm-types/passport';
+import {PassportLeaveGuard} from '../passport-leave-guard';
 import {LangService} from '@wm-core/localization/lang.service';
 import {passportShortDate, stageName} from '../passport.utils';
 
@@ -14,6 +16,12 @@ export interface PassportStageDetailHost {
   back(): Promise<void>;
   /** Apre l'anteprima della condivisione della tappa (oc:8702). */
   openSharePreview(stage: PassportStage): Promise<void>;
+  /** Cammino della tappa, per filtrare le esperienze (oc:8169). */
+  layerId: number;
+  /** `ion-nav` della modale, dove il blocco delle esperienze spinge form e dettaglio (oc:8169). */
+  nav: IonNav;
+  /** Il form delle esperienze registra qui il guard d'uscita, come quello della richiesta. */
+  registerGuard(guard: PassportLeaveGuard | null): void;
 }
 
 /**
@@ -87,6 +95,11 @@ export class WmPassportStageDetailComponent {
   /** Nome della tappa nella lingua corrente. */
   get title(): string {
     return stageName(this.stage, this._langSvc.currentLang);
+  }
+
+  /** Cammino e tappa in cima al form delle esperienze (oc:8169). */
+  get contextLabel(): string {
+    return [this.title, this.layerTitle].filter(Boolean).join(' · ');
   }
 
   /** Nasconde il blocco della foto quando l'immagine non si carica. */

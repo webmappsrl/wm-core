@@ -178,9 +178,15 @@ export class WmPassportModalComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  /** Chiude la modale, rispettando il `canLeave()` del guard registrato. */
-  async close(): Promise<void> {
-    if (await this._activeCanLeave()) await this._modalCtrl.dismiss();
+  /**
+   * Chiude la modale, rispettando il `canLeave()` del guard registrato.
+   *
+   * @returns `true` se la modale si è chiusa davvero (oc:8169: chi apre una registrazione sulla
+   *   mappa naviga solo in quel caso).
+   */
+  async close(): Promise<boolean> {
+    if (!(await this._activeCanLeave())) return false;
+    return (await this._modalCtrl.dismiss()) === true;
   }
 
   /** Torna al dettaglio senza chiedere conferma, dopo un invio riuscito. */

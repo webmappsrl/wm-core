@@ -1,0 +1,148 @@
+// Form di creazione e modifica delle esperienze (oc:8169).
+// La barra dell'editor resta in alto mentre si scorre (ciclo 3): l'area che scorre ne tiene conto,
+// così la riga in cui si scrive non finisce sotto la barra.
+ion-content.wm-diary-form::part(scroll) {
+  scroll-padding-top: 60px;
+}
+
+.wm-diary-form {
+  &-context {
+    margin-bottom: 18px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #f6f6f6;
+    font-size: 13px;
+  }
+
+  &-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  &-text {
+    box-sizing: border-box;
+    width: 100%;
+    margin-bottom: 18px;
+    padding: 12px;
+    border: 1px solid #c9c9c9;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.45;
+    resize: none;
+  }
+
+  &-counter {
+    margin: -12px 0 18px;
+    font-size: 12px;
+    text-align: right;
+    color: #5f6368;
+
+    &.is-over {
+      color: var(--ion-color-danger);
+      font-weight: 600;
+    }
+  }
+
+  &-limit {
+    margin: -12px 0 18px;
+    font-size: 13px;
+    color: var(--ion-color-danger);
+  }
+
+  &-walk {
+    display: block;
+    margin-bottom: 18px;
+  }
+
+  &-walk-far {
+    margin: -10px 0 18px;
+    font-size: 13px;
+    color: #8a5a00;
+  }
+
+  &-photos-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  &-count {
+    font-size: 12px;
+    line-height: 1.4;
+    color: #5f6368;
+  }
+
+  &-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 12px 0;
+    padding: 12px;
+    border-radius: 10px;
+    background: #fdecea;
+    color: #8c1d18;
+    font-size: 13px;
+    line-height: 1.4;
+
+    ion-icon {
+      flex: 0 0 20px;
+      font-size: 20px;
+    }
+  }
+
+  &-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    height: 50px;
+    margin-top: 12px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--wm-color-primary);
+    color: #fff;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+
+    &:disabled {
+      opacity: 0.5;
+    }
+  }
+}
+
+// Spunta del consenso (oc:8169, ciclo 2): etichetta su più righe, area di tocco di almeno 44px.
+.wm-diary-form-consent {
+  display: flex;
+  min-height: 44px;
+  margin: 16px 0 8px;
+  white-space: normal;
+
+  &::part(label) {
+    white-space: normal;
+    line-height: 1.4;
+  }
+}
+
+.wm-diary-form-ratings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0 8px;
+}
+
+.wm-diary-form-rating-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wm-diary-form-rating-label {
+  font-size: 15px;
+}

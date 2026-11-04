@@ -38,4 +38,12 @@
   ></wm-tab-description>
 
   <wm-config-detail [groups]="layer?.config_detail"></wm-config-detail>
+  <wm-diaries-section
+    class="wm-diaries-feature"
+    layout="carousel"
+    title="Il mio diario"
+    [layerId]="layer?.id"
+    [showCreate]="(diaryCanWrite$ | async) !== false"
+    [contextLabel]="layer?.title | wmtrans"
+  ></wm-diaries-section>
 </ng-container>

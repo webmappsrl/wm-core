@@ -72,6 +72,18 @@
         <ion-icon name="share-social-outline" aria-hidden="true"></ion-icon>
         <span>{{ 'Condividi il traguardo' | wmtrans }}</span>
       </button>
+      <!-- diario del cammino (oc:8169, vista 6): resta anche a tappe aperte, la lista va sotto;
+           form e dettaglio restano nella modale -->
+      <wm-diaries-section
+        class="wm-diaries-gutter"
+        layout="carousel"
+        title="Il mio diario"
+        [carouselInset]="16"
+        [layerId]="layerId"
+        [contextLabel]="layerTitle"
+        [nav]="host?.nav"
+        [guardHost]="host"
+      ></wm-diaries-section>
       <button
         type="button"
         class="wm-passport-detail-toggle"
@@ -83,6 +95,20 @@
         <ng-template #showStages>{{ 'Vedi le {{n}} tappe' | wmtrans: {n: vm.progress.totalStages} }}</ng-template>
       </button>
     </ng-container>
+
+    <!-- diario del cammino a cammino iniziato (oc:8169, ciclo 2): dalla prima tappa riconosciuta,
+         senza la regola della vicinanza; a cammino completato sta nel traguardo, sopra -->
+    <wm-diaries-section
+      *ngIf="!vm.completed && vm.showDiary"
+      class="wm-diaries-gutter"
+      layout="carousel"
+      title="Il mio diario"
+      [carouselInset]="16"
+      [layerId]="layerId"
+      [contextLabel]="layerTitle"
+      [nav]="host?.nav"
+      [guardHost]="host"
+    ></wm-diaries-section>
 
     <!-- fuori dallo scroll: resta visibile anche con molte tappe, come nel wireframe -->
     <button *ngIf="vm.showCta" type="button" class="wm-passport-detail-cta" (click)="host?.openForm()">
@@ -129,6 +155,7 @@
     <div
       id="wm-passport-detail-stages"
       class="wm-passport-detail-stages"
+      [class.wm-passport-detail-stages--below]="vm.completed"
       *ngIf="vm.progress; else progressError"
       [hidden]="vm.completed && !(stagesOpen$ | async)"
     >

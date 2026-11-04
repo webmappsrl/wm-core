@@ -5,6 +5,7 @@ import {
   Input,
   OnDestroy,
   OnInit,
+  ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -18,10 +19,10 @@ import {LangService} from '@wm-core/localization/lang.service';
 import {PassportService} from '../passport.service';
 import {PASSPORT_MAX_PHOTOS, PASSPORT_MIN_PHOTOS, PASSPORT_PHOTO_CAPTURE} from '../passport.constants';
 import {PassportLeaveGuard} from '../passport-leave-guard';
-import {formatDateForLang, intlLocale, isEndBeforeStart, toIsoDate, todayLocal} from '../passport.utils';
+import {isEndBeforeStart, todayLocal} from '../passport.utils';
+import {WmDateRangePickerComponent} from '../../shared/date-range-picker/date-range-picker.component';
+import {DateRange} from '../../shared/date-range-picker/date-range.utils';
 
-/** Campo data del form aperto nel calendario (oc:8761). */
-export type PassportDateField = 'start' | 'end';
 
 /** Operazioni della modale host usate dal form. */
 export interface PassportFormHost {
@@ -61,23 +62,14 @@ export class WmPassportFormComponent implements OnInit, OnDestroy, PassportLeave
   submitting = false;
   /** Gli errori di validazione compaiono solo dopo il primo tentativo d'invio. */
   triedSubmit = false;
-  /** Campo data in modifica nel calendario, `null` se il calendario è chiuso (oc:8761). */
-  editing: PassportDateField | null = null;
-  /** Data `AAAA-MM-GG` scelta nel calendario e non ancora confermata, `null` a calendario chiuso. */
-  pendingDate: string | null = null;
-  /**
-   * Ultimo campo aperto nel calendario: tiene titolo e limite minimo del foglio stabili anche durante
-   * l'animazione di chiusura, quando `editing` è già `null`.
-   */
-  calendarField: PassportDateField = 'start';
   /** Data locale del dispositivo all'apertura del form, `AAAA-MM-GG`: limite massimo delle date. */
   readonly today = todayLocal();
 
   private _needsPrivacy = false;
   private _logged = false;
   private _subs = new Subscription();
-  /** `true` dopo una chiusura da codice: il suo `didDismiss` in arrivo va ignorato. */
-  private _dismissExpected = false;
+  /** Calendario a intervallo (oc:8169, ciclo 4): il suo foglio si chiude col back hardware. */
+  @ViewChild(WmDateRangePickerComponent) private _picker?: WmDateRangePickerComponent;
 
   constructor(
     private _passportSvc: PassportService,
@@ -108,20 +100,6 @@ export class WmPassportFormComponent implements OnInit, OnDestroy, PassportLeave
   get endDateInvalid(): boolean {
     const {startDate, endDate} = this.form.controls;
     return this.triedSubmit && (!endDate.value || (!!startDate.value && isEndBeforeStart(startDate.value, endDate.value)));
-  }
-
-  /** Lingua del calendario per `ion-datetime`: quella dell'app, non quella del telefono. */
-  get locale(): string {
-    return intlLocale(this._langSvc.currentLang);
-  }
-
-  /**
-   * Valore da cui si apre il calendario: la data dell'ultimo campo aperto, altrimenti oggi. Legge
-   * `calendarField` e non `editing`, così resta stabile durante l'animazione di chiusura del foglio.
-   */
-  get calendarValue(): string {
-    const control = this.calendarField === 'end' ? this.form.controls.endDate : this.form.controls.startDate;
-    return control.value ?? this.today;
   }
 
   /**
@@ -157,95 +135,36 @@ export class WmPassportFormComponent implements OnInit, OnDestroy, PassportLeave
   }
 
   /**
-   * Apre il calendario per il campo data indicato, partendo dal valore del campo o da oggi.
+   * Periodo del cammino per il calendario a intervallo (oc:8169, ciclo 4).
    *
-   * @param field Campo da modificare.
+   * @returns L'intervallo, `null` se non c'è l'inizio.
    */
-  openCalendar(field: PassportDateField): void {
-    this.editing = field;
-    this.calendarField = field;
-    this.pendingDate = this.calendarValue;
-    this._cdr.markForCheck();
+  get range(): DateRange | null {
+    const {startDate, endDate} = this.form.controls;
+    if (!startDate.value) return null;
+    return {start: startDate.value, end: endDate.value ?? startDate.value};
   }
 
   /**
-   * Aggiorna la data scelta nel calendario senza applicarla al campo: senza i bottoni di default
-   * `ionChange` parte a ogni tocco di un giorno, la data si applica solo con «Conferma».
+   * Intervallo confermato nel calendario: scrive le due date come prima, un giorno solo le rende uguali.
    *
-   * @param value Valore di `ionChange` di `ion-datetime` (ISO, con o senza orario).
+   * @param range Intervallo, `null` se svuotato.
    */
-  onDatePicked(value: string | string[] | null | undefined): void {
-    const picked = Array.isArray(value) ? value[0] : value;
-    if (!picked || this.editing === null) return;
-    this.pendingDate = toIsoDate(picked);
+  onRange(range: DateRange | null): void {
+    this.form.controls.startDate.setValue(range?.start ?? null);
+    this.form.controls.endDate.setValue(range?.end ?? null);
     this._cdr.markForCheck();
   }
 
   /**
-   * Applica la data scelta al campo in modifica e chiude il calendario. Se l'inizio supera una fine
-   * già scelta, la fine si svuota.
-   */
-  confirmDate(): void {
-    const date = this.pendingDate;
-    if (date && this.editing !== null) {
-      const {startDate, endDate} = this.form.controls;
-      if (this.editing === 'start') {
-        startDate.setValue(date);
-        if (endDate.value && isEndBeforeStart(date, endDate.value)) endDate.setValue(null);
-      } else {
-        endDate.setValue(date);
-      }
-    }
-    this.closeCalendar();
-  }
-
-  /**
-   * Chiude il calendario da codice e scarta la data non confermata (✕, back hardware o dopo
-   * «Conferma»). Lo stato si azzera subito; il `didDismiss` che ne segue viene ignorato, così non
-   * annulla un campo riaperto mentre il foglio scende.
-   */
-  closeCalendar(): void {
-    if (this.editing !== null) this._dismissExpected = true;
-    this.editing = null;
-    this.pendingDate = null;
-    this._cdr.markForCheck();
-  }
-
-  /**
-   * `didDismiss` del foglio: dopo una chiusura da codice non tocca lo stato (potrebbe essere stato
-   * riaperto un campo); dopo una chiusura dell'utente (trascinamento, sfondo) azzera lo stato.
-   */
-  onCalendarDismissed(): void {
-    if (this._dismissExpected) {
-      this._dismissExpected = false;
-      return;
-    }
-    this.editing = null;
-    this.pendingDate = null;
-    this._cdr.markForCheck();
-  }
-
-  /**
-   * Chiude il calendario se è aperto (back hardware della modale host, oc:8761).
+   * Chiude il foglio del calendario se è aperto (back hardware della modale host, oc:8761).
    *
    * @returns `true` se il calendario era aperto e l'ha chiuso.
    */
   closeOverlay(): Promise<boolean> {
-    if (this.editing === null) return Promise.resolve(false);
-    this.closeCalendar();
+    if (!this._picker?.isOpen) return Promise.resolve(false);
+    this._picker.cancel();
     return Promise.resolve(true);
-  }
-
-  /**
-   * Testo del bottone di un campo data: la data nella lingua dell'app o «Seleziona la data».
-   *
-   * @param value Data `AAAA-MM-GG` del campo, `null` se vuoto.
-   * @returns Il testo da mostrare.
-   */
-  dateLabel(value: string | null): string {
-    return value
-      ? formatDateForLang(value, this._langSvc.currentLang)
-      : this._langSvc.instant('Seleziona la data');
   }
 
   /** Invia la richiesta; in caso di errore mostra un messaggio e conserva le foto. */

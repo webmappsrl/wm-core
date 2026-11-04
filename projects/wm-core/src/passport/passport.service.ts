@@ -1,4 +1,5 @@
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import './passport-walked';
 import {Injectable} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {App} from '@capacitor/app';
@@ -51,7 +52,13 @@ interface ProgressResponse {
     descent?: number | null;
     image?: string | null;
     shareable?: boolean | null;
+    /** Km delle registrazioni dell'utente (oc:8169, ciclo 2). */
+    user_distance?: number | null;
+    /** Giorni `Y-m-d` in cui la tappa è stata percorsa (oc:8169, ciclo 2). */
+    walked_dates?: string[] | null;
   }>;
+  /** Km percorsi dall'utente sul cammino (oc:8169, ciclo 2). */
+  user_distance_total?: number | null;
 }
 
 /**
@@ -525,6 +532,9 @@ export class PassportService {
       if (track.descent != null) stage.descent = track.descent;
       if (track.image) stage.image = track.image;
       if (track.shareable === true) stage.shareable = true;
+      // km e giorni dell'utente per la scheda del diario (oc:8169, ciclo 2)
+      if (track.user_distance != null) stage.userDistance = track.user_distance;
+      if (Array.isArray(track.walked_dates)) stage.walkedDates = track.walked_dates;
       return stage;
     });
     return {
@@ -534,6 +544,7 @@ export class PassportService {
       percent: res?.percentage ?? 0,
       completed: res?.completed === true,
       stages,
+      ...(res?.user_distance_total != null ? {userDistanceTotal: res.user_distance_total} : {}),
     };
   }
 

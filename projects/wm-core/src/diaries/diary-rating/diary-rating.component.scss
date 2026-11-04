@@ -1,0 +1,78 @@
+.wm-diary-rating {
+  --wm-diary-rating-on: var(--ion-color-primary);
+  --wm-diary-rating-off-ring: #b9bec4;
+  --wm-diary-rating-off-glyph: #c8ccd1;
+  --wm-diary-rating-size: 34px;
+  display: inline-flex;
+  gap: 4px;
+
+  &.wm-diary-rating--small {
+    --wm-diary-rating-size: 18px;
+    gap: 3px;
+  }
+}
+
+.wm-diary-rating-stamp {
+  display: inline-flex;
+  width: var(--wm-diary-rating-size);
+  height: var(--wm-diary-rating-size);
+  padding: 0;
+  border: 0;
+  background: none;
+  transform-origin: center;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .wm-diary-rating-disc {
+    fill: #ffffff;
+    stroke: var(--wm-diary-rating-off-ring);
+    stroke-width: 1.2;
+  }
+
+  .wm-diary-rating-dash {
+    fill: none;
+    stroke: var(--wm-diary-rating-off-glyph);
+    stroke-width: 0.7;
+    stroke-dasharray: 1.1 1.2;
+  }
+
+  .wm-diary-rating-boot {
+    fill: var(--wm-diary-rating-off-glyph);
+  }
+
+  &.wm-diary-rating-stamp--on {
+    .wm-diary-rating-disc {
+      fill: var(--wm-diary-rating-on);
+      stroke: var(--wm-diary-rating-on);
+    }
+
+    .wm-diary-rating-dash {
+      stroke: #ffffff;
+    }
+
+    .wm-diary-rating-boot {
+      fill: #ffffff;
+    }
+  }
+}
+
+// area di tocco di almeno 44px senza allargare il disegno
+button.wm-diary-rating-stamp {
+  position: relative;
+  cursor: pointer;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -5px -2px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--wm-diary-rating-on);
+    outline-offset: 2px;
+    border-radius: 50%;
+  }
+}

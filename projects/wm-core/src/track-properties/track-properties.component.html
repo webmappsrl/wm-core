@@ -60,6 +60,17 @@
   ></wm-tab-description>
 
   <wm-config-detail [groups]="ecTrackProperties?.config_detail"></wm-config-detail>
+  <ng-container *ngIf="showDiaries && {layer: currentLayer$|async} as ctx">
+    <wm-diaries-section
+      class="wm-diaries-feature wm-diaries-feature--divided"
+      layout="list"
+      title="Il mio diario di questa tappa"
+      [ecTrackId]="ecTrackProperties?.id"
+      [layerId]="ctx.layer?.id"
+      [showCreate]="(diaryCanWrite$ | async) !== false"
+      [contextLabel]="diaryContextLabel(ecTrackProperties?.name | wmtrans, ctx.layer?.title | wmtrans)"
+    ></wm-diaries-section>
+  </ng-container>
 
   <ng-container *ngIf="ecTrackProperties.related_pois?.length > 0">
     <div class="wm-track-details-track-related-poi">

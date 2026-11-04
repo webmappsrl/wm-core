@@ -23,14 +23,28 @@ export class WmImagePickerComponent implements OnDestroy {
   @Output() startAddPhotos = new EventEmitter<void>();
   @Output() endAddPhotos = new EventEmitter<void>();
   @Input() maxPhotos = MAX_PHOTOS;
+  /**
+   * Modalità di rimozione di una foto già sincronizzata (oc:8169): con `'ugc'` (default) viene
+   * cancellata dal server con `deleteUgcMedia`; con `'local'` esce solo dalla lista e il suo id
+   * viene emesso da `syncedPhotoRemoved`, senza toccare lo store.
+   */
+  @Input() removeMode: 'ugc' | 'local' = 'ugc';
+  /** Emette l'id di una foto sincronizzata tolta dalla lista con `removeMode = 'local'` (oc:8169). */
+  @Output() syncedPhotoRemoved = new EventEmitter<number>();
   /** Opzioni di acquisizione (oc:8166); `null` mantiene il comportamento di default. */
   @Input() captureOptions: CaptureOptions | null = null;
+  /** Foto locali da ripristinare, per esempio da una bozza salvata sul telefono (oc:8169). */
+  @Input() set localPhotos(localPhotos: Media[] | null) {
+    if (localPhotos?.length) this._localPhotos$.next(localPhotos);
+  }
   @Input() set synchronizedPhotos(synchronizedPhotos: Media[]) {
     this._synchronizedPhotos$.next(synchronizedPhotos);
   }
 
   private _synchronizedPhotos$ = new BehaviorSubject<Media[]>([]);
   private _localPhotos$ = new BehaviorSubject<Media[]>([]);
+  /** Id delle foto sincronizzate tolte localmente: restano nascoste anche se l'input le riporta. */
+  private _removedSyncedIds$ = new BehaviorSubject<number[]>([]);
   private _combinedPhotosSubscription$: Subscription;
   
   isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this._deviceSvc.isMobile);
@@ -39,9 +53,13 @@ export class WmImagePickerComponent implements OnDestroy {
   constructor(private _cameraSvc: CameraService, private _cdr: ChangeDetectorRef, private _store: Store, private _deviceSvc: DeviceService) {
     this._combinedPhotosSubscription$ = combineLatest([
       this._localPhotos$,
-      this._synchronizedPhotos$
+      this._synchronizedPhotos$,
+      this._removedSyncedIds$
     ]).pipe(
-      map(([localPhotos, synchronizedPhotos]) => [...localPhotos, ...synchronizedPhotos])
+      map(([localPhotos, synchronizedPhotos]) => [
+        ...localPhotos,
+        ...synchronizedPhotos.filter(p => !this._isRemoved(p))
+      ])
     ).subscribe(combinedPhotos => {
       this.photos.next(combinedPhotos);
       this.photosChanged.emit(combinedPhotos);
@@ -97,9 +115,19 @@ export class WmImagePickerComponent implements OnDestroy {
     }
   }
 
+  /**
+   * Rimuove una foto. Con `removeMode = 'local'` una foto sincronizzata viene solo tolta dalla
+   * lista ed emessa su `syncedPhotoRemoved`; altrimenti viene cancellata con `deleteUgcMedia`.
+   *
+   * @param idx Indice della foto nella lista mostrata.
+   * @param media La foto da rimuovere.
+   */
   remove(idx: number, media: Media): void {
     if (idx > -1) {
-      if (media.id) {
+      if (media.id && this.removeMode === 'local') {
+        this._removedSyncedIds$.next([...this._removedSyncedIds$.value, media.id as number]);
+        this.syncedPhotoRemoved.emit(media.id as number);
+      } else if (media.id) {
         this._store.dispatch(deleteUgcMedia({media}));
       } else {
         const currentLocalPhotos = this._localPhotos$.value;
@@ -116,7 +144,25 @@ export class WmImagePickerComponent implements OnDestroy {
    * @returns Il numero totale di foto.
    */
   private _totalPhotos(): number {
-    return this._localPhotos$.value.length + (this._synchronizedPhotos$.value?.length ?? 0);
+    return this._localPhotos$.value.length + this._visibleSynchronizedCount();
+  }
+
+  /**
+   * Numero di foto sincronizzate ancora visibili, cioè non tolte localmente.
+   *
+   * @returns Il numero di foto sincronizzate visibili.
+   */
+  private _visibleSynchronizedCount(): number {
+    return (this._synchronizedPhotos$.value ?? []).filter(p => !this._isRemoved(p)).length;
+  }
+
+  /**
+   * Indica se una foto sincronizzata è stata tolta localmente (`removeMode = 'local'`).
+   *
+   * @param photo La foto da controllare.
+   */
+  private _isRemoved(photo: Media): boolean {
+    return this._removedSyncedIds$.value.includes(photo.id as number);
   }
 
   /**

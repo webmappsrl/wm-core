@@ -12,6 +12,12 @@ wm-track-properties {
     order: 100;
   }
 
+  // Esperienze della tappa (oc:8169): in fondo, subito prima dello slot `[bottom]`, per lo stesso
+  // motivo; senza `order` un tema che riordina le sezioni le porterebbe sopra l'intestazione.
+  > wm-diaries-section {
+    order: 99;
+  }
+
   bottom: 0;
   border-radius: 15px;
   background: white;
