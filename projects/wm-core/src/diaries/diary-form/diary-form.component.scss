@@ -52,6 +52,17 @@ ion-content.wm-diary-form::part(scroll) {
     color: var(--ion-color-danger);
   }
 
+  &-walk {
+    display: block;
+    margin-bottom: 18px;
+  }
+
+  &-walk-far {
+    margin: -10px 0 18px;
+    font-size: 13px;
+    color: #8a5a00;
+  }
+
   &-photos-head {
     display: flex;
     align-items: baseline;

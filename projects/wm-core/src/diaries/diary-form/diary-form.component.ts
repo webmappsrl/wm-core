@@ -1,5 +1,7 @@
 import {HttpErrorResponse} from '@angular/common/http';
 import {
+  Optional,
+  ViewChild,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -11,7 +13,7 @@ import {
 import {Photo} from '@capacitor/camera';
 import {Capacitor} from '@capacitor/core';
 import {AlertController, ToastController} from '@ionic/angular';
-import {firstValueFrom} from 'rxjs';
+import {Subscription, firstValueFrom} from 'rxjs';
 import {Media} from '@wm-types/feature';
 import {LangService} from '@wm-core/localization/lang.service';
 import {CaptureOptions} from '@wm-core/services/camera.service';
@@ -31,6 +33,11 @@ import {DiaryOutboxService} from '../diary-outbox.service';
 import {diaryHttpErrorKey} from '../diary-offline.utils';
 import {resizeImageBlob} from '../diary-photo.utils';
 import {DIARY_MAX_VISIBLE, diaryVisibleLength} from '../diary-text.utils';
+import {PassportService} from '../../passport/passport.service';
+import {intlLocale, todayLocal} from '../../passport/passport.utils';
+import {DateRange, formatDateRange} from '../../shared/date-range-picker/date-range.utils';
+import {WmDateRangePickerComponent} from '../../shared/date-range-picker/date-range-picker.component';
+import {diaryKnownWalk, walksNear} from '../diary-route-data.utils';
 
 /** Foto massime di un'esperienza (oc:8169). */
 export const DIARY_MAX_PHOTOS = 6;
@@ -159,7 +166,68 @@ export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGua
     private _drafts: DiaryDraftStore,
     private _outbox: DiaryOutboxService,
     private _toastCtrl: ToastController,
+    @Optional() private _passportSvc?: PassportService,
   ) {}
+
+  /** Date di percorrenza toccate dall'utente (ciclo 4): solo allora si salvano e si inviano. */
+  walkTouched = false;
+  /** Date scelte nel campo, `null` se svuotato. */
+  walkDates: DateRange | null = null;
+  /** Ultima percorrenza nota dal Passaporto, per precompilare e per l'avviso. */
+  knownWalk: DateRange | null = null;
+  /** Ultimo giorno selezionabile. */
+  readonly today = todayLocal();
+  private _progressSub?: Subscription;
+  @ViewChild(WmDateRangePickerComponent) private _picker?: WmDateRangePickerComponent;
+
+  /** @returns il valore del campo: le date toccate, altrimenti quelle del diario, altrimenti l'ultima percorrenza */
+  get walkValue(): DateRange | null {
+    return this.walkTouched ? this.walkDates : (this._diary?.walkDates ?? this.knownWalk);
+  }
+
+  /** @returns `true` se le date scelte non toccano l'ultima percorrenza entro un giorno */
+  get walkFar(): boolean {
+    return this.walkTouched && !!this.walkDates && !!this.knownWalk && !walksNear(this.walkDates, this.knownWalk);
+  }
+
+  /** @returns l'ultima percorrenza per esteso, per l'avviso */
+  get knownWalkLabel(): string {
+    return formatDateRange(this.knownWalk, intlLocale(this._langSvc.currentLang));
+  }
+
+  /**
+   * Ultima percorrenza nota: precompila il campo se non è stato toccato.
+   *
+   * @param walk Periodo, `null` se non noto.
+   */
+  setKnownWalk(walk: DateRange | null): void {
+    this.knownWalk = walk;
+    this._cdr.markForCheck();
+  }
+
+  /**
+   * Chiude il foglio del calendario se è aperto: il back hardware del diario ha priorità sopra 100 e
+   * il foglio non lo riceverebbe (come nella richiesta cartacea, oc:8761).
+   *
+   * @returns `true` se il calendario era aperto e l'ha chiuso.
+   */
+  closeOverlay(): Promise<boolean> {
+    if (!this._picker?.isOpen) return Promise.resolve(false);
+    this._picker.cancel();
+    return Promise.resolve(true);
+  }
+
+  /**
+   * Date scelte o svuotate nel calendario.
+   *
+   * @param range Periodo, `null` se svuotato.
+   */
+  onWalkDates(range: DateRange | null): void {
+    this.walkTouched = true;
+    this.walkDates = range;
+    this._scheduleDraftSave();
+    this._cdr.markForCheck();
+  }
 
   /** Titolo: «Nuova esperienza» in creazione, «Modifica esperienza» in modifica. */
   get title(): string {
@@ -218,7 +286,8 @@ export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGua
       this.newPhotos.length > 0 ||
       this.keepMediaIds.length !== original.length ||
       this.publicationConsent !== (this._diary.publicationConsent === true) ||
-      !sameDiaryRatings(this.ratings, normalizeDiaryRatings(this._diary.ratings))
+      !sameDiaryRatings(this.ratings, normalizeDiaryRatings(this._diary.ratings)) ||
+      (this.walkTouched && JSON.stringify(this.walkDates) !== JSON.stringify(this._diary.walkDates ?? null))
     );
   }
 
@@ -231,12 +300,18 @@ export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGua
   ngOnInit(): void {
     this.host?.registerGuard?.(this);
     this.draftReady = this._restoreDraft();
+    if (this._passportSvc && this.layerId != null) {
+      this._progressSub = this._passportSvc
+        .progress$(this.layerId)
+        .subscribe(progress => this.setKnownWalk(diaryKnownWalk(progress, this.ecTrackId ?? null)));
+    }
   }
 
   /** Si toglie da guard del contenitore. */
   ngOnDestroy(): void {
     this.host?.registerGuard?.(null);
     if (this._draftTimer) clearTimeout(this._draftTimer);
+    this._progressSub?.unsubscribe();
   }
 
   /**
@@ -313,6 +388,7 @@ export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGua
         newPhotos: photos,
         publicationConsent: this.publicationConsent,
         ratings: {...this.ratings},
+        walkDates: this.walkTouched ? this.walkDates : undefined,
         ...(this._diary ? {keepMediaIds: this.keepMediaIds} : {}),
       };
       draftForQueue = draft;
@@ -410,6 +486,7 @@ export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGua
         keepMediaIds: this._diary ? this.keepMediaIds : undefined,
         publicationConsent: this.publicationConsent,
         ratings: {...this.ratings},
+        walkDates: this.walkTouched ? this.walkDates : undefined,
         updatedAt: Date.now(),
       })
       .catch(() => undefined);
@@ -459,6 +536,10 @@ export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGua
     this.textLength = diaryVisibleLength(this.description);
     this.publicationConsent = draft.publicationConsent === true;
     if (draft.ratings) this.ratings = normalizeDiaryRatings(draft.ratings);
+    if (draft.walkDates !== undefined) {
+      this.walkTouched = true;
+      this.walkDates = draft.walkDates;
+    }
     if (draft.errorMessage) this.errorMessage = this._langSvc.instant(draft.errorMessage);
     if (!this._diary && draft.uuid) this._uuid = draft.uuid;
     if (this._diary && draft.keepMediaIds) this.keepMediaIds = draft.keepMediaIds;

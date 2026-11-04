@@ -27,6 +27,20 @@
     {{ 'Il racconto può avere al massimo 20.000 caratteri' | wmtrans }}
   </div>
 
+  <span class="wm-diary-form-label" id="wm-diary-walk-label">{{ "Quando l'hai percorso" | wmtrans }}</span>
+  <wm-date-range-picker
+    class="wm-diary-form-walk"
+    [value]="walkValue"
+    [max]="today"
+    [label]="&quot;Quando l'hai percorso&quot; | wmtrans"
+    [placeholder]="'Scegli le date' | wmtrans"
+    [clearable]="true"
+    (valueChange)="onWalkDates($event)"
+  ></wm-date-range-picker>
+  <div class="wm-diary-form-walk-far" role="status" *ngIf="walkFar">
+    {{ 'Le date sono lontane da quelle del tuo Passaporto ({{date}})' | wmtrans: {date: knownWalkLabel} }}
+  </div>
+
   <div class="wm-diary-form-photos-head">
     <span class="wm-diary-form-label">{{ 'Foto' | wmtrans }}</span>
     <span class="wm-diary-form-count">{{ '{{n}} di {{max}}' | wmtrans: {n: photosCount, max: maxPhotos} }}</span>

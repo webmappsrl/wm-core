@@ -110,13 +110,12 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
   101) chiude prima un eventuale alert aperto, poi il calendario del form (`closeOverlay()` del
   guard), poi dal form torna al dettaglio, poi chiude. Il form si registra come guard sulla modale:
   con foto o date non inviate ogni uscita chiede conferma.
-- **Date di percorrenza** (oc:8761): «Dal» e «Al» aprono un `ion-datetime` in un foglio dal basso
-  dichiarato nel template del form; la data si applica solo con «Conferma», mentre ✕,
-  trascinamento, tocco sullo sfondo e back la scartano. Non si va oltre l'oggi del dispositivo e
-  la fine non precede l'inizio: se l'inizio la supera, la fine si svuota. Le date restano stringhe
-  `AAAA-MM-GG` fino all'invio (`start_date`/`end_date`); il server accetta date fino a domani,
-  perché è in UTC, e rifiuta una fine prima dell'inizio. Un 422 su quei campi mostra «Controlla le
-  date di percorrenza e riprova».
+- **Date di percorrenza** (oc:8761, calendario cambiato in oc:8169 ciclo 4): un solo campo apre il
+  calendario a intervallo `wm-date-range-picker` in un foglio dal basso; primo tocco l'inizio,
+  secondo la fine, un tocco e «Conferma» un giorno solo. Il form scrive i due `FormControl` di prima,
+  quindi l'invio (`start_date`/`end_date`) non cambia. Non si va oltre l'oggi del dispositivo e la
+  fine non precede l'inizio. Il server accetta date fino a domani, perché è in UTC, e rifiuta una fine
+  prima dell'inizio. Un 422 su quei campi mostra «Controlla le date di percorrenza e riprova».
 - **Foto:** `WmImagePickerComponent` con `captureOptions` (1600px, qualità 80, senza accendere il
   GPS); salvataggio in galleria attivo per scelta del developer.
 - **Condivisione della tappa e del cammino completato** (oc:8702, oc:8703): vedi
@@ -226,6 +225,8 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
   home.
 - **Nessun flag sul layer per accendere il passaporto** (oc:8701, superata da oc:8763): in camminiditalia è sempre
   attivo; un flag accendi/spegni sarà valutato in seguito. Il cliente ha chiesto di accenderlo per pochi partner prima di estenderlo a tutti.
+- **«Dal» e «Al» in due campi separati** (oc:8761, superati in oc:8169 ciclo 4): sostituiti da un
+  campo solo con il calendario a intervallo, condiviso con le date del diario.
 - **Due bottoni a tutta larghezza e calendario in una modale centrata `fit-content`** (oc:8761,
   superati): i bottoni sembravano azioni, e la modale, senza sfondo scuro né bordo, si confondeva
   con il form sotto.

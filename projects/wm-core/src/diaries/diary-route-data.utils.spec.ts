@@ -1,6 +1,6 @@
 import {PassportProgress, PassportStage} from '@wm-types/passport';
 import {Diary} from './diary.model';
-import {diaryRouteData} from './diary-route-data.utils';
+import {diaryKnownWalk, diaryRouteData, walksNear} from './diary-route-data.utils';
 
 /**
  * Tappa di prova.
@@ -120,5 +120,49 @@ describe('diaryRouteData (oc:8169, ciclo 2)', () => {
 
   it('senza progresso: nessuna scheda', () => {
     expect(diaryRouteData(null, diary(null))).toBeNull();
+  });
+
+  it('date scritte nel diario prima di quelle note, anche a tappa non completata (ciclo 4)', () => {
+    const p = progress([stage(70, {status: 'in_progress', percent: 40, walkedDates: []})]);
+    const d = {...diary(70), walkDates: {start: '2026-05-09', end: '2026-05-11'}};
+
+    expect(diaryRouteData(p, d)).toEqual({km: null, from: '2026-05-09', to: '2026-05-11', days: 3});
+  });
+
+  it('cammino non completato con date scritte: date senza km', () => {
+    const p = progress([stage(70), stage(71, {status: 'not_started'})]);
+    const d = {...diary(null), walkDates: {start: '2026-05-10', end: '2026-05-10'}};
+
+    expect(diaryRouteData(p, d)).toEqual({km: null, from: '2026-05-10', to: '2026-05-10', days: 1});
+  });
+
+  it('ultima percorrenza nota: della tappa, o di tutte le tappe del cammino, gap di 30 giorni', () => {
+    const p = progress([
+      stage(70, {walkedDates: ['2024-05-01', '2026-05-10']}),
+      stage(71, {walkedDates: ['2026-05-12']}),
+      stage(72, {status: 'not_started', walkedDates: []}),
+    ]);
+
+    expect(diaryKnownWalk(p, 70)).toEqual({start: '2026-05-10', end: '2026-05-10'});
+    expect(diaryKnownWalk(p, null)).toEqual({start: '2026-05-10', end: '2026-05-12'});
+    expect(diaryKnownWalk(p, 72)).toBeNull();
+    expect(diaryKnownWalk(null, 70)).toBeNull();
+  });
+
+  it('date vicine: si toccano entro un giorno', () => {
+    const known = {start: '2026-05-10', end: '2026-05-12'};
+    expect(walksNear({start: '2026-05-13', end: '2026-05-14'}, known)).toBeTrue();
+    expect(walksNear({start: '2026-05-14', end: '2026-05-15'}, known)).toBeFalse();
+    expect(walksNear({start: '2026-05-01', end: '2026-05-09'}, known)).toBeTrue();
+  });
+
+  it('diario del cammino senza date proprie: solo l\'ultima percorrenza delle tappe', () => {
+    const p = progress([
+      stage(70, {walkedDates: ['2024-05-01', '2024-05-02']}),
+      stage(71, {walkedDates: ['2026-05-10']}),
+      stage(72, {walkedDates: ['2026-05-11']}),
+    ]);
+
+    expect(diaryRouteData(p, diary(null))).toEqual(jasmine.objectContaining({from: '2026-05-10', to: '2026-05-11', days: 2}));
   });
 });

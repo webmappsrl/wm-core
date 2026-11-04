@@ -1,0 +1,58 @@
+<div class="wm-date-range">
+  <button
+    type="button"
+    class="wm-date-range-field"
+    [class.is-invalid]="invalid"
+    [attr.aria-invalid]="invalid || null"
+    [attr.aria-label]="label ? label + ': ' + (value ? formatted : placeholder) : null"
+    (click)="open()"
+  >
+    <span class="wm-date-range-value" [class.is-empty]="!value">{{ value ? formatted : placeholder }}</span>
+    <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+  </button>
+  <button
+    *ngIf="clearable && value"
+    type="button"
+    class="wm-date-range-clear"
+    [attr.aria-label]="'Svuota le date' | wmtrans"
+    (click)="clear()"
+  >
+    <ion-icon name="close-circle" aria-hidden="true"></ion-icon>
+  </button>
+
+  <ion-modal
+    class="wm-date-range-sheet"
+    [isOpen]="isOpen"
+    [breakpoints]="[0, 1]"
+    [initialBreakpoint]="1"
+    [handle]="true"
+    (didDismiss)="onDismiss()"
+  >
+    <ng-template>
+      <div class="wm-date-range-sheet-header">
+        <h2 class="wm-date-range-sheet-title">{{ label }}</h2>
+        <ion-button fill="clear" [attr.aria-label]="'Chiudi' | wmtrans" (click)="cancel()">
+          <ion-icon slot="icon-only" name="close"></ion-icon>
+        </ion-button>
+      </div>
+      <ion-datetime
+        presentation="date"
+        [multiple]="true"
+        [value]="selected"
+        [max]="max"
+        [locale]="locale"
+        [firstDayOfWeek]="1"
+        [highlightedDates]="highlighted"
+        (ionChange)="onCalendarChange($event.detail.value)"
+      ></ion-datetime>
+      <p class="wm-date-range-summary" aria-live="polite">
+        <ng-container *ngIf="summary as s; else hint">{{ s.key | wmtrans: s.params }}</ng-container>
+        <ng-template #hint>{{ 'Tocca il primo e l\'ultimo giorno' | wmtrans }}</ng-template>
+      </p>
+      <div class="wm-date-range-sheet-footer">
+        <ion-button fill="outline" color="medium" (click)="cancel()">{{ 'Annulla' | wmtrans }}</ion-button>
+        <ion-button color="primary" [disabled]="!pending" (click)="confirm()">{{ 'Conferma' | wmtrans }}</ion-button>
+      </div>
+    </ng-template>
+  </ion-modal>
+</div>

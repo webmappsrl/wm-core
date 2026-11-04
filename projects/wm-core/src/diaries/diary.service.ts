@@ -44,6 +44,8 @@ interface DiaryResponse {
   rating_route?: number | null;
   rating_hospitality?: number | null;
   rating_difficulty?: number | null;
+  walk_start_date?: string | null;
+  walk_end_date?: string | null;
 }
 
 /** Stato interno: stato della funzione e lista (vuota se non attiva). */
@@ -409,6 +411,11 @@ export class DiaryService implements OnDestroy {
     form.append('rating_route', ratings.route != null ? String(ratings.route) : '');
     form.append('rating_hospitality', ratings.hospitality != null ? String(ratings.hospitality) : '');
     form.append('rating_difficulty', ratings.difficulty != null ? String(ratings.difficulty) : '');
+    // date di percorrenza (ciclo 4): solo se il campo è stato toccato; vuote lo svuotano
+    if (draft.walkDates !== undefined) {
+      form.append('walk_start_date', draft.walkDates?.start ?? '');
+      form.append('walk_end_date', draft.walkDates?.end ?? '');
+    }
     (draft.newPhotos ?? []).forEach((photo, i) =>
       form.append('images[]', photo, `photo-${i}.${this._extension(photo)}`),
     );
@@ -436,6 +443,9 @@ export class DiaryService implements OnDestroy {
         hospitality: item.rating_hospitality,
         difficulty: item.rating_difficulty,
       }),
+      walkDates: item.walk_start_date
+        ? {start: item.walk_start_date, end: item.walk_end_date ?? item.walk_start_date}
+        : null,
     };
   }
 

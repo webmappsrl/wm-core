@@ -86,6 +86,7 @@ import {WmPassportDetailComponent} from './passport/passport-detail/passport-det
 import {WmDiaryFormComponent} from './diaries/diary-form/diary-form.component';
 import {WmDiaryRatingComponent} from './diaries/diary-rating/diary-rating.component';
 import {WmDiaryEditorComponent} from './diaries/diary-editor/diary-editor.component';
+import {WmDateRangePickerComponent} from './shared/date-range-picker/date-range-picker.component';
 import {WmDiaryDetailComponent} from './diaries/diary-detail/diary-detail.component';
 import {WmDiariesSectionComponent} from './diaries/diaries-section/diaries-section.component';
 import {WmPassportFormComponent} from './passport/passport-form/passport-form.component';
@@ -178,6 +179,7 @@ export const declarations = [
   WmDiaryFormComponent,
   WmDiaryRatingComponent,
   WmDiaryEditorComponent,
+  WmDateRangePickerComponent,
   WmDiaryDetailComponent,
   WmDiariesSectionComponent,
   WmPassportStageDetailComponent,

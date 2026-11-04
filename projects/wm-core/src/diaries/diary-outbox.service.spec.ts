@@ -19,7 +19,7 @@ describe('DiaryOutboxService (oc:8169)', () => {
     const start = Date.now();
     while (!cond() && Date.now() - start < maxMs) await wait(5);
   };
-  const draft = (uuid: string) => ({uuid, layerId: 3, description: 'ciao', newPhotos: [new Blob(['a'])], publicationConsent: true, ratings: {route: 4, hospitality: null, difficulty: 1}});
+  const draft = (uuid: string) => ({uuid, layerId: 3, description: 'ciao', newPhotos: [new Blob(['a'])], publicationConsent: true, ratings: {route: 4, hospitality: null, difficulty: 1}, walkDates: {start: '2026-05-10', end: '2026-05-11'}});
   const items = async () => {
     const all: DiaryOutboxItem[] = [];
     await deviceDiaryOutbox.iterate<DiaryOutboxItem, void>(v => void all.push(v));
@@ -54,6 +54,7 @@ describe('DiaryOutboxService (oc:8169)', () => {
     expect(diarySvc.create.calls.argsFor(0)[0].uuid).toBe('u-1');
     expect(diarySvc.create.calls.argsFor(0)[0].publicationConsent).toBeTrue();
     expect(diarySvc.create.calls.argsFor(0)[0].ratings).toEqual({route: 4, hospitality: null, difficulty: 1});
+    expect(diarySvc.create.calls.argsFor(0)[0].walkDates).toEqual({start: '2026-05-10', end: '2026-05-11'});
     await wait(30);
     expect((await items()).length).toBe(0);
   });

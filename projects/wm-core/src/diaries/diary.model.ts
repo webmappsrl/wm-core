@@ -1,3 +1,5 @@
+import {DateRange} from '../shared/date-range-picker/date-range.utils';
+
 /** Esperienza dell'utente su un cammino o una tappa (oc:8169). */
 export interface Diary {
   id: number;
@@ -13,6 +15,8 @@ export interface Diary {
   publicationConsent: boolean;
   /** Valutazioni facoltative da 1 a 5 (oc:8169, ciclo 2). */
   ratings?: DiaryRatings;
+  /** Date di percorrenza scritte dall'utente (oc:8169, ciclo 4), `null` se non ci sono. */
+  walkDates?: DateRange | null;
 }
 
 /** Chiave di una valutazione: cammino (o tappa), ospitalità, difficoltà percepita. */
@@ -73,6 +77,11 @@ export interface DiaryDraft {
   publicationConsent?: boolean;
   /** Valutazioni; assenti valgono «non date». */
   ratings?: DiaryRatings;
+  /**
+   * Date di percorrenza (oc:8169, ciclo 4): `undefined` = campo non toccato, non si inviano;
+   * `null` = svuotato, si inviano vuote.
+   */
+  walkDates?: DateRange | null;
 }
 
 /**

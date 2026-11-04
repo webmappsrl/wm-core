@@ -281,6 +281,33 @@ describe('DiaryService (oc:8169)', () => {
     httpMock.expectOne({method: 'GET', url: URL}).flush({data: []});
   });
 
+  it('invia le date di percorrenza solo se il campo è stato toccato (oc:8169, ciclo 4)', () => {
+    const svc = create();
+    svc.diaries$({}).subscribe();
+    httpMock.expectOne(URL).flush({data: []});
+    const send = (walkDates: any) => {
+      svc.create({uuid: 'u1', layerId: 3, description: 'x', newPhotos: [], walkDates}).subscribe();
+      const req = httpMock.expectOne({method: 'POST', url: URL});
+      const body = req.request.body as FormData;
+      const out = [body.get('walk_start_date'), body.get('walk_end_date')];
+      req.flush(item(1, 3, null), {status: 201, statusText: 'Created'});
+      httpMock.expectOne({method: 'GET', url: URL}).flush({data: []});
+      return out;
+    };
+    expect(send({start: '2026-05-10', end: '2026-05-12'})).toEqual(['2026-05-10', '2026-05-12']);
+    expect(send(null)).toEqual(['', '']);
+    expect(send(undefined)).toEqual([null, null]);
+  });
+
+  it('legge le date di percorrenza dalla risposta (oc:8169, ciclo 4)', () => {
+    const svc = create();
+    let list: Diary[] = [];
+    svc.diaries$({}).subscribe(l => (list = l));
+    httpMock.expectOne(URL).flush({data: [{...item(1, 3, null), walk_start_date: '2026-05-10', walk_end_date: null}, item(2, 3, null)]});
+    expect(list[0].walkDates).toEqual({start: '2026-05-10', end: '2026-05-10'});
+    expect(list[1].walkDates).toBeNull();
+  });
+
   it('legge le valutazioni dalla risposta (oc:8169, ciclo 2)', () => {
     const svc = create();
     let list: Diary[] = [];

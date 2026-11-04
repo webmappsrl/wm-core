@@ -1,5 +1,29 @@
 # Diario del camminatore: cammino, foto e descrizione
 
+## Ciclo 4 — Date di percorrenza (oc:8169, 4 novembre 2026)
+
+Il resto della pagina descrive i cicli precedenti; per le date del diario e il calendario vale questa
+sezione.
+
+- **Campo «Quando l'hai percorso»** nel form, con `wm-date-range-picker`. Arriva precompilato con
+  l'ultima percorrenza nota (`diaryKnownWalk`: i `walkedDates` della tappa o di tutte le tappe del
+  cammino, divisi in percorrenze a più di 30 giorni di distanza, tenuta la più recente). Le date si
+  inviano (`walk_start_date`/`walk_end_date`) **solo se il campo è stato toccato**: `walkDates`
+  `undefined` = non toccato, `null` = svuotato; bozza e coda conservano la differenza. Un diario
+  senza date proprie usa ogni volta l'ultima percorrenza, ricalcolata. Se le date scelte non toccano
+  l'ultima percorrenza entro un giorno compare un avviso che non blocca.
+- **Dettaglio:** la scheda «Il tuo percorso» usa prima le date del diario, anche a percorso non
+  completato (i km solo a percorso completato), poi l'ultima percorrenza.
+- **`wm-date-range-picker`** (cartella `shared/date-range-picker`, dichiarato in `WmCoreModule`): un
+  campo che apre `ion-datetime` in un foglio dal basso. `ion-datetime` non ha l'intervallo: usa la
+  selezione multipla, che emette anche quando si ritocca lo stesso giorno (lo deseleziona), ricava il
+  giorno toccato dalla differenza con la selezione precedente e tiene selezionati solo gli estremi,
+  colorando quelli in mezzo con `highlightedDates`. Logica dei tocchi e testi in `date-range.utils`
+  (funzioni pure). Lo usa anche il form della richiesta cartacea del Passaporto.
+- **Trappola: un foglio sopra una modale ha bisogno di `closeOverlay()` nel form che lo contiene.**
+  Il back hardware della modale del diario (priorità 101) e del Passaporto passa prima dal guard del
+  form: senza `closeOverlay()` chiude tutto invece del solo foglio.
+
 ## Ciclo 3 — Editor del racconto (oc:8169, 4 novembre 2026)
 
 Il resto della pagina descrive i cicli precedenti; dove questo ciclo cambia il formato del racconto (prima testo semplice, ora HTML) vale questa sezione.

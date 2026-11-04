@@ -1,3 +1,4 @@
+import {DateRange} from '../shared/date-range-picker/date-range.utils';
 import {Injectable} from '@angular/core';
 import {deviceDiaryDrafts} from '@wm-core/utils/localForage';
 import {DiaryRatings} from './diary.model';
@@ -21,6 +22,8 @@ export interface StoredDiaryDraft {
   publicationConsent: boolean;
   /** Valutazioni scelte (oc:8169, ciclo 2); assenti nelle bozze salvate prima. */
   ratings?: DiaryRatings;
+  /** Date di percorrenza (ciclo 4): `undefined` = campo non toccato. */
+  walkDates?: DateRange | null;
   /** Messaggio di un invio dalla coda rifiutato dal server: il form lo mostra alla riapertura. */
   errorMessage?: string;
   /** Ultima modifica (ms): la bozza scade dopo `DIARY_RETENTION_DAYS`. */

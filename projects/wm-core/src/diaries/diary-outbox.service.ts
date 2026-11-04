@@ -1,3 +1,4 @@
+import {DateRange} from '../shared/date-range-picker/date-range.utils';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Inject, Injectable, InjectionToken, OnDestroy, Optional} from '@angular/core';
 import {Store} from '@ngrx/store';
@@ -30,6 +31,8 @@ export interface DiaryOutboxItem {
   publicationConsent: boolean;
   /** Valutazioni scelte (oc:8169, ciclo 2). */
   ratings?: DiaryRatings;
+  /** Date di percorrenza (ciclo 4): `undefined` = campo non toccato. */
+  walkDates?: DateRange | null;
   /** `pending` in attesa di invio, `failed` rifiutato dal server (422, 413, 404). */
   status: 'pending' | 'failed';
   errorMessage?: string;
@@ -122,6 +125,7 @@ export class DiaryOutboxService implements OnDestroy {
       photos: draft.newPhotos ?? [],
       publicationConsent: draft.publicationConsent === true,
       ratings: normalizeDiaryRatings(draft.ratings),
+      walkDates: draft.walkDates,
       status: 'pending',
       attempts: 0,
       nextAttemptAt: 0,
@@ -193,6 +197,7 @@ export class DiaryOutboxService implements OnDestroy {
       newPhotos: item.photos ?? [],
       publicationConsent: item.publicationConsent,
       ratings: normalizeDiaryRatings(item.ratings),
+      walkDates: item.walkDates,
     };
   }
 

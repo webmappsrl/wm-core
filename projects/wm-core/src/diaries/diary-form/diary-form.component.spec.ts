@@ -229,6 +229,52 @@ describe('WmDiaryFormComponent (oc:8169)', () => {
     expect(cmp.canSubmit).toBeTrue();
   });
 
+  it('date di percorrenza: precompilate dall\'ultima percorrenza, inviate solo se toccate (oc:8169, ciclo 4)', async () => {
+    const cmp = create();
+    cmp.setKnownWalk({start: '2026-05-10', end: '2026-05-11'});
+    expect(cmp.walkValue).toEqual({start: '2026-05-10', end: '2026-05-11'});
+    cmp.onDescription('<p>x</p>');
+    await cmp.submit();
+    expect(svc.create.calls.mostRecent().args[0].walkDates).toBeUndefined();
+  });
+
+  it('un campo toccato non viene sovrascritto dalla precompilazione e si invia', async () => {
+    const cmp = create();
+    cmp.onWalkDates({start: '2026-06-01', end: '2026-06-02'});
+    cmp.setKnownWalk({start: '2026-05-10', end: '2026-05-11'});
+    expect(cmp.walkValue).toEqual({start: '2026-06-01', end: '2026-06-02'});
+    cmp.onDescription('<p>x</p>');
+    await cmp.submit();
+    expect(svc.create.calls.mostRecent().args[0].walkDates).toEqual({start: '2026-06-01', end: '2026-06-02'});
+  });
+
+  it('avviso quando le date non toccano l\'ultima percorrenza', () => {
+    const cmp = create();
+    cmp.setKnownWalk({start: '2026-05-10', end: '2026-05-11'});
+    cmp.onWalkDates({start: '2026-05-12', end: '2026-05-12'});
+    expect(cmp.walkFar).toBeFalse();
+    cmp.onWalkDates({start: '2026-06-10', end: '2026-06-11'});
+    expect(cmp.walkFar).toBeTrue();
+    cmp.onWalkDates(null);
+    expect(cmp.walkFar).toBeFalse();
+  });
+
+  it('un diario con date proprie le mostra e la precompilazione non le cambia', () => {
+    const cmp = create();
+    cmp.diary = {...diary, walkDates: {start: "2026-04-01", end: "2026-04-02"}};
+    cmp.setKnownWalk({start: '2026-05-10', end: '2026-05-11'});
+    expect(cmp.walkValue).toEqual({start: '2026-04-01', end: '2026-04-02'});
+  });
+
+  it('closeOverlay chiude il foglio del calendario aperto (back hardware)', async () => {
+    const cmp = create();
+    expect(await cmp.closeOverlay()).toBeFalse();
+    const picker = {isOpen: true, cancel: jasmine.createSpy('cancel')};
+    (cmp as any)._picker = picker;
+    expect(await cmp.closeOverlay()).toBeTrue();
+    expect(picker.cancel).toHaveBeenCalled();
+  });
+
   it('il contatore si annuncia agli screen reader solo dal 90% del limite', () => {
     const cmp = create();
     cmp.onLength(17999);

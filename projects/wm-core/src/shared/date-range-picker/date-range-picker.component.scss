@@ -1,0 +1,97 @@
+// Calendario a intervallo (oc:8169, ciclo 4).
+.wm-date-range {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &-field {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 48px;
+    padding: 10px 12px;
+    border: 1px solid #c9c9c9;
+    border-radius: 10px;
+    background: #fff;
+    color: inherit;
+    font-family: inherit;
+    font-size: 15px;
+    text-align: left;
+
+    &.is-invalid {
+      border-color: var(--ion-color-danger);
+    }
+
+    ion-icon {
+      font-size: 20px;
+      color: var(--ion-color-primary);
+    }
+  }
+
+  &-value.is-empty {
+    color: #9aa0a6;
+  }
+
+  &-clear {
+    min-width: 44px;
+    min-height: 44px;
+    border: 0;
+    background: transparent;
+    color: #6b7177;
+    font-size: 22px;
+  }
+
+  &-sheet {
+    --height: auto;
+    --border-radius: 16px;
+    --background: var(--ion-background-color, #fff);
+    --box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.12);
+    // Ionic azzera l'opacità dello sfondo scuro sulle modali impilate (il foglio sta sopra la modale
+    // del Passaporto o del diario): la si rende esplicita, come nel vecchio calendario (oc:8761).
+    --backdrop-opacity: var(--ion-backdrop-opacity, 0.32);
+
+    // con l'altezza automatica il contenuto deve stare nel flusso, altrimenti il foglio collassa
+    .ion-page {
+      position: relative;
+      display: block;
+      contain: none;
+    }
+
+    ion-datetime {
+      margin: 0 auto;
+    }
+  }
+
+  &-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 8px 0 16px;
+  }
+
+  &-sheet-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  &-summary {
+    margin: 4px 16px 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  &-sheet-footer {
+    display: flex;
+    gap: 10px;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+
+    ion-button {
+      flex: 1;
+      margin: 0;
+    }
+  }
+}
