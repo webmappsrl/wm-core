@@ -267,6 +267,29 @@ describe('DiaryService (oc:8169)', () => {
     httpMock.expectOne({method: 'GET', url: URL}).flush({data: []});
   });
 
+  it('create invia le valutazioni, vuote quelle non date (oc:8169, ciclo 2)', () => {
+    const svc = create();
+    svc.diaries$({}).subscribe();
+    httpMock.expectOne(URL).flush({data: []});
+    svc.create({uuid: 'u1', layerId: 3, description: 'x', newPhotos: [], ratings: {route: 5, hospitality: null}}).subscribe();
+    const req = httpMock.expectOne({method: 'POST', url: URL});
+    const body = req.request.body as FormData;
+    expect(body.get('rating_route')).toBe('5');
+    expect(body.get('rating_hospitality')).toBe('');
+    expect(body.get('rating_difficulty')).toBe('');
+    req.flush(item(1, 3, null), {status: 201, statusText: 'Created'});
+    httpMock.expectOne({method: 'GET', url: URL}).flush({data: []});
+  });
+
+  it('legge le valutazioni dalla risposta (oc:8169, ciclo 2)', () => {
+    const svc = create();
+    let list: Diary[] = [];
+    svc.diaries$({}).subscribe(l => (list = l));
+    httpMock.expectOne(URL).flush({data: [{...item(1, 3, null), rating_route: 4, rating_difficulty: 2}, item(2, 3, null)]});
+    expect(list[0].ratings).toEqual({route: 4, hospitality: null, difficulty: 2});
+    expect(list[1].ratings).toEqual({route: null, hospitality: null, difficulty: null});
+  });
+
   it('legge publicationConsent dalla risposta', () => {
     const svc = create();
     let list: Diary[] = [];

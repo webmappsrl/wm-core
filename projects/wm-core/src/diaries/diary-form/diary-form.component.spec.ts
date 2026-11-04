@@ -78,6 +78,42 @@ describe('WmDiaryFormComponent (oc:8169)', () => {
     expect(svc.create.calls.argsFor(0)[0].publicationConsent).toBeTrue();
   });
 
+  it('le righe delle valutazioni restano le stesse fra un ciclo e l\'altro: il componente non si ricrea e l\'animazione resta visibile', () => {
+    const cmp = create();
+    const first = cmp.ratingRows;
+    cmp.onRating('route', 4);
+    expect(cmp.ratingRows).toBe(first);
+    expect(cmp.trackRating(0, first[1])).toBe('hospitality');
+  });
+
+  it('le valutazioni scelte si inviano (oc:8169, ciclo 2)', async () => {
+    const cmp = create();
+    cmp.onDescription('ciao');
+    cmp.onRating('route', 5);
+    cmp.onRating('difficulty', 2);
+    await cmp.submit();
+    expect(svc.create.calls.argsFor(0)[0].ratings).toEqual({route: 5, hospitality: null, difficulty: 2});
+  });
+
+  it('in modifica ripropone le valutazioni e un cambio rende il form modificato', () => {
+    const cmp = create();
+    cmp.diary = {...diary, ratings: {route: 3, hospitality: null, difficulty: null}};
+    expect(cmp.ratings.route).toBe(3);
+    expect(cmp.isDirty).toBeFalse();
+    cmp.onRating('route', null);
+    expect(cmp.isDirty).toBeTrue();
+  });
+
+  it('la bozza salva e ripropone le valutazioni', async () => {
+    saved = {key: 'u5:l1:t0', userId: 5, uuid: 'uuid-bozza', layerId: 1, description: 'x', photos: [], publicationConsent: false, ratings: {route: 1, hospitality: 4, difficulty: null}, updatedAt: Date.now()};
+    const cmp = create();
+    await cmp.draftReady;
+    expect(cmp.ratings).toEqual({route: 1, hospitality: 4, difficulty: null});
+    cmp.onRating('difficulty', 3);
+    await cmp.flushDraft();
+    expect(drafts.save.calls.mostRecent().args[0].ratings).toEqual({route: 1, hospitality: 4, difficulty: 3});
+  });
+
   it('in modifica ripropone il consenso salvato', () => {
     const cmp = create();
     cmp.diary = {...diary, publicationConsent: true};

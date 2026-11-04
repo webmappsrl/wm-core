@@ -36,6 +36,18 @@
     (syncedPhotoRemoved)="onSyncedPhotoRemoved($event)"
   ></wm-image-picker>
 
+  <div class="wm-diary-form-ratings">
+    <span class="wm-diary-form-label">{{ 'Valutazioni' | wmtrans }}</span>
+    <div class="wm-diary-form-rating-row" *ngFor="let row of ratingRows; trackBy: trackRating">
+      <span class="wm-diary-form-rating-label">{{ row.label | wmtrans }}</span>
+      <wm-diary-rating
+        [value]="ratings[row.key]"
+        [label]="row.label | wmtrans"
+        (valueChange)="onRating(row.key, $event)"
+      ></wm-diary-rating>
+    </div>
+  </div>
+
   <ion-checkbox
     class="wm-diary-form-consent"
     labelPlacement="end"

@@ -14,9 +14,12 @@ import {UGC_TRACK_STATS_DEFAULT_PARAMS} from '@wm-core/utils/ugc-track-stats';
 import {FakeTransPipe, fakeLangService} from '@wm-core/passport/testing/fake-trans';
 import {Diary, DiariesStatus} from '../diary.model';
 import {DiaryService} from '../diary.service';
+import {PassportService} from '@wm-core/passport/passport.service';
+import {PassportProgress} from '@wm-types/passport';
 import {WmDiaryDetailComponent, formatUgcDuration} from './diary-detail.component';
 
 describe('WmDiaryDetailComponent (oc:8169)', () => {
+  let progress$: BehaviorSubject<PassportProgress | null>;
   const diary: Diary = {
     id: 4,
     uuid: 'u4',
@@ -76,6 +79,7 @@ describe('WmDiaryDetailComponent (oc:8169)', () => {
       getCurrentQueryParams: jasmine.createSpy('getCurrentQueryParams').and.returnValue({}),
       getCurrentPath: jasmine.createSpy('getCurrentPath').and.returnValue('home'),
     };
+    progress$ = new BehaviorSubject<PassportProgress | null>(null);
     TestBed.configureTestingModule({
       declarations: [WmDiaryDetailComponent, FakeTransPipe],
       providers: [
@@ -101,6 +105,7 @@ describe('WmDiaryDetailComponent (oc:8169)', () => {
         {provide: UrlHandlerService, useValue: urlHandler},
         {provide: UgcTrackStatsService, useValue: {params$: of(UGC_TRACK_STATS_DEFAULT_PARAMS)}},
         {provide: DiaryService, useValue: svc},
+        {provide: PassportService, useValue: {progress$: () => progress$.asObservable()}},
         {provide: ToastController, useValue: toastCtrl},
         {provide: LangService, useValue: fakeLangService()},
         {
@@ -154,6 +159,56 @@ describe('WmDiaryDetailComponent (oc:8169)', () => {
     list$.next([consented]);
     render(consented);
     expect(text()).toContain("12 giugno 2026 · Cammini d'Italia può pubblicarlo");
+  });
+
+  it('tappa completata: la scheda mostra km e giorno dell\'utente (oc:8169, ciclo 2)', () => {
+    progress$.next({
+      layerId: 7,
+      totalStages: 2,
+      completedStages: 1,
+      percent: 50,
+      completed: false,
+      stages: [
+        {trackId: 70, name: {}, status: 'completed', distance: 14, userDistance: 12.3, walkedDates: ['2026-05-02']},
+        {trackId: 71, name: {}, status: 'not_started', distance: 10},
+      ],
+    });
+    list$.next([diary]);
+    render(diary);
+    const route = fixture.nativeElement.querySelector('.wm-diary-detail-route') as HTMLElement;
+    expect(route).not.toBeNull();
+    expect(route.textContent).toContain('12,3');
+    expect(route.textContent).toContain('1');
+    expect(route.textContent).toContain('2 maggio 2026');
+  });
+
+  it('tappa non completata: nessuna scheda dati', () => {
+    progress$.next({
+      layerId: 7,
+      totalStages: 1,
+      completedStages: 0,
+      percent: 0,
+      completed: false,
+      stages: [{trackId: 70, name: {}, status: 'in_progress', distance: 14, percent: 30}],
+    });
+    list$.next([diary]);
+    render(diary);
+    expect(fixture.nativeElement.querySelector('.wm-diary-detail-route')).toBeNull();
+  });
+
+  it('mostra solo le valutazioni date (oc:8169, ciclo 2)', () => {
+    const rated = {...diary, ratings: {route: null, hospitality: 4, difficulty: null}};
+    list$.next([rated]);
+    render(rated);
+    const rows = Array.from(fixture.nativeElement.querySelectorAll('.wm-diary-detail-rating-row')) as HTMLElement[];
+    expect(rows.length).toBe(1);
+    expect(rows[0].textContent).toContain('Ospitalità');
+  });
+
+  it('senza valutazioni non mostra il blocco', () => {
+    list$.next([diary]);
+    render(diary);
+    expect(fixture.nativeElement.querySelector('.wm-diary-detail-ratings')).toBeNull();
   });
 
   /** Righe delle registrazioni collegate. */

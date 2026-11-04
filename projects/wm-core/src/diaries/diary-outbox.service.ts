@@ -5,7 +5,7 @@ import {BehaviorSubject, Observable, Subscription, combineLatest, firstValueFrom
 import {distinctUntilChanged, filter, map, pairwise, startWith} from 'rxjs/operators';
 import {online} from '@wm-core/store/network/network.selector';
 import {deviceDiaryOutbox} from '@wm-core/utils/localForage';
-import {DiaryDraft} from './diary.model';
+import {DiaryDraft, DiaryRatings, normalizeDiaryRatings} from './diary.model';
 import {DiaryService, selectDiariesSession} from './diary.service';
 import {DiaryDraftStore} from './diary-draft.store';
 import {diaryHttpErrorKey} from './diary-offline.utils';
@@ -28,6 +28,8 @@ export interface DiaryOutboxItem {
   description: string;
   photos: Blob[];
   publicationConsent: boolean;
+  /** Valutazioni scelte (oc:8169, ciclo 2). */
+  ratings?: DiaryRatings;
   /** `pending` in attesa di invio, `failed` rifiutato dal server (422, 413, 404). */
   status: 'pending' | 'failed';
   errorMessage?: string;
@@ -119,6 +121,7 @@ export class DiaryOutboxService implements OnDestroy {
       description: draft.description ?? '',
       photos: draft.newPhotos ?? [],
       publicationConsent: draft.publicationConsent === true,
+      ratings: normalizeDiaryRatings(draft.ratings),
       status: 'pending',
       attempts: 0,
       nextAttemptAt: 0,
@@ -189,6 +192,7 @@ export class DiaryOutboxService implements OnDestroy {
       description: item.description,
       newPhotos: item.photos ?? [],
       publicationConsent: item.publicationConsent,
+      ratings: normalizeDiaryRatings(item.ratings),
     };
   }
 

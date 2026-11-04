@@ -11,6 +11,31 @@ export interface Diary {
   ugcTrackIds: number[];
   /** Consenso alla ripubblicazione sui canali di Cammini d'Italia (oc:8169, ciclo 2). */
   publicationConsent: boolean;
+  /** Valutazioni facoltative da 1 a 5 (oc:8169, ciclo 2). */
+  ratings?: DiaryRatings;
+}
+
+/** Chiave di una valutazione: cammino (o tappa), ospitalità, difficoltà percepita. */
+export type DiaryRatingKey = 'route' | 'hospitality' | 'difficulty';
+
+/** Valutazioni da 1 a 5, `null` (o assente) se non date. */
+export type DiaryRatings = Partial<Record<DiaryRatingKey, number | null>>;
+
+/** Valutazioni tutte vuote. */
+export const EMPTY_DIARY_RATINGS: Required<DiaryRatings> = {route: null, hospitality: null, difficulty: null};
+
+/**
+ * Valutazioni complete, con `null` dove mancano.
+ *
+ * @param ratings Valutazioni, anche parziali o assenti.
+ * @returns Le tre valutazioni.
+ */
+export function normalizeDiaryRatings(ratings?: DiaryRatings | null): Required<DiaryRatings> {
+  return {
+    route: ratings?.route ?? null,
+    hospitality: ratings?.hospitality ?? null,
+    difficulty: ratings?.difficulty ?? null,
+  };
 }
 
 /**
@@ -46,4 +71,19 @@ export interface DiaryDraft {
   keepMediaIds?: number[];
   /** Spunta del consenso alla ripubblicazione; assente vale `false`. */
   publicationConsent?: boolean;
+  /** Valutazioni; assenti valgono «non date». */
+  ratings?: DiaryRatings;
+}
+
+/**
+ * Confronta due insiemi di valutazioni.
+ *
+ * @param a Prime valutazioni.
+ * @param b Seconde valutazioni.
+ * @returns `true` se le tre valutazioni coincidono.
+ */
+export function sameDiaryRatings(a?: DiaryRatings | null, b?: DiaryRatings | null): boolean {
+  const x = normalizeDiaryRatings(a);
+  const y = normalizeDiaryRatings(b);
+  return x.route === y.route && x.hospitality === y.hospitality && x.difficulty === y.difficulty;
 }

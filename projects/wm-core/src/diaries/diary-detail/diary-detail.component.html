@@ -53,6 +53,32 @@
     >
     <p class="wm-diary-detail-text" *ngIf="vm.diary.description">{{ vm.diary.description }}</p>
 
+    <section class="wm-diary-detail-route" *ngIf="vm.routeData as route">
+      <h2 class="wm-diary-detail-route-title">{{ 'Il tuo percorso' | wmtrans }}</h2>
+      <div class="wm-diary-detail-route-values">
+        <span class="wm-diary-detail-route-value" *ngIf="route.km">
+          <strong>{{ route.km }}</strong> km
+        </span>
+        <span class="wm-diary-detail-route-value" *ngIf="route.days">
+          <strong>{{ route.days }}</strong>
+          {{ (route.days === 1 ? 'giorno' : 'giorni') | wmtrans }}
+        </span>
+      </div>
+      <span class="wm-diary-detail-route-dates" *ngIf="route.dates">{{ route.dates }}</span>
+    </section>
+
+    <section class="wm-diary-detail-ratings" *ngIf="vm.ratingRows.length > 0">
+      <div class="wm-diary-detail-rating-row" *ngFor="let row of vm.ratingRows">
+        <span class="wm-diary-detail-rating-label">{{ row.label | wmtrans }}</span>
+        <wm-diary-rating
+          size="small"
+          [readonly]="true"
+          [value]="row.value"
+          [label]="row.label | wmtrans"
+        ></wm-diary-rating>
+      </div>
+    </section>
+
     <section class="wm-diary-detail-ugc" *ngIf="vm.ugcRows.length > 0">
       <div class="wm-diary-detail-ugc-head">
         <h2 class="wm-diary-detail-ugc-title">{{ 'Registrazioni collegate' | wmtrans }}</h2>

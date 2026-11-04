@@ -7,11 +7,14 @@ import {
   OnDestroy,
   OnInit,
   ViewEncapsulation,
+  inject,
 } from '@angular/core';
 import {AlertController, ToastController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, Observable, combineLatest, firstValueFrom, of} from 'rxjs';
-import {catchError, map, switchMap} from 'rxjs/operators';
+import {catchError, distinctUntilChanged, map, startWith, switchMap} from 'rxjs/operators';
+import {PassportService} from '@wm-core/passport/passport.service';
+import {PassportProgress} from '@wm-types/passport';
 import {LangService} from '@wm-core/localization/lang.service';
 import {intlLocale, passportKm, passportLongDate} from '@wm-core/passport/passport.utils';
 import {UgcTrackStatsService} from '@wm-core/services/ugc-track-stats.service';
@@ -26,6 +29,7 @@ import {LineString} from 'geojson';
 import type {SwiperOptions} from 'swiper/types';
 import {Diary} from '../diary.model';
 import {DiaryService} from '../diary.service';
+import {diaryRouteData} from '../diary-route-data.utils';
 import {presentDiaryOfflineToast} from '../diary-offline.utils';
 
 /** Operazioni del contenitore usate dal dettaglio. */
@@ -65,6 +69,25 @@ interface DiaryDetailVm {
   date: string;
   /** Registrazioni collegate, una riga per id. */
   ugcRows: DiaryLinkedUgcRow[];
+  /** Solo le valutazioni date (oc:8169, ciclo 2). */
+  ratingRows: {label: string; value: number}[];
+  /** Scheda «Il tuo percorso», `null` se ciò che il diario racconta non è stato percorso. */
+  routeData: {km: string | null; dates: string | null; days: number | null} | null;
+}
+
+/**
+ * Valutazioni date di un diario, nell'ordine del form.
+ *
+ * @param diary Diario.
+ * @returns Una riga per valutazione data; sulla tappa la prima è «Tappa».
+ */
+export function diaryRatingRows(diary: Diary): {label: string; value: number}[] {
+  const ratings = diary.ratings ?? {};
+  return [
+    {label: diary.ecTrack ? 'Tappa' : 'Cammino', value: ratings.route},
+    {label: 'Ospitalità', value: ratings.hospitality},
+    {label: 'Difficoltà percepita', value: ratings.difficulty},
+  ].filter((row): row is {label: string; value: number} => row.value != null);
 }
 
 /**
@@ -105,6 +128,7 @@ export class WmDiaryDetailComponent implements OnInit, OnDestroy {
   private _openingUgc = false;
   /** Segnale di rete dell'app: senza rete modifica e cancellazione avvisano e basta. */
   private _offline = false;
+  private _passportSvc = inject(PassportService);
 
   constructor(
     private _diarySvc: DiaryService,
@@ -131,15 +155,30 @@ export class WmDiaryDetailComponent implements OnInit, OnDestroy {
             ),
       ),
     );
+    // progresso del cammino per la scheda dati (oc:8169, ciclo 2): lo stream condiviso con badge
+    // e anello; finché non arriva, o se fallisce, la scheda non c'è
+    const progress$ = current$.pipe(
+      map(diary => diary?.layer?.id ?? null),
+      distinctUntilChanged(),
+      switchMap(layerId =>
+        layerId == null
+          ? of(null)
+          : this._passportSvc.progress$(layerId).pipe(
+              startWith(null),
+              catchError(() => of(null)),
+            ),
+      ),
+    );
     this.vm$ = combineLatest([
       current$,
       this._store.select(ugcTracksFeatures),
       this._ugcTrackStatsSvc.params$,
       this._store.select(online),
+      progress$,
     ]).pipe(
-      map(([diary, ugcTracks, params, isOnline]) => {
+      map(([diary, ugcTracks, params, isOnline, progress]) => {
         this._offline = isOnline === false;
-        return diary == null ? null : this._toVm(diary, ugcTracks ?? [], params);
+        return diary == null ? null : this._toVm(diary, ugcTracks ?? [], params, progress);
       }),
     );
   }
@@ -299,12 +338,14 @@ export class WmDiaryDetailComponent implements OnInit, OnDestroy {
    * @param diary Esperienza.
    * @param ugcTracks Registrazioni dell'utente nello store, per nome, data e dati tecnici.
    * @param params Parametri della pulizia GPS, per i dati tecnici calcolati in locale.
+   * @param progress Progresso del cammino, per la scheda dati.
    * @returns I dati del dettaglio.
    */
   private _toVm(
     diary: Diary,
     ugcTracks: WmFeature<LineString>[],
     params: UgcTrackStatsParams,
+    progress: PassportProgress | null = null,
   ): DiaryDetailVm {
     const lang = this._langSvc.currentLang;
     const ugcRows = (diary.ugcTrackIds ?? []).map(id =>
@@ -315,7 +356,37 @@ export class WmDiaryDetailComponent implements OnInit, OnDestroy {
         lang,
       ),
     );
-    return {diary, date: passportLongDate(diary.createdAt, lang), ugcRows};
+    return {
+      diary,
+      date: passportLongDate(diary.createdAt, lang),
+      ugcRows,
+      ratingRows: diaryRatingRows(diary),
+      routeData: this._toRouteData(diary, progress, lang),
+    };
+  }
+
+  /**
+   * Scheda «Il tuo percorso» pronta per il template: km formattati e intervallo di date.
+   *
+   * @param diary Diario.
+   * @param progress Progresso del cammino.
+   * @param lang Lingua corrente.
+   * @returns La scheda, `null` se non va mostrata.
+   */
+  private _toRouteData(
+    diary: Diary,
+    progress: PassportProgress | null,
+    lang: string,
+  ): DiaryDetailVm['routeData'] {
+    const data = diaryRouteData(progress, diary);
+    if (!data) return null;
+    const from = data.from ? passportLongDate(`${data.from}T12:00:00`, lang) : null;
+    const to = data.to ? passportLongDate(`${data.to}T12:00:00`, lang) : null;
+    let dates: string | null = null;
+    if (from && to) {
+      dates = from === to ? from : this._langSvc.instant('dal {{from}} al {{to}}', {from, to});
+    }
+    return {km: data.km != null ? passportKm(data.km, lang) : null, dates, days: data.days};
   }
 
   /**

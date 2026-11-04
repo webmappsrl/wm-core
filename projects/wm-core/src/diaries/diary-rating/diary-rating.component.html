@@ -1,0 +1,46 @@
+<ng-template #stampSvg let-on="on">
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <circle class="wm-diary-rating-disc" cx="12" cy="12" r="10.2"></circle>
+    <circle
+      *ngIf="size === 'form'"
+      class="wm-diary-rating-dash"
+      cx="12"
+      cy="12"
+      r="8.2"
+    ></circle>
+    <svg x="6.5" y="6.5" width="11" height="11" viewBox="0 0 1024 1024">
+      <path class="wm-diary-rating-boot" [attr.d]="bootPath"></path>
+    </svg>
+  </svg>
+</ng-template>
+
+<div
+  class="wm-diary-rating"
+  [class.wm-diary-rating--small]="size === 'small'"
+  [attr.role]="readonly ? 'img' : 'group'"
+  [attr.aria-label]="readonly ? ('{{label}}: {{n}} su 5' | wmtrans: {label: label, n: value ?? 0}) : label"
+>
+  <ng-container *ngIf="!readonly; else readonlyStamps">
+    <button
+      *ngFor="let n of scale"
+      #stamp
+      type="button"
+      class="wm-diary-rating-stamp"
+      [class.wm-diary-rating-stamp--on]="isOn(n)"
+      [attr.aria-label]="'{{label}}: {{n}} su 5' | wmtrans: {label: label, n: n}"
+      [attr.aria-pressed]="value === n"
+      (click)="select(n)"
+    >
+      <ng-container *ngTemplateOutlet="stampSvg"></ng-container>
+    </button>
+  </ng-container>
+  <ng-template #readonlyStamps>
+    <span
+      *ngFor="let n of scale"
+      class="wm-diary-rating-stamp"
+      [class.wm-diary-rating-stamp--on]="isOn(n)"
+    >
+      <ng-container *ngTemplateOutlet="stampSvg"></ng-container>
+    </span>
+  </ng-template>
+</div>

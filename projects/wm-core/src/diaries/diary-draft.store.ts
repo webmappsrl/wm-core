@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {deviceDiaryDrafts} from '@wm-core/utils/localForage';
+import {DiaryRatings} from './diary.model';
 
 /** Chiave di una bozza: una per contesto e per utente (oc:8169, ciclo 2). */
 export type DiaryDraftKey = string;
@@ -18,6 +19,8 @@ export interface StoredDiaryDraft {
   photos: Blob[];
   keepMediaIds?: number[];
   publicationConsent: boolean;
+  /** Valutazioni scelte (oc:8169, ciclo 2); assenti nelle bozze salvate prima. */
+  ratings?: DiaryRatings;
   /** Messaggio di un invio dalla coda rifiutato dal server: il form lo mostra alla riapertura. */
   errorMessage?: string;
   /** Ultima modifica (ms): la bozza scade dopo `DIARY_RETENTION_DAYS`. */

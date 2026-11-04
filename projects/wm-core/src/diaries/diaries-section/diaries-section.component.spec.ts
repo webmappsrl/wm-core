@@ -136,6 +136,7 @@ describe('WmDiariesSectionComponent (oc:8169)', () => {
   const queuedItem = (status: 'pending' | 'failed'): DiaryOutboxItem => ({
     uuid: 'q-1', userId: 5, layerId: 3, description: 'scritto in rifugio', photos: [],
     publicationConsent: false, status, attempts: 0, nextAttemptAt: 0, updatedAt: 1,
+    ratings: {route: 4, hospitality: 5, difficulty: null},
     ...(status === 'failed' ? {errorMessage: 'Il diario non è stato inviato: aprilo per correggerlo.'} : {}),
   });
 
@@ -197,6 +198,7 @@ describe('WmDiariesSectionComponent (oc:8169)', () => {
     const saved = drafts.save.calls.mostRecent().args[0];
     expect(saved.uuid).toBe('q-1');
     expect(saved.errorMessage).toBeTruthy();
+    expect(saved.ratings).toEqual({route: 4, hospitality: 5, difficulty: null});
     expect(outbox.discard).toHaveBeenCalledWith('q-1');
     expect(launcher.openForm).toHaveBeenCalled();
   });

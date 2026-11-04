@@ -93,3 +93,21 @@
     line-height: 1.4;
   }
 }
+
+.wm-diary-form-ratings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0 8px;
+}
+
+.wm-diary-form-rating-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wm-diary-form-rating-label {
+  font-size: 15px;
+}

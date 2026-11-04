@@ -689,6 +689,11 @@ export const deviceActiveRoutes = localforage.createInstance({
   name: 'device',
   storeName: 'activeRoutes',
 });
+/** Cammini completati già notificati dall'avviso del Passaporto, una chiave per utente (oc:8169, ciclo 2). */
+export const deviceCompletedRoutesSeen = localforage.createInstance({
+  name: 'device',
+  storeName: 'completedRoutesSeen',
+});
 /** Diari nuovi scritti senza rete, in attesa di invio (oc:8169, ciclo 2). */
 export const deviceDiaryOutbox = localforage.createInstance({
   name: 'device',

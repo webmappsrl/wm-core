@@ -32,6 +32,37 @@ sezione.
 - **Dettaglio.** «Modifica» ed «Elimina» in un `ion-footer`; la ✕ sopra la galleria ha `z-index`,
   altrimenti lo `swiper-container` la copre. Carosello del cammino con schede basse (215×76).
 
+### Aggiunte del 4 novembre 2026 (solo camminiditalia)
+
+- **Valutazioni** (`wm-diary-rating`, `Diary.ratings` con `route`, `hospitality`, `difficulty`, da
+  1 a 5 o `null`): tre righe nel form dopo le foto, sola lettura e in piccolo nel dettaglio. Un
+  tocco sul valore già scelto lo azzera. L'icona è il timbro con lo scarpone `txn-boot` di
+  wm-package, copiato nel componente. **L'animazione parte solo alla selezione** e solo sui timbri
+  che cambiano (impressi uno dopo l'altro, o una dissolvenza quando si abbassa); con
+  `prefers-reduced-motion` niente animazione. Passano per bozza, coda offline e riapertura di un
+  «Non inviato»; il form manda sempre i tre campi (`''` = nessun valore).
+- **Scheda «Il tuo percorso»** nel dettaglio (`diaryRouteData`): solo a tappa o cammino completati,
+  dal progresso del Passaporto. Km dell'utente (`userDistance`, `userDistanceTotal`, dal backend)
+  e, dove mancano, quelli del percorso; date e giorni da `walkedDates`. Per il cammino contano
+  **solo le tappe completate**: in un cammino con varianti quelle non percorse restano
+  `not_started` e non hanno date. Se una tappa completata non ha date, la scheda mostra solo i km.
+  I tre campi sono un'estensione di `@wm-types/passport` in `passport/passport-walked.ts`: debito,
+  vanno spostati in wm-types.
+- **Avviso di cammino completato** (`RouteCompletedNoticeService`, avviato solo da
+  `tabs.page.camminiditalia.ts`): ascolta `passportRoutes$()`, quindi vede il completamento al
+  login, al ritorno in primo piano o all'apertura del Passaporto, non in tempo reale. Un `ion-toast`
+  in alto alla volta, persistente, bottoni sotto il testo (`layout: 'stacked'`). I cammini visti
+  sono per utente in `device/completedRoutesSeen` (`u<id>`); alla prima esecuzione per un utente
+  quelli già completati si segnano senza avviso. Un cammino è «visto» quando l'avviso compare. Lo
+  stile sta nel foglio camminiditalia dell'app: il toast è un overlay globale.
+- **Trappola: un getter che restituisce un array nuovo, usato da `*ngFor` senza `trackBy`, ricrea i
+  figli a ogni change detection.** Nel form delle valutazioni ogni tocco distruggeva e ricreava
+  `wm-diary-rating`, e l'animazione partiva su elementi già tolti: nei test unitari non si vede.
+- **Trappola dell'avviso: fra la chiusura di un toast e la comparsa del successivo ci sono degli
+  `await`.** Il servizio segna il cammino in preparazione (`_current`) prima del primo `await`,
+  altrimenti un'emissione di `passportRoutes$()` in quel momento apre un secondo avviso, anche dello
+  stesso cammino.
+
 ## Come funziona oggi
 
 Un utente loggato racconta una sua esperienza (descrizione e foto) su un cammino, su una tappa o

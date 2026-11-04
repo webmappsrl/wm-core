@@ -16,7 +16,15 @@ import {Media} from '@wm-types/feature';
 import {LangService} from '@wm-core/localization/lang.service';
 import {CaptureOptions} from '@wm-core/services/camera.service';
 import {PassportLeaveGuard} from '@wm-core/passport/passport-leave-guard';
-import {Diary, DiaryDraft} from '../diary.model';
+import {
+  Diary,
+  DiaryDraft,
+  DiaryRatingKey,
+  DiaryRatings,
+  EMPTY_DIARY_RATINGS,
+  normalizeDiaryRatings,
+  sameDiaryRatings,
+} from '../diary.model';
 import {DiaryService} from '../diary.service';
 import {DiaryDraftKey, DiaryDraftStore, diaryDraftKey} from '../diary-draft.store';
 import {DiaryOutboxService} from '../diary-outbox.service';
@@ -66,6 +74,7 @@ export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGua
     this.description = diary?.description ?? '';
     this.keepMediaIds = (diary?.photos ?? []).map(p => p.id);
     this.publicationConsent = diary?.publicationConsent === true;
+    this.ratings = normalizeDiaryRatings(diary?.ratings);
     this.syncedPhotos = (diary?.photos ?? []).map(
       p => ({id: p.id, webPath: p.thumbnail || p.url, format: 'jpeg'}) as Media,
     );
@@ -80,6 +89,36 @@ export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGua
   description = '';
   /** Spunta facoltativa del consenso alla ripubblicazione, non selezionata di default. */
   publicationConsent = false;
+  /** Valutazioni facoltative da 1 a 5 (oc:8169, ciclo 2). */
+  ratings: Required<DiaryRatings> = {...EMPTY_DIARY_RATINGS};
+  /**
+   * Righe delle valutazioni: sulla tappa la prima è «Tappa». Lo stesso array finché l'etichetta
+   * non cambia: un array nuovo a ogni ciclo farebbe ricreare `wm-diary-rating` da `*ngFor` a ogni
+   * tocco, e l'animazione partirebbe su timbri già tolti dalla pagina.
+   */
+  get ratingRows(): {key: DiaryRatingKey; label: string}[] {
+    const first = this.ecTrackId != null || this._diary?.ecTrack ? 'Tappa' : 'Cammino';
+    if (this._ratingRows?.[0].label !== first) {
+      this._ratingRows = [
+        {key: 'route', label: first},
+        {key: 'hospitality', label: 'Ospitalità'},
+        {key: 'difficulty', label: 'Difficoltà percepita'},
+      ];
+    }
+    return this._ratingRows;
+  }
+
+  /**
+   * Identità delle righe delle valutazioni per `*ngFor`.
+   * @param _ indice
+   * @param row riga
+   * @returns la chiave della valutazione
+   */
+  trackRating(_: number, row: {key: DiaryRatingKey}): DiaryRatingKey {
+    return row.key;
+  }
+
+  private _ratingRows: {key: DiaryRatingKey; label: string}[] | null = null;
   newPhotos: Photo[] = [];
   /** Foto già pubblicate mostrate dal picker (solo in modifica). */
   syncedPhotos: Media[] = [];
@@ -150,7 +189,8 @@ export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGua
       this.description !== (this._diary.description ?? '') ||
       this.newPhotos.length > 0 ||
       this.keepMediaIds.length !== original.length ||
-      this.publicationConsent !== (this._diary.publicationConsent === true)
+      this.publicationConsent !== (this._diary.publicationConsent === true) ||
+      !sameDiaryRatings(this.ratings, normalizeDiaryRatings(this._diary.ratings))
     );
   }
 
@@ -215,6 +255,17 @@ export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGua
     void this.flushDraft();
   }
 
+  /**
+   * Aggiorna una valutazione.
+   * @param key valutazione
+   * @param value nuovo valore, `null` se azzerata
+   */
+  onRating(key: DiaryRatingKey, value: number | null): void {
+    this.ratings = {...this.ratings, [key]: value};
+    void this.flushDraft();
+    this._cdr.markForCheck();
+  }
+
   /** Pubblica (creazione) o salva (modifica); in caso di errore il form resta aperto. */
   async submit(): Promise<void> {
     if (!this.canSubmit) return;
@@ -232,6 +283,7 @@ export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGua
         description: this.description.trim(),
         newPhotos: photos,
         publicationConsent: this.publicationConsent,
+        ratings: {...this.ratings},
         ...(this._diary ? {keepMediaIds: this.keepMediaIds} : {}),
       };
       draftForQueue = draft;
@@ -328,6 +380,7 @@ export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGua
         photos,
         keepMediaIds: this._diary ? this.keepMediaIds : undefined,
         publicationConsent: this.publicationConsent,
+        ratings: {...this.ratings},
         updatedAt: Date.now(),
       })
       .catch(() => undefined);
@@ -375,6 +428,7 @@ export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGua
     if (!draft) return;
     this.description = draft.description ?? '';
     this.publicationConsent = draft.publicationConsent === true;
+    if (draft.ratings) this.ratings = normalizeDiaryRatings(draft.ratings);
     if (draft.errorMessage) this.errorMessage = this._langSvc.instant(draft.errorMessage);
     if (!this._diary && draft.uuid) this._uuid = draft.uuid;
     if (this._diary && draft.keepMediaIds) this.keepMediaIds = draft.keepMediaIds;

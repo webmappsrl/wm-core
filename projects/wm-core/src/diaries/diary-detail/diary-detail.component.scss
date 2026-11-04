@@ -240,3 +240,49 @@
     color: #a50e0e;
   }
 }
+
+.wm-diary-detail-ratings {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 12px 0;
+}
+
+.wm-diary-detail-rating-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.wm-diary-detail-route {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 12px 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #eaf7ee;
+}
+
+.wm-diary-detail-route-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.wm-diary-detail-route-values {
+  display: flex;
+  gap: 16px;
+  font-size: 15px;
+
+  strong {
+    font-size: 20px;
+  }
+}
+
+.wm-diary-detail-route-dates {
+  font-size: 13px;
+  color: #4a5056;
+}

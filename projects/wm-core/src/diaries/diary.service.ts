@@ -26,6 +26,7 @@ import {
   DiaryDraft,
   DiaryFilter,
   DiariesStatus,
+  normalizeDiaryRatings,
 } from './diary.model';
 
 /** Elemento della risposta del backend (snake_case). */
@@ -40,6 +41,9 @@ interface DiaryResponse {
   photos?: {id: number; url: string; thumbnail: string}[] | null;
   ugc_track_ids?: number[] | null;
   publication_consent?: boolean | null;
+  rating_route?: number | null;
+  rating_hospitality?: number | null;
+  rating_difficulty?: number | null;
 }
 
 /** Stato interno: stato della funzione e lista (vuota se non attiva). */
@@ -400,6 +404,11 @@ export class DiaryService implements OnDestroy {
     }
     form.append('description', draft.description ?? '');
     form.append('publication_consent', draft.publicationConsent ? '1' : '0');
+    // sempre tutte e tre: la stringa vuota azzera una valutazione tolta in modifica
+    const ratings = normalizeDiaryRatings(draft.ratings);
+    form.append('rating_route', ratings.route != null ? String(ratings.route) : '');
+    form.append('rating_hospitality', ratings.hospitality != null ? String(ratings.hospitality) : '');
+    form.append('rating_difficulty', ratings.difficulty != null ? String(ratings.difficulty) : '');
     (draft.newPhotos ?? []).forEach((photo, i) =>
       form.append('images[]', photo, `photo-${i}.${this._extension(photo)}`),
     );
@@ -422,6 +431,11 @@ export class DiaryService implements OnDestroy {
       photos: item.photos ?? [],
       ugcTrackIds: item.ugc_track_ids ?? [],
       publicationConsent: item.publication_consent === true,
+      ratings: normalizeDiaryRatings({
+        route: item.rating_route,
+        hospitality: item.rating_hospitality,
+        difficulty: item.rating_difficulty,
+      }),
     };
   }
 

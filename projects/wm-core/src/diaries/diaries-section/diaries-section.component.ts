@@ -234,6 +234,7 @@ export class WmDiariesSectionComponent implements OnChanges {
       description: item.description,
       photos: item.photos ?? [],
       publicationConsent: item.publicationConsent,
+      ratings: item.ratings,
       errorMessage: item.errorMessage,
       updatedAt: Date.now(),
     });
