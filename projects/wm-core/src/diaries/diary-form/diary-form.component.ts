@@ -30,6 +30,7 @@ import {DiaryDraftKey, DiaryDraftStore, diaryDraftKey} from '../diary-draft.stor
 import {DiaryOutboxService} from '../diary-outbox.service';
 import {diaryHttpErrorKey} from '../diary-offline.utils';
 import {resizeImageBlob} from '../diary-photo.utils';
+import {DIARY_MAX_VISIBLE, diaryVisibleLength} from '../diary-text.utils';
 
 /** Foto massime di un'esperienza (oc:8169). */
 export const DIARY_MAX_PHOTOS = 6;
@@ -72,6 +73,7 @@ export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGua
   @Input() set diary(diary: Diary | undefined) {
     this._diary = diary;
     this.description = diary?.description ?? '';
+    this.textLength = diaryVisibleLength(this.description);
     this.keepMediaIds = (diary?.photos ?? []).map(p => p.id);
     this.publicationConsent = diary?.publicationConsent === true;
     this.ratings = normalizeDiaryRatings(diary?.ratings);
@@ -178,7 +180,33 @@ export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGua
 
   /** Invio possibile: almeno un testo non vuoto o una foto, e nessun invio in corso. */
   get canSubmit(): boolean {
-    return (this.description.trim().length > 0 || this.photosCount > 0) && !this.submitting;
+    // testo visibile, non la stringa HTML: `<p>&nbsp;</p>` o una sola linea non sono un racconto
+    return (this.textLength > 0 || this.photosCount > 0) && !this.submitting && !this.overLimit;
+  }
+
+  /** Caratteri di testo visibile del racconto, dal contatore dell'editor (oc:8169, ciclo 3). */
+  textLength = 0;
+  /** Limite del testo visibile. */
+  readonly maxTextLength = DIARY_MAX_VISIBLE;
+
+  /** @returns `true` oltre il limite del testo visibile */
+  get overLimit(): boolean {
+    return this.textLength > this.maxTextLength;
+  }
+
+  /** @returns `true` dal 90% del limite: solo allora il contatore si annuncia agli screen reader */
+  get counterLive(): boolean {
+    return this.textLength >= this.maxTextLength * 0.9;
+  }
+
+  /**
+   * Aggiorna il contatore.
+   *
+   * @param length Caratteri di testo visibile.
+   */
+  onLength(length: number): void {
+    this.textLength = length;
+    this._cdr.markForCheck();
   }
 
   /** Il form ha contenuto non pubblicato (in modifica: diverso dall'esperienza salvata). */
@@ -218,6 +246,7 @@ export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGua
    */
   onDescription(value: string | null | undefined): void {
     this.description = value ?? '';
+    this.textLength = diaryVisibleLength(this.description);
     this._scheduleDraftSave();
     this._cdr.markForCheck();
   }
@@ -427,6 +456,7 @@ export class WmDiaryFormComponent implements OnInit, OnDestroy, PassportLeaveGua
     const draft = await this._drafts.load(this._draftKey).catch(() => null);
     if (!draft) return;
     this.description = draft.description ?? '';
+    this.textLength = diaryVisibleLength(this.description);
     this.publicationConsent = draft.publicationConsent === true;
     if (draft.ratings) this.ratings = normalizeDiaryRatings(draft.ratings);
     if (draft.errorMessage) this.errorMessage = this._langSvc.instant(draft.errorMessage);

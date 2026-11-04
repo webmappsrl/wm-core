@@ -35,7 +35,7 @@
               ></ion-icon>
               {{ (item.status === 'failed' ? 'Non inviato' : 'In attesa di invio') | wmtrans }}
             </span>
-            <span class="wm-diaries-section-excerpt">{{ item.description }}</span>
+            <span class="wm-diaries-section-excerpt">{{ excerpt(item.description) }}</span>
           </button>
         </li>
       </ul>
@@ -90,7 +90,7 @@
                     class="wm-diaries-section-label"
                     [class.wm-diaries-section-label--stage]="!!diary.ecTrack"
                   >{{ label(diary) }}</span>
-                  <span class="wm-diaries-section-excerpt">{{ diary.description }}</span>
+                  <span class="wm-diaries-section-excerpt">{{ excerpt(diary.description) }}</span>
                 </span>
               </button>
             </swiper-slide>
@@ -114,7 +114,7 @@
               class="wm-diaries-section-label"
               [class.wm-diaries-section-label--stage]="ecTrackId == null && !!diary.ecTrack"
             >{{ meta(diary) }}</span>
-            <span class="wm-diaries-section-excerpt">{{ diary.description }}</span>
+            <span class="wm-diaries-section-excerpt">{{ excerpt(diary.description) }}</span>
           </span>
         </button>
         <button

@@ -1,0 +1,30 @@
+<div class="wm-diary-editor" [class.is-loading]="!ready && !fallback">
+  <textarea
+    *ngIf="fallback; else rich"
+    class="wm-diary-editor-fallback"
+    rows="8"
+    [attr.id]="inputId || null"
+    [value]="fallbackText"
+    [placeholder]="placeholder"
+    (input)="onFallbackInput($any($event.target).value)"
+  ></textarea>
+  <ng-template #rich>
+    <div class="wm-diary-editor-toolbar" role="toolbar" [attr.aria-label]="'Formattazione' | wmtrans">
+      <button
+        *ngFor="let action of actions; trackBy: trackAction"
+        type="button"
+        class="wm-diary-editor-button"
+        [class.is-active]="active[action.key]"
+        [attr.aria-pressed]="action.toggle ? !!active[action.key] : null"
+        [attr.aria-label]="action.label | wmtrans"
+        [disabled]="!ready"
+        (mousedown)="$event.preventDefault()"
+        (click)="run(action)"
+      >
+        <ion-icon *ngIf="action.icon; else text" [name]="action.icon" aria-hidden="true"></ion-icon>
+        <ng-template #text><span [class]="action.textClass" aria-hidden="true">{{ action.text }}</span></ng-template>
+      </button>
+    </div>
+  </ng-template>
+  <div #content class="wm-diary-editor-content" [hidden]="fallback"></div>
+</div>

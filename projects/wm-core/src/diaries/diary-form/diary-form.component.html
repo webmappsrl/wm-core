@@ -13,14 +13,19 @@
   <div class="wm-diary-form-context" *ngIf="contextLabel">{{ contextLabel }}</div>
 
   <label class="wm-diary-form-label" for="wm-diary-text">{{ 'Il tuo racconto' | wmtrans }}</label>
-  <textarea
-    id="wm-diary-text"
-    class="wm-diary-form-text"
-    rows="7"
+  <wm-diary-editor
+    inputId="wm-diary-text"
     [value]="description"
     [placeholder]="placeholder | wmtrans"
-    (input)="onDescription($any($event.target).value)"
-  ></textarea>
+    (valueChange)="onDescription($event)"
+    (lengthChange)="onLength($event)"
+  ></wm-diary-editor>
+  <div class="wm-diary-form-counter" [class.is-over]="overLimit" [attr.aria-live]="counterLive ? 'polite' : null">
+    {{ '{{n}} / {{max}}' | wmtrans: {n: textLength.toLocaleString('it-IT'), max: maxTextLength.toLocaleString('it-IT')} }}
+  </div>
+  <div class="wm-diary-form-limit" role="alert" *ngIf="overLimit">
+    {{ 'Il racconto può avere al massimo 20.000 caratteri' | wmtrans }}
+  </div>
 
   <div class="wm-diary-form-photos-head">
     <span class="wm-diary-form-label">{{ 'Foto' | wmtrans }}</span>

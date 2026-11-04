@@ -1,4 +1,10 @@
 // Form di creazione e modifica delle esperienze (oc:8169).
+// La barra dell'editor resta in alto mentre si scorre (ciclo 3): l'area che scorre ne tiene conto,
+// così la riga in cui si scrive non finisce sotto la barra.
+ion-content.wm-diary-form::part(scroll) {
+  scroll-padding-top: 60px;
+}
+
 .wm-diary-form {
   &-context {
     margin-bottom: 18px;
@@ -26,6 +32,24 @@
     font-size: 14px;
     line-height: 1.45;
     resize: none;
+  }
+
+  &-counter {
+    margin: -12px 0 18px;
+    font-size: 12px;
+    text-align: right;
+    color: #5f6368;
+
+    &.is-over {
+      color: var(--ion-color-danger);
+      font-weight: 600;
+    }
+  }
+
+  &-limit {
+    margin: -12px 0 18px;
+    font-size: 13px;
+    color: var(--ion-color-danger);
   }
 
   &-photos-head {

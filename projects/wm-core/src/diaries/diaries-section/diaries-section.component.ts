@@ -21,6 +21,7 @@ import {DiaryGuardHost, DiaryLauncherService} from '../diary-launcher.service';
 import {DiaryOutboxItem, DiaryOutboxService} from '../diary-outbox.service';
 import {DiaryDraftStore, diaryDraftKey} from '../diary-draft.store';
 import {presentDiaryOfflineToast} from '../diary-offline.utils';
+import {diaryTextExcerpt} from '../diary-text.utils';
 
 /** Riaprendo un diario non inviato dove c'è già un'altra bozza (oc:8169, ciclo 2). */
 export const DIARY_DRAFT_CONFLICT_MESSAGE =
@@ -141,6 +142,15 @@ export class WmDiariesSectionComponent implements OnChanges {
   /** Testo della scheda di creazione: della tappa nell'elenco, generico nel carosello. */
   get createLabel(): string {
     return this.layout === 'list' ? 'Racconta questa tappa' : 'Racconta il tuo cammino';
+  }
+
+  /**
+   * Estratto della scheda, senza formattazione.
+   * @param text racconto
+   * @returns il testo su una riga
+   */
+  excerpt(text: string | null | undefined): string {
+    return diaryTextExcerpt(text);
   }
 
   /**

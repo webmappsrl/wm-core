@@ -154,6 +154,33 @@ describe('WmDiaryDetailComponent (oc:8169)', () => {
     expect(fixture.nativeElement.querySelector('.wm-diary-detail-ugc')).toBeNull();
   });
 
+  it('mostra il racconto HTML così com\'è (oc:8169, ciclo 3)', () => {
+    const rich = {...diary, description: '<h2>Giorno 1</h2><p>Partiti <strong>presto</strong> &amp; bene</p>'};
+    list$.next([rich]);
+    render(rich);
+    const body = fixture.nativeElement.querySelector('.wm-diary-detail-text') as HTMLElement;
+    expect(body.querySelector('h2')?.textContent).toBe('Giorno 1');
+    expect(body.querySelector('strong')?.textContent).toBe('presto');
+    expect(body.textContent).toContain('& bene');
+  });
+
+  it('il tocco su un collegamento, anche sul grassetto dentro, apre il browser e non naviga', () => {
+    const linked = {...diary, description: '<p><a href="https://a.it"><strong>sito</strong></a> <a href="mailto:x@y.it">scrivi</a></p>'};
+    list$.next([linked]);
+    render(linked);
+    const open = spyOn(window, 'open');
+    const mail = spyOn<any>(cmp, '_openMailto');
+    const body = fixture.nativeElement.querySelector('.wm-diary-detail-text') as HTMLElement;
+
+    const click = new MouseEvent('click', {bubbles: true, cancelable: true});
+    body.querySelector('strong')!.dispatchEvent(click);
+    expect(open).toHaveBeenCalledWith('https://a.it', '_blank');
+    expect(click.defaultPrevented).toBeTrue();
+
+    body.querySelector('a[href^="mailto"]')!.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true}));
+    expect(mail).toHaveBeenCalledWith('mailto:x@y.it');
+  });
+
   it('con il consenso la riga lo dice: «Cammini d\'Italia può pubblicarlo»', () => {
     const consented = {...diary, publicationConsent: true};
     list$.next([consented]);

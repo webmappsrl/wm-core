@@ -208,6 +208,35 @@ describe('WmDiaryFormComponent (oc:8169)', () => {
     expect(cmp.canSubmit).toBeTrue();
   });
 
+  it('oltre 20.000 caratteri visibili il form non si invia e segnala il limite (oc:8169, ciclo 3)', () => {
+    const cmp = create();
+    cmp.onDescription('<p>x</p>');
+    cmp.onLength(20000);
+    expect(cmp.overLimit).toBeFalse();
+    expect(cmp.canSubmit).toBeTrue();
+    cmp.onLength(20001);
+    expect(cmp.overLimit).toBeTrue();
+    expect(cmp.canSubmit).toBeFalse();
+  });
+
+  it('pubblica disabilitato con racconto senza testo visibile: spazi non separabili o solo una linea', () => {
+    const cmp = create();
+    cmp.onDescription('<p>&nbsp;</p><p>\u00a0</p>');
+    expect(cmp.canSubmit).toBeFalse();
+    cmp.onDescription('<hr>');
+    expect(cmp.canSubmit).toBeFalse();
+    cmp.onDescription('<p>x</p>');
+    expect(cmp.canSubmit).toBeTrue();
+  });
+
+  it('il contatore si annuncia agli screen reader solo dal 90% del limite', () => {
+    const cmp = create();
+    cmp.onLength(17999);
+    expect(cmp.counterLive).toBeFalse();
+    cmp.onLength(18000);
+    expect(cmp.counterLive).toBeTrue();
+  });
+
   it('stesso uuid su due invii', async () => {
     const cmp = create();
     cmp.onDescription('ciao');

@@ -1,5 +1,31 @@
 # Diario del camminatore: cammino, foto e descrizione
 
+## Ciclo 3 — Editor del racconto (oc:8169, 4 novembre 2026)
+
+Il resto della pagina descrive i cicli precedenti; dove questo ciclo cambia il formato del racconto (prima testo semplice, ora HTML) vale questa sezione.
+
+- **`description` è sempre HTML**, scritto con `wm-diary-editor` (Tiptap 3.32.0) e ripulito dal
+  backend con un elenco chiuso di tag (`p`, `br`, `strong`, `em`, `s`, `h2`, `h3`, `ul`, `ol`, `li`,
+  `blockquote`, `hr`, `a[href]` http/https/mailto). Nessuna regola per riconoscere il formato: il
+  dettaglio mette `description` in `[innerHTML]` (mai `wm-inner-html`, che non ripulisce), le schede
+  usano `diaryTextExcerpt`. Lo stile del testo è uno solo, `_diary-rich-text.scss`, per editor e
+  dettaglio: così il racconto si vede come è stato scritto.
+- **Tiptap si carica solo all'apertura del form** (`import()` dinamico in `_loadTiptap`): il bundle
+  iniziale non lo contiene, ma app e webapp devono avere i pacchetti, perché `WmCoreModule` dichiara
+  l'editor. Se il caricamento fallisce (PWA senza rete al primo uso) resta una `textarea` e si invia
+  testo semplice, che il backend converte in paragrafi; in modifica la formattazione si perde.
+- **Barra di 12 bottoni** (niente sottolineato: è spento anche nello `StarterKit`, Ctrl+U compreso),
+  collegamenti normalizzati da `normalizeDiaryLink` (`www.…` → `https://…`), aperti nel dettaglio con
+  `window.open(href, '_blank')` intercettando il click con `closest('a')`.
+- **Limite:** 20.000 caratteri di testo visibile (`DIARY_MAX_VISIBLE`, contatore sotto l'editor,
+  «Pubblica» disabilitato oltre); il backend ha anche un tetto di 100.000 caratteri di HTML.
+  «Pubblica» guarda il testo visibile, non la stringa HTML: `<p>&nbsp;</p>` e una sola linea non
+  sono un racconto.
+- **Trappola: una barra `position: sticky` dentro `ion-content` si ferma sotto il padding**, perché
+  il padding sta dentro l'area che scorre: con `top: 0` il testo passa nei 16 px sopra la barra. Va
+  `top: calc(-1 * var(--padding-top))`, più `scroll-padding-top` su `ion-content::part(scroll)` perché
+  la riga in cui si scrive non finisca sotto la barra.
+
 ## Ciclo 2 — «Il mio diario» (oc:8169, 3 novembre 2026)
 
 La funzione si chiama **diario** per l'utente e `Diary` nel codice (cartella `diaries/`, blocco

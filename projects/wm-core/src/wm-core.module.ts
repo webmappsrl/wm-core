@@ -85,6 +85,7 @@ import {WmPassportModalComponent} from './passport/passport-modal/passport-modal
 import {WmPassportDetailComponent} from './passport/passport-detail/passport-detail.component';
 import {WmDiaryFormComponent} from './diaries/diary-form/diary-form.component';
 import {WmDiaryRatingComponent} from './diaries/diary-rating/diary-rating.component';
+import {WmDiaryEditorComponent} from './diaries/diary-editor/diary-editor.component';
 import {WmDiaryDetailComponent} from './diaries/diary-detail/diary-detail.component';
 import {WmDiariesSectionComponent} from './diaries/diaries-section/diaries-section.component';
 import {WmPassportFormComponent} from './passport/passport-form/passport-form.component';
@@ -176,6 +177,7 @@ export const declarations = [
   WmPassportFormComponent,
   WmDiaryFormComponent,
   WmDiaryRatingComponent,
+  WmDiaryEditorComponent,
   WmDiaryDetailComponent,
   WmDiariesSectionComponent,
   WmPassportStageDetailComponent,

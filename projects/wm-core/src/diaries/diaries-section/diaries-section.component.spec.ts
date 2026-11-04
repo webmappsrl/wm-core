@@ -158,6 +158,15 @@ describe('WmDiariesSectionComponent (oc:8169)', () => {
     expect(fixture.nativeElement.querySelector('.wm-diaries-section-create')).toBeNull();
   });
 
+  it('l\'estratto della scheda è testo semplice (oc:8169, ciclo 3)', () => {
+    store.overrideSelector(isLogged, true);
+    list$.next([{...layerExp, description: '<h2>Giorno 1</h2><p>A &amp; <strong>B</strong></p>'}]);
+    render({layerId: 7, layout: 'list', showCreate: false});
+    const excerpt = fixture.nativeElement.querySelector('.wm-diaries-section-excerpt') as HTMLElement;
+    expect(excerpt.textContent?.trim()).toBe('Giorno 1 A & B');
+    expect(excerpt.querySelector('strong')).toBeNull();
+  });
+
   it('nella registrazione non si mostrano i diari in coda', () => {
     queued$.next([queuedItem('pending')]);
     store.overrideSelector(isLogged, true);

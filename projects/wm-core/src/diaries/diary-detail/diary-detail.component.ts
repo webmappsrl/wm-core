@@ -71,6 +71,8 @@ interface DiaryDetailVm {
   ugcRows: DiaryLinkedUgcRow[];
   /** Solo le valutazioni date (oc:8169, ciclo 2). */
   ratingRows: {label: string; value: number}[];
+  /** Racconto in HTML, ripulito dal backend (oc:8169, ciclo 3). */
+  descriptionHtml: string;
   /** Scheda «Il tuo percorso», `null` se ciò che il diario racconta non è stato percorso. */
   routeData: {km: string | null; dates: string | null; days: number | null} | null;
 }
@@ -205,6 +207,30 @@ export class WmDiaryDetailComponent implements OnInit, OnDestroy {
       return;
     }
     this.host?.edit(diary);
+  }
+
+  /**
+   * Tocco nel racconto (oc:8169, ciclo 3): un collegamento si apre nel browser del telefono, non
+   * dentro l'app; `closest` trova il link anche toccando il grassetto che contiene.
+   *
+   * @param event Click sul testo.
+   */
+  onTextClick(event: Event): void {
+    const link = (event.target as Element | null)?.closest?.('a');
+    const href = link?.getAttribute('href');
+    if (!href) return;
+    event.preventDefault();
+    if (/^mailto:/i.test(href)) this._openMailto(href);
+    else window.open(href, '_blank');
+  }
+
+  /**
+   * Apre il programma di posta. Separato per i test: `location.href` non si può spiare.
+   *
+   * @param href Indirizzo `mailto:`.
+   */
+  protected _openMailto(href: string): void {
+    window.location.href = href;
   }
 
   /**
@@ -361,6 +387,7 @@ export class WmDiaryDetailComponent implements OnInit, OnDestroy {
       date: passportLongDate(diary.createdAt, lang),
       ugcRows,
       ratingRows: diaryRatingRows(diary),
+      descriptionHtml: diary.description ?? '',
       routeData: this._toRouteData(diary, progress, lang),
     };
   }

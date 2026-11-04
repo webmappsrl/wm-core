@@ -51,7 +51,7 @@
         · {{ "Cammini d'Italia può pubblicarlo" | wmtrans }}</ng-container
       ></span
     >
-    <p class="wm-diary-detail-text" *ngIf="vm.diary.description">{{ vm.diary.description }}</p>
+    <div class="wm-diary-detail-text wm-diary-rich" *ngIf="vm.descriptionHtml" [innerHTML]="vm.descriptionHtml" (click)="onTextClick($event)"></div>
 
     <section class="wm-diary-detail-route" *ngIf="vm.routeData as route">
       <h2 class="wm-diary-detail-route-title">{{ 'Il tuo percorso' | wmtrans }}</h2>
