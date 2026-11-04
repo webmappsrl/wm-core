@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, ViewEncapsulation, inject} from '@angular/core';
 import {Observable, combineLatest} from 'rxjs';
 import {switchMap, tap} from 'rxjs/operators';
-import {ecTracks} from '@wm-core/store/features/ec/ec.selector';
+import {ecTracks, ecTracksLoading} from '@wm-core/store/features/ec/ec.selector';
 import {ActiveRouteService} from '@wm-core/diaries/active-route.service';
 import {WmHomeLayerBaseComponent} from './home-layer-base.component';
 
@@ -24,9 +24,11 @@ export class WmHomeLayerComponent extends WmHomeLayerBaseComponent {
     this._store.select(ecTracks),
     // una posizione nuova, anche a dettaglio già aperto, rifà il confronto
     this._activeRoute.lastPositionAt$,
+    // durante il caricamento le tappe sono quelle della ricerca precedente: non si valuta
+    this._store.select(ecTracksLoading),
   ]).pipe(
-    tap(([layer, hits]) => {
-      if (layer?.id == null) return;
+    tap(([layer, hits, , loading]) => {
+      if (layer?.id == null || loading) return;
       const trackIds = (hits ?? []).filter(h => (h.layers ?? []).includes(+layer.id)).map(h => h.id);
       void this._activeRoute.evaluateLayer(layer.id, trackIds, layer.bbox);
     }),

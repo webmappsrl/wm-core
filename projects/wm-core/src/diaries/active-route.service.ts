@@ -190,6 +190,9 @@ export class ActiveRouteService implements OnDestroy {
   async evaluateLayer(layerId: number | string, trackIds: (number | string)[], bbox?: number[]): Promise<void> {
     const key = String(layerId);
     if (this._isToday(this._lastSeen$.value.get(key))) return;
+    // tappe non ancora arrivate da Elastic: non si decide niente, né «attivo» col ripiego sul
+    // rettangolo né «già controllato», così il confronto vero parte quando arrivano
+    if (trackIds.length === 0) return;
     const latest = this._latestPositionTime();
     if (latest == null || this._checkedUntil.get(key) === latest) return;
     const candidates = bbox?.length

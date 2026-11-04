@@ -165,4 +165,14 @@ describe('diaryRouteData (oc:8169, ciclo 2)', () => {
 
     expect(diaryRouteData(p, diary(null))).toEqual(jasmine.objectContaining({from: '2026-05-10', to: '2026-05-11', days: 2}));
   });
+
+  it('cammino iniziato senza date proprie: date dell\'ultima percorrenza, senza km (review)', () => {
+    const p = progress([
+      stage(70, {walkedDates: ['2026-05-10']}),
+      stage(71, {walkedDates: ['2026-05-11']}),
+      stage(72, {status: 'not_started', walkedDates: []}),
+    ]);
+
+    expect(diaryRouteData(p, diary(null))).toEqual({km: null, from: '2026-05-10', to: '2026-05-11', days: 2});
+  });
 });

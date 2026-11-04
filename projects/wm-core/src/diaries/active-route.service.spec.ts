@@ -91,6 +91,20 @@ describe('ActiveRouteService (oc:8169)', () => {
     expect(writable(svc, [1])).toBeTrue();
   });
 
+  it('tappe non ancora arrivate (elenco vuoto): niente ripiego sul rettangolo, e il confronto vero resta possibile', async () => {
+    await svc.start();
+    // posizione dentro il rettangolo del cammino ma a 1.500 m dalla tappa
+    await svc.recordPosition(loc(at1500m));
+    await svc.evaluateLayer(1, [], [11.0, 42.99, 11.1, 43.02]);
+    expect(writable(svc, [1])).toBeFalse();
+    expect(ecSvc.getEcTrack).not.toHaveBeenCalled();
+
+    // arrivano le tappe: il confronto parte davvero, nonostante la valutazione a vuoto di prima
+    await svc.evaluateLayer(1, [101], [11.0, 42.99, 11.1, 43.02]);
+    expect(ecSvc.getEcTrack).toHaveBeenCalledWith(101);
+    expect(writable(svc, [1])).toBeFalse();
+  });
+
   it('cammino controllato e non vicino: non riscarica le tappe senza posizioni nuove', async () => {
     await svc.start();
     await svc.recordPosition(loc(at1500m));

@@ -42,11 +42,12 @@ export function diaryRouteData(progress: PassportProgress | null | undefined, di
   if (!progress) return null;
   if (diary.ecTrack) {
     const stage = progress.stages.find(s => s.trackId === diary.ecTrack!.id);
-    if (!stage || stage.status !== 'completed') return null;
+    if (!stage) return null;
+    if (stage.status !== 'completed') return knownWalkOnly(progress, stage.trackId);
     const km = stage.userDistance ?? (stage.distance > 0 ? stage.distance : null);
     return {km, ...datesOf([stage])};
   }
-  if (!progress.completed) return null;
+  if (!progress.completed) return knownWalkOnly(progress, null);
   // solo le tappe percorse: in un cammino con varianti quelle saltate restano «not_started»
   const walked = progress.stages.filter(s => s.status === 'completed');
   const km = progress.userDistanceTotal ?? totalDistanceKm(walked);
@@ -124,4 +125,22 @@ function dayDiff(from: string, to: string): number {
  */
 function daysInclusive(from: string, to: string): number {
   return dayDiff(from, to) + 1;
+}
+
+/**
+ * Percorso non completato e diario senza date proprie (review del 4 novembre): le date dell'ultima
+ * percorrenza nota, senza km, come le propone il form.
+ *
+ * @param progress Progresso del cammino.
+ * @param ecTrackId Tappa, `null` per il cammino.
+ * @returns Le date, `null` se non ce ne sono.
+ */
+function knownWalkOnly(progress: PassportProgress, ecTrackId: number | null): DiaryRouteData | null {
+  const walk = diaryKnownWalk(progress, ecTrackId);
+  if (!walk) return null;
+  const stages = ecTrackId != null ? progress.stages.filter(s => s.trackId === ecTrackId) : progress.stages;
+  const days = new Set(
+    stages.reduce<string[]>((all, s) => all.concat(s.walkedDates ?? []), []).filter(d => d >= walk.start && d <= walk.end),
+  );
+  return {km: null, from: walk.start, to: walk.end, days: days.size};
 }
