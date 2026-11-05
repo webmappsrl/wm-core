@@ -1,7 +1,7 @@
 import {Inject, Injectable, Optional} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {EMPTY, from, of} from 'rxjs';
-import {catchError, map, switchMap, distinctUntilChanged, tap} from 'rxjs/operators';
+import {catchError, defaultIfEmpty, map, switchMap, distinctUntilChanged, tap} from 'rxjs/operators';
 import {Response} from '@wm-types/elastic';
 import {POSTHOG_CLIENT} from '@wm-core/store/conf/conf.token';
 import {WmPosthogClient} from '@wm-types/posthog';
@@ -59,6 +59,10 @@ export class EcEffects {
       switchMap(() =>
         this._ecSvc.getPois().pipe(
           map(featureCollection => loadEcPoisSuccess({featureCollection})),
+          // Difesa: con una risposta 200 senza body e nessuna copia in cache getPois completa senza
+          // emettere. Il caricamento è comunque finito, altrimenti ecPoisLoaded resterebbe false
+          // per sempre (oc:8933). Una 304 invece arriva come errore di HttpClient, al catchError.
+          defaultIfEmpty(loadEcPoisFailure()),
           catchError(() => of(loadEcPoisFailure())),
         ),
       ),
