@@ -400,10 +400,33 @@ describe('WmPassportDetailComponent (oc:8166)', () => {
       expect(vm.totalKm).toBeNull();
     });
 
+    it('km del cammino completato: solo le tappe percorse', async () => {
+      const stage = (trackId: number, status: string, distance: number) => ({trackId, name: {it: `Tappa ${trackId}`}, status, distance, source: 'gps'});
+      const stages = [stage(1, 'completed', 10), stage(2, 'completed', 14), stage(3, 'not_started', 7), stage(4, 'completed', 5)];
+
+      const sums = await firstValueFrom(create(completed(stages), {status: 'approved'}).cmp.vm$);
+      const recorded = await firstValueFrom(create({...completed(stages), userDistanceTotal: 31}, {status: 'approved'}).cmp.vm$);
+
+      expect(sums.totalKm).toBe(29);
+      expect(recorded.totalKm).toBe(31);
+    });
+
     it('uscite con tutte le tappe gps', async () => {
       const vm = await firstValueFrom(
         create(
           completed([doneStage(1, '2026-04-10T08:00:00', 10, 'gps'), doneStage(2, '2026-04-10T18:00:00', 10, 'gps'), doneStage(3, '2026-04-11T08:00:00', 10, 'gps')]),
+          {status: 'none'},
+        ).cmp.vm$,
+      );
+
+      expect(vm.outings).toBe(2);
+    });
+
+    it('uscite: le varianti non percorse non le fanno sparire (oc:8918)', async () => {
+      const variant = {...doneStage(4, undefined, 7, 'gps'), status: 'not_started'};
+      const vm = await firstValueFrom(
+        create(
+          completed([doneStage(1, '2026-04-10T08:00:00', 10, 'gps'), doneStage(2, '2026-04-11T08:00:00', 10, 'gps'), variant]),
           {status: 'none'},
         ).cmp.vm$,
       );
