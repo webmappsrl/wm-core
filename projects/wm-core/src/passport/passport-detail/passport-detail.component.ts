@@ -14,6 +14,7 @@ import {IonNav} from '@ionic/angular';
 import {PassportService} from '../passport.service';
 import {PassportLeaveGuard} from '../passport-leave-guard';
 import {
+  completedStages,
   gpsOutings,
   latestCompletedAt,
   passportKm,
@@ -22,7 +23,7 @@ import {
   passportShortDate,
   sortStages,
   stageName,
-  totalDistanceKm,
+  walkedDistanceKm,
 } from '../passport.utils';
 
 /** Dati del dettaglio del cammino. */
@@ -158,8 +159,8 @@ export class WmPassportDetailComponent implements OnInit, OnDestroy {
           showEmailHint: outcome === 'rejected' && !certification.decisionNote,
           completed,
           completedAt: completed ? latestCompletedAt(stages) : null,
-          totalKm: completed ? totalDistanceKm(stages) : null,
-          outings: completed ? gpsOutings(stages) : null,
+          totalKm: completed && progress ? walkedDistanceKm(progress) : null,
+          outings: completed ? gpsOutings(completedStages(stages)) : null,
           showDiary: completed || (progress?.completedStages ?? 0) > 0,
         };
       }),

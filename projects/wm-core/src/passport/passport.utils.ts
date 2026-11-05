@@ -1,5 +1,7 @@
+import './passport-walked';
 import {Language} from '@wm-types/language';
 import {
+  PassportProgress,
   PassportRoute,
   PassportStage,
   PassportStageChip,
@@ -351,6 +353,27 @@ export function latestCompletedAt(stages: PassportStage[]): string | null {
 export function totalDistanceKm(stages: PassportStage[]): number | null {
   if (!stages?.length || stages.some(stage => !(stage.distance > 0))) return null;
   return Math.round(stages.reduce((sum, stage) => sum + stage.distance, 0) * 10) / 10;
+}
+
+/**
+ * Km percorsi dall'utente sul cammino (oc:8918): prima quelli delle sue registrazioni, altrimenti la
+ * somma delle sole tappe completate. Le varianti non percorse di un cammino completato non contano.
+ *
+ * @param progress Progresso del cammino.
+ * @returns I km, `null` se non si sanno.
+ */
+export function walkedDistanceKm(progress: PassportProgress): number | null {
+  return progress.userDistanceTotal ?? totalDistanceKm(completedStages(progress.stages));
+}
+
+/**
+ * Tappe percorse (oc:8918): in un cammino con varianti quelle saltate restano `not_started`.
+ *
+ * @param stages Tappe del cammino.
+ * @returns Le sole tappe completate.
+ */
+export function completedStages(stages: PassportStage[] | null | undefined): PassportStage[] {
+  return (stages ?? []).filter(stage => stage.status === 'completed');
 }
 
 /**

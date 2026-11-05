@@ -1,13 +1,21 @@
 <ng-container *ngIf="(useTotal ? layerFeaturesTotalCount$ : layerFeaturesCount$) | async as layerFeaturesCount">
   <div>
-    <ng-container *ngIf="layerFeaturesCount[layerId]?.tracks as countEcTracks">
-      <div
-        *ngIf="countEcTracks > 0"
-      >
-        <span>{{countEcTracks}}</span>
-        <span>{{(countEcTracks > 1 ? 'Sentieri' : 'Sentiero')|wmtrans}}</span>
+    <ng-container *ngIf="{value: stageCount$ | async} as stage">
+      <div *ngIf="(stage.value ?? 0) > 0; else tracksCount">
+        <span>{{stage.value}}</span>
+        <span>{{(stage.value > 1 ? 'Sentieri' : 'Sentiero')|wmtrans}}</span>
       </div>
     </ng-container>
+    <ng-template #tracksCount>
+      <ng-container *ngIf="layerFeaturesCount[layerId]?.tracks as countEcTracks">
+        <div
+          *ngIf="countEcTracks > 0"
+        >
+          <span>{{countEcTracks}}</span>
+          <span>{{(countEcTracks > 1 ? 'Sentieri' : 'Sentiero')|wmtrans}}</span>
+        </div>
+      </ng-container>
+    </ng-template>
     <ng-container *ngIf="layerFeaturesCount[layerId]?.pois as countEcPoi">
       <div
         *ngIf="countEcPoi > 0"

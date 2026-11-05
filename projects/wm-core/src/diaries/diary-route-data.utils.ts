@@ -1,6 +1,6 @@
 import '../passport/passport-walked';
 import {PassportProgress, PassportStage} from '@wm-types/passport';
-import {totalDistanceKm} from '../passport/passport.utils';
+import {walkedDistanceKm} from '../passport/passport.utils';
 import {Diary} from './diary.model';
 import {DateRange} from '../shared/date-range-picker/date-range.utils';
 
@@ -50,7 +50,7 @@ export function diaryRouteData(progress: PassportProgress | null | undefined, di
   if (!progress.completed) return knownWalkOnly(progress, null);
   // solo le tappe percorse: in un cammino con varianti quelle saltate restano «not_started»
   const walked = progress.stages.filter(s => s.status === 'completed');
-  const km = progress.userDistanceTotal ?? totalDistanceKm(walked);
+  const km = walkedDistanceKm(progress);
   // ciclo 4: le date del cammino sono quelle dell'ultima percorrenza delle tappe, come nel collegamento
   const latest = walked.some(s => !s.walkedDates?.length) ? null : diaryKnownWalk({...progress, stages: walked}, null);
   if (!latest) return {km, ...datesOf(walked)};

@@ -1,8 +1,6 @@
-import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
-import {layerFeaturesCount, layerFeaturesTotalCount} from '@wm-core/store/features/ec/ec.selector';
+import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
-import {LayerFeaturesCount} from '@wm-types/feature';
-import {Observable} from 'rxjs';
+import {LayerFeaturesCounterBadgeBaseComponent} from './layer-features-counter-badge-base.component';
 
 @Component({
   standalone: false,
@@ -12,12 +10,8 @@ import {Observable} from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class WmLayerFeaturesCounterBadgeComponent {
-  @Input() layerId: string;
-  @Input() useTotal = false;
-
-  layerFeaturesCount$: Observable<LayerFeaturesCount> = this._store.select(layerFeaturesCount);
-  layerFeaturesTotalCount$: Observable<LayerFeaturesCount> = this._store.select(layerFeaturesTotalCount);
-
-  constructor(private _store: Store) {}
+export class WmLayerFeaturesCounterBadgeComponent extends LayerFeaturesCounterBadgeBaseComponent {
+  constructor(store: Store) {
+    super(store);
+  }
 }

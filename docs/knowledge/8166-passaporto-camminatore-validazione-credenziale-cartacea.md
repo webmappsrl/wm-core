@@ -41,10 +41,15 @@ grigio col numero di tappe; senza cammini iniziati una riga spiega come colorarl
 timbro da mostrare il tab ha uno stato vuoto illustrato, che spiega che il servizio non è ancora
 attivo (oc:8763). Il tocco su un timbro, anche grigio, apre il dettaglio. A cammino **completato** il
 dettaglio mostra il traguardo (vista 6): «Cammino completato! 🎉», «Completato il» con la data più
-recente, caselle km (nascoste se una tappa non ha distanza), tappe e uscite (solo con tutte le
-tappe validate col GPS), «Condividi il traguardo» e la lista delle tappe chiusa ma apribile; il
-blocco di esito della certificazione non c'è. La voce, la rotta e la pagina del tab sono
-dell'app.
+recente, caselle km (nascoste se una tappa percorsa non ha distanza), tappe e uscite (solo con
+tutte le tappe percorse validate col GPS; le varianti non percorse non contano, oc:8918),
+«Condividi il traguardo» e la lista delle tappe chiusa ma apribile; il blocco di esito della
+certificazione non c'è. La voce, la rotta e la pagina del tab sono dell'app.
+
+**Km e uscite del traguardo contano le sole tappe percorse** (oc:8918): i km vengono da
+`walkedDistanceKm` (`userDistanceTotal`, altrimenti la somma delle tappe `completed`), condivisa
+con la scheda del diario; le uscite da `gpsOutings(completedStages(stages))`. Una variante saltata
+resta `not_started` e non pesa: chi passa da una variante vede i suoi km.
 
 Tutto il codice sta in `projects/wm-core/src/passport/`:
 
@@ -136,8 +141,9 @@ Tutto il codice sta in `projects/wm-core/src/passport/`:
 - **Contano tutte le tappe del cammino** (oc:8676, decisione del dev): il backend non esclude più le
   tappe con un proprietario diverso da quello del layer (oc:8314), che durante il lavoro arrivavano
   come `not_validatable`. È un errore di dati, che non
-  deve pesare sull'utente finale. Le varianti contano nel totale: la regola di completamento è
-  rimandata a oc:8165, e l'app non costruisce logiche proprie sulle varianti.
+  deve pesare sull'utente finale. Le varianti contavano nel totale, e l'app non costruiva logiche
+  proprie sulle varianti. **⚠️ Superata:** il totale raggruppa le varianti nel backend da oc:8165,
+  e da oc:8918 km e uscite contano le sole tappe percorse.
 - **«Percorsa il …» con la data di validazione** (oc:8676, come nel wireframe): `validated_at` è il
   momento in cui il gestore approva, non quello della percorrenza. Con il GPS le due date
   coincideranno.
