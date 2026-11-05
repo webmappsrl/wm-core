@@ -21,6 +21,12 @@ export interface HomeResultEmptyStateInput {
   tracksLoading: boolean;
   /** Vista delle UGC aperta: i filtri Home restano nello store ma non riguardano le UGC. */
   ugcOpened: boolean;
+  /** Selettore `showTracks`: false con soli filtri POI, e allora le tracce sono nascoste. */
+  showTracks: boolean;
+  /** POI che corrispondono a testo e filtri. */
+  countPois: number;
+  /** Il caricamento dei POI è finito (`ecPoisLoaded`), con successo o con errore. */
+  poisLoaded: boolean;
 }
 
 /**
@@ -28,16 +34,32 @@ export interface HomeResultEmptyStateInput {
  *
  * Con filtri Home attivi tracce e POI sono nascosti (solo i cammini sono pertinenti), quindi
  * zero cammini vuol dire pannello vuoto anche se `countAll > 0`: vale il messaggio sui filtri,
- * che dipende solo dalla configurazione e non aspetta il caricamento delle tracce. Altrimenti
- * il messaggio generico compare solo a caricamento finito e con tutto a zero.
+ * che dipende solo dalla configurazione e non aspetta il caricamento delle tracce.
+ *
+ * Con soli filtri POI (`showTracks` false) le tracce sono nascoste, quindi zero POI e zero cammini
+ * vuol dire pannello vuoto anche se `countAll > 0`: vale il messaggio generico, ma solo a
+ * caricamento dei POI finito, per non mostrarlo mentre arrivano (oc:8933). Altrimenti il
+ * messaggio generico compare solo a caricamento finito e con tutto a zero.
  * @param input conteggi e stato correnti di `wm-home-result`
  * @returns `'filters'`, `'generic'` o `null` se c'è qualcosa da mostrare
  */
 export function homeResultEmptyState(input: HomeResultEmptyStateInput): HomeResultEmptyState {
-  const {countAll, countLayers, hasActiveRouteFilters, hasCurrentLayer, tracksLoading, ugcOpened} =
-    input;
+  const {
+    countAll,
+    countLayers,
+    hasActiveRouteFilters,
+    hasCurrentLayer,
+    tracksLoading,
+    ugcOpened,
+    showTracks,
+    countPois,
+    poisLoaded,
+  } = input;
   if (hasActiveRouteFilters && !hasCurrentLayer && !ugcOpened && countLayers === 0)
     return 'filters';
+  // Con soli filtri POI le tracce non contano: decide solo questo ramo, e mai prima che i POI
+  // siano caricati (oc:8933).
+  if (!showTracks) return poisLoaded && countPois === 0 && countLayers === 0 ? 'generic' : null;
   if (!tracksLoading && countAll === 0 && countLayers === 0) return 'generic';
   return null;
 }

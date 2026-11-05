@@ -22,7 +22,7 @@
   </div>
 </ng-container>
 <ng-template #noDownload>
-  <ng-container *ngIf="((countAll$|async)>0 || (countLayers$|async)>0) && (emptyState$|async) !== 'filters'">
+  <ng-container *ngIf="(showResultTabSelected$|async) && !(emptyState$|async)">
     <ion-segment [value]="showResultTabSelected$|async" (ionChange)="changeResultType($event)">
       <ng-container *ngIf="countLayers$|async as countLayers">
         <ion-segment-button
@@ -40,7 +40,7 @@
       <ng-container *ngIf="tracks$|async as tracks">
         <ion-segment-button
           value="tracks"
-          *ngIf="tracks.length > 0 && (showTracks$|async) && (!(hasActiveRouteFilters$|async) || (currentLayer$|async))"
+          *ngIf="tracks.length > 0 && (tracksTabVisible$|async)"
           e2e-home-result-tracks-tab
         >
           <ion-label>
@@ -57,7 +57,7 @@
         </ion-segment-button>
       </ng-container>
       <ng-container *ngIf="countPois$|async as countPois">
-        <ion-segment-button value="pois" *ngIf="countPois > 0 && (!(hasActiveRouteFilters$|async) || (currentLayer$|async))" e2e-home-result-pois-tab>
+        <ion-segment-button value="pois" *ngIf="countPois > 0 && (poisTabVisible$|async)" e2e-home-result-pois-tab>
           <ion-label>
             {{'Punti di interesse'|wmtrans}}
             <span>

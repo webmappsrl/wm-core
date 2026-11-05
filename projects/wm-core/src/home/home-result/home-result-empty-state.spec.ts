@@ -10,6 +10,9 @@ describe('homeResultEmptyState', () => {
     hasCurrentLayer: false,
     tracksLoading: false,
     ugcOpened: false,
+    showTracks: true,
+    countPois: 0,
+    poisLoaded: true,
   };
 
   it('filtri attivi e zero cammini → filters, anche con tracce e POI presenti', () => {
@@ -53,5 +56,43 @@ describe('homeResultEmptyState', () => {
 
   it('risultati senza filtri → null', () => {
     expect(homeResultEmptyState({...base, hasActiveRouteFilters: false})).toBeNull();
+  });
+
+  // oc:8933: soli filtri POI (showTracks false), la ricerca trova solo sentieri, che sono nascosti.
+  describe('soli filtri POI', () => {
+    const onlyPois: HomeResultEmptyStateInput = {
+      ...base,
+      hasActiveRouteFilters: false,
+      countAll: 3,
+      showTracks: false,
+    };
+
+    it('nessun POI e nessun cammino, POI caricati → generic', () => {
+      expect(homeResultEmptyState(onlyPois)).toBe('generic');
+    });
+
+    it('POI non ancora caricati → null', () => {
+      expect(homeResultEmptyState({...onlyPois, poisLoaded: false})).toBeNull();
+    });
+
+    it('la ricerca trova cammini → null (si vede il tab layers)', () => {
+      expect(homeResultEmptyState({...onlyPois, countLayers: 2})).toBeNull();
+    });
+
+    it('ci sono POI → null', () => {
+      expect(homeResultEmptyState({...onlyPois, countPois: 5})).toBeNull();
+    });
+
+    it('tracce visibili → null (invariato)', () => {
+      expect(homeResultEmptyState({...onlyPois, showTracks: true})).toBeNull();
+    });
+
+    it('POI non ancora caricati e nessuna traccia → null, non generic', () => {
+      expect(homeResultEmptyState({...onlyPois, poisLoaded: false, countAll: 0})).toBeNull();
+    });
+
+    it('con filtri Home attivi e zero cammini resta filters', () => {
+      expect(homeResultEmptyState({...onlyPois, hasActiveRouteFilters: true})).toBe('filters');
+    });
   });
 });
