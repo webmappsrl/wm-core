@@ -18,8 +18,16 @@ import {POSTHOG_CLIENT} from '../../store/conf/conf.token';
 import {WmPosthogClient} from '@wm-types/posthog';
 import {Store} from '@ngrx/store';
 import {Observable, combineLatest, from, of} from 'rxjs';
-import {debounceTime, distinctUntilChanged, map, startWith, switchMap, throttleTime} from 'rxjs/operators';
-import {ecTracksLoading, poisInitCount} from '@wm-core/store/features/ec/ec.selector';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  shareReplay,
+  startWith,
+  switchMap,
+  throttleTime,
+} from 'rxjs/operators';
+import {ecPoisLoaded, ecTracksLoading, poisInitCount} from '@wm-core/store/features/ec/ec.selector';
 
 import {
   downloadsOpened,
@@ -27,7 +35,6 @@ import {
   hasActiveRouteFilters,
   homeResultTabSelected,
   inputTyped,
-  lastFilterType,
   routeFilters,
   showTracks,
   ugcOpened,
@@ -57,6 +64,7 @@ import {
   HomeResultEmptyState,
   homeResultEmptyState,
 } from './home-result-empty-state';
+import {homeResultTab, HomeResultTabResult} from './home-result-tab';
 
 @Component({
   standalone: false,
@@ -87,7 +95,6 @@ export class WmHomeResultComponent {
   ectracks$ = this._store.select(tracks);
   emptyState$: Observable<HomeResultEmptyState>;
   readonly emptyMessages = HOME_RESULT_EMPTY_MESSAGES;
-  lastFilterType$ = this._store.select(lastFilterType);
   pois$: Observable<WmFeature<Point>[]> = this._store.select(pois).pipe(
     switchMap(pois =>
       pois?.length
@@ -113,6 +120,10 @@ export class WmHomeResultComponent {
   showResultTabSelected$: Observable<HomeResultTab>;
   showTracks$ = this._store.select(showTracks);
   tracks$: Observable<Hit[]>;
+  /** Pulsante Tracks visibile: calcolato da `homeResultTab`, non va ricalcolato nel template. */
+  tracksTabVisible$: Observable<boolean>;
+  /** Pulsante POI visibile: calcolato da `homeResultTab`, non va ricalcolato nel template. */
+  poisTabVisible$: Observable<boolean>;
   tracksLoading$: Observable<boolean> = this._store.select(ecTracksLoading);
   ugcOpened$: Observable<boolean> = this._store.select(ugcOpened);
 
@@ -153,9 +164,9 @@ export class WmHomeResultComponent {
 
     this.countLayers$ = this.filteredLayers$.pipe(map(layers => layers.length));
 
-    // Decide quale messaggio di stato vuoto mostrare e, nel caso filtri, nasconde la barra dei tab
-    // (oc:8765). La regola «filtri Home attivi senza layer aperto» vale anche in
-    // showResultTabSelected$ e negli *ngIf dei tab: se cambia, va cambiata in tutti e tre.
+    // Decide quale messaggio di stato vuoto mostrare; con un messaggio la barra dei tab è nascosta
+    // (oc:8765). Le regole di visibilità stanno in homeResultEmptyState e homeResultTab: il template
+    // legge tracksTabVisible$ e poisTabVisible$ invece di ricalcolare i pulsanti (oc:8933).
     this.emptyState$ = combineLatest([
       this.countAll$,
       this.countLayers$,
@@ -163,54 +174,73 @@ export class WmHomeResultComponent {
       this.currentLayer$,
       this.tracksLoading$,
       this.ugcOpened$,
+      this.showTracks$,
+      this.countPois$,
+      this._store.select(ecPoisLoaded),
     ]).pipe(
-      map(([countAll, countLayers, hasActiveRouteFilters, currentLayer, tracksLoading, ugcOpened]) =>
-        homeResultEmptyState({
+      map(
+        ([
           countAll,
           countLayers,
           hasActiveRouteFilters,
-          hasCurrentLayer: currentLayer != null,
+          currentLayer,
           tracksLoading,
           ugcOpened,
-        }),
+          showTracks,
+          countPois,
+          poisLoaded,
+        ]) =>
+          homeResultEmptyState({
+            countAll,
+            countLayers,
+            hasActiveRouteFilters,
+            hasCurrentLayer: currentLayer != null,
+            tracksLoading,
+            ugcOpened,
+            showTracks,
+            countPois,
+            poisLoaded,
+          }),
       ),
       distinctUntilChanged(),
     );
 
-    this.showResultTabSelected$ = combineLatest([
+    const homeResultTab$: Observable<HomeResultTabResult> = combineLatest([
       this.countTracks$,
       this.countPois$,
       this.countLayers$,
       this._store.select(homeResultTabSelected),
-      this.lastFilterType$,
+      this.showTracks$,
       this._store.select(ecLayer).pipe(startWith(null)),
       this.hasActiveRouteFilters$,
     ]).pipe(
-      map(([countTracks, countPois, countLayers, userSelectedTab, lastFilterType, currentLayer, hasActiveRouteFilters]) => {
-        // Se un layer è già aperto, il tab layers non esiste nell'UI — mai restituirlo
-        const layersAvailable = countLayers > 0 && !currentLayer;
-
-        // Filtri Home (oc:8414) attivi: solo cammini sono un risultato pertinente, mai
-        // tracce/POI — ignora la selezione tab dell'utente e la logica di default sotto.
-        // Non si applica se l'utente ha già aperto un layer specifico: a quel punto i
-        // filtri Home (pensati per la vista d'insieme) non sono più pertinenti, e le
-        // tappe/tracce del layer aperto devono restare visibili come di consueto.
-        if (hasActiveRouteFilters && !currentLayer) return layersAvailable ? 'layers' : null;
-
-        // Rispetta la scelta esplicita dell'utente (userSelectedTab != null)
-        if (userSelectedTab === 'tracks' && countTracks > 0) return 'tracks';
-        if (userSelectedTab === 'pois' && countPois > 0) return 'pois';
-        if (userSelectedTab === 'layers' && layersAvailable) return 'layers';
-
-        // Default automatico (nessuna selezione esplicita): layers prima, poi tracks, poi pois
-        if (layersAvailable) return 'layers';
-        if (countTracks > 0) return 'tracks';
-        if (countPois > 0) return 'pois';
-
-        return null;
-      }),
+      map(([countTracks, countPois, countLayers, userSelectedTab, showTracks, currentLayer, hasActiveRouteFilters]) =>
+        homeResultTab({
+          countTracks,
+          countPois,
+          countLayers,
+          userSelectedTab,
+          showTracks,
+          hasCurrentLayer: currentLayer != null,
+          hasActiveRouteFilters,
+        }),
+      ),
+      // Una sola sottoscrizione condivisa: senza, ogni async ripartirebbe dal debounce di
+      // countLayers$ e il pulsante Tracks comparirebbe dopo la barra.
+      shareReplay({bufferSize: 1, refCount: true}),
+    );
+    this.showResultTabSelected$ = homeResultTab$.pipe(
+      map(result => result.tab),
       distinctUntilChanged(),
-    ) as Observable<HomeResultTab>;
+    );
+    this.tracksTabVisible$ = homeResultTab$.pipe(
+      map(result => result.tracksTabVisible),
+      distinctUntilChanged(),
+    );
+    this.poisTabVisible$ = homeResultTab$.pipe(
+      map(result => result.poisTabVisible),
+      distinctUntilChanged(),
+    );
 
     this.tracks$ = combineLatest([
       this.ectracks$,

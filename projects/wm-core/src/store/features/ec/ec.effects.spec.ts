@@ -1,8 +1,8 @@
 import {Actions} from '@ngrx/effects';
-import {Subject, of} from 'rxjs';
+import {EMPTY, Subject, of} from 'rxjs';
 
 import {EcEffects} from './ec.effects';
-import {ecTracks} from './ec.actions';
+import {ecTracks, loadEcPois, loadEcPoisFailure, loadEcPoisSuccess} from './ec.actions';
 
 describe('EcEffects - queryApi$ (oc:8684)', () => {
   let actions$: Subject<any>;
@@ -35,5 +35,33 @@ describe('EcEffects - queryApi$ (oc:8684)', () => {
     });
 
     actions$.next(ecTracks({inputTyped: 'due mari'}));
+  });
+});
+
+describe('EcEffects - loadEcPois$ (oc:8933)', () => {
+  const build = (pois$: any) => {
+    const actions$ = new Subject<any>();
+    const ecSvcStub: any = {getPois: () => pois$};
+    const effects = new EcEffects(ecSvcStub, actions$ as unknown as Actions, {capture: () => {}} as any);
+    return {actions$, effects};
+  };
+
+  it('getPois che completa senza emettere (200 senza body, nessuna cache) → loadEcPoisFailure', done => {
+    const {actions$, effects} = build(EMPTY);
+    effects.loadEcPois$.subscribe(action => {
+      expect(action).toEqual(loadEcPoisFailure());
+      done();
+    });
+    actions$.next(loadEcPois());
+  });
+
+  it('getPois che emette → loadEcPoisSuccess', done => {
+    const featureCollection: any = {type: 'FeatureCollection', features: []};
+    const {actions$, effects} = build(of(featureCollection));
+    effects.loadEcPois$.subscribe(action => {
+      expect(action).toEqual(loadEcPoisSuccess({featureCollection}));
+      done();
+    });
+    actions$.next(loadEcPois());
   });
 });

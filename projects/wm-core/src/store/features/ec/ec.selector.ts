@@ -97,6 +97,8 @@ export const countSelectedFilters = createSelector(
 
 export const allEcPois = createSelector(ec, state => state.ecPois);
 export const allEcpoiFeatures = createSelector(ec, state => state.ecPoiFeatures);
+/** Il caricamento dei POI è finito, con successo o con errore (oc:8933). */
+export const ecPoisLoaded = createSelector(ec, state => state.ecPoisLoaded);
 export const poisInitCount = createSelector(allEcpoiFeatures, allEcPois => allEcPois?.length ?? 0);
 
 export const poisWhereFeatures = createSelector(

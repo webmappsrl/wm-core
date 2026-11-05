@@ -3,6 +3,7 @@ import {Point} from 'geojson';
 import {createReducer, on} from '@ngrx/store';
 import {
   loadEcPoisSuccess,
+  loadEcPoisFailure,
   ecTracksFailure,
   ecTracksSuccess,
   ecTracksInitAggregationsSuccess,
@@ -23,6 +24,8 @@ export interface Ec {
   ecPoiFeatures?: WmFeature<Point>[];
   hits?: Hit[];
   ecTracksLoading: boolean;
+  /** Il caricamento dei POI è finito, con successo o con errore (oc:8933). */
+  ecPoisLoaded: boolean;
   aggregations?: Aggregations;
   initialAggregations?: Aggregations;
   currentEcTrack?: WmFeature<LineString>;
@@ -39,6 +42,7 @@ const initialConfState: Ec = {
   ecPoiFeatures: [],
   hits: [],
   ecTracksLoading: false,
+  ecPoisLoaded: false,
 };
 
 export const ecReducer = createReducer(
@@ -74,9 +78,11 @@ export const ecReducer = createReducer(
     const newState: Ec = {
       ...state,
       ecPoiFeatures,
+      ecPoisLoaded: true,
     };
     return newState;
   }),
+  on(loadEcPoisFailure, state => ({...state, ecPoisLoaded: true})),
   on(loadCurrentEcTrackSuccess, (state, {ecTrack}) => {
     const newState: Ec = {
       ...state,
