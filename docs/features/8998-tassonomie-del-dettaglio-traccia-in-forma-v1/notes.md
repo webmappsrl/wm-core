@@ -42,8 +42,11 @@ diventa `identifier`, le chiavi che iniziano con `_` (`_admin_level`, `_source`)
 
 La review ha trovato che la copia offline di una traccia GeoHub perdeva l'icona dell'attività:
 l'adapter toglie l'SVG inline dall'elemento, la copia salvata è v1, e alla lettura l'adapter non
-ha più niente da estrarre. GeoHub non ha `icons.json` (403 sulle app 1, 26, 33 e 49), quindi offline
-l'icona non arrivava da nessuna parte; prima del ticket `wm-icon` usava l'SVG dell'elemento.
+ha più niente da estrarre. Offline l'icona resta solo se `icons.json` dell'app ha quel nome: GeoHub
+usa il percorso vecchio `geohub/icons/<app>.json`, e per esempio l'app 33 ha `txn-hiking` mentre la
+49 no. Per un'app come la 49 l'icona non arrivava da nessuna parte; prima del ticket `wm-icon` usava
+l'SVG dell'elemento. (La review aveva cercato `geohub/<app>/icons.json`, che non esiste, e aveva
+concluso a torto che GeoHub non avesse `icons.json`.)
 
 Ora la copia porta le icone accanto ad `awsVersion` (`StoredEcTrack` in `localForage.ts`):
 `saveEcTrack` e `downloadEcTrack` ricevono `icons` opzionale, l'aggiornamento della copia in
