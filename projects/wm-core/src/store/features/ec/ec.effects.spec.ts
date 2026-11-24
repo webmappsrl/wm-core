@@ -2,7 +2,15 @@ import {Actions} from '@ngrx/effects';
 import {EMPTY, Subject, of} from 'rxjs';
 
 import {EcEffects} from './ec.effects';
-import {ecTracks, loadEcPois, loadEcPoisFailure, loadEcPoisSuccess} from './ec.actions';
+import {
+  currentEcTrackId,
+  ecTracks,
+  loadCurrentEcTrackSuccess,
+  loadEcPois,
+  loadEcPoisFailure,
+  loadEcPoisSuccess,
+} from './ec.actions';
+import {addIcons} from '@wm-core/store/icons/icons.actions';
 
 describe('EcEffects - queryApi$ (oc:8684)', () => {
   let actions$: Subject<any>;
@@ -63,5 +71,48 @@ describe('EcEffects - loadEcPois$ (oc:8933)', () => {
       done();
     });
     actions$.next(loadEcPois());
+  });
+});
+
+describe('EcEffects - currentEcTrack$ (oc:8998)', () => {
+  const build = (result: any) => {
+    const actions$ = new Subject<any>();
+    const ecSvcStub: any = {
+      getEcTrackWithIcons: () => of(result),
+      decorateNotAccessibleRelatedPoi: (t: any) => t,
+    };
+    const effects = new EcEffects(ecSvcStub, actions$ as unknown as Actions, {capture: () => {}} as any);
+    return {actions$, effects};
+  };
+
+  it('con icone inline emette addIcons e poi loadCurrentEcTrackSuccess', done => {
+    const track: any = {type: 'Feature', properties: {id: 1}, geometry: {type: 'LineString', coordinates: []}};
+    const icons = {'txn-hiking': '<svg/>'};
+    const {actions$, effects} = build({track, icons});
+    const emitted: any[] = [];
+    effects.currentEcTrack$.subscribe({
+      next: a => emitted.push(a),
+      complete: () => {
+        expect(emitted).toEqual([addIcons({icons}), loadCurrentEcTrackSuccess({ecTrack: track})]);
+        done();
+      },
+    });
+    actions$.next(currentEcTrackId({currentEcTrackId: 1} as any));
+    actions$.complete();
+  });
+
+  it('senza icone emette solo loadCurrentEcTrackSuccess', done => {
+    const track: any = {type: 'Feature', properties: {id: 1}, geometry: {type: 'LineString', coordinates: []}};
+    const {actions$, effects} = build({track, icons: {}});
+    const emitted: any[] = [];
+    effects.currentEcTrack$.subscribe({
+      next: a => emitted.push(a),
+      complete: () => {
+        expect(emitted).toEqual([loadCurrentEcTrackSuccess({ecTrack: track})]);
+        done();
+      },
+    });
+    actions$.next(currentEcTrackId({currentEcTrackId: 1} as any));
+    actions$.complete();
   });
 });

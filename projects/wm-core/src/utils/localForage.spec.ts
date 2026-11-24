@@ -17,6 +17,7 @@ import {
   getSynchronizedUgcTracksOrNull,
   removeSynchronizedUgcPoi,
   removeSynchronizedUgcTrack,
+  iconsUsedByTrack,
 } from './localForage';
 import {WmFeature} from '@wm-types/feature';
 import {LineString, Point} from 'geojson';
@@ -273,5 +274,38 @@ describe('localForage: supporto alla riconciliazione delle UGC (oc:8741)', () =>
     spyOn(synchronizedUgcPoi, 'keys').and.returnValue(Promise.resolve(['1']));
     spyOn(synchronizedUgcPoi, 'getItem').and.returnValue(Promise.resolve(poi as any));
     expect(await getSynchronizedUgcPoisOrNull()).toEqual([poi]);
+  });
+});
+
+describe('iconsUsedByTrack (oc:8998)', () => {
+  const track = (taxonomies: any): WmFeature<LineString> =>
+    ({type: 'Feature', geometry: {type: 'LineString', coordinates: []}, properties: {id: 1, taxonomies}} as any);
+  const storeIcons = {'txn-hiking': '<svg a/>', 'txn-mtb': '<svg b/>', 'poi-bar': '<svg c/>'};
+
+  it('tiene solo le icone usate dalle tassonomie della traccia', () => {
+    const result = iconsUsedByTrack(
+      track({
+        activity: [
+          {identifier: 'hiking', name: {it: 'Escursionismo'}, icon_name: 'txn-hiking'},
+          {identifier: 'x', name: {it: 'Senza icona'}, icon_name: null},
+        ],
+        where: [{identifier: 'R1', name: {it: 'Lazio'}, admin_level: 4}],
+      }),
+      storeIcons,
+    );
+    expect(result).toEqual({'txn-hiking': '<svg a/>'});
+  });
+
+  it('un icon_name che lo store non ha viene ignorato', () => {
+    const result = iconsUsedByTrack(
+      track({activity: [{identifier: 'ski', name: {it: 'Sci'}, icon_name: 'txn-ski'}]}),
+      storeIcons,
+    );
+    expect(result).toEqual({});
+  });
+
+  it('senza taxonomies o senza icone restituisce un oggetto vuoto', () => {
+    expect(iconsUsedByTrack(track(undefined), storeIcons)).toEqual({});
+    expect(iconsUsedByTrack(track({activity: []}), null)).toEqual({});
   });
 });

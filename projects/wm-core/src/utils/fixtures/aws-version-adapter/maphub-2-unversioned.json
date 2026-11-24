@@ -1,0 +1,61 @@
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "LineString",
+    "coordinates": [
+      [
+        10.665592237,
+        44.286905892,
+        1301
+      ],
+      [
+        10.665143207,
+        44.286958513,
+        1301
+      ]
+    ]
+  },
+  "properties": {
+    "id": 2,
+    "name": {
+      "it": "Monte Campidello"
+    },
+    "taxonomy": {
+      "activity": [
+        {
+          "id": 36,
+          "name": {
+            "it": "Mountain Bike",
+            "en": "Mountain Bike"
+          },
+          "description": [],
+          "identifier": "mountain-bike",
+          "icon_name": "txn-mtb"
+        }
+      ],
+      "when": [],
+      "poi_type": null,
+      "poi_types": []
+    },
+    "taxonomy_where": {
+      "R42611": {
+        "de": "Emilia-Romagna",
+        "en": "Emilia-Romagna",
+        "es": "Emilia-Romaña",
+        "fr": "Émilie-Romagne",
+        "it": "Emilia-Romagna",
+        "_admin_level": 4
+      },
+      "R43003": {
+        "en": "Lama Mocogno",
+        "it": "Lama Mocogno",
+        "_admin_level": 8
+      }
+    },
+    "taxonomyWheres": [
+      "Emilia-Romagna",
+      "Lama Mocogno"
+    ],
+    "related_pois": []
+  }
+}

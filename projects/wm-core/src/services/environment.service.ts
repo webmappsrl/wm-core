@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Environment, Redirect, Redirects, Shard} from '@wm-types/environment';
+import {AwsVersions} from '@wm-types/aws';
 import {BehaviorSubject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 
@@ -112,6 +113,10 @@ export class EnvironmentService {
   }
   get awsApi(): string {
     return this._awsApi;
+  }
+  /** Versioni dei file su awsApi dichiarate dallo shard corrente; un tipo assente è il file senza versione. */
+  get awsVersions(): AwsVersions {
+    return this._shard?.awsVersions ?? {};
   }
   get appId(): number {
     return this._appId;

@@ -1,6 +1,6 @@
 import {createReducer, on} from '@ngrx/store';
 import {ICONS} from '@wm-types/config';
-import {loadIconsSuccess} from './icons.actions';
+import {addIcons, loadIconsSuccess} from './icons.actions';
 
 export const IconsFeatureKey = 'icons';
 
@@ -18,5 +18,7 @@ export const initialState: IconsState = {
 
 export const iconsReducer = createReducer(
   initialState,
-  on(loadIconsSuccess, (state, {icons}) => ({...state, icons})),
+  // icons.json vince sempre: le icone inline non sovrascrivono un nome già presente
+  on(addIcons, (state, {icons}) => ({...state, icons: {...icons, ...(state.icons ?? {})}})),
+  on(loadIconsSuccess, (state, {icons}) => ({...state, icons: {...(state.icons ?? {}), ...icons}})),
 );

@@ -53,6 +53,7 @@ import {WmFeature} from '@wm-types/feature';
 import {HomeResultTab} from '@wm-types/user-activity';
 import {Point} from 'geojson';
 import {Hit} from '@wm-types/elastic';
+import {downloadedPropertiesToHit} from './downloads-hit';
 import {getEcTracks, removeEcTrack} from '@wm-core/utils/localForage';
 import {LangService} from '@wm-core/localization/lang.service';
 import {AlertController} from '@ionic/angular';
@@ -89,7 +90,7 @@ export class WmHomeResultComponent {
   downloadsTracks$ = this.refreshDownloads.pipe(
     startWith(undefined), // Emetti un valore iniziale per avviare il flusso
     switchMap(() =>
-      from(getEcTracks()).pipe(map(t => t.map(track => track.properties as unknown as Hit))),
+      from(getEcTracks()).pipe(map(t => t.map(track => downloadedPropertiesToHit(track.properties)))),
     ),
   );
   ectracks$ = this._store.select(tracks);

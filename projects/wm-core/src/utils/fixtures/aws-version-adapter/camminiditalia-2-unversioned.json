@@ -1,0 +1,39 @@
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "LineString",
+    "coordinates": [
+      [
+        12.69228,
+        42.320479,
+        365
+      ],
+      [
+        12.69228,
+        42.320465,
+        365
+      ]
+    ]
+  },
+  "properties": {
+    "id": 2,
+    "name": {
+      "it": "Cammino dei Borghi Sabini - Tappa 04: Roccantica – Vacone"
+    },
+    "taxonomy_where": {
+      "R40784": {
+        "de": "Latium",
+        "en": "Lazio",
+        "es": "Lacio",
+        "fr": "Latium",
+        "it": "Lazio",
+        "_admin_level": 4,
+        "_source": "osmfeatures"
+      }
+    },
+    "taxonomyWheres": [
+      "Lazio"
+    ],
+    "related_pois": []
+  }
+}

@@ -5,6 +5,16 @@ import {Location} from '@capacitor-community/background-geolocation';
 import {downloadTiles, getTilesByGeometry, removeTiles} from '../../../../../map-core/src/utils';
 import {IUser} from '@wm-core/store/auth/auth.model';
 import {isValidWmFeature} from '@wm-core/utils/features';
+import {AwsVersion, CURRENT_AWS_VERSIONS} from '@wm-types/aws';
+import {ICONS} from '@wm-types/config';
+import {Taxonomies} from '@wm-types/taxonomy';
+
+/**
+ * Copia offline di una traccia EC. `awsVersion` dice in che forma è stata salvata (assente nelle
+ * copie salvate prima di oc:8998); `icons` porta gli SVG inline che l'adapter ha tolto dalle
+ * tassonomie, perché offline non c'è altro modo di riaverli (GeoHub non ha `icons.json`).
+ */
+export type StoredEcTrack = WmFeature<LineString> & {awsVersion?: AwsVersion; icons?: ICONS};
 
 export async function clearUgcSynchronizedData(): Promise<void> {
   await Promise.all([
@@ -21,16 +31,22 @@ export async function clearUgcDeviceData(): Promise<void> {
     deviceCurrentUgcTrackLocations.clear(),
   ]);
 }
+/**
+ * Scarica una traccia EC per l'uso offline (tile, immagini e copia della traccia).
+ * Stessa precondizione di `saveEcTrack`. `icons` può essere l'intero store delle icone: nella
+ * copia finiscono solo quelle usate dalle tassonomie della traccia (oc:8998).
+ */
 export async function downloadEcTrack(
   trackid: string,
   track: WmFeature<LineString>,
   callBackStatusFn = updateStatus,
   tileUrlTemplate?: string,
+  icons?: ICONS,
 ): Promise<number> {
   let totalSize = 0;
   const tiles = getTilesByGeometry(track.geometry);
   totalSize += await downloadTiles(tiles, trackid, callBackStatusFn, tileUrlTemplate);
-  totalSize += await saveEcTrack(trackid, track, callBackStatusFn, totalSize);
+  totalSize += await saveEcTrack(trackid, track, callBackStatusFn, totalSize, iconsUsedByTrack(track, icons));
 
   return Promise.resolve(totalSize);
 }
@@ -124,14 +140,34 @@ export async function getDeviceUgcTracks(): Promise<WmFeature<LineString>[]> {
   return keys ? await Promise.all(keys.map(key => getDeviceUgcTrack(key))) : [];
 }
 
-export async function getEcTrack(trackId: string): Promise<WmFeature<LineString> | null> {
+/**
+ * Le icone di `icons` che le tassonomie della traccia (forma v1) citano con `icon_name`.
+ */
+export function iconsUsedByTrack(track: WmFeature<LineString>, icons: ICONS | null | undefined): ICONS {
+  const used: ICONS = {};
+  if (icons == null) return used;
+  const taxonomies: Taxonomies = track?.properties?.taxonomies ?? {};
+  for (const items of Object.values(taxonomies)) {
+    for (const item of items ?? []) {
+      const iconName = item?.icon_name;
+      if (iconName != null && icons[iconName] != null) used[iconName] = icons[iconName];
+    }
+  }
+  return used;
+}
+
+/**
+ * Copia offline di una traccia EC (vedi `StoredEcTrack`). Una copia senza `awsVersion` è stata
+ * salvata prima di oc:8998 e va normalizzata da chi la legge.
+ */
+export async function getEcTrack(trackId: string): Promise<StoredEcTrack | null> {
   return handleAsync(
-    synchronizedEctrack.getItem<WmFeature<LineString>>(`${trackId}`),
+    synchronizedEctrack.getItem<StoredEcTrack>(`${trackId}`),
     'getEcTrack: Failed',
   );
 }
 
-export async function getEcTracks(): Promise<WmFeature<LineString>[]> {
+export async function getEcTracks(): Promise<StoredEcTrack[]> {
   const keys = await handleAsync(synchronizedEctrack.keys(), 'Failed to get track keys');
   return keys ? await Promise.all(keys.map(key => getEcTrack(key))) : [];
 }
@@ -481,15 +517,25 @@ export function saveDeviceUgcTrack(feature: WmFeature<LineString>): void {
   deviceUgcTrack.setItem(`${featureId}`, feature);
 }
 
+/**
+ * Salva la copia offline di una traccia EC, con le immagini e le icone inline.
+ * Precondizione: la traccia deve essere già nella versione corrente (passata da
+ * `adaptTrackToCurrentVersion` o presa dallo store). La copia viene marcata con
+ * `CURRENT_AWS_VERSIONS.tracks` e alla lettura non verrà più normalizzata (oc:8998).
+ */
 export async function saveEcTrack(
   trackId: string,
   track: WmFeature<LineString>,
   callBackStatusFn = updateStatus,
   totalSize: number = 0,
+  icons?: ICONS,
 ): Promise<number> {
   totalSize += await saveImgInsideTrack(track, callBackStatusFn);
-  const trackCopy = {
+  // La copia è sempre in forma v1: chi la salva passa una traccia già adattata
+  const trackCopy: StoredEcTrack = {
     ...track,
+    awsVersion: CURRENT_AWS_VERSIONS.tracks,
+    ...(icons && Object.keys(icons).length > 0 ? {icons} : {}),
     properties: {
       ...track.properties,
       size: totalSize,
