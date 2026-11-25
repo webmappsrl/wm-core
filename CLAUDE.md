@@ -104,6 +104,7 @@ Il dettaglio di ogni lavoro sta nel proprio cantiere sotto `docs/features/<slug>
 | UGC | Pre-selezione del layer da GPS, foto condivise fra POI e track, condivisione social | oc:7639, oc:5125, oc:8183, oc:8166, oc:8764 | [docs/knowledge/ugc.md](docs/knowledge/ugc.md) |
 | UGC sincronizzate | Il telefono rispecchia l'index del server: riconciliazione per id, immagini non più usate, chiusura del pannello della UGC tolta | oc:8741 | [docs/knowledge/8741-app-le-ugc-cancellate-sul-server-restano-visibili-sul-telefono-fino-al-logout.md](docs/knowledge/8741-app-le-ugc-cancellate-sul-server-restano-visibili-sul-telefono-fino-al-logout.md) |
 | Varianti per shard | `fileReplacements`, quando estrarre una classe base, filtri della searchbar camminiditalia, il CSS per app caricato a runtime | oc:8391, oc:8414, oc:8166, oc:8701, oc:8406, oc:8613, oc:8764, oc:8169 | [docs/knowledge/varianti-per-shard.md](docs/knowledge/varianti-per-shard.md) |
+| Lingua del filtro dei cammini | Opzioni ricalcolate su cambio lingua e lingua di ripiego, `currentLang` vuoto al primo avvio | oc:8958 | [docs/knowledge/8958-nomenclatura-regioni-su-filtri.md](docs/knowledge/8958-nomenclatura-regioni-su-filtri.md) |
 
 ## Trappole
 
@@ -111,7 +112,7 @@ Le trappole — ciò che non si deduce leggendo il codice e che si scopre solo s
 in `.claude/rules/`, un file per soggetto, con il frontmatter `paths:` che le carica quando si
 toccano i file corrispondenti: `box-e-immagini`, `spec-e-testbed`, `form-e-cva`,
 `varianti-e-classi-base`, `posthog-e-log`, `template-wm-map`, `modali-e-ion-nav`, `condivisione`,
-`css-per-istanza`. Ogni rule rimanda alla pagina di conoscenza per il perché.
+`css-per-istanza`, `lingua`. Ogni rule rimanda alla pagina di conoscenza per il perché.
 
 ## Lavori senza una pagina dedicata
 
