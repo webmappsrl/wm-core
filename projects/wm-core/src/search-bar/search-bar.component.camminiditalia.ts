@@ -10,8 +10,8 @@ import {
 } from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {Observable, combineLatest, defer, merge} from 'rxjs';
+import {distinctUntilChanged, map, startWith} from 'rxjs/operators';
 
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {ILAYER} from '@wm-core/types/config';
@@ -80,9 +80,22 @@ export class WmSearchBarComponent extends SearchBarBaseComponent {
   /** `true` se almeno un layer della config ha `attributes` — gate del toggle/pannello filtri. */
   showFilters$: Observable<boolean> = this._store.select(confShowRouteFilters);
 
-  options$: Observable<RouteFilterOptionsByKey> = this._store.select(confMAPLayers).pipe(
-    map((layers: ILAYER[]) => this._deriveOptions(layers ?? [])),
-  );
+  /**
+   * Opzioni del pannello filtri, ricalcolate quando cambiano i layer o la lingua (oc:8958).
+   * Senza una lingua scelta dal profilo arriva solo `onFallbackLangChange` (`setDefaultLang` non
+   * emette `onLangChange`): vanno ascoltati entrambi. `defer` perché `_langSvc` è un parametro
+   * del costruttore, non ancora assegnato quando si inizializzano i campi.
+   */
+  options$: Observable<RouteFilterOptionsByKey> = defer(() =>
+    combineLatest([
+      this._store.select(confMAPLayers),
+      merge(this._langSvc.onLangChange, this._langSvc.onFallbackLangChange).pipe(
+        map(() => this._resolveLang()),
+        startWith(this._resolveLang()),
+        distinctUntilChanged(),
+      ),
+    ]),
+  ).pipe(map(([layers]) => this._deriveOptions((layers as ILAYER[]) ?? [])));
 
   constructor(
     fb: FormBuilder,
@@ -168,8 +181,19 @@ export class WmSearchBarComponent extends SearchBarBaseComponent {
     this._store.dispatch(routeFiltersChanged({filters: {}}));
   }
 
+  /**
+   * Lingua delle etichette, risolta come in `wmtrans`: quella scelta dal profilo, altrimenti
+   * quella di ripiego (lingua del dispositivo o default della config), altrimenti `it`. Al primo
+   * avvio `currentLang` è vuoto finché l'utente non sceglie una lingua (oc:8958).
+   *
+   * @returns La lingua attiva.
+   */
+  private _resolveLang(): Language {
+    return (this._langSvc.currentLang ?? this._langSvc.defaultLang ?? 'it') as Language;
+  }
+
   private _deriveOptions(layers: ILAYER[]): RouteFilterOptionsByKey {
-    const lang = (this._langSvc.currentLang as Language) ?? 'it';
+    const lang = this._resolveLang();
     const kmUnit = this._langSvc.instant('km');
     const tappeUnit = this._langSvc.instant('tappe');
     return {
