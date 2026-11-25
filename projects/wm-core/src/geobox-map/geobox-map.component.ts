@@ -78,6 +78,7 @@ import {
   distinctUntilChanged,
   filter,
   map,
+  skip,
   startWith,
   switchMap,
   take,
@@ -358,8 +359,23 @@ export class WmGeoboxMapComponent implements AfterViewInit, OnDestroy {
         }
       }),
     );
-    this.refreshLayer$ = this._actions$.pipe(
-      ofType(updateTrackFilter, toggleTrackFilter, resetTrackFilters),
+    // Il ref sulle tracce passa da wmMapTranslationCallback (oc:9044): quando la lingua cambia le
+    // tracce vanno ridisegnate. use() emette onLangChange anche con la lingua già in uso (per
+    // esempio useSavedLang() all'apertura del selettore), quindi si ridisegna solo su un cambio
+    // reale: distinctUntilChanged, e skip(1) scarta soltanto il valore iniziale. Il valore iniziale
+    // può essere undefined: alla prima visita, senza wm-lang in localStorage, nessuno chiama use()
+    // e currentLang non c'è. Per questo niente filter sui null: scarterebbe lo startWith e skip(1)
+    // si mangerebbe il primo cambio di lingua dell'utente. Al massimo un ridisegno in più al primo
+    // use() programmatico. Sta qui e non in map-core perché è wm-core a conoscere la lingua.
+    const languageChanged$ = this._langService.onLangChange.pipe(
+      map(event => event.lang),
+      startWith(this._langService.currentLang),
+      distinctUntilChanged(),
+      skip(1),
+    );
+    this.refreshLayer$ = merge(
+      this._actions$.pipe(ofType(updateTrackFilter, toggleTrackFilter, resetTrackFilters)),
+      languageChanged$,
     );
     if (window.innerWidth < maxWidth) {
       this._store.dispatch(actionPadding({padding: initPadding}));
