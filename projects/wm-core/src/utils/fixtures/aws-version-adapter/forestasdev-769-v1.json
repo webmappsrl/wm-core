@@ -1,0 +1,302 @@
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "LineString",
+    "coordinates": [
+      [
+        9.25847801,
+        40.115454313,
+        0
+      ],
+      [
+        9.258523107,
+        40.115374901,
+        954.92
+      ]
+    ]
+  },
+  "properties": {
+    "id": 769,
+    "name": {
+      "it": "Fonni - Genna Duio (T 714)"
+    },
+    "taxonomies": {
+      "activity": [
+        {
+          "identifier": "mtb",
+          "name": {
+            "it": "Mountain Bike",
+            "en": "Mountain Bike"
+          }
+        },
+        {
+          "identifier": "hiking",
+          "name": {
+            "it": "Alte vie",
+            "en": "High routes"
+          }
+        },
+        {
+          "identifier": "horse",
+          "name": {
+            "it": "Turismo equestre",
+            "en": "Horse"
+          }
+        },
+        {
+          "identifier": "trail",
+          "name": {
+            "it": "Sentiero"
+          },
+          "icon_name": "txn-hiking"
+        }
+      ],
+      "where": [
+        {
+          "identifier": "81",
+          "name": {
+            "en": "Area T (Centrale)",
+            "it": "Area T (Centrale)"
+          }
+        },
+        {
+          "identifier": "391",
+          "name": {
+            "en": "ZNUT7"
+          }
+        },
+        {
+          "identifier": "R7361997",
+          "name": {
+            "en": "Sardegna"
+          },
+          "admin_level": 4
+        },
+        {
+          "identifier": "R39979",
+          "name": {
+            "en": "Nuoro"
+          },
+          "admin_level": 6
+        },
+        {
+          "identifier": "R40251",
+          "name": {
+            "en": "Fonni"
+          },
+          "admin_level": 8
+        }
+      ],
+      "route-type": [
+        {
+          "identifier": "route-type-trail",
+          "name": {
+            "en": "Trail",
+            "it": "Sentiero"
+          }
+        }
+      ],
+      "hiking-difficulty": [
+        {
+          "identifier": "hiking-difficulty-E",
+          "name": {
+            "it": "E"
+          }
+        }
+      ],
+      "validation-status": [
+        {
+          "identifier": "validation-status-pre-registration",
+          "name": {
+            "it": "In pre-accatastamento o manutenzione"
+          }
+        }
+      ],
+      "mtb-difficulty": [
+        {
+          "identifier": "mtb-difficulty-EC",
+          "name": {
+            "it": "EC"
+          }
+        }
+      ]
+    },
+    "taxonomy": null,
+    "taxonomy_where": null,
+    "taxonomyWheres": null,
+    "related_pois": [
+      {
+        "type": "Feature",
+        "properties": {
+          "layers": [
+            5
+          ],
+          "forestas": {
+            "url": "https://www.sardegnasentieri.it/da-vedere/fonni",
+            "video": [],
+            "codice": "Z-NU-T-714_WP",
+            "allegati": [],
+            "created_at": "2024-08-07 16:52:25",
+            "updated_at": "2024-08-07 17:24:17",
+            "come_arrivare": null,
+            "poi_correlati": [],
+            "zona_geografica": [
+              "4838"
+            ],
+            "source_relations": {
+              "pois": [],
+              "tracks": [
+                "3281"
+              ]
+            },
+            "sardegnasentieri_id": "3301"
+          },
+          "description": {
+            "en": "<p>Fonni is the highest town in Sardinia, on the slopes of the Gennargentu massif, in the center of the island, surrounded by ancient woods and prehistoric remains, and the premier Sardinian ski destination.</p><p>The<strong> T 714</strong> trail to <em><strong>Genna Duio</strong></em> starts from this point.</p>",
+            "it": "<p>Fonni è il paese più alto della Sardegna, sulle pendici del Gennargentu, al centro dell’Isola, circondato da boschi secolari e resti preistorici, meta sciistica sarda per eccellenza.</p><p>Da questo punto parte il sentiero <strong>T 714</strong> che porta a <em><strong>Genna Duio</strong></em>.</p>"
+          },
+          "taxonomy_where": {
+            "81": {
+              "en": "Area T (Centrale)",
+              "it": "Area T (Centrale)",
+              "_source": "geohub_conf_32"
+            },
+            "391": {
+              "en": "ZNUT7",
+              "_source": "osm2cai"
+            },
+            "R39979": {
+              "en": "Nuoro",
+              "_admin_level": 6,
+              "_source": "osmfeatures"
+            },
+            "R40251": {
+              "en": "Fonni",
+              "_admin_level": 8,
+              "_source": "osmfeatures"
+            },
+            "R7361997": {
+              "en": "Sardegna",
+              "_admin_level": 4,
+              "_source": "osmfeatures"
+            }
+          },
+          "out_source_feature_id": "3301",
+          "id": 365,
+          "taxonomy": {
+            "activity": [],
+            "when": [],
+            "poi_type": {
+              "id": 8,
+              "name": {
+                "it": "Rifugio, presidi abitati"
+              },
+              "description": null,
+              "identifier": "rifugio",
+              "icon_name": "refuge"
+            },
+            "poi_types": [
+              {
+                "id": 8,
+                "name": {
+                  "it": "Rifugio, presidi abitati"
+                },
+                "description": null,
+                "identifier": "rifugio",
+                "icon_name": "refuge"
+              },
+              {
+                "id": 10,
+                "name": {
+                  "it": "Incroci - waypoint"
+                },
+                "description": null,
+                "identifier": "crossroads",
+                "icon_name": "txn-guidepost"
+              }
+            ]
+          },
+          "taxonomyWheres": [
+            "Area T (Centrale)",
+            "ZNUT7",
+            "Sardegna",
+            "Nuoro",
+            "Fonni"
+          ],
+          "feature_image": {
+            "id": 86612,
+            "name": {
+              "it": "Fonni_2C_20immagine_20da_20Wikipedia"
+            },
+            "url": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/Fonni_2C_20immagine_20da_20Wikipedia.jpg",
+            "thumbnail": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_400_200.jpg",
+            "api_url": "https://forestas.dev.maphub.it/api/media/86612",
+            "sizes": {
+              "108x148": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_108_148.jpg",
+              "108x137": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_108_137.jpg",
+              "150x150": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_150_150.jpg",
+              "225x100": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_225_100.jpg",
+              "118x138": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_118_138.jpg",
+              "108x139": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_108_139.jpg",
+              "118x117": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_118_117.jpg",
+              "335x250": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_335_250.jpg",
+              "400x200": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_400_200.jpg",
+              "1440x500": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_1440_500.jpg",
+              "1920x1080": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_1920_1080.jpg",
+              "250x150": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_250_150.jpg"
+            },
+            "caption": "Fonni, immagine da Wikipedia",
+            "author": "m/m",
+            "credits": "Wikipedia",
+            "show_image_on_map": false
+          },
+          "image_gallery": [
+            {
+              "id": 86612,
+              "name": {
+                "it": "Fonni_2C_20immagine_20da_20Wikipedia"
+              },
+              "url": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/Fonni_2C_20immagine_20da_20Wikipedia.jpg",
+              "thumbnail": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_400_200.jpg",
+              "api_url": "https://forestas.dev.maphub.it/api/media/86612",
+              "sizes": {
+                "108x148": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_108_148.jpg",
+                "108x137": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_108_137.jpg",
+                "150x150": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_150_150.jpg",
+                "225x100": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_225_100.jpg",
+                "118x138": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_118_138.jpg",
+                "108x139": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_108_139.jpg",
+                "118x117": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_118_117.jpg",
+                "335x250": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_335_250.jpg",
+                "400x200": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_400_200.jpg",
+                "1440x500": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_1440_500.jpg",
+                "1920x1080": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_1920_1080.jpg",
+                "250x150": "https://forestas.dev.maphub.it/wmfe/forestasdev/1/media/86612/conversions/Fonni_2C_20immagine_20da_20Wikipedia-thumbnail_250_150.jpg"
+              },
+              "caption": "Fonni, immagine da Wikipedia",
+              "author": "m/m",
+              "credits": "Wikipedia"
+            }
+          ],
+          "created_at": "2026-11-19T15:46:28.000000Z",
+          "updated_at": "2026-11-19T16:20:17.000000Z",
+          "name": {
+            "it": "Fonni",
+            "en": "Fonni"
+          },
+          "geojson_url": "https://forestas.dev.maphub.it/api/ec/poi/download/365.geojson",
+          "gpx_url": "https://forestas.dev.maphub.it/api/ec/poi/download/365.gpx",
+          "kml_url": "https://forestas.dev.maphub.it/api/ec/poi/download/365.kml"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            9.258427,
+            40.115437,
+            0
+          ]
+        }
+      }
+    ]
+  }
+}

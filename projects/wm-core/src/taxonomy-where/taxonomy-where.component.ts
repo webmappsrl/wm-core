@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import {TaxonomyWhereEntry, TaxonomyWhereMap} from '@wm-types/feature';
 import {Language, LANGUAGES} from '@wm-types/language';
+import {TaxonomyItem} from '@wm-types/taxonomy';
 
 interface NormalizedWhereItem {
   adminLevel: number;
@@ -23,6 +24,8 @@ interface NormalizedWhereItem {
 })
 export class WmTaxonomyWhereComponent {
   taxonomyWheres = input<TaxonomyWhereMap | null | undefined>(null);
+  /** Elenco `taxonomies.where` (livello da `admin_level`); ha la precedenza su `taxonomyWheres`. */
+  wheres = input<TaxonomyItem[] | null | undefined>(null);
 
   /**
    * Normalizza l'input `taxonomyWheres` (una mappa `{ [id]: { ...lang, _admin_level } }`)
@@ -32,6 +35,12 @@ export class WmTaxonomyWhereComponent {
    * cambia `taxonomyWheres()` (ed evita di fare lavoro ripetuto nei getter/nel rendering).
    */
   private _normalizedWhere = computed<NormalizedWhereItem[]>(() => {
+    const items = this.wheres();
+    if (items?.length) {
+      return items
+        .filter(item => item.admin_level != null)
+        .map(item => ({adminLevel: Number(item.admin_level), label: item.name}));
+    }
     const value = this.taxonomyWheres() ?? {};
     return Object.values(value)
       .map(entry => {

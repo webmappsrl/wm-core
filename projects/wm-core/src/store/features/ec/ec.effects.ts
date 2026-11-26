@@ -23,6 +23,7 @@ import {
   wmMapFeaturesInViewportFailure,
   wmMapFeaturesInViewportSuccess,
 } from '@wm-core/store/user-activity/user-activity.action';
+import {addIcons} from '@wm-core/store/icons/icons.actions';
 import {loadConfSuccess} from '@wm-core/store/conf/conf.actions';
 
 @Injectable({
@@ -45,9 +46,17 @@ export class EcEffects {
     this._actions$.pipe(
       ofType(currentEcTrackId),
       switchMap(action =>
-        from(this._ecSvc.getEcTrack(action.currentEcTrackId)).pipe(
-          map(ecTrack => this._ecSvc.decorateNotAccessibleRelatedPoi(ecTrack)),
-          map(ecTrack => loadCurrentEcTrackSuccess({ecTrack})),
+        from(this._ecSvc.getEcTrackWithIcons(action.currentEcTrackId)).pipe(
+          // Per ogni emissione (copia offline, poi rete) le icone inline vanno nello store
+          // prima della traccia, così il dettaglio le trova già registrate (oc:8998).
+          switchMap(result => {
+            const ecTrack = this._ecSvc.decorateNotAccessibleRelatedPoi(result?.track ?? null);
+            const icons = result?.icons;
+            const success = loadCurrentEcTrackSuccess({ecTrack});
+            return icons && Object.keys(icons).length > 0
+              ? from([addIcons({icons}), success])
+              : of(success);
+          }),
           catchError(error => of(loadCurrentEcTrackFailure({error}))),
         ),
       ),

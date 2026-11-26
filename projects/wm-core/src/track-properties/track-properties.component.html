@@ -42,11 +42,11 @@
   <wm-get-directions></wm-get-directions>
   <wm-tab-detail class="webmapp-route-tab" [properties]="ecTrackProperties"></wm-tab-detail>
   <wm-txn-where
-    *ngIf="ecTrackProperties?.taxonomy_where as txnWhere"
-    [taxonomyWheres]="txnWhere"
+    *ngIf="ecTrackProperties?.taxonomies?.where?.length"
+    [wheres]="ecTrackProperties.taxonomies.where"
   ></wm-txn-where>
   <wm-tab-howto
-    *ngIf="ecTrackProperties?.taxonomy?.activity"
+    *ngIf="ecTrackProperties?.taxonomies?.activity?.length"
     [properties]="ecTrackProperties"
   ></wm-tab-howto>
   <wm-tab-image-gallery

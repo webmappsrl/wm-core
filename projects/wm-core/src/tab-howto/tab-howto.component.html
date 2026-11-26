@@ -1,8 +1,8 @@
 <ng-container *ngIf="properties != null">
-  <ng-container *ngIf="properties.taxonomy  as taxonomy">
+  <ng-container *ngIf="properties.taxonomies as taxonomies">
     <div class="wm-tab-howto-content">
       <div class="webmapp-title">{{'Attività'|wmtrans}}</div>
-      <div class="webmapp-walkability" *ngIf="taxonomy.activity as activity">
+      <div class="webmapp-walkability" *ngIf="taxonomies.activity as activity">
         <ng-container *ngFor="let item of activity">
           <div class="webmapp-walkability-box">
             <wm-icon *ngIf="hasIcon(item)" [iconData]="item"></wm-icon>

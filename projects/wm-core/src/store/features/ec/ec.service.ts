@@ -5,13 +5,14 @@ import {Injectable} from '@angular/core';
 import {FeatureCollection, LineString, Point} from 'geojson';
 import {Observable, of} from 'rxjs';
 // @ts-ignore
-import {distinctUntilChanged, shareReplay, take} from 'rxjs/operators';
+import {distinctUntilChanged, map, shareReplay, take} from 'rxjs/operators';
 import {Response} from '@wm-types/elastic';
 import {Filter, SliderFilter} from '../../../types/config';
 import {synchronizedApi, getEcTrack as getEcTrackFromLocalForage, saveEcTrack} from '@wm-core/utils/localForage';
 import {WmFeature} from '@wm-types/feature';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 import {LangService} from '@wm-core/localization/lang.service';
+import {AdaptedTrack, adaptTrackToCurrentVersion} from '@wm-core/utils/aws-version-adapter';
 import {EC_NOT_PASSABLE_ONLY_LABEL, EC_NOT_PASSABLE_SUFFIX} from '@wm-core/constants/ec';
 @Injectable({
   providedIn: 'root',
@@ -42,18 +43,35 @@ export class EcService {
     return this._ensureNotAccessibleRelatedPoi(track);
   }
 
+  /** La sola traccia, in forma v1: per chi non usa le icone inline (es. il diario). */
   public getEcTrack(id: string | number): Observable<WmFeature<LineString>> {
+    return this.getEcTrackWithIcons(id).pipe(map(result => result?.track ?? null));
+  }
+
+  /**
+   * Traccia EC in forma v1 con le icone inline estratte dall'adapter. Emette prima la copia
+   * offline, se c'è, poi la versione di rete. L'URL dipende da `awsVersions.tracks` dello shard;
+   * la copia offline si adatta con la versione salvata insieme a lei, non con quella dello shard.
+   * Un errore sul file versionato non ripiega sul file senza versione.
+   */
+  public getEcTrackWithIcons(id: string | number): Observable<AdaptedTrack> {
     if (id == null) return of(null);
     if (+id > -1) {
-      const url = `${this._environmentSvc.awsApi}/tracks/${id}.json`;
+      const tracksVersion = this._environmentSvc.awsVersions.tracks;
+      const url = tracksVersion
+        ? `${this._environmentSvc.awsApi}/tracks/${tracksVersion}/${id}.json`
+        : `${this._environmentSvc.awsApi}/tracks/${id}.json`;
       const lastModifiedKey = `${url}-last-modified`;
 
-      return new Observable<WmFeature<LineString>>(observer => {
+      return new Observable<AdaptedTrack>(observer => {
         // Prima cerca la track nel localForage (ec-tracks synchronized)
         getEcTrackFromLocalForage(`${id}`).then(cachedTrack => {
-          // Se ci sono dati in cache locale, emettili subito
+          // Se ci sono dati in cache locale, emettili subito, adattati con la loro versione
           if (cachedTrack) {
-            observer.next(cachedTrack);
+            const {awsVersion: cachedVersion, icons: cachedIcons, ...cachedFeature} = cachedTrack;
+            const cached = adaptTrackToCurrentVersion(cachedFeature, cachedVersion);
+            // Le icone inline salvate con la copia: offline sono l'unica fonte degli SVG di GeoHub
+            observer.next(cached && {...cached, icons: {...(cachedIcons ?? {}), ...cached.icons}});
           }
 
           // Effettua la richiesta HTTP per ottenere la versione aggiornata
@@ -71,12 +89,13 @@ export class EcService {
                 const lastModified = response.headers.get('last-modified');
 
                 if (response.status === 200) {
-                  const remoteTrack = response.body;
+                  const remoteTrack = adaptTrackToCurrentVersion(response.body, tracksVersion);
 
                   if (remoteTrack) {
-                    // Aggiorna il localForage solo se la track era già stata scaricata dall'utente
+                    // Aggiorna il localForage solo se la track era già stata scaricata dall'utente,
+                    // salvando la traccia già adattata
                     if (cachedTrack) {
-                      saveEcTrack(`${id}`, remoteTrack).catch(err =>
+                      saveEcTrack(`${id}`, remoteTrack.track, undefined, 0, remoteTrack.icons).catch(err =>
                         console.warn('getEcTrack: Failed to update localForage cache', err),
                       );
                     }

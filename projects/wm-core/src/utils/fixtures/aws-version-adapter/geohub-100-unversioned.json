@@ -1,0 +1,207 @@
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "LineString",
+    "coordinates": [
+      [
+        10.71737511,
+        44.2482851,
+        857
+      ],
+      [
+        10.71736416,
+        44.24829975,
+        857
+      ]
+    ]
+  },
+  "properties": {
+    "id": 100,
+    "name": {
+      "it": "Via Germanica Imperiale Tappa 14 variante"
+    },
+    "taxonomy": {
+      "activity": [
+        {
+          "id": 1,
+          "created_at": "2021-06-15T11:35:16.000000Z",
+          "updated_at": "2025-07-01T12:51:05.000000Z",
+          "name": {
+            "it": "Escursionismo",
+            "en": "Hiking",
+            "sq": null
+          },
+          "description": {
+            "sq": null
+          },
+          "excerpt": {
+            "sq": null
+          },
+          "identifier": "hiking",
+          "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024' width='32' height='32'><circle fill=\"darkorange\"  cx='512' cy='512' r='512'/><g fill=\"white\" transform='scale(0.8 0.8) translate(100, 100)'><path d='M614.4 238.944c0 56.544-45.856 102.4-102.4 102.4s-102.4-45.856-102.4-102.4c0-56.544 45.856-102.4 102.4-102.4s102.4 45.856 102.4 102.4zM853.344 546.144c0-18.848-15.296-34.144-34.144-34.144v0h-122.4l-92.352-92.448c-6.176-6.144-14.688-9.952-24.096-9.952-0.032 0-0.032 0-0.064 0h-171.616c-6.56 0.32-12.544 2.496-17.504 6.016l0.096-0.064c-1.12 0.672-2.080 1.344-3.008 2.048l0.064-0.064c-4.768 3.872-8.416 8.96-10.496 14.784l-0.064 0.224c0 0.416-0.544 0.544-0.672 0.96l-136.544 477.856c-0.96 3.008-1.536 6.496-1.536 10.112 0 15.264 10.048 28.224 23.872 32.576l0.256 0.064c2.976 0.992 6.4 1.568 9.92 1.632h0.032c0 0 0 0 0 0 15.264 0 28.192-10.016 32.544-23.84l0.064-0.256 66.144-248.96h88.736l17.28 73.792v165.152c0 18.848 15.296 34.144 34.144 34.144s34.144-15.296 34.144-34.144v0-170.656c0-0.032 0-0.096 0-0.128 0-3.808-0.64-7.488-1.792-10.912l0.064 0.256-15.36-57.472 68.256-170.656 61.44 58.304c6.112 6.112 14.56 9.92 23.872 9.952h112.32l-60.768 337.984c-0.192 0.992-0.32 2.112-0.32 3.296 0 8.32 5.984 15.264 13.856 16.768l0.096 0.032c0.512 0.064 1.088 0.096 1.664 0.096s1.184-0.032 1.728-0.096h-0.064c0 0 0 0 0 0 8.224 0 15.072-5.792 16.704-13.536l0.032-0.096 62.528-346.848c13.248-4.736 22.624-17.088 22.88-31.648v-0.032zM161.76 568.448l67.744-215.136c2.816-8.992 12.416-13.984 21.408-11.168l78.528 24.736c8.992 2.816 13.984 12.416 11.168 21.408l-67.744 215.136c-2.816 8.992-12.416 13.984-21.408 11.168l-78.528-24.736c-8.992-2.816-13.984-12.416-11.168-21.408z'/></g></svg>",
+          "feature_image": 398,
+          "stroke_width": "3",
+          "min_visible_zoom": "5",
+          "min_size_zoom": "5",
+          "min_size": "0.1",
+          "max_size": "0.1",
+          "icon_zoom": "5",
+          "icon_size": "0.1",
+          "icon_name": "txn-hiking"
+        }
+      ],
+      "theme": [
+        4,
+        16,
+        22
+      ],
+      "where": [
+        8,
+        56,
+        697,
+        700,
+        2447,
+        13218,
+        13220,
+        9979,
+        13282
+      ]
+    },
+    "taxonomy_where": null,
+    "taxonomyWheres": [
+      "Emilia-Romagna",
+      "Modena",
+      "Fiumalbo",
+      "Pievepelago",
+      "Montecreto",
+      "Riolunato"
+    ],
+    "related_pois": [
+      {
+        "type": "Feature",
+        "properties": {
+          "id": 56,
+          "created_at": "2022-02-01T14:38:47.000000Z",
+          "updated_at": "2022-02-01T14:38:50.000000Z",
+          "name": {
+            "it": "Ponte della Fola"
+          },
+          "description": {
+            "it": "Il ponte della Fola è una costruzione tardomedievale a schiena d’asino con due archi irregolari. Le analogie con il ponte toscano di Borgo a Mozzano e con quello delle Lazze sono forse una testimonianza della breve dominazione lucchese nell’Alto Frignano durante il XIV secolo. Ha la particolarità di essere l’unico esempio noto di ponte in pietra a due arcate di tutta l’Emilia. La prima citazione di questo ponte risale al 1028 quando era considerato un transito fondamentale nelle comunicazioni appenniniche. Il ponte fu usato come strada di collegamento tra Riolunato e Pievepelago fino alla fine del XIX secolo, quando fu realizzato il moderno ponte posto più a valle."
+          },
+          "user_id": 4103,
+          "feature_image": {
+            "id": 166,
+            "name": {
+              "it": "Ponte della Fola"
+            },
+            "url": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/166.jpg",
+            "thumbnail": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/400x200/166_400x200.jpg",
+            "api_url": "https://geohub.webmapp.it/api/ec/media/166",
+            "sizes": {
+              "108x148": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x148/166_108x148.jpg",
+              "108x137": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x137/166_108x137.jpg",
+              "150x150": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/150x150/166_150x150.jpg",
+              "225x100": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/225x100/166_225x100.jpg",
+              "118x138": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/118x138/166_118x138.jpg",
+              "108x139": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x139/166_108x139.jpg",
+              "118x117": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/118x117/166_118x117.jpg",
+              "335x250": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/335x250/166_335x250.jpg",
+              "400x200": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/400x200/166_400x200.jpg",
+              "250x150": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/250x150/166_250x150.jpg"
+            }
+          },
+          "ele": "752",
+          "addr_street": "via Fola",
+          "addr_postcode": "41020",
+          "addr_locality": "Fola",
+          "opening_hours": "24/7",
+          "pivot": {
+            "ec_track_id": 100,
+            "ec_poi_id": 56,
+            "order": 1
+          },
+          "author_email": "pec@webmapp.it",
+          "image_gallery": [
+            {
+              "id": 166,
+              "name": {
+                "it": "Ponte della Fola"
+              },
+              "url": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/166.jpg",
+              "thumbnail": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/400x200/166_400x200.jpg",
+              "api_url": "https://geohub.webmapp.it/api/ec/media/166",
+              "sizes": {
+                "108x148": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x148/166_108x148.jpg",
+                "108x137": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x137/166_108x137.jpg",
+                "150x150": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/150x150/166_150x150.jpg",
+                "225x100": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/225x100/166_225x100.jpg",
+                "118x138": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/118x138/166_118x138.jpg",
+                "108x139": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x139/166_108x139.jpg",
+                "118x117": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/118x117/166_118x117.jpg",
+                "335x250": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/335x250/166_335x250.jpg",
+                "400x200": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/400x200/166_400x200.jpg",
+                "250x150": "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/250x150/166_250x150.jpg"
+              }
+            }
+          ],
+          "geojson_url": "https://geohub.webmapp.it/api/ec/poi/download/56.geojson",
+          "gpx_url": "https://geohub.webmapp.it/api/ec/poi/download/56.gpx",
+          "kml_url": "https://geohub.webmapp.it/api/ec/poi/download/56.kml",
+          "taxonomy": {
+            "where": [
+              8,
+              56,
+              9979,
+              13218,
+              13220
+            ],
+            "poi_type": {
+              "id": 12,
+              "name": {
+                "it": "Cultura",
+                "en": "Culture"
+              },
+              "color": "#F39C19",
+              "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024' width='32' height='32'><circle fill=\"darkorange\"  cx='512' cy='512' r='512'/><g fill=\"white\" transform='scale(0.8 0.8) translate(100, 100)'><path d='M750.933 273.067h-477.867c-37.704 0-68.267-30.563-68.267-68.267v-170.667c0-18.848 15.285-34.133 34.133-34.133s34.133 15.285 34.133 34.133v102.4h68.267v-68.267c0-37.704 30.563-68.267 68.267-68.267s68.267 30.563 68.267 68.267v68.267h68.267v-68.267c0-37.704 30.563-68.267 68.267-68.267s68.267 30.563 68.267 68.267v68.267h68.267v-102.4c0-18.848 15.285-34.133 34.133-34.133s34.133 15.285 34.133 34.133v170.667c0 37.704-30.563 68.267-68.267 68.267zM955.733 989.867c0 18.848-15.285 34.133-34.133 34.133h-819.2c-18.848 0-34.133-15.285-34.133-34.133s15.285-34.133 34.133-34.133h34.133c37.704 0 68.267-30.563 68.267-68.267 0 0 68.267-409.6 68.267-477.867 0-37.704 30.563-68.267 68.267-68.267h341.333c37.704 0 68.267 30.563 68.267 68.267 0 68.267 68.267 477.867 68.267 477.867 0 37.704 30.563 68.267 68.267 68.267h34.133c18.589-0.007 33.765 14.868 34.133 33.451v0.683zM614.4 716.8c0-56.552-45.848-102.4-102.4-102.4s-102.4 45.848-102.4 102.4v238.933h204.8v-238.933z'/></g></svg>",
+              "icon_name": "txn-castle"
+            },
+            "poi_types": [
+              {
+                "id": 12,
+                "name": {
+                  "it": "Cultura",
+                  "en": "Culture"
+                },
+                "color": "#F39C19",
+                "icon": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024' width='32' height='32'><circle fill=\"darkorange\"  cx='512' cy='512' r='512'/><g fill=\"white\" transform='scale(0.8 0.8) translate(100, 100)'><path d='M750.933 273.067h-477.867c-37.704 0-68.267-30.563-68.267-68.267v-170.667c0-18.848 15.285-34.133 34.133-34.133s34.133 15.285 34.133 34.133v102.4h68.267v-68.267c0-37.704 30.563-68.267 68.267-68.267s68.267 30.563 68.267 68.267v68.267h68.267v-68.267c0-37.704 30.563-68.267 68.267-68.267s68.267 30.563 68.267 68.267v68.267h68.267v-102.4c0-18.848 15.285-34.133 34.133-34.133s34.133 15.285 34.133 34.133v170.667c0 37.704-30.563 68.267-68.267 68.267zM955.733 989.867c0 18.848-15.285 34.133-34.133 34.133h-819.2c-18.848 0-34.133-15.285-34.133-34.133s15.285-34.133 34.133-34.133h34.133c37.704 0 68.267-30.563 68.267-68.267 0 0 68.267-409.6 68.267-477.867 0-37.704 30.563-68.267 68.267-68.267h341.333c37.704 0 68.267 30.563 68.267 68.267 0 68.267 68.267 477.867 68.267 477.867 0 37.704 30.563 68.267 68.267 68.267h34.133c18.589-0.007 33.765 14.868 34.133 33.451v0.683zM614.4 716.8c0-56.552-45.848-102.4-102.4-102.4s-102.4 45.848-102.4 102.4v238.933h204.8v-238.933z'/></g></svg>",
+                "icon_name": "txn-castle"
+              }
+            ]
+          },
+          "taxonomyIdentifiers": [
+            "where_emilia-romagna",
+            "where_modena",
+            "where_036035",
+            "where_macroarea-parchi-emilia-centrale",
+            "where_parco-frignano",
+            "poi_type_culture"
+          ],
+          "taxonomyWheres": [
+            "Emilia-Romagna",
+            "Modena",
+            "Riolunato"
+          ],
+          "searchable": "{it:Ponte della Fola} {it:Il ponte della Fola u00e8 una costruzione tardomedievale a schiena du2019asino con due archi irregolari. Le analogie con il ponte toscano di Borgo a Mozzano e con quello delle Lazze sono forse una testimonianza della breve dominazione lucchese nellu2019Alto Frignano durante il XIV secolo. Ha la particolaritu00e0 di essere lu2019unico esempio noto di ponte in pietra a due arcate di tutta lu2019Emilia. La prima citazione di questo ponte risale al 1028 quando era considerato un transito fondamentale nelle comunicazioni appenniniche. Il ponte fu usato come strada di collegamento tra Riolunato e Pievepelago fino alla fine del XIX secolo, quando fu realizzato il moderno ponte posto piu00f9 a valle.} []  {it:Cultura,en:Culture} "
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            10.629736012,
+            44.21274737
+          ]
+        }
+      }
+    ]
+  }
+}
